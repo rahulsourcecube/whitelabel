@@ -9,11 +9,12 @@
 
                 <a class="btn btn-primary float-right" href="{{ route('admin.package.create') }}" role="button">Add New</a>
                 <div class="m-t-25">
-                    <table id="package_tbale" class="table">
+                    <table id="package_tbales" class="table">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Name</th>
-                                <th>Description </th>
+                                {{-- <th>Description </th> --}}
                                 <th>Type</th>
                                 <th>Duration</th>
                                 <th>Price</th>
@@ -24,54 +25,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Package 1</td>
-                                <td>Package 1 Package 1 Package 1 </td>
-                                <td>Free Trial</td>
-                                <td>7 Month</td>
-                                <td>$50</td>
-                                <td>15</td>
-                                <td>image</td>
-                                <td>Active</td>
-                                <td>
-                                    <a class="btn btn-success " href="{{ route('admin.package.view') }}"
-                                        role="button">View</a>
-                                    <a class="btn btn-primary" href="#" role="button">Edit</a>
-                                    <a class="btn btn-danger " href="#" role="button">Delete</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Package 2</td>
-                                <td>Package 1 Package 1 Package 1 </td>
-                                <td>Monthly</td>
-                                <td>7 Month</td>
-                                <td>$50</td>
-                                <td>15</td>
-                                <td>image</td>
-                                <td>Active</td>
-                                <td>
-                                    <a class="btn btn-success " href="{{ route('admin.package.view') }}"
-                                        role="button">View</a>
-                                    <a class="btn btn-primary" href="#" role="button">Edit</a>
-                                    <a class="btn btn-danger " href="#" role="button">Delete</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Package 2</td>
-                                <td>Package 1 Package 1 Package 1 </td>
-                                <td>Yearly</td>
-                                <td>7 Month</td>
-                                <td>$50</td>
-                                <td>15</td>
-                                <td>image</td>
-                                <td>Active</td>
-                                <td>
-                                    <a class="btn btn-success " href="{{ route('admin.package.view') }}"
-                                        role="button">View</a>
-                                    <a class="btn btn-primary" href="#" role="button">Edit</a>
-                                    <a class="btn btn-danger " href="#" role="button">Delete</a>
-                                </td>
-                            </tr>
+                            
 
                         </tbody>
 
@@ -85,10 +39,58 @@
 
     <script>
         /*This is data table for partership Request */
+        // $(document).ready(function() {
+        //     $('#package_tbale').DataTable({
+        //         "paging": true, // Enable pagination
+        //         "searching": false // Enable search bar
+        //     });
+        // });
         $(document).ready(function() {
-            $('#package_tbale').DataTable({
-                "paging": true, // Enable pagination
-                "searching": false // Enable search bar
+            var table = $('#package_tbales').DataTable({
+                // Processing indicator
+                "processing": true,
+                // DataTables server-side processing mode
+                "serverSide": true,
+                responsive: true,
+                pageLength: 25,
+                // Initial no order.
+                'order': [
+                    [0, 'desc']
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search Here",
+                },
+                // Load data from an Ajax source
+                "ajax": {
+                    "url": "{{ route('admin.package.dtlist') }}",
+                    "type": "POST",
+                    "headers": {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    "data": function(d) {
+                        // d.search_name = $('#search_name').val();
+                    }
+                },
+                'columnDefs': [{
+                //     'targets': 0,
+                //     'visible': true,
+                //     'orderable': false,
+                //     'render': function(data, type, row) {
+                //         return '<input type="checkbox" name="chk-row" value="' + row[1] +
+                //             '" class="chk-row">';
+                //     },
+                // }, {
+                    'targets': 8,
+                    'visible': true,
+                    'orderable': false,
+                    'render': function(data, type, row) {
+                        var viewUrl = '{{ route('admin.company.view', ':id') }}';
+                        viewUrl = viewUrl.replace(':id', row[0]);
+                        return '<a class="btn btn-success " href="' + viewUrl +
+                            '" role="button">View</a>';
+                    },
+            }],
             });
         });
     </script>
