@@ -9,11 +9,12 @@
 
                 <a class="btn btn-primary float-right" href="{{ route('admin.package.create') }}" role="button">Add New</a>
                 <div class="m-t-25">
-                    <table id="package_tbale" class="table">
+                    <table id="package_tbales" class="table">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Name</th>
-                                <th>Description </th>
+                                {{-- <th>Description </th> --}}
                                 <th>Type</th>
                                 <th>Duration</th>
                                 <th>Price</th>
@@ -24,54 +25,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Package 1</td>
-                                <td>Package 1 Package 1 Package 1 </td>
-                                <td>Free Trial</td>
-                                <td>7 Month</td>
-                                <td>$50</td>
-                                <td>15</td>
-                                <td>image</td>
-                                <td>Active</td>
-                                <td>
-                                    <a class="btn btn-success " href="{{ route('admin.package.view') }}"
-                                        role="button">View</a>
-                                    <a class="btn btn-primary" href="#" role="button">Edit</a>
-                                    <a class="btn btn-danger " href="#" role="button">Delete</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Package 2</td>
-                                <td>Package 1 Package 1 Package 1 </td>
-                                <td>Monthly</td>
-                                <td>7 Month</td>
-                                <td>$50</td>
-                                <td>15</td>
-                                <td>image</td>
-                                <td>Active</td>
-                                <td>
-                                    <a class="btn btn-success " href="{{ route('admin.package.view') }}"
-                                        role="button">View</a>
-                                    <a class="btn btn-primary" href="#" role="button">Edit</a>
-                                    <a class="btn btn-danger " href="#" role="button">Delete</a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Package 2</td>
-                                <td>Package 1 Package 1 Package 1 </td>
-                                <td>Yearly</td>
-                                <td>7 Month</td>
-                                <td>$50</td>
-                                <td>15</td>
-                                <td>image</td>
-                                <td>Active</td>
-                                <td>
-                                    <a class="btn btn-success " href="{{ route('admin.package.view') }}"
-                                        role="button">View</a>
-                                    <a class="btn btn-primary" href="#" role="button">Edit</a>
-                                    <a class="btn btn-danger " href="#" role="button">Delete</a>
-                                </td>
-                            </tr>
+                            
 
                         </tbody>
 
@@ -82,14 +36,139 @@
             </div>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         /*This is data table for partership Request */
+        // $(document).ready(function() {
+        //     $('#package_tbale').DataTable({
+        //         "paging": true, // Enable pagination
+        //         "searching": false // Enable search bar
+        //     });
+        // });
         $(document).ready(function() {
-            $('#package_tbale').DataTable({
-                "paging": true, // Enable pagination
-                "searching": false // Enable search bar
+            var table = $('#package_tbales').DataTable({
+                // Processing indicator
+                "processing": true,
+                // DataTables server-side processing mode
+                "serverSide": true,
+                responsive: true,
+                pageLength: 25,
+                // Initial no order.
+                'order': [
+                    [0, 'desc']
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search Here",
+                },
+                // Load data from an Ajax source
+                "ajax": {
+                    "url": "{{ route('admin.package.dtlist') }}",
+                    "type": "POST",
+                    "headers": {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    "data": function(d) {
+                        // d.search_name = $('#search_name').val();
+                    }
+                },
+                'columnDefs': [
+                    {
+                    'targets': 0,
+                    'visible': false,
+                    'orderable': false,
+                    'render': function(data, type, row) {
+                        return '<input type="checkbox" name="chk_row" value="' + row[0] +
+                            '" class="chk-row">';
+                    },
+                },{
+                    'targets': 6,
+                    'visible': true,
+                    'orderable': false,
+                    'render': function(data, type, row) {
+                       var imagurl='{{ asset("uploads/package") }}/'+ row[6];
+                        // imagurl = imagurl.replace(':row', row[6]);
+                        return ' <img id="" class="packageimage" src="'+ imagurl +'" style="height: 100px; width: 100px;">';
+                           
+                    },
+                }, {
+                    'targets': 8,
+                    'visible': true,
+                    'orderable': false,
+                    'render': function(data, type, row) {
+                        var viewUrl = '{{ route('admin.package.view', ':id') }}';
+                        var editUrl = '{{ route('admin.package.edit', ':package') }}';
+                        // var viewUrl = '{{ route('admin.company.view', ':id') }}';
+                        viewUrl = viewUrl.replace(':id', row[0]);
+                        editUrl = editUrl.replace(':package', row[0]);
+
+                        var deleteUrl = '{{ route('admin.package.delete', ':del') }}';
+                                    deleteUrl = deleteUrl.replace(':del', row[0]);
+
+                        
+                        return '<a class="btn btn-success " href="'+ viewUrl +
+                            '" role="button">View</a> <a class="btn btn-primary" href="'+ editUrl +'" role="button">Edit</a> <a class="btn btn-danger" role="button" onclick="sweetAlertAjax(\'' + deleteUrl + '\')">Delete</a>';
+                            
+                    },
+            }],
             });
         });
+    </script>
+    <script>
+      function sweetAlertAjax(deleteUrl) {
+    // Use SweetAlert for confirmation
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You won\'t be able to revert this!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // If the user confirms, proceed with AJAX deletion
+            $.ajax({
+                url: deleteUrl,
+                type: 'DELETE',
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: (response) => {
+                    if (response.status === 'error') {
+                        // Handle error case
+                        swal({
+                            text: response.message,
+                            icon: "error",
+                            button: "Ok",
+                        }).then(() => {
+                            // Reload the page or take appropriate action
+                            location.reload();
+                        });
+                    } else {
+                        // Handle success case
+                        swal({
+                            text: response.message,
+                            icon: "success",
+                            button: "Ok",
+                        }).then(() => {
+                            // Reload the page or take appropriate action
+                            location.reload();
+                        });
+                    }
+                },
+                error: (xhr, status, error) => {
+                    // Handle AJAX request error
+                    console.error(xhr.responseText);
+                    swal({
+                        text: 'An error occurred while processing your request.',
+                        icon: "error",
+                        button: "Ok",
+                    });
+                }
+            });
+        }
+    });
+}
     </script>
 @endsection

@@ -20,60 +20,86 @@
 
         <div class="m-t-50" style="">
 
-            <form action="" id="whoWeAreForm">
+            <form id="" method="POST" action="{{ route('admin.setting.store',$setting->id) }}" 
+                enctype="multipart/form-data">
+                @csrf
 
                 <div class="form-row">
                 <div class="form-group col-md-6">
 
                     <label for="title">Title</label>
-                    <input type="text" class="form-control mb-2" name="title" id="title" placeholder="Title" value="{{ old('title') }}">
+                    <input type="text" class="form-control mb-2" name="title" id="title" placeholder="Title" value="{{$setting->title }}">
 
                 </div>
                 <div class="form-group col-md-6">
 
-                    <label for="title">Email</label>
-                    <input type="Email" class="form-control mb-2" name="title" id="title" placeholder="Email" value="{{ old('title') }}">
+                    <label for="email">Email</label>
+                    <input type="Email" class="form-control mb-2" name="email" id="email" placeholder="Email" value="{{$setting->email }}">
 
                 </div>
                 <div class="form-group col-md-6">
 
-                    <label for="title">Contact Number</label>
-                    <input type="Email" class="form-control mb-2" name="title" id="title" placeholder="Contact Number" value="{{ old('title') }}">
+                    <label for="contact">Contact Number</label>
+                    <input type="text" class="form-control mb-2" name="contact_no" id="contact" placeholder="Contact Number" value="{{$setting->contact_number }}">
 
                 </div>
                 <div class="form-group col-md-4">
 
                     <label for="flink">Facebook Link</label>
-                    <input type="text" class="form-control mb-2" name="flink" id="flink" placeholder="Facebook Link" value="{{ old('flink') }}">
+                    <input type="text" class="form-control mb-2" name="flink" id="flink" placeholder="Facebook Link" value="{{$setting->facebook_link }}">
 
                 </div>
                 <div class="form-group col-md-4">
 
                     <label for="t_link">Twitter Link</label>
-                    <input type="text" class="form-control mb-2" name="t_link" id="t_link" placeholder="Twitter Link" value="{{ old('t_link') }}">
+                    <input type="text" class="form-control mb-2" name="t_link" id="t_link" placeholder="Twitter Link" value="{{$setting->twitter_link }}">
 
                 </div>
                 <div class="form-group col-md-4">
 
                     <label for="l_link">linkedin Link</label>
-                    <input type="text" class="form-control mb-2" name="l_link" id="l_link" placeholder="Jane Doe" value="{{ old('l_link') }}">
+                    <input type="text" class="form-control mb-2" name="l_link" id="l_link" placeholder="linkedin Link" value="{{$setting->linkedin_link }}">
 
                 </div>
 
                     <div class="form-group col-md-6">
-                        <label for="leader_image">Logo</label>
-                        <input type="file" class="form-control leader_img files" name="leader_img" id="files" placeholder="File" value="old{'leader_img'}">
-                        <!-- <input type="file" id="files" name="profile_image[]" multiple /> -->
-
-
+                        <label for="leader_image">Logo</label>                        
+                        <input type="file" class="form-control" name="logo" id="file" accept=".png, .jpg, .jpeg"
+                            onchange="previewImage()">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <img id="imagePreview" src="{{ asset("uploads/setting/".$setting->logo) }}" alt="Image Preview"
+                                        style="width: 50%; height: 100px; display: block; ">
+                                    <button type="button" id="deleteImageButton"  class="btn btn-danger mt-2"
+                                        style="display: block;" onclick="deleteImage()">Delete Image</button>
+                                </div>
+                            </div>
                     </div>
+                   
                     <div class="form-group col-md-6">
                         <label for="leader_image">Favicon</label>
-                        <input type="file" class="form-control favicon_img favicon" name="favicon_img" id="" placeholder="File" value="old{'leader_img'}">
+                        <input type="file" class="form-control" name="favicon_img" id="file2" accept=".png, .jpg, .jpeg"
+                        onchange="previewImage2()">
                         <!-- <input type="file" id="files" name="profile_image[]" multiple /> -->
-
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <img id="imagePreview2" src="{{ asset("uploads/setting/".$setting->favicon) }}" alt="Image Preview"
+                                    style="width: 50%; height: 100px; display: block; ">
+                                <button type="button" id="deleteImageButton"  class="btn btn-danger mt-2"
+                                    style="display: block;" onclick="deleteImage2()">Delete Image</button>
+                            </div>
+                        </div>
 
                     </div>
+                    {{-- <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <img id="imagePreview" src="{{ asset("uploads/setting/".$setting->favicon) }}" alt="Image Preview"
+                                style="width: 50%; height: 100px; display: block; ">
+                            <button type="button" id="faviconImage"  class="btn btn-danger mt-2"
+                                style="display: block;" onclick="faviconImage()">Delete Image</button>
+                        </div>
+                    </div> --}}
+                    
 
                 </div>
 
@@ -86,196 +112,76 @@
 </div>
 
 
+
+   
 <script>
-    $(document).ready(function() {
-        $.validator.addMethod("imageFile", function(value, element) {
-            // Check if the file extension is one of these
-            return this.optional(element) || /\.(jpg|jpeg|png|gif)$/i.test(value);
-        }, "Please select a valid image file (jpg, jpeg, png, gif)");
-        $("#whoWeAreForm").validate({
-            ignore: [],
-            rules: {
-                leader_img: {
-                    required: true,
-                    imageFile: true,
-                },
-                first_name: {
-                    required: true,
-                },
-                last_name: {
-                    required: true,
-                },
-                desigtion: {
-                    required: true,
-                },
-                description: {
-                    required: true,
-                },
-                facebook: {
-                    required: true,
-                    // url:true,
-                },
-                instagram: {
-                    required: true,
-                    // url:true,
-                },
-                twitter: {
-                    required: true,
-                    // url:true,
-                },
-                linkedin: {
-                    required: true,
-                    // url:true,
-                },
-                'img[]': {
-                    required: true,
-                    imageFile: true,
-                },
+    function previewImage() {
+        var input = document.getElementById('file');
+        var preview = document.getElementById('imagePreview');
+        var deleteButton = document.getElementById('deleteImageButton');
 
-            },
-            messages: {
-                email: {
-                    leader_img: "Please Select Leader Image",
-                    accept: "Only image files are allowed."
-                },
-                first_name: {
-                    required: "Please Enter First Name"
-                },
-                last_name: {
-                    required: "Please Enter Last Name"
-                },
-                desigtion: {
-                    required: "Please Enter Designation"
-                },
-                description: {
-                    required: "Please Enter Description"
-                },
-                facebook: {
-                    required: "Please Enter Facebook URL",
-                    // url: "Please enter a valid Facebook URL"
-                },
-                instagram: {
-                    required: "Please Enter Instagram URL",
-                    // url: "Please enter a valid Instagram URL"
-                },
-                twitter: {
-                    required: "Please Enter Twitter URL",
-                    // url: "Please enter a valid Twitter URL"
-                },
-                linkedin: {
-                    required: "Please Enter Linkedin URL",
-                    // url: "Please enter a valid LinkedIn URL"
-                },
-                'img[]': {
-                    required: "Please Select Images",
-                    accept: "Only image files are allowed."
-                },
-            }
-        });
-    });
-    $(document).ready(function() {
-        if (window.File && window.FileList && window.FileReader) {
-            $(".files").on("change", function(e) {
-                var files = e.target.files,
-                    filesLength = files.length;
-                for (var i = 0; i < filesLength; i++) {
-                    var f = files[i]
-                    var fileReader = new FileReader();
-                    fileReader.onload = (function(e) {
-                        var file = e.target;
-                        $('.pip').remove();
-                        $("<span class=\"pip\">" +
-                            "<img style='height: 150px; width: 190px;' class=\"imageThumb\" src=\"" +
-                            e.target.result + "\" title=\"" + file.name + "\"/>" +
-                            "<br/><span class=\"remove\" style='font-size:16px;color:red'>Remove image</span>" +
-                            "</span>").insertAfter("#files");
-                        $(".remove").click(function() {
-                            $(this).parent(".pip").remove();
-                            $('.leader_img').val('');
-                        });
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
-                    });
-                    fileReader.readAsDataURL(f);
-                }
-                console.log(files);
-            });
-            $(".favicon").on("change", function(e) {
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                deleteButton.style.display = 'block';
+            };
 
-                var files = e.target.files,
-                    filesLength = files.length;
-                for (var i = 0; i < filesLength; i++) {
-                    var f = files[i]
-                    var fileReader = new FileReader();
-                    fileReader.onload = (function(e) {
-                        var file = e.target;
-                        $('.pips').remove();
-                        $("<span class=\"pips\">" +
-                            "<img style='height: 150px; width: 190px;' class=\"imageThumb\" src=\"" +
-                            e.target.result + "\" title=\"" + file.name + "\"/>" +
-                            "<br/><span class=\"removes\" style='font-size:16px;color:red'>Remove image</span>" +
-                            "</span>").insertAfter(".favicon");
-                        $(".removes").click(function() {
-                            $(this).parent(".pips").remove();
-                            $('.favicon_img').val('');
-                        });
-
-                    });
-                    fileReader.readAsDataURL(f);
-                }
-                console.log(files);
-            });
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+            deleteButton.style.display = 'none';
         }
-    });
+    }
 
-    $(document).ready(function() {
-        $('.file').on('change', function(e) {
-            var files = e.target.files;
+    function deleteImage() {
+        var input = document.getElementById('file');
+        var preview = document.getElementById('imagePreview');
+        var deleteButton = document.getElementById('deleteImageButton');
 
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var reader = new FileReader();
-
-                reader.onload = function(e) {
-                    var previewHtml = `
-				<div class="preview-item col-md-2">
-					<img style='height: 150px; width: 190px;' class="preview-image" src="${e.target.result}" alt="Preview">
-					<i class="fa fa-close delete-button" style="font-size:25px;color:red"></i>
-				</div>
-				`;
-
-                    $('#who_we_are_preview_container').append(previewHtml);
-                };
-
-                reader.readAsDataURL(file);
-            }
-        });
-        $('.favicon').on('change', function(e) {
-            var files = e.target.files;
-
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var reader = new FileReader();
-
-                reader.onload = function(e) {
-                    var previewHtml = `
-				<div class="preview-item col-md-2">
-					<img style='height: 150px; width: 190px;' class="preview-image" src="${e.target.result}" alt="Preview">
-					<i class="fa fa-close delete-button" style="font-size:25px;color:red"></i>
-				</div>
-				`;
-
-                    $('#who_we_are_preview_container').append(previewHtml);
-                };
-
-                reader.readAsDataURL(file);
-            }
-        });
-
-        $('#who_we_are_preview_container').on('click', '.delete-button', function() {
-            $(this).parent('.preview-item').remove();
-            $('.imgs').val('');
-
-        });
-    });
+        input.value = ''; // Clear the file input
+        preview.src = '#';
+        preview.style.display = 'none';
+        deleteButton.style.display = 'none';
+    }
 </script>
+<script>
+    function previewImage2() {
+        var input = document.getElementById('file2');
+        var preview = document.getElementById('imagePreview2');
+        var deleteButton = document.getElementById('deleteImageButton2');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                deleteButton.style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+            deleteButton.style.display = 'none';
+        }
+    }
+
+    function deleteImage2() {
+        var input = document.getElementById('file2');
+        var preview = document.getElementById('imagePreview2');
+        var deleteButton = document.getElementById('deleteImageButton2');
+
+        input.value = ''; // Clear the file input
+        preview.src = '#';
+        preview.style.display = 'none';
+        deleteButton.style.display = 'none';
+    }
+</script>
+
+
 @endsection
