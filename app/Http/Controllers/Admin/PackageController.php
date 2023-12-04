@@ -30,6 +30,7 @@ class PackageController extends Controller
             ->get();
         foreach($results as $result){
             // dd($result);
+            // dd('admin/uploads/packageImage/' . $result->image);
             $list [] = [
                 $result->id,
                 $result->title,
@@ -37,16 +38,9 @@ class PackageController extends Controller
                 $result->duration,
                 $result->price,
                 $result->no_of_campaign,
-                $result->image,
-                $result->status,
-                // $result->user->first_name  .' '. $result->user->last_name,
-                // $result['company_name'],
-                // $result['subdomain'],
-                // $result['email'],
-                // $result['email'],
-                // $result['email'],
-                // $result['is_indivisual'],
-                // $result['status'],
+                $result->image,                
+                ($result->status=='Active')? 'Active': 'Deactive',
+               
             ] ;
         }
         $totalFiltered = $results->count();
@@ -61,9 +55,12 @@ class PackageController extends Controller
     {
         return view('admin.package.create');
     }
-    function view()
+    function view(packageModel $package) 
     {
-        return view('admin.package.view');
+       
+       
+        return view('admin.package.view',compact('package'));
+      
     }
     function store(Request $request)
     {
@@ -84,7 +81,7 @@ class PackageController extends Controller
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
                 
                 // Move the file to the storage directory with the new filename
-                $request->file('image')->move('admin/uploads/packageImage', $image);
+                $request->file('image')->move('uploads/package', $image);
 
                 // Save the image path to the database
                 $package->image = $image;
@@ -135,7 +132,7 @@ class PackageController extends Controller
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
                 
                 // Move the file to the storage directory with the new filename+
-                $request->file('image')->move('admin/uploads/packageImage', $image);
+                $request->file('image')->move('uploads/package', $image);
 
                 // Save the image path to the database
                 $package->image = $image;
@@ -160,5 +157,18 @@ class PackageController extends Controller
         //     return redirect()->back()->with('error', 'Error creating package: ' . $e->getMessage());
         // }
     }
+    public function delete(Request $request, $id)
+    {
+        try {
+            $package = PackageModel::findOrFail($id);
+            $package->delete();
+
+            return response()->json(["status" => 200, "message" => "Package Deleted"]);
+        } catch (\Exception $e) {
+            // Handle the case where the record with the specified $id does not exist
+            return response()->json(["status" => 400, "message" => "Package not found or could not be deleted"]);
+        }
+    }
 }
+       
 

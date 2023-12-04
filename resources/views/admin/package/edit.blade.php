@@ -34,9 +34,9 @@
                             <label for="inputype">Type</label>
                             <select id="inputype" name="type" class="form-control type">
 
-                                <option value="1">Free Trial</option>
-                                <option value="2">Monthly</option>
-                                <option value="3">Yearly</option>
+                                <option value="1" {{ !empty($package->type) && $package->type == '1' ? 'selected' : '' }}>Free Trial</option>
+                                <option value="2" {{ !empty($package->type) && $package->type == '2' ? 'selected' : '' }}>Monthly</option>
+                                <option value="3" {{ !empty($package->type) && $package->type == '3' ? 'selected' : '' }}>Yearly</option>   
                             </select>
                         </div>
                         <div class="form-group col-md-6">
@@ -52,9 +52,19 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group  col-md-6">
+                        <div class="form-group col-md-6">
                             <label for="file">Image</label>
-                            <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg">
+                            <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg"
+                                onchange="previewImage()">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <img id="imagePreview" src="{{ asset("uploads/package/".$package->image) }}" alt="Image Preview"
+                                style="width: 50%; height: 100px; display: block; ">
+                            <button type="button" id="deleteImageButton"  class="btn btn-danger mt-2"
+                                style="display: block;" onclick="deleteImage()">Delete Image</button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -67,6 +77,7 @@
 
 
 <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
      window.onload = () => {
@@ -147,6 +158,40 @@
             })
         })
         
+</script>
+<script>
+    function previewImage() {
+        var input = document.getElementById('file');
+        var preview = document.getElementById('imagePreview');
+        var deleteButton = document.getElementById('deleteImageButton');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                deleteButton.style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.src = '#';
+            preview.style.display = 'none';
+            deleteButton.style.display = 'none';
+        }
+    }
+
+    function deleteImage() {
+        var input = document.getElementById('file');
+        var preview = document.getElementById('imagePreview');
+        var deleteButton = document.getElementById('deleteImageButton');
+
+        input.value = ''; // Clear the file input
+        preview.src = '#';
+        preview.style.display = 'none';
+        deleteButton.style.display = 'none';
+    }
 </script>
 
 

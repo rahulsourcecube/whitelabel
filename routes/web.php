@@ -44,7 +44,8 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 
         Route::get('create', [PackageController::class, 'create'])->name('create');
         Route::post('/store', [PackageController::class, 'store'])->name('store');
-        Route::get('view', [PackageController::class, 'view'])->name('view');
+        Route::get('view/{package}', [PackageController::class, 'view'])->name('view');
+        Route::delete('delete/{package}', [PackageController::class, 'delete'])->name('delete');
         Route::get('edit/{package}', [PackageController::class, 'edit'])->name('edit');
         Route::put('update/{package}', [PackageController::class, 'update'])->name('update');
     });
@@ -53,6 +54,7 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [SettingController::class, 'index'])->name('index');
+        Route::post('store', [SettingController::class, 'store'])->name('store');
     });
     Route::prefix('company')->name('company.')->group(function () {
         Route::get('', [CompanyController::class, 'index'])->name('list');
