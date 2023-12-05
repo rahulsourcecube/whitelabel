@@ -1,3 +1,12 @@
 .form-control::placeholder {
     color: #0f0f0f;
 }
+
+.logo  img{
+    width: 100%;
+    max-width: 100px;
+}
+
+.error {
+    color: red;
+}

@@ -27,11 +27,11 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Auth::routes();
-Route::get('/', [AdminController::class, 'index'] )->name('admin');
+Route::get('/', [AdminController::class, 'index'])->name('admin');
 
 Route::group(['prefix' => 'admin'], function () {
-    Route::get('/', [AdminController::class, 'index'] )->name('admin');
-    Route::get('/login',[AdminController::class, 'index'])->name('admin.login');
+    Route::get('/', [AdminController::class, 'index'])->name('admin');
+    Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
@@ -50,7 +50,7 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
         Route::put('update/{package}', [PackageController::class, 'update'])->name('update');
     });
 
-    
+
 
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [SettingController::class, 'index'])->name('index');

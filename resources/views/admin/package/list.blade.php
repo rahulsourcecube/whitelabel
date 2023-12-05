@@ -3,9 +3,17 @@
 @section('main-content')
 
     <div class="main-content">
-        
-    @include('admin.includes.message')
 
+        @include('admin.includes.message')
+        <div class="page-header">
+            <div class="header-sub-title">
+                <nav class="breadcrumb breadcrumb-dash">
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <span class="breadcrumb-item active">Package</span>
+                </nav>
+            </div>
+        </div>
         <div class="card">
             <div class="card-body">
                 <h4>Package List</h4>
@@ -17,7 +25,6 @@
                             <tr>
                                 <th></th>
                                 <th>Name</th>
-                                {{-- <th>Description </th> --}}
                                 <th>Type</th>
                                 <th>Duration</th>
                                 <th>Price</th>
@@ -28,26 +35,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
-
                         </tbody>
-
                     </table>
                 </div>
-
-
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         /*This is data table for partership Request */
-        // $(document).ready(function() {
-        //     $('#package_tbale').DataTable({
-        //         "paging": true, // Enable pagination
-        //         "searching": false // Enable search bar
-        //     });
-        // });
         $(document).ready(function() {
             var table = $('#package_tbales').DataTable({
                 // Processing indicator
@@ -75,8 +71,7 @@
                         // d.search_name = $('#search_name').val();
                     }
                 },
-                'columnDefs': [
-                    {
+                'columnDefs': [{
                     'targets': 0,
                     'visible': false,
                     'orderable': false,
@@ -84,15 +79,16 @@
                         return '<input type="checkbox" name="chk_row" value="' + row[0] +
                             '" class="chk-row">';
                     },
-                },{
+                }, {
                     'targets': 6,
                     'visible': true,
                     'orderable': false,
                     'render': function(data, type, row) {
-                       var imagurl='{{ asset("uploads/package") }}/'+ row[6];
+                        var imagurl = '{{ asset('uploads/package') }}/' + row[6];
                         // imagurl = imagurl.replace(':row', row[6]);
-                        return ' <img id="" class="packageimage" src="'+ imagurl +'" style="height: 100px; width: 100px;">';
-                           
+                        return ' <img id="" class="packageimage" src="' + imagurl +
+                            '" style="height: 100px; width: 100px;">';
+
                     },
                 }, {
                     'targets': 8,
@@ -106,72 +102,74 @@
                         editUrl = editUrl.replace(':package', row[0]);
 
                         var deleteUrl = '{{ route('admin.package.delete', ':del') }}';
-                                    deleteUrl = deleteUrl.replace(':del', row[0]);
+                        deleteUrl = deleteUrl.replace(':del', row[0]);
 
-                        
-                        return '<a class="btn btn-success " href="'+ viewUrl +
-                            '" role="button">View</a> <a class="btn btn-primary" href="'+ editUrl +'" role="button">Edit</a> <a class="btn btn-danger" role="button" onclick="sweetAlertAjax(\'' + deleteUrl + '\')">Delete</a>';
-                            
+                        return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
+                            '" role="button" title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
+                            editUrl +
+                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
+
                     },
-            }],
+                }],
             });
         });
     </script>
     <script>
-      function sweetAlertAjax(deleteUrl) {
-    // Use SweetAlert for confirmation
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You won\'t be able to revert this!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // If the user confirms, proceed with AJAX deletion
-            $.ajax({
-                url: deleteUrl,
-                type: 'DELETE',
-                data: {
-                    "_token": "{{ csrf_token() }}"
-                },
-                success: (response) => {
-                    if (response.status === 'error') {
-                        // Handle error case
-                        swal({
-                            text: response.message,
-                            icon: "error",
-                            button: "Ok",
-                        }).then(() => {
-                            // Reload the page or take appropriate action
-                            location.reload();
-                        });
-                    } else {
-                        // Handle success case
-                        swal({
-                            text: response.message,
-                            icon: "success",
-                            button: "Ok",
-                        }).then(() => {
-                            // Reload the page or take appropriate action
-                            location.reload();
-                        });
-                    }
-                },
-                error: (xhr, status, error) => {
-                    // Handle AJAX request error
-                    console.error(xhr.responseText);
-                    swal({
-                        text: 'An error occurred while processing your request.',
-                        icon: "error",
-                        button: "Ok",
+        function sweetAlertAjax(deleteUrl) {
+            // Use SweetAlert for confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, proceed with AJAX deletion
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'DELETE',
+                        data: {
+                            "_token": "{{ csrf_token() }}"
+                        },
+                        success: (response) => {
+                            if (response.status === 'error') {
+                                // Handle error case
+                                swal({
+                                    text: response.message,
+                                    icon: "error",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            } else {
+                                // Handle success case
+                                swal({
+                                    text: response.message,
+                                    icon: "success",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: (xhr, status, error) => {
+                            // Handle AJAX request error
+                            console.error(xhr.responseText);
+                            swal({
+                                text: 'An error occurred while processing your request.',
+                                icon: "error",
+                                button: "Ok",
+                            });
+                        }
                     });
                 }
             });
         }
-    });
-}
     </script>
 @endsection
