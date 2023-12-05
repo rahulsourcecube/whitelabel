@@ -1,7 +1,7 @@
 <div class="header">
     <div class="logo logo-dark">
         <a href="{{ route('admin.dashboard') }}">
-            <img src="@if(isset($siteSetting->logo) && file_exists(public_path("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif " alt="Logo">
+            <img src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(base_path("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif " alt="Logo">
             <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold.png') }}" alt="Logo">
         </a>
     </div>

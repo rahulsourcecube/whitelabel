@@ -17,14 +17,11 @@
                                 <th>Mobile</th>
                                 <th>Company Name </th>
                                 <th>Domain</th>
-                                
-                                {{-- <th>Type</th> --}}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                           
                         </tbody>
                     </table>
                 </div>
@@ -69,17 +66,17 @@
                             '" class="chk-row">';
                     },
                 }, {
-                    'targets': 10,
+                    'targets': 7,
                     'visible': true,
                     'orderable': false,
                     'render': function(data, type, row) {
                         var viewUrl = '{{ route('admin.company.view', ':id') }}';
                         viewUrl = viewUrl.replace(':id', row[0]);
-                        return '<a class="btn btn-success " href="' + viewUrl +
-                            '" role="button">View</a>';
+                        return '<a class="btn btn-success btn-sm " href="' + viewUrl +
+                            '" role="button"><i class="fa fa-eye"></i></a>';
                     },
                 }],
             });
         });
     </script>
-@endsection 
+@endsection
