@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-
+@section('title', 'Package view')
 @section('main-content')
     <div class="main-content">
         <div class="page-header">
@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <img class="img-fluid" src="{{ asset("uploads/package/".$package->image) }}" alt="">
+                            <img class="img-fluid" src="{{ asset("uploads/package/".$package->image) }}" alt="" style="width: 50%; height: 100%;">
                         </div>
                         <div class="col-md-8">
                             <h4 class="m-b-10">{{$package->title}}</h4>
