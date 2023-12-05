@@ -32,7 +32,7 @@
                             <label for="inputype">Type</label>
                             <select id="inputype" name="type" class="form-control type">
 
-                                <option value="1">s</option>
+                               
                                 <option value="1">Free Trial</option>
                                 <option value="2">Monthly</option>
                                 <option value="3">Yearly</option>

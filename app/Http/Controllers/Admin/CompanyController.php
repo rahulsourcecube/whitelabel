@@ -24,7 +24,7 @@ class CompanyController extends Controller
             ->get();
         foreach($results as $result){
             $list [] = [
-                $result->user->id,
+                $result->id,
                 $result->user->first_name  .' '. $result->user->last_name,
                 $result->user->email,
                 $result->user->contact_number,
@@ -45,7 +45,11 @@ class CompanyController extends Controller
             "data" => $list
         ]);
     }
-    public function view(Request $request){
-            echo "<pre>"; print_r($request->all());
+    public function view(Request $request)
+    {
+        $data = [];
+        $data['user_company'] = CompanyModel::where('id',$request->id)->first();
+        // dd( $data['user_company'][]);
+        return view('admin.company.view', $data);
     }
 }

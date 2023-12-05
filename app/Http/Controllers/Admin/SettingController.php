@@ -58,7 +58,7 @@ class SettingController extends Controller
             // Save the favicon_img path to the database
             $SettingModel->favicon = $favicon_img;
         } else {
-            $SettingModel->favicon =$SettingModel->favicon_img; // or whatever default value you want
+            $SettingModel->favicon =$SettingModel->favicon;// or whatever default value you want
         }
         // dd($request->description);
         $SettingModel->title = $request->title;
@@ -72,7 +72,8 @@ class SettingController extends Controller
         $SettingModel->save(); 
             
 
-        return redirect()->route('admin.setting.index');
+        // return redirect()->route('');
+        return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');
     
     }
 }
