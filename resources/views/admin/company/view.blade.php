@@ -28,7 +28,7 @@
                                 <div class="text-center text-sm-left m-v-15 p-l-30">
                                     <h2 class="m-b-5">{{ $user_company->user->first_name }}
                                         {{ $user_company->user->last_name }}</h2>
-​
+                                    ​
                                     <div class="row">
                                         <div class="d-md-block d-none border-left col-1"></div>
                                         <div class="col-md-12">
@@ -63,7 +63,7 @@
                         <div class="card-body">
                             <div class="d-md-flex align-items-center">
                                 <div class="text-center text-sm-left m-v-15 p-l-30">
-​
+                                    ​
                                     <div class="row">
                                         <div class="col-md-2">
                                             <div class="text-center text-sm-left ">
@@ -81,9 +81,9 @@
                                             </div>
                                         </div>
                                     </div>
-​
+                                    ​
                                     <hr>
-​
+                                    ​
                                     <div class="row">
                                         <div class="d-md-block d-none border-left col-1"></div>
                                         <div class="col-md-12">
@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                             </div>
-​
+                            ​
                         </div>
                     </div>
                 </div>
