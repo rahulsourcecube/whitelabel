@@ -34,6 +34,7 @@ return array(
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Models\\CompanyModel' => $baseDir . '/app/Models/CompanyModel.php',
     'App\\Models\\PackageModel' => $baseDir . '/app/Models/PackageModel.php',
+    'App\\Models\\SettingModel' => $baseDir . '/app/Models/SettingModel.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
     'App\\Providers\\AuthServiceProvider' => $baseDir . '/app/Providers/AuthServiceProvider.php',

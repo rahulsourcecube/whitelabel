@@ -1,7 +1,10 @@
 @extends('admin.layouts.master')
 @section('title', 'Package List')
 @section('main-content')
+
     <div class="main-content">
+        
+    @include('admin.includes.message')
 
         <div class="card">
             <div class="card-body">
