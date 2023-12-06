@@ -9,6 +9,11 @@ class CampaignController extends Controller
 {
     function index()
     {
-        return view('123');
+        return view('company.campaign.list');
     }
+    function create()
+    {
+        return view('company.campaign.create');
+    }
+    
 }
