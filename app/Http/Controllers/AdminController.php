@@ -20,11 +20,14 @@ class AdminController extends Controller
     {
         if (auth()->user()->user_type == env('ADMIN_ROLE')) {
             return redirect()->route('admin.dashboard');
+        } elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
+            return redirect()->route('company.dashboard');
         } else {
             return view('auth.login');
         }
     }
-   function dashboard()  {
+    function dashboard()
+    {
 
         $data = [];
         $data['total_comapny'] = 0;
@@ -32,5 +35,5 @@ class AdminController extends Controller
         $data['total_campaign'] = 0;
         $data['total_package'] = 0;
         return view('admin.dashboard', $data);
-   }
+    }
 }
