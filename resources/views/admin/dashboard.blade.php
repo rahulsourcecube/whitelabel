@@ -14,7 +14,7 @@
                             </div>
                             <div class="m-l-15">
                                 <h2 class="m-b-0">{{ $total_comapny }}</h2>
-                                <p class="m-b-0 text-muted">Companies</p>
+                                <p class="m-b-0 text-muted">Company</p>
                             </div>
                         </div>
                     </div>
