@@ -64,7 +64,7 @@
                             <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
                                 style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
                         </div>
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
 
@@ -102,7 +102,7 @@
             cpassword: {
                     required: true,
                     equalTo: "#password"
-                },                  
+                },
                 // image: {
                 //     required: true,
                 //     maxfilesize: 1024 *
@@ -134,7 +134,7 @@
             cpassword: {
                 required: "Please enter confirm password",
                 equalTo: "The password you entered does not match.",
-            },                               
+            },
                 // image: {
                 //     required: "Please select an image",
                 //     maxfilesize: "File size must be less than 1MB",

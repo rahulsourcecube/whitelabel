@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class CompanyController extends Controller
+class CompanyLoginController extends Controller
 {
+
     public function index()
     {
-
         if (!empty(auth()->user()) && auth()->user()->user_type == env('ADMIN_ROLE')) {
             return redirect()->route('admin.dashboard');
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == env('COMPANY_ROLE')) {
@@ -20,7 +20,6 @@ class CompanyController extends Controller
     }
     function dashboard()
     {
-
         $data = [];
         $data['total_campaign'] = 0;
         $data['total_user'] = 0;

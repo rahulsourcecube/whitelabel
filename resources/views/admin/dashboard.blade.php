@@ -92,7 +92,7 @@
             <div class="col-md-12 col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="m-b-0">Customers</h5>
+                        <h5 class="m-b-0">Company</h5>
                         <div class="m-v-60 text-center" style="height: 200px">
                             <canvas class="chart" id="customers-chart"></canvas>
                         </div>
