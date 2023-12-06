@@ -5,7 +5,7 @@
     <!-- Content Wrapper START -->
     <div class="main-content">
         <div class="row">
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="media align-items-center">
@@ -13,14 +13,14 @@
                                 <i class="anticon anticon-dollar"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ $total_comapny }}</h2>
-                                <p class="m-b-0 text-muted">Companies</p>
+                                <h2 class="m-b-0">{{ $total_campaign }}</h2>
+                                <p class="m-b-0 text-muted">Total Campaign</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="media align-items-center">
@@ -35,7 +35,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-6 col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="media align-items-center">
@@ -43,28 +43,13 @@
                                 <i class="anticon anticon-profile"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ $total_campaign }}</h2>
-                                <p class="m-b-0 text-muted">Campaigns</p>
+                                <h2 class="m-b-0">{{ $total_campaignReq }}</h2>
+                                <p class="m-b-0 text-muted">Campaigns request</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="media align-items-center">
-                            <div class="avatar avatar-icon avatar-lg avatar-purple">
-                                <i class="anticon anticon-user"></i>
-                            </div>
-                            <div class="m-l-15">
-                                <h2 class="m-b-0">{{ $total_package }}</h2>
-                                <p class="m-b-0 text-muted">Packages</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </div>           
         </div>
         <div class="row">
             <div class="col-md-12 col-lg-8">

@@ -23,11 +23,19 @@
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
                     </span>
-                    <span class="title">Campaigns</span>
+                    <span class="title">Campaign</span>
                 </a>
             </li>
+            {{-- <li class="nav-item dropdown open">
+                <a class="dropdown-toggle" href="{{ route('company.campaign.history.list') }}">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-safety-certificate"></i>
+                    </span>
+                    <span class="title">Campaign History</span>
+                </a>
+            </li> --}}
             <li class="nav-item dropdown open">
-                <a class="dropdown-toggle" href="">
+                <a class="dropdown-toggle" href="{{ route('company.setting.index') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-setting"></i>
                     </span>
