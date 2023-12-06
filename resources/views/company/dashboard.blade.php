@@ -14,7 +14,7 @@
                             </div>
                             <div class="m-l-15">
                                 <h2 class="m-b-0">{{ $total_campaign }}</h2>
-                                <p class="m-b-0 text-muted">Total Campaign</p>
+                                <p class="m-b-0 text-muted">Campaigns</p>
                             </div>
                         </div>
                     </div>
@@ -44,12 +44,12 @@
                             </div>
                             <div class="m-l-15">
                                 <h2 class="m-b-0">{{ $total_campaignReq }}</h2>
-                                <p class="m-b-0 text-muted">Campaigns request</p>
+                                <p class="m-b-0 text-muted">Campaign Approval Request</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>           
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12 col-lg-8">
@@ -77,7 +77,7 @@
             <div class="col-md-12 col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="m-b-0">Customers</h5>
+                        <h5 class="m-b-0">Users</h5>
                         <div class="m-v-60 text-center" style="height: 200px">
                             <canvas class="chart" id="customers-chart"></canvas>
                         </div>

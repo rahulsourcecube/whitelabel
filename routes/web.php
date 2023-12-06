@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\CompanyController as AdminCompanyController;
-use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
@@ -40,6 +40,11 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
 });
 
+Route::prefix('company')->name('company.')->group(function () {
+    Route::get('/', [CompanyLoginController::class, 'index'])->name('login');
+    Route::get('/login', [CompanyLoginController::class, 'index'])->name('login');
+    Route::post('/store', [CompanyLoginController::class, 'login'])->name('login');
+});
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
 
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -63,29 +68,31 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
         Route::post('store', [SettingController::class, 'store'])->name('store');
     });
     Route::prefix('company')->name('company.')->group(function () {
-        Route::get('', [CompanyController::class, 'index'])->name('list');
-        Route::post('list', [CompanyController::class, 'dtList'])->name('dtlist');
-        Route::get('view/{id}', [CompanyController::class, 'view'])->name('view');
+        Route::get('', [AdminCompanyController::class, 'index'])->name('list');
+        Route::post('list', [AdminCompanyController::class, 'dtList'])->name('dtlist');
+        Route::get('view/{id}', [AdminCompanyController::class, 'view'])->name('view');
     });
 });
 
-Route::prefix('company')->name('company.')->group(function () {
-    Route::get('/login', [CompanyController::class, 'index'])->name('login');
-    Route::post('/store', [CompanyController::class, 'login'])->name('login');
+Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
 
-    Route::get('dashboard', [CompanyController::class, 'dashboard'])->name('dashboard');
-        Route::prefix('user')->name('user.')->group(function () {
+    Route::get('dashboard', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
+    Route::prefix('user')->name('user.')->group(function () {
         Route::get('', [UserController::class, 'index'])->name('list');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::get('/edit', [UserController::class, 'edit'])->name('edit');
         Route::post('list', [UserController::class, 'dtList'])->name('dtlist');
+        Route::get('view', [UserController::class, 'view'])->name('view');
+
     });
+
     Route::prefix('campaign')->name('campaign.')->group(function () {
         Route::get('', [CampaignController::class, 'index'])->name('list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');
-        Route::post('store', [SettingController::class, 'store'])->name('store');
+        Route::post('store', [CompanySettingController::class, 'store'])->name('store');
     });
+
 });

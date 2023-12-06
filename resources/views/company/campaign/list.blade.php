@@ -16,24 +16,24 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Campaign List</h4>                
+                <h4>Campaign List</h4>
                 <a class="btn btn-primary float-right" href="{{route('company.campaign.create')}}" role="button">Add New</a>
                 <div class="m-t-25">
                     <table id="user_tables" class="table">
                         <thead>
                             <tr>
-                               
-                                <th>title</th>
-                                <th>Reward</th>                               
+
+                                <th>Title</th>
+                                <th>Reward</th>
                                 <th>Expiry Date</th>
-                                <th>Image</th>                               
+                                <th>Image</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                           <tr>
-                                <td>new</td>
+                                <td>Join Our Facebook Page</td>
                                 <td>$500</td>
                                 <td>2023-07-2</td>
                                 <td><img src="http://whitelabel.local/assets/images/logo/logo.png" alt=""></td>
@@ -46,7 +46,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>new</td>
+                                <td>Let's connect on Instagram</td>
                                 <td>$500</td>
                                 <td>2023-07-2</td>
                                 <td><img src="http://whitelabel.local/assets/images/logo/logo.png" alt=""></td>
@@ -83,7 +83,7 @@
                     search: "",
                     searchPlaceholder: "Search Here",
                 },
-              
+
                 // "ajax": {
                 //     "url": "{{ route('company.user.dtlist') }}",
                 //     "type": "POST",
@@ -127,5 +127,5 @@
             });
         });
     </script>
-     
+
 @endsection

@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('title', 'Company List')​
+@section('title', 'Company Details')​
 @section('main-content')
     <!-- Content Wrapper START -->
     <div class="main-content">
