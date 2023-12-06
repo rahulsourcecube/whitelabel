@@ -47,7 +47,10 @@ class LoginController extends Controller
         {
             if (auth()->user()->user_type == env('ADMIN_ROLE')) {
                 return redirect()->route('admin.dashboard');
-            }else{
+            
+        }elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
+            return redirect()->route('company.dashboard');
+        }else{
                 return redirect()->route('/');
             }
         }else{
