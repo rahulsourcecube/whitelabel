@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\company\CampaignController;
+use App\Http\Controllers\company\SettingController as CompanySettingController;
 use App\Http\Controllers\company\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -31,7 +32,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Auth::routes();
- 
+
 Route::get('/', [AdminController::class, 'index'])->name('admin');
 
 Route::group(['prefix' => 'admin'], function () {
@@ -73,12 +74,18 @@ Route::prefix('company')->name('company.')->group(function () {
     Route::post('/store', [CompanyController::class, 'login'])->name('login');
 
     Route::get('dashboard', [CompanyController::class, 'dashboard'])->name('dashboard');
-    Route::prefix('user')->name('user.')->group(function () {
+        Route::prefix('user')->name('user.')->group(function () {
         Route::get('', [UserController::class, 'index'])->name('list');
-       
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::get('/edit', [UserController::class, 'edit'])->name('edit');
+        Route::post('list', [UserController::class, 'dtList'])->name('dtlist');
     });
     Route::prefix('campaign')->name('campaign.')->group(function () {
         Route::get('', [CampaignController::class, 'index'])->name('list');
-       
+        Route::get('/create', [CampaignController::class, 'create'])->name('create');
+    });
+    Route::prefix('setting')->name('setting.')->group(function () {
+        Route::get('', [CompanySettingController::class, 'index'])->name('index');
+        Route::post('store', [SettingController::class, 'store'])->name('store');
     });
 });
