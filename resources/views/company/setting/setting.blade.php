@@ -22,7 +22,7 @@
 
             <div class="m-t-50" style="">
 
-                <form id="settings" method="POST" action="" enctype="multipart/form-data">
+                <form id="settings" method="POST" action="{{ route("company.setting.store")}}" enctype="multipart/form-data">
                     @csrf
 
                     <div class="form-row">
@@ -33,8 +33,8 @@
                                 value="{{ !empty($setting) ? $setting->title : env('APP_NAME') }}" required>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="cdomainname">Company Doman</label>
-                            <input type="text" class="form-control mb-2" name="" id=""value="company.com" readonly>
+                            <label for="cdomainname">Company Domain</label>
+                            <input type="text" class="form-control mb-2" name="" id="" value="my.whitelabel.com" readonly>
                         </div>
                         <div class="form-group col-md-4">
 
@@ -199,7 +199,7 @@
                     $(this).hide(); // Hide the delete button
                 }
             });
-           
+
         });
         $(document).ready(function() {
             window.onload = () => {

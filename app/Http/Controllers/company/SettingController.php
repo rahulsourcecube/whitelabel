@@ -12,4 +12,7 @@ class SettingController extends Controller
       // $setting=User::where()->where('role','2')->first();
         return view('company.setting.setting');
    }
+   function store(){
+    return redirect()->route('company.setting.index')->with('success', 'Setting Update successfully');
+    }
 }

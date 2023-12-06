@@ -26,11 +26,11 @@ class UserController extends Controller
             ->skip($start)
             ->take($length)
             ->get();
-        foreach ($results as $result) {          
+        foreach ($results as $result) {
 
             $list[] = [
-                
-               
+
+
 
             ];
         }
@@ -44,6 +44,9 @@ class UserController extends Controller
     }
     function create() {
         return view('company.user.create');
+    }
+    function View() {
+        return view('company.user.view');
     }
     function edit() {
         return view('company.user.edit');
