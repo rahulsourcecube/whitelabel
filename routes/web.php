@@ -90,6 +90,8 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::prefix('campaign')->name('campaign.')->group(function () {
         Route::get('', [CampaignController::class, 'index'])->name('list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
+        Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
+
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');

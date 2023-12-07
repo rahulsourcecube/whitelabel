@@ -1,3 +1,5 @@
+<script src="{{ asset('assets/vendors/chartist/chartist.min.js') }}"></script>
+
 
 <div class="side-nav">
     <div class="side-nav-inner">
@@ -7,7 +9,7 @@
                     <span class="icon-holder">
                         <i class="anticon anticon-dashboard"></i>
                     </span>
-                    <span class="title">Dashboard</span>
+                    <span class="title">Analytics</span>
                 </a>
             </li>
             <li class="nav-item dropdown open">
@@ -34,6 +36,14 @@
                     <span class="title">Campaign History</span>
                 </a>
             </li> --}}
+            <li class="nav-item dropdown open">
+                <a class="dropdown-toggle" href="{{ route('company.campaign.analytics') }}">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-build"></i>
+                    </span>
+                    <span class="title">Task Analytics</span>
+                </a>
+            </li>
             <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('company.setting.index') }}">
                     <span class="icon-holder">
