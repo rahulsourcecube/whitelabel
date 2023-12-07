@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -35,5 +38,29 @@ class AdminController extends Controller
         $data['total_campaign'] = 0;
         $data['total_package'] = 0;
         return view('admin.dashboard', $data);
+    }
+
+    public function change_password()
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+
+        // return view('auth.change_password', compact('user'));
+    }
+
+    public function update_change_password(Request $request)
+    {
+        // Match The Old Password
+        if (!Hash::check($request->current_password, Auth::user()->password)) {
+            return back()->with("error", "Old Password Doesn't match!");
+        }
+
+
+        //Update the new Password
+        user::whereId(Auth::user()->id)->update([
+            'password' => Hash::make($request->new_password)
+
+        ]);
+
+        return redirect()->route('admin.change_password')->with('success', __('Change Password successfully updated.'));
     }
 }
