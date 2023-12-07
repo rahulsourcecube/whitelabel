@@ -22,11 +22,9 @@
                     <table id="user_tables" class="table">
                         <thead>
                             <tr>
-
-                                <th>Title</th>
+                                <th>Name</th>
                                 <th>Reward</th>
-                                <th>Expiry Date</th>
-                                <th>Image</th>
+                                <th>Description</th>
                                 <th>Type</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -34,33 +32,37 @@
                         </thead>
                         <tbody>
                           <tr>
-                                <td>Join Our Facebook Page</td>
-                                <td>$500</td>
-                                <td>2023-07-2</td>
-                                <td><img src="http://whitelabel.local/assets/images/logo/logo.png" alt=""></td>
-                                <td>Custom Tasks</td>
-                                <td><a class="btn btn-success  btn-sm" href="" role="button" title="View">Active</a></td>
-                                <td>
-                                    <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}" role="button" title="View"><i class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}" role="button" title="Edit"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)" onclick="sweetAlertAjax()"><i
-                                            class="fa fa-trash"></i></a>
-                                </td>
+                            <td>Join Our Facebook Page</td>
+                            <td>$500</td>
+                            <td>Now you can browse privately, and other people who ...</td>
+                            <td>Custom</td>
+
+                            <td><a class="btn btn-success  btn-sm" href="" role="button" title="View">Active</a></td>
+                            <td>
+                                <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}"
+                                    role="button" title="View"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}"
+                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
+                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
+                            </td>
                             </tr>
                             <tr>
-                                <td>Let's connect on Instagram</td>
+                                <td>Join Our Facebook Page</td>
                                 <td>$500</td>
-                                <td>2023-07-2</td>
-                                <td><img src="http://whitelabel.local/assets/images/logo/logo.png" alt=""></td>
-                                <td>Custom Tasks</td>
-                                <td><a class="btn btn-danger  btn-sm" href="" role="button" title="View">Deactive</a></td>
+                                <td>Now you can browse privately, and other people who ...</td>
+                                <td>Custom</td>
+    
+                                <td><a class="btn btn-danger  btn-sm" href="" role="button" title="View">Active</a></td>
                                 <td>
-                                    <a class="btn btn-success  btn-sm" href="" role="button" title="View"><i class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary btn-sm"  role="button" title="Edit" href="{{route('company.campaign.create')}}"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)" onclick="sweetAlertAjax()"><i
-                                            class="fa fa-trash"></i></a>
+                                    <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}"
+                                        role="button" title="View"><i class="fa fa-eye"></i></a>
+                                    <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}"
+                                        role="button" title="Edit"><i class="fa fa-pencil"></i></a>
+                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
+                                        onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
                                 </td>
-                            </tr>
+                                </tr>
                         </tbody>
                     </table>
                 </div>

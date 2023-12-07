@@ -38,6 +38,9 @@
                 </a>
                 
                 <ul class="dropdown-menu">
+                    <li @if(request()->segment(3)=='list' && request()->segment(2)=='campaign') class='active' @endif >
+                        <a href="{{ route('company.campaign.list') }}">Tasks</a>
+                    </li>
                     <li @if(request()->segment(3)=='referral') class='active' @endif >
                         <a href="{{ route('company.campaign.referral.list') }}">Referral Tasks</a>
                     </li>

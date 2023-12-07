@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', [AdminController::class, 'index'])->name('admin');
+Route::get('user', [LoginController::class, 'user']);
 
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
@@ -89,6 +90,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     });
 
     Route::prefix('campaign')->name('campaign.')->group(function () {
+        Route::get('list', [CampaignController::class, 'index'])->name('list');
         Route::get('referral/tasks', [CampaignController::class, 'referralTasks'])->name('referral.list');
         Route::get('social/share', [CampaignController::class, 'socialShare'])->name('social.list');
         Route::get('custom/tasks', [CampaignController::class, 'customTasks'])->name('custom.list');
