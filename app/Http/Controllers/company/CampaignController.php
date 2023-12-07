@@ -15,9 +15,14 @@ class CampaignController extends Controller
     {
         return view('company.campaign.create');
     }
+    function analytics()
+    {
+        return view('company.campaign.analytics');
+    }
+
     function view()
     {
         return view('company.campaign.view');
     }
-    
+
 }
