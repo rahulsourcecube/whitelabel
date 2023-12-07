@@ -95,16 +95,18 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('social/share', [CampaignController::class, 'socialShare'])->name('social.list');
         Route::get('custom/tasks', [CampaignController::class, 'customTasks'])->name('custom.list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
+        Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
+
         Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('', [CompanyPackageController::class, 'index'])->name('list');
-       
+
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');
         Route::post('store', [CompanySettingController::class, 'store'])->name('store');
-       
+
     });
 
 });
