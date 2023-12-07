@@ -1,5 +1,5 @@
 @extends('company.layouts.master')
-@section('title', 'Add Campaign')
+@section('title', 'Add Task')
 @section('main-content')
     <div class="main-content">
         <div class="page-header">
@@ -7,21 +7,21 @@
                 <nav class="breadcrumb breadcrumb-dash">
                     <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                         <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                    <a href="{{ route('admin.package.list') }}" class="breadcrumb-item">Campaign</a>
+                    <a href="{{ route('admin.package.list') }}" class="breadcrumb-item">Task</a>
                     <span class="breadcrumb-item active">Add</span>
                 </nav>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Add Campaign</h4>
+                <h4>Add Task</h4>
                 <div class="m-t-50" style="">
                     <form id="package" method="POST" action=""enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="name">Campaign Title <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="name" name="title" placeholder="Campaign Title"
+                                <label for="name">Task Title <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="name" name="title" placeholder="Task Title"
                                     maxlength="150">
                             </div>
                             <div class="form-group col-md-6">
@@ -37,12 +37,23 @@
                             <div class="form-group col-md-6">
                                 <label for="date">End date <span class="error">*</span></label>
                                 <input type="date" class="form-control" id="" name="date"
-                                    placeholder="No Of Campaign"
+                                    placeholder="No Of Task"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="Type">Task Type</label>
+                                <select id="Type" class="form-control">
+                                    <option >Select</option>
+                                    <option >Referral</option>
+                                    <option >Custom</option>
+                                    <option >Social</option>
+                                   
+                                </select>
                             </div>
 
 
                         </div>
+                        
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="file">Image <span class="error">*</span></label>
@@ -67,12 +78,12 @@
     </div>
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
     <script>
-        $('#package').validate({
+        $('#packagess').validate({
             rules: {
                 title: {
                     required: true
                 },
-                campaign: {
+                Task: {
                     required: true
                 },
                 description: {
@@ -98,8 +109,8 @@
                 title: {
                     required: "Please enter package title"
                 },
-                campaign: {
-                    required: "Please enter no of campaign"
+                Task: {
+                    required: "Please enter no of Task"
                 },
                 description: {
                     required: "Please enter description"

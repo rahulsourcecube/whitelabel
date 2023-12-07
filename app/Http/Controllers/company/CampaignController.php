@@ -7,9 +7,22 @@ use Illuminate\Http\Request;
 
 class CampaignController extends Controller
 {
+    
     function index()
     {
         return view('company.campaign.list');
+    }
+    function referralTasks()
+    {
+        return view('company.campaign.referralTasks');
+    }
+    function socialShare()
+    {
+        return view('company.campaign.socialShare');
+    }
+    function customTasks()
+    {
+        return view('company.campaign.customTasks');
     }
     function create()
     {

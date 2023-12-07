@@ -2,71 +2,92 @@
 @section('title', 'Campaign List')
 @section('main-content')
 
-    <div class="main-content">
+<div class="main-content">
 
-        @include('company.includes.message')
-        <div class="page-header">
-            <div class="header-sub-title">
-                <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
-                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                    <span class="breadcrumb-item active">Campaign </span>
-                </nav>
-            </div>
+    @include('company.includes.message')
+    <div class="page-header">
+        <div class="header-sub-title">
+            <nav class="breadcrumb breadcrumb-dash">
+                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                        class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                <span class="breadcrumb-item active">Campaign </span>
+            </nav>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h4>Campaign List</h4>
-                <a class="btn btn-primary float-right" href="{{route('company.campaign.create')}}" role="button">Add New</a>
-                <div class="m-t-25">
-                    <table id="user_tables" class="table">
-                        <thead>
-                            <tr>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h4>Task List</h4>
+            <a class="btn btn-primary float-right" href="{{route('company.campaign.create')}}" role="button">Add New</a>
+            <div class="m-t-25">
+                <table id="user_tables" class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Reward</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Join Our Facebook Page</td>
+                            <td>$500</td>
+                            <td>Now you can browse privately, and other people who ...</td>
+                            <td>Referral</td>
 
-                                <th>Title</th>
-                                <th>Reward</th>
-                                <th>Expiry Date</th>
-                                <th>Image</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                                <td>Join Our Facebook Page</td>
-                                <td>$500</td>
-                                <td>2023-07-2</td>
-                                <td><img src="http://whitelabel.local/assets/images/logo/logo.png" alt=""></td>
-                                <td><a class="btn btn-success  btn-sm" href="" role="button" title="View">Active</a></td>
-                                <td>
-                                    <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}" role="button" title="View"><i class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}" role="button" title="Edit"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)" onclick="sweetAlertAjax()"><i
-                                            class="fa fa-trash"></i></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Let's connect on Instagram</td>
-                                <td>$500</td>
-                                <td>2023-07-2</td>
-                                <td><img src="http://whitelabel.local/assets/images/logo/logo.png" alt=""></td>
-                                <td><a class="btn btn-danger  btn-sm" href="" role="button" title="View">Deactive</a></td>
-                                <td>
-                                    <a class="btn btn-success  btn-sm" href="" role="button" title="View"><i class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary btn-sm"  role="button" title="Edit" href="{{route('company.campaign.create')}}"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)" onclick="sweetAlertAjax()"><i
-                                            class="fa fa-trash"></i></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                            <td><a class="btn btn-success  btn-sm" href="" role="button" title="View">Active</a></td>
+                            <td>
+                                <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}"
+                                    role="button" title="View"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}"
+                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
+                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Join Our Facebook Page</td>
+                            <td>$500</td>
+                            <td>Now you can browse privately, and other people who ...</td>
+                            <td>Social Share</td>
+
+                            <td><a class="btn btn-success  btn-sm" href="" role="button" title="View">Active</a></td>
+                            <td>
+                                <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}"
+                                    role="button" title="View"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}"
+                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
+                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Join Our Facebook Page</td>
+                            <td>$500</td>
+                            <td>Now you can browse privately, and other people who ...</td>
+                            <td>Custom</td>
+
+                            <td><a class="btn btn-danger  btn-sm" href="" role="button" title="View">Inactive</a></td>
+                            <td>
+                                <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}"
+                                    role="button" title="View"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}"
+                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
+                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script>
-        /*This is data table for partership Request */
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    /*This is data table for partership Request */
         $(document).ready(function() {
             var table = $('#user_tables').DataTable({
                 // Processing indicator
@@ -126,6 +147,6 @@
                 // }],
             });
         });
-    </script>
+</script>
 
 @endsection
