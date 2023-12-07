@@ -33,8 +33,8 @@
                                     <span class="text-gray">
                                         {{$package->duration}}
                                         @if ($package->type == '1') Day Free
-                                        @elseif ($result->type == '2') Month
-                                        @elseif ($result->type == '3') Year
+                                        @elseif ($package->type == '2') Month
+                                        @elseif ($package->type == '3') Year
                                         @endif
                                     </span>
                                     <span class="text-gray"> | </span>

@@ -42,6 +42,11 @@
                         <i class="anticon anticon-build"></i>
                     </span>
                     <span class="title">Task Analytics</span>
+                <a class="dropdown-toggle" href="{{ route('company.package.list') }}">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-shopping-cart"></i>
+                    </span>
+                    <span class="title">Buy Package</span>
                 </a>
             </li>
             <li class="nav-item dropdown open">
