@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\company\CampaignController;
+use App\Http\Controllers\company\PackageController as CompanyPackageController;
 use App\Http\Controllers\company\SettingController as CompanySettingController;
 use App\Http\Controllers\company\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -89,10 +90,16 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::prefix('campaign')->name('campaign.')->group(function () {
         Route::get('', [CampaignController::class, 'index'])->name('list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
+        Route::get('/view', [CampaignController::class, 'view'])->name('view');
+    });
+    Route::prefix('package')->name('package.')->group(function () {
+        Route::get('', [CompanyPackageController::class, 'index'])->name('list');
+       
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');
         Route::post('store', [CompanySettingController::class, 'store'])->name('store');
+       
     });
 
 });

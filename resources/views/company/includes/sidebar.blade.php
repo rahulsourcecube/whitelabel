@@ -35,6 +35,14 @@
                 </a>
             </li> --}}
             <li class="nav-item dropdown open">
+                <a class="dropdown-toggle" href="{{ route('company.package.list') }}">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-shopping-cart"></i>
+                    </span>
+                    <span class="title">Buy Package</span>
+                </a>
+            </li>
+            <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('company.setting.index') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-setting"></i>

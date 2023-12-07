@@ -15,5 +15,9 @@ class CampaignController extends Controller
     {
         return view('company.campaign.create');
     }
+    function view()
+    {
+        return view('company.campaign.view');
+    }
     
 }
