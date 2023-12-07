@@ -9,7 +9,7 @@
                     <span class="icon-holder">
                         <i class="anticon anticon-dashboard"></i>
                     </span>
-                    <span class="title">Analytics</span>
+                    <span class="title">Dashboard</span>
                 </a>
             </li>
             <li class="nav-item dropdown open">
@@ -40,9 +40,7 @@
                 </a>
                 
                 <ul class="dropdown-menu">
-                    <li @if(request()->segment(3)=='list' && request()->segment(2)=='campaign') class='active' @endif >
-                        <a href="{{ route('company.campaign.list') }}">Tasks</a>
-                    </li>
+                    
                     <li @if(request()->segment(3)=='referral') class='active' @endif >
                         <a href="{{ route('company.campaign.referral.list') }}">Referral Tasks</a>
                     </li>
@@ -54,6 +52,33 @@
                     </li>
                     
                 </ul>
+                
+            </li>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0);">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-safety-certificate"></i>
+                    </span>
+                    <span class="title">Create New task</span>
+                    <span class="arrow">
+                        <i class="arrow-icon"></i>
+                    </span>
+                </a>
+                
+                <ul class="dropdown-menu">
+                    
+                    <li @if(request()->segment(3)=='1') class='active' @endif >
+                        <a href="{{ route('company.campaign.create') }}">Referral Tasks</a>
+                    </li>
+                    <li @if(request()->segment(3)=='2') class='active' @endif >
+                        <a href="{{ route('company.campaign.create') }}">Social Share</a>
+                    </li>
+                    <li @if(request()->segment(3)=='create') class='active' @endif >
+                        <a href="{{ route('company.campaign.create') }}">Custom Tasks </a>
+                    </li>
+                    
+                </ul>
+                
             </li>
             {{-- <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('company.campaign.history.list') }}">
