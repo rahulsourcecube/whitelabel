@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    {{-- <div class="app">
+    <div class="app">
         <div class="container-fluid p-0 h-100">
             <div class="row no-gutters h-100 full-height">
                 <div class="col-lg-12 bg-white">
@@ -74,8 +74,8 @@
                 </div>
             </div>
         </div>
-    </div> --}}
-    <div class="app">
+    </div>
+    {{-- <div class="app">
         <div class="container-fluid">
             <div class="d-flex full-height p-v-15 flex-column justify-content-between">
                 <div class="d-none d-md-flex p-h-40">
@@ -135,7 +135,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Core Vendors JS -->
     <script src="{{ asset('assets/js/vendors.min.js') }}"></script>
