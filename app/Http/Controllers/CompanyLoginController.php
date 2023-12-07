@@ -48,4 +48,10 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', 'These credentials do not match our records.');
         }
     }
+    public function editProfile(){
+        return view('company.editprofile');
+    }
+    public function Profile(){
+        return view('company.profile');
+    }
 }
