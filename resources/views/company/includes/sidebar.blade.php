@@ -18,13 +18,37 @@
                     <span class="title">User</span>
                 </a>
             </li>
-            <li class="nav-item dropdown open">
+            {{-- <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('company.campaign.list') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
                     </span>
                     <span class="title">Campaign</span>
                 </a>
+            </li> --}}
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0);">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-safety-certificate"></i>
+                    </span>
+                    <span class="title">Campaigns</span>
+                    <span class="arrow">
+                        <i class="arrow-icon"></i>
+                    </span>
+                </a>
+                
+                <ul class="dropdown-menu">
+                    <li @if(request()->segment(3)=='referral') class='active' @endif >
+                        <a href="{{ route('company.campaign.referral.list') }}">Referral Tasks</a>
+                    </li>
+                    <li @if(request()->segment(3)=='social') class='active' @endif >
+                        <a href="{{ route('company.campaign.social.list') }}">Social Share</a>
+                    </li>
+                    <li @if(request()->segment(3)=='custom') class='active' @endif >
+                        <a href="{{ route('company.campaign.custom.list') }}">Custom Tasks </a>
+                    </li>
+                    
+                </ul>
             </li>
             {{-- <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('company.campaign.history.list') }}">

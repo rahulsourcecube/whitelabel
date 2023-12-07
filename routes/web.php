@@ -89,7 +89,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     });
 
     Route::prefix('campaign')->name('campaign.')->group(function () {
-        Route::get('', [CampaignController::class, 'index'])->name('list');
+        Route::get('referral/tasks', [CampaignController::class, 'referralTasks'])->name('referral.list');
+        Route::get('social/share', [CampaignController::class, 'socialShare'])->name('social.list');
+        Route::get('custom/tasks', [CampaignController::class, 'customTasks'])->name('custom.list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
         Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });

@@ -15,7 +15,7 @@ class CompanyLoginController extends Controller
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == env('COMPANY_ROLE')) {
             return redirect()->route('company.dashboard');
         } else {
-            return view('company.companyLogin');
+            return view('company.companylogin');
         }
     }
     function dashboard()
