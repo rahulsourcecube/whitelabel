@@ -39,7 +39,7 @@
                                 <td><img src="http://whitelabel.local/assets/images/logo/logo.png" alt=""></td>
                                 <td><a class="btn btn-success  btn-sm" href="" role="button" title="View">Active</a></td>
                                 <td>
-                                    <a class="btn btn-success  btn-sm" href="" role="button" title="View"><i class="fa fa-eye"></i></a>
+                                    <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}" role="button" title="View"><i class="fa fa-eye"></i></a>
                                     <a class="btn btn-primary btn-sm" href="{{route('company.campaign.create')}}" role="button" title="Edit"><i class="fa fa-pencil"></i></a>
                                     <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)" onclick="sweetAlertAjax()"><i
                                             class="fa fa-trash"></i></a>

@@ -15,4 +15,5 @@ class SettingController extends Controller
    function store(){
     return redirect()->route('company.setting.index')->with('success', 'Setting Update successfully');
     }
+   
 }
