@@ -54,4 +54,13 @@ class CompanyLoginController extends Controller
     public function Profile(){
         return view('company.profile');
     }
+    public function signup(){
+        return view('company.signup');
+    }
+    public function forget(){
+        return view('company.forgetPassword');
+    }
+    public function confirmPassword(){
+        return view('company.confirmPassword');
+    }
 }

@@ -63,7 +63,7 @@
                            
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                                 <div class="m-l-15">
                                     <h2 class="font-weight-bold font-size-30 m-b-0">
                                         $400
-                                        <span class="font-size-13 font-weight-semibold">/ month</span>
+                                        <span class="font-size-13 font-weight-semibold"></span>
                                     </h2>
                                     <h4 class="m-b-0">Standard Plan</h4>
                                 </div>
@@ -104,7 +104,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button  class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                                 <div class="m-l-15">
                                     <h2 class="font-weight-bold font-size-30 m-b-0">
                                         $1000
-                                        <span class="font-size-13 font-weight-semibold">/ Year</span>
+                                        <span class="font-size-13 font-weight-semibold"></span>
                                     </h2>
                                     <h4 class="m-b-0">Premium Plan</h4>
                                 </div>
@@ -145,7 +145,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -161,7 +161,7 @@
                                 <div class="m-l-15">
                                     <h2 class="font-weight-bold font-size-30 m-b-0">
                                         $400
-                                        <span class="font-size-13 font-weight-semibold">/ month</span>
+                                        <span class="font-size-13 font-weight-semibold"></span>
                                     </h2>
                                     <h4 class="m-b-0">Standard Plan</h4>
                                 </div>
@@ -186,7 +186,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -202,7 +202,7 @@
                                 <div class="m-l-15">
                                     <h2 class="font-weight-bold font-size-30 m-b-0">
                                         $1000
-                                        <span class="font-size-13 font-weight-semibold">/ Year</span>
+                                        <span class="font-size-13 font-weight-semibold"></span>
                                     </h2>
                                     <h4 class="m-b-0">Premium Plan</h4>
                                 </div>
@@ -227,7 +227,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button  onclick="showSuccessAlert()" class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -236,5 +236,18 @@
        
     </div>
 </div>
-  
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    function showSuccessAlert() {
+        // Trigger a success sweet alert
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Operation was successful.',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+    }
+</script>>
 @endsection
