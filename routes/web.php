@@ -45,8 +45,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
 });
 Route::prefix('user')->name('user.')->group(function () {
-    Route::get('/', [UsrController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', [UsrController::class, 'index'])->name('user.dashboard');
+    Route::get('/', [UsrController::class, 'index'])->name('login');
+    Route::get('/login', [UsrController::class, 'index'])->name('login');
+    Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
     Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
     Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
     Route::get('edit_profile', [UsrController::class, 'editProfile'])->name('edit_profile');
@@ -56,6 +57,9 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
     Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
     Route::get('/changePassword', [UsrController::class, 'notification'])->name('changePassword');
+    Route::get('/signup', [UsrController::class, 'signup'])->name('signup');
+    Route::get('/forget', [UsrController::class, 'forget'])->name('forgetpassword');
+    Route::get('/confirm/password', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
 });
 
 Route::prefix('company')->name('company.')->group(function () {
@@ -118,21 +122,23 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });
     Route::prefix('package')->name('package.')->group(function () {
-        Route::get('', [CompanyPackageController::class, 'index'])->name('list');       
+        Route::get('', [CompanyPackageController::class, 'index'])->name('list');
+    });
+    Route::prefix('billing')->name('billing.')->group(function () {
+        Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');
-        Route::post('store', [CompanySettingController::class, 'store'])->name('store');       
+        Route::post('store', [CompanySettingController::class, 'store'])->name('store');
     });
     Route::prefix('role')->name('role.')->group(function () {
-        Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');       
-        Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');       
-        Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');              
+        Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');
+        Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
+        Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');
     });
     Route::prefix('employee')->name('employee.')->group(function () {
-        Route::get('', [EmployeeController::class, 'index'])->name('list');       
-        Route::get('/create', [EmployeeController::class, 'create'])->name('create');       
-        Route::get('view', [RolesController::class, 'roleview'])->name('roleview');         
+        Route::get('', [EmployeeController::class, 'index'])->name('list');
+        Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+        Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
     });
-
 });

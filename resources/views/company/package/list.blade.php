@@ -3,16 +3,17 @@
 @section('main-content')
 <div class="main-content">
     <div class="page-header">
-        <h2 class="header-title">Campaign</h2>
         <div class="header-sub-title">
-            <nav class="breadcrumb breadcrumb-dash">              
-                <span class="breadcrumb-item active">Campaign</span>
+            <nav class="breadcrumb breadcrumb-dash">
+                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                        class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                <span class="breadcrumb-item active">Package </span>
             </nav>
         </div>
     </div>
     <div class="container">
         <div class="text-center m-t-30 m-b-40">
-            <h2>Campaign plans</h2>
+            <h2>Purchase Package</h2>
             <p class="w-45 m-h-auto m-b-30">Climb leg rub face on everything give attitude nap all day for under the bed. Chase mice attack feet but rub face.</p>
             <div class="btn-group">
                 <button type="button" id="monthly-btn" class="btn btn-default active">
@@ -46,7 +47,7 @@
                         <ul class="list-unstyled m-v-30">
                             <li class="m-b-20">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No Of Days-15</span>
+                                    <span class="text-dark font-weight-semibold">15 Days</span>
                                     <div class="text-success font-size-16">
                                         <i class="anticon anticon-check"></i>
                                     </div>
@@ -54,16 +55,16 @@
                             </li>
                             <li class="m-b-20">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No of Campaigns -50</span>
+                                    <span class="text-dark font-weight-semibold">50 Campaigns</span>
                                     <div class="text-success font-size-16">
                                         <i class="anticon anticon-check"></i>
                                     </div>
                                 </div>
                             </li>
-                           
+
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">Buy Package</button>
                         </div>
                     </div>
                 </div>
@@ -88,7 +89,7 @@
                         <ul class="list-unstyled m-v-30">
                             <li class="m-b-20">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No Of Months-15</span>
+                                    <span class="text-dark font-weight-semibold">175 Days</span>
                                     <div class="text-success font-size-16">
                                         <i class="anticon anticon-check"></i>
                                     </div>
@@ -96,7 +97,7 @@
                             </li>
                             <li class="m-b-20">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No of Campaigns -100</span>
+                                    <span class="text-dark font-weight-semibold">250 Campaigns</span>
                                     <div class="text-success font-size-16">
                                         <i class="anticon anticon-check"></i>
                                     </div>
@@ -104,7 +105,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button  class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
+                            <button  class="btn btn-success " onclick="showSuccessAlert()">Buy Package</button>
                         </div>
                     </div>
                 </div>
@@ -129,7 +130,7 @@
                         <ul class="list-unstyled m-v-30">
                             <li class="m-b-20">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No Of Year-1</span>
+                                    <span class="text-dark font-weight-semibold">365 Days</span>
                                     <div class="text-success font-size-16">
                                         <i class="anticon anticon-check"></i>
                                     </div>
@@ -137,7 +138,7 @@
                             </li>
                             <li class="m-b-20">
                                 <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No of Campaigns -150</span>
+                                    <span class="text-dark font-weight-semibold">500 Campaigns</span>
                                     <div class="text-success font-size-16">
                                         <i class="anticon anticon-check"></i>
                                     </div>
@@ -145,95 +146,13 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between p-b-20 border-bottom">
-                            <div class="media align-items-center">
-                                <div class="avatar avatar-cyan avatar-icon" style="height: 55px; width: 55px;">
-                                    <i class="anticon anticon-shop font-size-25" style="line-height: 55px"></i>
-                                </div>
-                                <div class="m-l-15">
-                                    <h2 class="font-weight-bold font-size-30 m-b-0">
-                                        $400
-                                        <span class="font-size-13 font-weight-semibold"></span>
-                                    </h2>
-                                    <h4 class="m-b-0">Standard Plan</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <ul class="list-unstyled m-v-30">
-                            <li class="m-b-20">
-                                <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No Of Months-15</span>
-                                    <div class="text-success font-size-16">
-                                        <i class="anticon anticon-check"></i>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="m-b-20">
-                                <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No of Campaigns -100</span>
-                                    <div class="text-success font-size-16">
-                                        <i class="anticon anticon-check"></i>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="text-center">
-                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between p-b-20 border-bottom">
-                            <div class="media align-items-center">
-                                <div class="avatar avatar-gold avatar-icon" style="height: 55px; width: 55px;">
-                                    <i class="anticon anticon-experiment font-size-25" style="line-height: 55px"></i>
-                                </div>
-                                <div class="m-l-15">
-                                    <h2 class="font-weight-bold font-size-30 m-b-0">
-                                        $1000
-                                        <span class="font-size-13 font-weight-semibold"></span>
-                                    </h2>
-                                    <h4 class="m-b-0">Premium Plan</h4>
-                                </div>
-                            </div>
-                        </div>
-                        <ul class="list-unstyled m-v-30">
-                            <li class="m-b-20">
-                                <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No Of Year-1</span>
-                                    <div class="text-success font-size-16">
-                                        <i class="anticon anticon-check"></i>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="m-b-20">
-                                <div class="d-flex justify-content-between">
-                                    <span class="text-dark font-weight-semibold">No of Campaigns -150</span>
-                                    <div class="text-success font-size-16">
-                                        <i class="anticon anticon-check"></i>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="text-center">
-                            <button  onclick="showSuccessAlert()" class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">Buy Package</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-       
+
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -244,7 +163,7 @@
         Swal.fire({
             icon: 'success',
             title: 'Success!',
-            text: 'Operation was successful.',
+            text: 'Package is activated successful.',
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'OK'
         });

@@ -16,7 +16,8 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Referral Tasks List</h4>                
+                <h4>Referral Tasks List</h4>
+                <a class="btn btn-primary float-right" href="{{route('company.campaign.create')}}" role="button">Add New</a>
                 <div class="m-t-25">
                     <table id="user_tables" class="table">
                         <thead>
@@ -51,7 +52,7 @@
                                 <td>$500</td>
                                 <td>Now you can browse privately, and other people who ...</td>
                                 <td>Referral</td>
-    
+
                                 <td><a class="btn btn-danger  btn-sm" href="" role="button" title="View">Active</a></td>
                                 <td>
                                     <a class="btn btn-success  btn-sm" href="{{route('company.campaign.view')}}"

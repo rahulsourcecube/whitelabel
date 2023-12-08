@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class CampaignController extends Controller
 {
-    
+
     function index()
     {
         return view('company.campaign.list');

@@ -5,9 +5,9 @@
     <div class="page-header">
         <div class="header-sub-title">
             <nav class="breadcrumb breadcrumb-dash">
-                <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item">
+                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                     <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                <a href="" class="breadcrumb-item">Employee</a>
+                <a href="{{ route('company.employee.list') }}" class="breadcrumb-item">Employee</a>
                 <span class="breadcrumb-item active">Add</span>
             </nav>
         </div>
@@ -31,17 +31,17 @@
                         <div class="form-group col-md-6">
                             <label for="number">Email Address <span class="error">*</span></label>
                             <input type="text" class="form-control" id="number" name="number"
-                                placeholder="Mobile Number" maxlength="10" minlength="10"
+                                placeholder="Email Address" maxlength="10" minlength="10"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                        </div>                       
-                       
+                        </div>
+
                         <div class="form-group col-md-6">
                             <label for="Type">Role</label>
                             <select id="Type" class="form-control">
                                 <option >Select</option>
                                 <option >Staff</option>
                                 <option >Manager</option>
-                                <option >Lead</option>                               
+                                <option >Lead</option>
                             </select>
                         </div>
                         <div class="form-group col-md-6">
@@ -54,7 +54,7 @@
                             <input type="text" class="form-control" id="cpassword" name="cpassword"
                                 placeholder="Comfirm Password">
                         </div>
-                      
+
                         <div class="form-group col-md-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
