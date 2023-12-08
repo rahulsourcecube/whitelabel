@@ -35,7 +35,10 @@
                             <td>$500</td>
                             <td>Now you can browse privately, and other people who ...</td>
                             <td>Referral</td>                           
-                            <td>Join</td>                           
+                            <td>
+                                <button class="btn btn-primary  btn-sm"  onclick="showSuccessAlert()"
+                                    role="button" title="View">Join</button>                               
+                            </td>                           
                             <td>
                                 <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view')}}"
                                     role="button" title="View"><i class="fa fa-eye"></i></a>                               
@@ -46,7 +49,10 @@
                             <td>$500</td>
                             <td>Now you can browse privately, and other people who ...</td>
                             <td>Referral</td>                           
-                            <td>Claim</td>                           
+                            <td>
+                                <button class="btn btn-primary  btn-sm"  onclick="showSuccessAlert()"
+                                    role="button" title="View">Join</button>                               
+                            </td>                           
                             <td>
                                 <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view')}}"
                                     role="button" title="View"><i class="fa fa-eye"></i></a>                               
@@ -57,7 +63,10 @@
                             <td>$500</td>
                             <td>Now you can browse privately, and other people who ...</td>
                             <td>Completed</td>                           
-                            <td>Completed</td>                           
+                            <td>
+                                <button class="btn btn-primary  btn-sm"  onclick="showSuccessAlert()"
+                                    role="button" title="View">Join</button>                               
+                            </td>                           
                             <td>
                                 <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view')}}"
                                     role="button" title="View"><i class="fa fa-eye"></i></a>                               
@@ -89,6 +98,20 @@
             },
     });
     });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    function showSuccessAlert() {
+        // Trigger a success sweet alert
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Joined',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+    }
 </script>
 
 @endsection

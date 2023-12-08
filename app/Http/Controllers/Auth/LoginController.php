@@ -43,20 +43,19 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if(auth()->attempt(array('email' => $input['email'], 'password' => $input['password'])))
-        {
+        if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
             if (auth()->user()->user_type == env('ADMIN_ROLE')) {
                 return redirect()->route('admin.dashboard');
-            
-        }elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
-            return redirect()->route('company.dashboard');
-        }else{
+            } elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
+                return redirect()->route('company.dashboard');
+            }elseif (auth()->user()->user_type == env('USER_ROLE')) {
+                return redirect()->route('user.dashboard');
+            } else {
                 return redirect()->route('/');
             }
-        }else{
+        } else {
             return redirect()->route('login')
-                ->with('error','Email-Address And Password Are Wrong.');
+                ->with('error', 'Email-Address And Password Are Wrong.');
         }
-
     }
 }

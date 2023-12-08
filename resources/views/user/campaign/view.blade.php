@@ -41,8 +41,7 @@
                             </button>
                         </div>
                         <div class="text-center m-t-30">
-                            <a onclick="showSuccessAlert()" class="btn btn-primary btn-tone">
-                                <i class="anticon anticon-mail"></i>
+                            <a onclick="showSuccessAlert()" href="#" class="btn btn-primary btn-tone">                               
                                 <span class="m-l-5">Join</span>
                             </a>
                         </div>
@@ -85,7 +84,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5>Recent Conected</h5>                        
+                        <h5>Recent Conected Uers</h5>                        
                     </div>
                     <div class="m-t-30">
                         <div class="table-responsive">
@@ -93,10 +92,8 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Customer</th>
+                                        <th>User</th>
                                         <th>Date</th>
-                                       
-                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -114,12 +111,6 @@
                                         </td>
                                         <td>8 May 2019</td>
                                        
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-success badge-dot m-r-10"></span>
-                                                <span>Approved</span>
-                                            </div>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <td>#5375</td>
@@ -135,12 +126,6 @@
                                         </td>
                                         <td>6 May 2019</td>
                                         
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-success badge-dot m-r-10"></span>
-                                                <span>Approved</span>
-                                            </div>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <td>#5762</td>
@@ -156,12 +141,6 @@
                                         </td>
                                         <td>1 May 2019</td>
                                        
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-success badge-dot m-r-10"></span>
-                                                <span>Approved</span>
-                                            </div>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <td>#5865</td>
@@ -177,12 +156,7 @@
                                         </td>
                                         <td>28 April 2019</td>
                                         
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-primary badge-dot m-r-10"></span>
-                                                <span>Pending</span>
-                                            </div>
-                                        </td>
+                                       
                                     </tr>
                                   
                                 </tbody>
@@ -201,7 +175,7 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: 'Joind',
+                text: 'Campaign joined',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK'
             });

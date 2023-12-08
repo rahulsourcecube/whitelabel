@@ -56,7 +56,7 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
     Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
     Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
-    Route::get('/changePassword', [UsrController::class, 'notification'])->name('changePassword');
+    Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
     Route::get('/signup', [UsrController::class, 'signup'])->name('signup');
     Route::get('/forget', [UsrController::class, 'forget'])->name('forgetpassword');
     Route::get('/confirm/password', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
