@@ -48,6 +48,14 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/', [UsrController::class, 'index'])->name('dashboard');
     Route::get('/dashboard', [UsrController::class, 'index'])->name('user.dashboard');
     Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
+    Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
+    Route::get('edit_profile', [UsrController::class, 'editProfile'])->name('edit_profile');
+    Route::get('profile', [UsrController::class, 'profile'])->name('profile');
+    Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
+    Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
+    Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
+    Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
+    Route::get('/changePassword', [UsrController::class, 'notification'])->name('changePassword');
 });
 
 Route::prefix('company')->name('company.')->group(function () {
