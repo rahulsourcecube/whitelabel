@@ -10,13 +10,13 @@
             <nav class="breadcrumb breadcrumb-dash">
                 <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
                         class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                <span class="breadcrumb-item active">Campaign </span>
+                <span class="breadcrumb-item active">Employee List</span>
             </nav>
         </div>
     </div>
     <div class="card">
         <div class="card-body">
-            <h4>Task List</h4>
+            <h4>Employee List</h4>
             <a class="btn btn-primary float-right" href="{{route('company.employee.create')}}" role="button">Add New</a>
             <div class="m-t-25">
                 <table id="user_tables" class="table">
@@ -24,27 +24,15 @@
                         <tr>
                             <th>Name</th>
                             <th>Email Address</th>
-                            <th>Role</th>                           
+                            <th>Role</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Join Our Facebook Page</td>
-                            <td>Join@mailinataor.com</td>
-                            <td>Manager</td>                            
-                            <td>                               
-                                <a class="btn btn-primary btn-sm" href="{{route('company.employee.create')}}"
-                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
-                                <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Join Our Facebook Page</td>
-                            <td>Join@mailinataor.com</td>
+                            <td>John Doe</td>
+                            <td>John@mailinataor.com</td>
                             <td>Manager</td>
-                            
                             <td>
                                 <a class="btn btn-primary btn-sm" href="{{route('company.employee.create')}}"
                                     role="button" title="Edit"><i class="fa fa-pencil"></i></a>
@@ -52,7 +40,18 @@
                                     onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
                             </td>
                         </tr>
-                        
+                        <tr>
+                            <td>Tom Jery</td>
+                            <td>tom@mailinataor.com</td>
+                            <td>Staff</td>
+                            <td>
+                                <a class="btn btn-primary btn-sm" href="{{route('company.employee.create')}}"
+                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
+                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
+                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -124,3 +123,4 @@
 </script>
 
 @endsection
+

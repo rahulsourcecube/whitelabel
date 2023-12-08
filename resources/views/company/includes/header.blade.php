@@ -2,7 +2,7 @@
 
 <div class="header">
     <div class="logo logo-dark">
-        <a href="{{ route('admin.dashboard') }}">
+        <a href="{{ route('company.dashboard') }}">
             <img src="@if (
                 !empty($siteSetting) &&
                     isset($siteSetting->logo) &&
@@ -12,7 +12,7 @@
         </a>
     </div>
     <div class="logo logo-white">
-        <a href="{{ route('admin.dashboard') }}">
+        <a href="{{ route('company.dashboard') }}">
             <img src="{{ asset('assets/images/logo/logo-white.png') }}" alt="Logo">
             <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold-white.png') }}" alt="Logo">
         </a>

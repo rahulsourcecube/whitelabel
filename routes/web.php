@@ -110,21 +110,23 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });
     Route::prefix('package')->name('package.')->group(function () {
-        Route::get('', [CompanyPackageController::class, 'index'])->name('list');       
+        Route::get('', [CompanyPackageController::class, 'index'])->name('list');
+    });
+    Route::prefix('billing')->name('billing.')->group(function () {
+        Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');
-        Route::post('store', [CompanySettingController::class, 'store'])->name('store');       
+        Route::post('store', [CompanySettingController::class, 'store'])->name('store');
     });
     Route::prefix('role')->name('role.')->group(function () {
-        Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');       
-        Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');       
-        Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');              
+        Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');
+        Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
+        Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');
     });
     Route::prefix('employee')->name('employee.')->group(function () {
-        Route::get('', [EmployeeController::class, 'index'])->name('list');       
-        Route::get('/create', [EmployeeController::class, 'create'])->name('create');       
-        Route::get('view', [RolesController::class, 'roleview'])->name('roleview');         
+        Route::get('', [EmployeeController::class, 'index'])->name('list');
+        Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+        Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
     });
-
 });

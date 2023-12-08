@@ -7,7 +7,12 @@ use Illuminate\Http\Request;
 
 class PackageController extends Controller
 {
-    function index(){        
+    function index(){
           return view('company.package.list');
      }
+
+
+     function billing(){
+        return view('company.billing.list');
+   }
 }
