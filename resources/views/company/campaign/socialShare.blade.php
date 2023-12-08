@@ -35,7 +35,7 @@
                             <td>Join Our Facebook Page</td>
                             <td>$500</td>
                             <td>Now you can browse privately, and other people who ...</td>
-                            <td>Referral</td>
+                            <td>Social </td>
 
                             <td><a class="btn btn-success  btn-sm" href="" role="button" title="View">Active</a></td>
                             <td>
@@ -51,7 +51,7 @@
                                 <td>Join Our Facebook Page</td>
                                 <td>$500</td>
                                 <td>Now you can browse privately, and other people who ...</td>
-                                <td>Referral</td>
+                                <td>Social </td>
     
                                 <td><a class="btn btn-danger  btn-sm" href="" role="button" title="View">Active</a></td>
                                 <td>
