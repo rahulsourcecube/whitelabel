@@ -35,7 +35,6 @@
                                     <div class="col-md-12">
                                         <button class="btn btn-primary m-t-30">Filter</button>
 
-                                        <button class="btn btn-success m-t-30">Export</button>
                                     </div>
                                 </form>
                             </div>
@@ -68,7 +67,6 @@
                                     <div class="col-md-12">
                                         <button class="btn btn-primary m-t-30">Filter</button>
 
-                                        <button class="btn btn-success m-t-30">Export</button>
                                     </div>
                                 </form>
                             </div>

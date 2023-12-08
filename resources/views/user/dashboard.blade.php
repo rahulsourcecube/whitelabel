@@ -146,7 +146,7 @@
                                     </div>
                                     <div class="text-center m-t-30">
                                         <a href="#"     onclick="showSuccessAlert()" class="btn btn-primary btn-tone">
-                                            <i class="anticon anticon-mail"></i>
+                                            <i class="anticon anticon-copy"></i>
                                             <span class="m-l-5" >Copy</span>
                                         </a>
                                     </div>
@@ -209,7 +209,7 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: 'Copyed',
+                text: 'Referrel code link copied',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK'
             });

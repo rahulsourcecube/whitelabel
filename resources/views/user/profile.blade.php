@@ -31,14 +31,15 @@
                                         <div class="col-md-12">
                                             <ul class="list-unstyled m-t-10">
                                                 <li class="row">
-                                                    <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                    <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
                                                         <i class="m-r-10 text-primary anticon anticon-mail"></i>
                                                         <span>Email: </span>
                                                     </p>
                                                     <p class="col font-weight-semibold">Marshall@gmail.com</p>
                                                 </li>
+                                                
                                                 <li class="row">
-                                                    <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                    <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
                                                         <i class="m-r-10 text-primary anticon anticon-phone"></i>
                                                         <span>Phone: </span>
                                                     </p>
@@ -69,7 +70,6 @@
                                         <th>Customer</th>
                                         <th>Date</th>
 
-                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,12 +89,6 @@
                                         </td>
                                         <td>8 May 2019</td>
 
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-success badge-dot m-r-10"></span>
-                                                <span>Approved</span>
-                                            </div>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <td>#5375</td>
@@ -112,12 +106,6 @@
                                         </td>
                                         <td>6 May 2019</td>
 
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-success badge-dot m-r-10"></span>
-                                                <span>Approved</span>
-                                            </div>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <td>#5762</td>
@@ -135,12 +123,6 @@
                                         </td>
                                         <td>1 May 2019</td>
 
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-success badge-dot m-r-10"></span>
-                                                <span>Approved</span>
-                                            </div>
-                                        </td>
                                     </tr>
                                     <tr>
                                         <td>#5865</td>
@@ -158,12 +140,6 @@
                                         </td>
                                         <td>28 April 2019</td>
 
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <span class="badge badge-primary badge-dot m-r-10"></span>
-                                                <span>Pending</span>
-                                            </div>
-                                        </td>
                                     </tr>
 
                                 </tbody>

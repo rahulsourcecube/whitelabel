@@ -25,13 +25,14 @@ class AdminController extends Controller
             return redirect()->route('admin.dashboard');
         } elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
             return redirect()->route('company.dashboard');
+        } elseif (auth()->user()->user_type == env('USER_ROLE')) {
+            return redirect()->route('user.dashboard');
         } else {
             return view('auth.login');
         }
     }
     function dashboard()
     {
-
         $data = [];
         $data['total_comapny'] = 0;
         $data['total_user'] = 0;
@@ -43,7 +44,6 @@ class AdminController extends Controller
     public function change_password()
     {
         $user = User::where('id', Auth::user()->id)->first();
-
         // return view('auth.change_password', compact('user'));
     }
 

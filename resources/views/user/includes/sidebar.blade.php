@@ -90,14 +90,16 @@
                 </a>
             </li>
              <li class="nav-item dropdown open">
-                <a class="dropdown-toggle"  >
+                <a class="dropdown-toggle"  href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <span class="icon-holder">
                         <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
                     </span>
                     <span class="title">Logout</span>
                 </a>
             </li>
-            
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
         </ul>
     </div>
 </div>
