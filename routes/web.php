@@ -7,7 +7,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\company\CampaignController;
+use App\Http\Controllers\company\EmployeeController;
 use App\Http\Controllers\company\PackageController as CompanyPackageController;
+use App\Http\Controllers\company\RolesController;
 use App\Http\Controllers\company\SettingController as CompanySettingController;
 use App\Http\Controllers\company\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +49,8 @@ Route::prefix('company')->name('company.')->group(function () {
     Route::get('/login', [CompanyLoginController::class, 'index'])->name('signin');
     Route::post('/store', [CompanyLoginController::class, 'login'])->name('login');
     Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup');
+    Route::get('/forget', [CompanyLoginController::class, 'forget'])->name('forgetpassword');
+    Route::get('/confirm/password', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
 });
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
 
@@ -96,16 +100,25 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('social/share', [CampaignController::class, 'socialShare'])->name('social.list');
         Route::get('custom/tasks', [CampaignController::class, 'customTasks'])->name('custom.list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
+        Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
         Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });
     Route::prefix('package')->name('package.')->group(function () {
-        Route::get('', [CompanyPackageController::class, 'index'])->name('list');
-       
+        Route::get('', [CompanyPackageController::class, 'index'])->name('list');       
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');
-        Route::post('store', [CompanySettingController::class, 'store'])->name('store');
-       
+        Route::post('store', [CompanySettingController::class, 'store'])->name('store');       
+    });
+    Route::prefix('role')->name('role.')->group(function () {
+        Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');       
+        Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');       
+        Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');              
+    });
+    Route::prefix('employee')->name('employee.')->group(function () {
+        Route::get('', [EmployeeController::class, 'index'])->name('list');       
+        Route::get('/create', [EmployeeController::class, 'create'])->name('create');       
+        Route::get('view', [RolesController::class, 'roleview'])->name('roleview');         
     });
 
 });

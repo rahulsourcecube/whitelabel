@@ -109,6 +109,28 @@
                     <span class="title">Setting</span>
                 </a>
             </li>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0);">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-safety-certificate"></i>
+                    </span>
+                    <span class="title">Manage Roles</span>
+                    <span class="arrow">
+                        <i class="arrow-icon"></i>
+                    </span>
+                </a>
+                
+                <ul class="dropdown-menu">
+                    
+                    <li @if(request()->segment(2)=='employee') class='active' @endif >
+                        <a href="{{ route('company.employee.list') }}">Employee Management</a>
+                    </li>
+                    <li @if(request()->segment(2)=='role') class='active' @endif >
+                        <a href="{{ route('company.role.rolelist') }}">Role Management</a>
+                    </li>                                       
+                </ul>
+                
+            </li>
             <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <span class="icon-holder">

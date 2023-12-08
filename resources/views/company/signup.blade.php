@@ -33,41 +33,43 @@
                                         <h2 class="m-b-0">Sign In</h2>
                                     </div>
                                     <form>
-                                        <div class="form-group">
+                                        <div class="form-row">
+                                         <div class="form-group col-md-6">                                      
                                             <label class="font-weight-semibold" for="userName">First Name:</label>
                                             <input type="text" class="form-control" id="userName" placeholder="First Name">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group col-md-6">
                                             <label class="font-weight-semibold" for="userName">Last name</label>
                                             <input type="text" class="form-control" id="userName" placeholder="Last name">
                                         </div>                                        
-                                        <div class="form-group">
+                                        <div class="form-group col-md-12">
                                             <label class="font-weight-semibold" for="email">Email:</label>
                                             <input type="email" class="form-control" id="email" placeholder="Email">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group col-md-12">
                                             <label class="font-weight-semibold" for="userName">Company Name:</label>
                                             <input type="text" class="form-control" id="userName" placeholder="Company Name">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group col-md-12">
                                             <label class="font-weight-semibold" for="userName">Domain Name:</label>
                                             <input type="text" class="form-control" id="userName" placeholder="Domain Name">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group col-md-6">
                                             <label class="font-weight-semibold" for="password">Password:</label>
                                             <input type="password" class="form-control" id="password" placeholder="Password">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group col-md-6">
                                             <label class="font-weight-semibold" for="confirmPassword">Confirm Password:</label>
                                             <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password">
                                         </div>
+                                    </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between p-t-15">
                                                 <div class="checkbox">
                                                     <input id="checkbox" type="checkbox">
                                                    
                                                 </div>
-                                                <button class="btn btn-primary">Sign In</button>
+                                                <a href="{{route('company.signin')}}" class="btn btn-primary">Sign In</a>
                                             </div>
                                         </div>
                                     </form>

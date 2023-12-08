@@ -63,7 +63,7 @@
                            
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button  onclick="showSuccessAlert()"class="btn btn-success">$ Buy</button>
+                            <button  class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -227,7 +227,7 @@
                             </li>
                         </ul>
                         <div class="text-center">
-                            <button class="btn btn-success">$ Buy</button>
+                            <button  onclick="showSuccessAlert()" class="btn btn-success " onclick="showSuccessAlert()">$ Buy</button>
                         </div>
                     </div>
                 </div>
@@ -236,7 +236,7 @@
        
     </div>
 </div>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     function showSuccessAlert() {
@@ -249,5 +249,5 @@
             confirmButtonText: 'OK'
         });
     }
-</script>
+</script>>
 @endsection
