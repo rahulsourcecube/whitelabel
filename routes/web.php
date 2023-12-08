@@ -45,9 +45,13 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
 });
 Route::prefix('user')->name('user.')->group(function () {
-    Route::get('/', [UsrController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', [UsrController::class, 'index'])->name('user.dashboard');
+    Route::get('/', [UsrController::class, 'index'])->name('login');
+    Route::get('/login', [UsrController::class, 'index'])->name('login');
+    Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
     Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
+    Route::get('/signup', [UsrController::class, 'signup'])->name('signup');
+    Route::get('/forget', [UsrController::class, 'forget'])->name('forgetpassword');
+    Route::get('/confirm/password', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
 });
 
 Route::prefix('company')->name('company.')->group(function () {
