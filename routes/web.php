@@ -6,12 +6,12 @@ use App\Http\Controllers\CompanyLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\company\CampaignController;
-use App\Http\Controllers\company\EmployeeController;
-use App\Http\Controllers\company\PackageController as CompanyPackageController;
-use App\Http\Controllers\company\RolesController;
-use App\Http\Controllers\company\SettingController as CompanySettingController;
-use App\Http\Controllers\company\UserController;
+use App\Http\Controllers\Company\CampaignController;
+use App\Http\Controllers\Company\EmployeeController;
+use App\Http\Controllers\Company\PackageController as CompanyPackageController;
+use App\Http\Controllers\Company\RolesController;
+use App\Http\Controllers\Company\SettingController as CompanySettingController;
+use App\Http\Controllers\Company\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
