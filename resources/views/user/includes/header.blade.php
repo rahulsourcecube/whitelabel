@@ -54,7 +54,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="{{ route('company.profile') }}" class="dropdown-item d-block p-h-15 p-v-10">
+                    <a href="{{ route('user.profile') }}" class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <i class="anticon opacity-04 font-size-16 anticon-user"></i>
@@ -63,7 +63,7 @@
                             <i class="anticon font-size-10 anticon-right"></i>
                         </div>
                     </a>
-                    <a href="{{ route('company.edit_profile') }}" class="dropdown-item d-block p-h-15 p-v-10">
+                    <a href="{{ route('user.edit_profile') }}" class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <i class="anticon opacity-04 font-size-16 anticon-edit"></i>

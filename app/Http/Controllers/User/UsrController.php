@@ -9,6 +9,7 @@ class UsrController extends Controller
 {
     function index()
     {
+
         if (!empty(auth()->user()) && auth()->user()->user_type == env('ADMIN_ROLE')) {
             return redirect()->route('admin.dashboard');
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == env('COMPANY_ROLE')) {
@@ -28,6 +29,42 @@ class UsrController extends Controller
         $data['total_campaign'] = 0;
         $data['total_package'] = 0;
         return view('user.dashboard', $data);
+    }
+    function campaign()
+    {
+
+        return view('user.campaign.list');
+    }
+    function campaignview()
+    {
+
+        return view('user.campaign.view');
+    }
+    public function editProfile()
+    {
+        return view('user.editprofile');
+    }
+    public function Profile()
+    {
+        return view('user.profile');
+    }
+    function myreward()
+    {
+
+        return view('user.reward.myReward');
+    }
+    function progressreward()
+    {
+
+        return view('user.reward.progressReward');
+    }
+    function analytics()
+    {
+        return view('user.analytics');
+    }
+    function notification()
+    {
+        return view('user.notification');
     }
     public function signup()
     {

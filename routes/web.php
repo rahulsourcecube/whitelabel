@@ -49,6 +49,14 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/login', [UsrController::class, 'index'])->name('login');
     Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
     Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
+    Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
+    Route::get('edit_profile', [UsrController::class, 'editProfile'])->name('edit_profile');
+    Route::get('profile', [UsrController::class, 'profile'])->name('profile');
+    Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
+    Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
+    Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
+    Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
+    Route::get('/changePassword', [UsrController::class, 'notification'])->name('changePassword');
     Route::get('/signup', [UsrController::class, 'signup'])->name('signup');
     Route::get('/forget', [UsrController::class, 'forget'])->name('forgetpassword');
     Route::get('/confirm/password', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
