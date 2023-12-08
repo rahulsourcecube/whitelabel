@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <div class="app">
+    {{-- <div class="app">
         <div class="container-fluid p-0 h-100">
             <div class="row no-gutters h-100 full-height">
                 <div class="col-lg-12 bg-white">
@@ -74,8 +74,8 @@
                 </div>
             </div>
         </div>
-    </div>
-    {{-- <div class="app">
+    </div> --}}
+    <div class="app">
         <div class="container-fluid">
             <div class="d-flex full-height p-v-15 flex-column justify-content-between">
                 <div class="d-none d-md-flex p-h-40">
@@ -88,27 +88,45 @@
                                 <div class="card-body">
                                     <h2 class="m-t-20">Sign In</h2>
                                     <p class="m-b-30">Enter your credential to get access</p>
-                                    <form>
+                                    <form method="POST" action="{{ route('company.login') }}">
+                                        @csrf
                                         <div class="form-group">
                                             <label class="font-weight-semibold" for="userName">Username:</label>
                                             <div class="input-affix">
                                                 <i class="prefix-icon anticon anticon-user"></i>
-                                                <input type="text" class="form-control" id="userName" placeholder="Username">
+                                                <input id="email" type="email"
+                                                    class="form-control @error('email') is-invalid @enderror" name="email"
+                                                    value="{{ old('email') }}" required autocomplete="email" autofocus
+                                                    placeholder="Email">
+    
+                                                @error('email')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="font-weight-semibold" for="password">Password:</label>
-                                            <a class="float-right font-size-13 text-muted" href="#">Forget Password?</a>
+                                            
                                             <div class="input-affix m-b-10">
                                                 <i class="prefix-icon anticon anticon-lock"></i>
-                                                <input type="password" class="form-control" id="password" placeholder="Password">
+                                                <input id="password" type="password"
+                                                    class="form-control @error('password') is-invalid @enderror"
+                                                    placeholder="Password" name="password" required
+                                                    autocomplete="current-password">
+                                                @error('password')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span> 
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <span class="font-size-13 text-muted">
                                                     Don't have an account? 
-                                                    <a class="small" href="#"> Signup</a>
+                                                    <a class="small" href="{{route('company.signup')}}"> Signup</a>
                                                 </span>
                                                 <button class="btn btn-primary">Sign In</button>
                                             </div>
@@ -135,7 +153,7 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
     <!-- Core Vendors JS -->
     <script src="{{ asset('assets/js/vendors.min.js') }}"></script>

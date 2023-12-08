@@ -33,7 +33,7 @@
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
                     </span>
-                    <span class="title">Campaigns</span>
+                    <span class="title">Task</span>
                     <span class="arrow">
                         <i class="arrow-icon"></i>
                     </span>

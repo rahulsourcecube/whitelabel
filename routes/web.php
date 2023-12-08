@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', [AdminController::class, 'index'])->name('admin');
-Route::get('user', [LoginController::class, 'user']);
+Route::get('user', [LoginController::class, 'form']);
 
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
@@ -44,8 +44,9 @@ Route::group(['prefix' => 'admin'], function () {
 
 Route::prefix('company')->name('company.')->group(function () {
     Route::get('/', [CompanyLoginController::class, 'index'])->name('login');
-    Route::get('/login', [CompanyLoginController::class, 'index'])->name('login');
+    Route::get('/login', [CompanyLoginController::class, 'index'])->name('signin');
     Route::post('/store', [CompanyLoginController::class, 'login'])->name('login');
+    Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup');
 });
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
 
@@ -95,18 +96,16 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('social/share', [CampaignController::class, 'socialShare'])->name('social.list');
         Route::get('custom/tasks', [CampaignController::class, 'customTasks'])->name('custom.list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
-        Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
-
         Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('', [CompanyPackageController::class, 'index'])->name('list');
-
+       
     });
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [CompanySettingController::class, 'index'])->name('index');
         Route::post('store', [CompanySettingController::class, 'store'])->name('store');
-
+       
     });
 
 });
