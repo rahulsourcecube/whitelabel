@@ -12,6 +12,7 @@ use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\UserController;
+use App\Http\Controllers\User\UsrController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,11 @@ Route::get('user', [LoginController::class, 'form']);
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
+});
+Route::prefix('user')->name('user.')->group(function () {
+    Route::get('/', [UsrController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [UsrController::class, 'index'])->name('user.dashboard');
+    Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
 });
 
 Route::prefix('company')->name('company.')->group(function () {
