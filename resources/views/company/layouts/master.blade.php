@@ -19,7 +19,6 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Core css -->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
 </head>
 

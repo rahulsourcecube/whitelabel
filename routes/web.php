@@ -102,20 +102,25 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('', [UserController::class, 'index'])->name('list');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::post('/store', [UserController::class, 'store'])->name('store');
-        dd(123);
-        Route::get('edit/{$id}', [UserController::class, 'edit'])->name('edit');       
-        Route::get('view', [UserController::class, 'view'])->name('view');
+        Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
+        Route::get('view/{id}', [UserController::class, 'view'])->name('view');
+        Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
     });
     Route::prefix('campaign')->name('campaign.')->group(function () {
-        Route::get('list', [CampaignController::class, 'index'])->name('list');
+        Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
+        Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');
+        Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
+        Route::get('/edit/{type}', [CampaignController::class, 'edit'])->name('edit');
+        Route::delete('/delete/{type}', [CampaignController::class, 'delete'])->name('delete');
+        Route::post('/store', [CampaignController::class, 'store'])->name('store');
+        Route::get('/view', [CampaignController::class, 'view'])->name('view');
         Route::get('referral/tasks', [CampaignController::class, 'referralTasks'])->name('referral.list');
         Route::get('social/share', [CampaignController::class, 'socialShare'])->name('social.list');
         Route::get('custom/tasks', [CampaignController::class, 'customTasks'])->name('custom.list');
-        Route::get('/create', [CampaignController::class, 'create'])->name('create');
         Route::post('/referral/store', [CampaignController::class, 'referralStore'])->name('referral.store');
         Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
-        Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('', [CompanyPackageController::class, 'index'])->name('list');

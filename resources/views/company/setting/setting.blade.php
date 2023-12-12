@@ -120,7 +120,8 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+@endsection
+@section('js')
 <script>
     $('#settings').validate({
             rules: {
