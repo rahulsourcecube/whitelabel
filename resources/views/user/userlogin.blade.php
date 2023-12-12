@@ -70,7 +70,7 @@
                                                     Don't have an account?
                                                     <a class="small" href="{{route('user.signup')}}"> Signup</a>
                                                 </span>
-                                                <button class="btn btn-primary">Sign In</button>
+                                                <a href="{{route('user.dashboard')}}"  class="btn btn-primary">Sign In</a>
                                             </div>
                                         </div>
                                     </form>

@@ -20,7 +20,8 @@
 @endif
 
 @if (\Session::has('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="alert alert-
+     alert-dismissible fade show" role="alert">
         <i class="uil uil-times me-2"></i>
         {!! \Session::get('error') !!}
     </div>
@@ -36,3 +37,14 @@
         </button>
     </div>
 @endif
+<script>
+    $(document).ready(function() {
+ // Show the alert
+         $("alert").fadeIn();
+
+         // Hide the alert after 3 seconds
+         setTimeout(function() {
+         $("#alert").fadeOut();
+         }, 2000);
+ });
+</script>

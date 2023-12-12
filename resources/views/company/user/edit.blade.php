@@ -21,7 +21,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="fname">First Name <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name"
+                            <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name" value="{{$user->full_name ?? ""}}"
                                 maxlength="150">
                         </div>
                         <div class="form-group col-md-6">

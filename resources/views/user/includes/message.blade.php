@@ -35,3 +35,14 @@
         </button>
     </div>
 @endif
+<script>
+    $(document).ready(function() {
+ // Show the alert
+         $("alert").fadeIn();
+
+         // Hide the alert after 3 seconds
+         setTimeout(function() {
+         $("#alert").fadeOut();
+         }, 2000);
+ });
+</script>

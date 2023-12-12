@@ -16,11 +16,11 @@
             <div class="card-body">
                 <h4>Add Task</h4>
                 <div class="m-t-50" style="">
-                    <form id="package" method="POST" action=""enctype="multipart/form-data">
+                    <form id="taskadd" method="POST" action="{{ route('company.campaign.referral.store') }}"enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="name">Task Title <span class="error">*</span></label>
+                                <label for="name">Task Titles <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="name" name="title" placeholder="Task Title"
                                     maxlength="150">
                             </div>
@@ -36,13 +36,13 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="date">End date <span class="error">*</span></label>
-                                <input type="date" class="form-control" id="" name="date"
+                                <input type="date" class="form-control" id="" name="edate"
                                     placeholder="No Of Task"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="Type">Task Type</label>
-                                <select id="Type" class="form-control">
+                                <select id="Type" class="form-control" name="tasktype">
                                     <option >Select</option>
                                     <option >Referral</option>
                                     <option >Custom</option>
@@ -70,7 +70,7 @@
                                     style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>
@@ -78,87 +78,85 @@
     </div>
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
     <script>
-        $('#packagess').validate({
+        $('#taskadd').validate({
             rules: {
                 title: {
                     required: true
                 },
-                Task: {
+                reaward: {
                     required: true
                 },
                 description: {
                     required: true
                 },
-                type: {
+                tasktype: {
                     required: true
                 },
-                day: {
+                edate: {
                     required: true
                 },
-                price: {
-                    required: true
-                },
-                image: {
-                    required: true,
-                    maxfilesize: 1024 *
-                        1024, // Specify the maximum file size in bytes (1MB in this example)
-                    extension: "png|jpg|jpeg" // Specify the allowed file extensions
-                },
+               
+                // image: {
+                //     required: true,
+                //     maxfilesize: 1024 *
+                //         1024, // Specify the maximum file size in bytes (1MB in this example)
+                //     extension: "png|jpg|jpeg" // Specify the allowed file extensions
+                // },
             },
             messages: {
                 title: {
-                    required: "Please enter package title"
+                    required: "Please enter title"
                 },
-                Task: {
-                    required: "Please enter no of Task"
+                reaward: {
+                    required: "Please enter Reaward"
                 },
                 description: {
                     required: "Please enter description"
                 },
-                day: {
-                    required: "This field is required"
+                edate: {
+                    required: "Please select End date"
                 },
-                price: {
+                tasktype: {
                     required: "Please enter price"
                 },
-                image: {
-                    required: "Please select an image",
-                    maxfilesize: "File size must be less than 1MB",
-                    extension: "Only PNG, JPG, and JPEG files are allowed"
-                },
+                // image: {
+                //     required: "Please select an image",
+                //     maxfilesize: "File size must be less than 1MB",
+                //     extension: "Only PNG, JPG, and JPEG files are allowed"
+                // },
             }
         });
 
 
-        isFreePackage();
+        // isFreePackage();
 
-        $(document).on("change", '#inputype', function() {
-            type = $(this).val();
-            isFreePackage();
+        // $(document).on("change", '#inputype', function() {
+        //     type = $(this).val();
+        //     isFreePackage();
 
-            if (type == '1') {
-                $('.day_title').html('No Of Day');
-                $(".day_place").attr("placeholder", "No Of Day").placeholder();
-            } else if (type == '2') {
-                $('.day_title').html('No Of Month');
-                $(".day_place").attr("placeholder", "No Of Month").placeholder();
+        //     if (type == '1') {
+        //         $('.day_title').html('No Of Day');
+        //         $(".day_place").attr("placeholder", "No Of Day").placeholder();
+        //     } else if (type == '2') {
+        //         $('.day_title').html('No Of Month');
+        //         $(".day_place").attr("placeholder", "No Of Month").placeholder();
 
-            } else {
-                $('.day_title').html('No Of Year');
-                $(".day_place").attr("placeholder", "No Of Year").placeholder();
-            }
-        })
+        //     } else {
+        //         $('.day_title').html('No Of Year');
+        //         $(".day_place").attr("placeholder", "No Of Year").placeholder();
+        //     }
+        // })
 
-        function isFreePackage() {
+        // function isFreePackage() {
 
-            if ($("#inputype option:selected").val() == '1') {
-                $("#price-section").hide();
-                $("#price").val("0");
-            } else {
-                $("#price-section").show();
-                $("#price").val("");
-            }
-        }
+        //     if ($("#inputype option:selected").val() == '1') {
+        //         $("#price-section").hide();
+        //         $("#price").val("0");
+        //     } else {
+        //         $("#price-section").show();
+        //         $("#price").val("");
+        //     }
+        // }
 
         function previewImage() {
             var input = document.getElementById('file');

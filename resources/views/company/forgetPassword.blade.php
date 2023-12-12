@@ -4,15 +4,19 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Login</title>
-
+    <title>Password
+    </title>
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.png') }}">
-
-    <!-- page css -->
-
-    <!-- Core css -->
-    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
+    <link rel="shortcut icon"
+        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+        <!-- Include jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <!-- Core css -->
+        <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+        <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
 
 </head>
 
@@ -25,17 +29,20 @@
                         <div class="col-md-7 col-lg-5 m-h-auto">
                             <div class="card shadow-lg">
                                 <div class="card-body">
+                                    @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
                                         <img class="img-fluid" alt="" src="{{asset('assets/images/logo/logo.png')}}">
                                         <h2 class="m-b-0">Forget Password</h2>
                                     </div>
-                                    <form>
+                                    <form id="forgetPassSendmail" method="POST" action="{{ route('company.forgetPassSendmail') }}" >
+                                        @csrf
                                         <div class="form-group">
-                                            <label class="font-weight-semibold" for="userName">Email:</label>
+                                            <label class="font-weight-semibold" for="email">Email:</label>
                                             <div class="input-affix">
                                                 <i class="prefix-icon anticon anticon-user"></i>
-                                                <input type="text" class="form-control" id="userName" placeholder="Email">
+                                                <input type="email" class="form-control" id="email" name="email" placeholder="Email">
                                             </div>
+                                            <label id="email-error" class="error" for="email"></label>
                                         </div>
                                         
                                         <div class="form-group">
@@ -44,7 +51,7 @@
                                                     Don't have an account? 
                                                     <a class="small" href="{{route('company.signup')}}"> Signup</a>
                                                 </span>
-                                                <a  href="{{route('company.confirmPassword')}}" class="btn btn-primary">Submit</a>
+                                                <button type="submit" class="btn btn-primary">Submit</button>
                                             </div>
                                         </div>
                                     </form>
@@ -67,8 +74,21 @@
             </div>
         </div>
     </div>
+    <script>
+    $('#forgetPassSendmail').validate({
+        rules: {          
+            email: {
+                required: true
+            } 
+        },
+        messages: {
+             email: {
+                required: "Please enter Email"
+            },           
+        }
+    });
 
-    
+</script>
    <!-- Core Vendors JS -->
    <script src="{{ asset('assets/js/vendors.min.js') }}"></script>
 

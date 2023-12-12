@@ -17,64 +17,7 @@
 </head>
 
 <body>
-    {{-- <div class="app">
-        <div class="container-fluid p-0 h-100">
-            <div class="row no-gutters h-100 full-height">
-                <div class="col-lg-12 bg-white">
-                    <div class="container h-100">
-                        <div class="row no-gutters h-100 align-items-center">
-                            <div class="col-md-12 col-lg-6  mx-auto">
-                                <h2>Sign In</h2>
-                                <p class="m-b-30">Enter your credential to get access</p>
-                                <form method="POST" action="{{ route('company.login') }}">
-                                    @csrf
-                                    <div class="form-group">
-                                        <label class="font-weight-semibold" for="userName">Username:</label>
-                                        <div class="input-affix">
-                                            <i class="prefix-icon anticon anticon-user"></i>
-                                            <input id="email" type="email"
-                                                class="form-control @error('email') is-invalid @enderror" name="email"
-                                                value="{{ old('email') }}" required autocomplete="email" autofocus
-                                                placeholder="Email">
-
-                                            @error('email')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="font-weight-semibold" for="password">Password:</label>
-                                        
-                                        <div class="input-affix m-b-10">
-                                            <i class="prefix-icon anticon anticon-lock"></i>
-                                            <input id="password" type="password"
-                                                class="form-control @error('password') is-invalid @enderror"
-                                                placeholder="Password" name="password" required
-                                                autocomplete="current-password">
-                                            @error('password')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <input type="hidden" value="2" name="type">
-                                    <div class="form-group">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                           
-                                            <button class="btn btn-primary">Sign In</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+   
     <div class="app">
         <div class="container-fluid">
             <div class="d-flex full-height p-v-15 flex-column justify-content-between">
@@ -86,6 +29,7 @@
                         <div class="col-md-5">
                             <div class="card">
                                 <div class="card-body">
+                                    @include('admin.includes.message')
                                     <h2 class="m-t-20">Sign In</h2>
                                     <p class="m-b-30">Enter your credential to get access</p>
                                     <form method="POST" action="{{ route('company.login') }}">

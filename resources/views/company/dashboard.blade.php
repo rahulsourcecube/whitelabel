@@ -4,6 +4,7 @@
     <!-- Page Container START -->
     <!-- Content Wrapper START -->
     <div class="main-content">
+        @include('admin.includes.message')
         <div class="row">
             <div class="col-md-6 col-lg-4">
                 <div class="card">

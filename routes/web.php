@@ -30,16 +30,11 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', function () {
 //     return view('auth.login');
 // });
-
 // Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
 Auth::routes();
-
 Route::get('/', [AdminController::class, 'index'])->name('admin');
 Route::get('user', [LoginController::class, 'form']);
-
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
@@ -67,17 +62,17 @@ Route::prefix('company')->name('company.')->group(function () {
     Route::get('/login', [CompanyLoginController::class, 'index'])->name('signin');
     Route::post('/store', [CompanyLoginController::class, 'login'])->name('login');
     Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup');
+    Route::post('/signup/store', [CompanyLoginController::class, 'signupStore'])->name('signup.store');
     Route::get('/forget', [CompanyLoginController::class, 'forget'])->name('forgetpassword');
-    Route::get('/confirm/password', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::post('/forget/store', [CompanyLoginController::class, 'forgetPassSendmail'])->name('forgetPassSendmail');
+    Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
 });
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
-
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('', [PackageController::class, 'index'])->name('list');
         Route::post('list', [PackageController::class, 'dtList'])->name('dtlist');
-
         Route::get('create', [PackageController::class, 'create'])->name('create');
         Route::post('/store', [PackageController::class, 'store'])->name('store');
         Route::get('view/{package}', [PackageController::class, 'view'])->name('view');
@@ -85,7 +80,6 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
         Route::get('edit/{package}', [PackageController::class, 'edit'])->name('edit');
         Route::put('update/{package}', [PackageController::class, 'update'])->name('update');
     });
-
     Route::prefix('setting')->name('setting.')->group(function () {
         Route::get('', [SettingController::class, 'index'])->name('index');
         Route::post('store', [SettingController::class, 'store'])->name('store');
@@ -100,24 +94,26 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 });
 
 Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
-
     Route::get('dashboard', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
     Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');
     Route::get('profile', [CompanyLoginController::class, 'profile'])->name('profile');
+
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('', [UserController::class, 'index'])->name('list');
         Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::get('/edit', [UserController::class, 'edit'])->name('edit');
-        Route::post('list', [UserController::class, 'dtList'])->name('dtlist');
+        Route::post('/store', [UserController::class, 'store'])->name('store');
+        dd(123);
+        Route::get('edit/{$id}', [UserController::class, 'edit'])->name('edit');       
         Route::get('view', [UserController::class, 'view'])->name('view');
+        Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
     });
-
     Route::prefix('campaign')->name('campaign.')->group(function () {
         Route::get('list', [CampaignController::class, 'index'])->name('list');
         Route::get('referral/tasks', [CampaignController::class, 'referralTasks'])->name('referral.list');
         Route::get('social/share', [CampaignController::class, 'socialShare'])->name('social.list');
         Route::get('custom/tasks', [CampaignController::class, 'customTasks'])->name('custom.list');
         Route::get('/create', [CampaignController::class, 'create'])->name('create');
+        Route::post('/referral/store', [CampaignController::class, 'referralStore'])->name('referral.store');
         Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
         Route::get('/view', [CampaignController::class, 'view'])->name('view');
     });

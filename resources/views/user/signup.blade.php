@@ -30,7 +30,7 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
                                         <img class="img-fluid" alt="" src="{{asset('assets/images/logo/logo.png')}}">
-                                        <h2 class="m-b-0">Sign In</h2>
+                                        <h2 class="m-b-0">Signup</h2>
                                     </div>
                                     <form>
                                         <div class="form-row">
@@ -61,7 +61,7 @@
                                                     <input id="checkbox" type="checkbox">
                                                 </div> --}}
                                              <label for="checkbox"><span>Already have an account? <a href="{{route('user.login')}}">Login</a></span></label>
-                                                <a href="{{route('user.dashboard')}}" class="btn btn-primary">Sign In</a>
+                                                <a href="{{route('user.dashboard')}}" class="btn btn-primary">Signup</a>
                                             </div>
                                         </div>
                                     </form>
