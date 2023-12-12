@@ -2,6 +2,7 @@
 @section('title', 'Add Task')
 @section('main-content')
     <div class="main-content">
+        @include('company.includes.message')
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
@@ -16,52 +17,70 @@
             <div class="card-body">
                 <h4>Add Task</h4>
                 <div class="m-t-50" style="">
-                    <form id="taskadd" method="POST" action="{{ route('company.campaign.referral.store') }}"enctype="multipart/form-data">
+                    <form id="taskadd" method="POST"
+                        action="{{ route('company.campaign.store') }}"enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="name">Task Titles <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="name" name="title" placeholder="Task Title"
-                                    maxlength="150">
+                                <label for="title">Task Titles <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                    placeholder="Task Title" maxlength="150" value="{{ old('title') }}">
+                                @error('title')
+                                    <label id="title-error" class="error" for="title">{{ $message }}</label>
+                                @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="reaward"> Reaward <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="reaward" name="reaward"
-                                    placeholder="Reaward"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                <label for="reward"> Reward <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="reward" name="reward"
+                                    placeholder="Reward" onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="{{ old('reward') }}">
+                                @error('reward')
+                                    <label id="reward-error" class="error" for="reward">{{ $message }}</label>
+                                @enderror
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="descriptions">Description</label>
-                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> </textarea>
+                                <label for="description">Description</label>
+                                <textarea type="text" class="form-control" id="description" name="description" placeholder="description">{{ old('description') }}</textarea>
+                                @error('description')
+                                    <label id="description-error" class="error" for="description">{{ $message }}</label>
+                                @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="date">End date <span class="error">*</span></label>
-                                <input type="date" class="form-control" id="" name="edate"
+                                <label for="expiry_date">End date <span class="error">*</span></label>
+                                <input type="date" class="form-control" id="expiry_date" name="expiry_date"
                                     placeholder="No Of Task"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="{{ old('expiry_date') }}">
+                                @error('expiry_date')
+                                    <label id="expiry_date-error" class="error" for="expiry_date">{{ $message }}</label>
+                                @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="Type">Task Type</label>
-                                <select id="Type" class="form-control" name="tasktype">
-                                    <option >Select</option>
-                                    <option >Referral</option>
-                                    <option >Custom</option>
-                                    <option >Social</option>
-                                   
+                                <label for="type">Task Type</label>
+                                <select id="type" class="form-control" name="type">
+                                    @if (isset($type))
+                                        <option value="{{ $type }}" selected>
+                                            {{ \App\Helpers\Helper::taskType($type) }}</option>
+                                    @else
+                                        <option value="">Select</option>
+                                        <option value="1" {{ old('type') == '1' ? 'selected' : '' }}>Referral</option>
+                                        <option value="2" {{ old('type') == '2' ? 'selected' : '' }}>Custom</option>
+                                        <option value="3" {{ old('type') == '3' ? 'selected' : '' }}>Social</option>
+                                    @endif
                                 </select>
+                                @error('type')
+                                    <label id="type-error" class="error" for="type">{{ $message }}</label>
+                                @enderror
                             </div>
-
-
                         </div>
-                        
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="file">Image <span class="error">*</span></label>
                                 <input type="file" class="form-control" name="image" id="file"
                                     accept=".png, .jpg, .jpeg" onchange="previewImage()">
+                                @error('image')
+                                    <label id="image-error" class="error" for="image">{{ $message }}</label>
+                                @enderror
                             </div>
                         </div>
-
                         <div class="form-row">
                             <div class="form-group col-md-3" style="max-height: 200px;">
                                 <img id="imagePreview" src="#" alt="Image Preview"
@@ -76,124 +95,54 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
     <script>
+        $(document).ready(function() {
+            window.onload = () => {
+                CKEDITOR.replace("description");
+            };
+        });
         $('#taskadd').validate({
             rules: {
                 title: {
                     required: true
                 },
-                reaward: {
+                reward: {
                     required: true
                 },
                 description: {
                     required: true
                 },
-                tasktype: {
+                type: {
                     required: true
                 },
-                edate: {
+                expiry_date: {
                     required: true
                 },
-               
-                // image: {
-                //     required: true,
-                //     maxfilesize: 1024 *
-                //         1024, // Specify the maximum file size in bytes (1MB in this example)
-                //     extension: "png|jpg|jpeg" // Specify the allowed file extensions
-                // },
+                image: {
+                    fileExtension: true,
+                    fileSize: true,
+                },
             },
             messages: {
                 title: {
                     required: "Please enter title"
                 },
-                reaward: {
-                    required: "Please enter Reaward"
+                reward: {
+                    required: "Please enter reward"
                 },
                 description: {
                     required: "Please enter description"
                 },
-                edate: {
-                    required: "Please select End date"
+                type: {
+                    required: "Please select task type"
                 },
-                tasktype: {
-                    required: "Please enter price"
+                expiry_date: {
+                    required: "Please select end date"
                 },
-                // image: {
-                //     required: "Please select an image",
-                //     maxfilesize: "File size must be less than 1MB",
-                //     extension: "Only PNG, JPG, and JPEG files are allowed"
-                // },
             }
-        });
-
-
-        // isFreePackage();
-
-        // $(document).on("change", '#inputype', function() {
-        //     type = $(this).val();
-        //     isFreePackage();
-
-        //     if (type == '1') {
-        //         $('.day_title').html('No Of Day');
-        //         $(".day_place").attr("placeholder", "No Of Day").placeholder();
-        //     } else if (type == '2') {
-        //         $('.day_title').html('No Of Month');
-        //         $(".day_place").attr("placeholder", "No Of Month").placeholder();
-
-        //     } else {
-        //         $('.day_title').html('No Of Year');
-        //         $(".day_place").attr("placeholder", "No Of Year").placeholder();
-        //     }
-        // })
-
-        // function isFreePackage() {
-
-        //     if ($("#inputype option:selected").val() == '1') {
-        //         $("#price-section").hide();
-        //         $("#price").val("0");
-        //     } else {
-        //         $("#price-section").show();
-        //         $("#price").val("");
-        //     }
-        // }
-
-        function previewImage() {
-            var input = document.getElementById('file');
-            var preview = document.getElementById('imagePreview');
-            var deleteButton = document.getElementById('deleteImageButton');
-
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    deleteButton.style.display = 'block';
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.src = '#';
-                preview.style.display = 'none';
-                deleteButton.style.display = 'none';
-            }
-        }
-
-        function deleteImage() {
-            var input = document.getElementById('file');
-            var preview = document.getElementById('imagePreview');
-            var deleteButton = document.getElementById('deleteImageButton');
-
-            input.value = ''; // Clear the file input
-            preview.src = '#';
-            preview.style.display = 'none';
-            deleteButton.style.display = 'none';
-        }
-        $(document).ready(function() {
-            window.onload = () => {
-                CKEDITOR.replace("description");
-            };
         });
     </script>
 @endsection

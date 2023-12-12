@@ -36,9 +36,9 @@
         </div>
     </div>
 </div>
-
 @endsection
 @section('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     $(document).ready(function () {
         $(document).ready(function() {
@@ -94,11 +94,11 @@
                     'visible': true,
                     'orderable': false,
                     'render': function(data, type, row) {
-                        var viewUrl = '{{ route('company.user.edit', ':id') }}';
+                        var viewUrl = '{{ route('company.user.view', ':id') }}';
                         var editUrl = '{{ route('company.user.edit', ':package') }}';
                         viewUrl = viewUrl.replace(':id', row[0]);
                         editUrl = editUrl.replace(':package', row[0]);
-                        var deleteUrl = '{{ route('admin.package.delete', ':del') }}';
+                        var deleteUrl = '{{ route('company.user.delete', ':del') }}';
                         deleteUrl = deleteUrl.replace(':del', row[0]);
                         return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
                             '" role="button" title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
@@ -111,5 +111,61 @@
             });
         });
     })
+
+    function sweetAlertAjax(deleteUrl) {
+            // Use SweetAlert for confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, proceed with AJAX deletion
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'DELETE',
+                        data: {
+                            "_token": "{{ csrf_token() }}"
+                        },
+                        success: (response) => {
+                            if (response.status === 'error') {
+                                // Handle error case
+                                swal({
+                                    text: response.message,
+                                    icon: "error",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            } else {
+                                // Handle success case
+                                swal({
+                                    text: response.message,
+                                    icon: "success",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: (xhr, status, error) => {
+                            // Handle AJAX request error
+                            console.error(xhr.responseText);
+                            swal({
+                                text: 'An error occurred while processing your request.',
+                                icon: "error",
+                                button: "Ok",
+                            });
+                        }
+                    });
+                }
+            });
+        }
 </script>
 @endsection

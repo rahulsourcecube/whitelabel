@@ -21,11 +21,16 @@
                             <div class="d-md-flex align-items-center">
                                 <div class="text-center text-sm-left ">
                                     <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                        <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                        @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image))
+                                            <img src="{{ asset('uploads/company/user-profile/' . $user->profile_image) }}"
+                                                alt="">
+                                        @else
+                                            <img src="{{ asset('assets/images/default-user.jpg') }}" alt="">
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="text-center text-sm-left m-v-15 p-l-30">
-                                    <h2 class="m-b-5">Marshall Nichols</h2>
+                                    <h2 class="m-b-5">{{ isset($user) ? $user->full_name : "" }}</h2>
                                 </div>
                             </div>
                         </div>
@@ -39,24 +44,24 @@
                                                 <i class="m-r-10 text-primary anticon anticon-mail"></i>
                                                 <span>Email: </span>
                                             </p>
-                                            <p class="col font-weight-semibold"> Marshall123@gmail.com</p>
+                                            <p class="col font-weight-semibold">{{ isset($user) ? $user->email : "" }}</p>
                                         </li>
                                         <li class="row">
                                             <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
                                                 <i class="m-r-10 text-primary anticon anticon-phone"></i>
                                                 <span>Phone: </span>
                                             </p>
-                                            <p class="col font-weight-semibold"> +12-123-1234</p>
+                                            <p class="col font-weight-semibold">{{ isset($user) ? $user->contact_number : "" }}</p>
                                         </li>
-                                        <li class="row">
+                                        {{-- <li class="row">
                                             <p class="col-sm-4 col-5 font-weight-semibold text-dark m-b-5">
                                                 <i class="m-r-10 text-primary anticon anticon-compass"></i>
                                                 <span>Location: </span>
                                             </p>
-                                            <p class="col font-weight-semibold"> Los Angeles, CA</p>
-                                        </li>
+                                            <p class="col font-weight-semibold">{{ isset($user) ? $user->location : "" }}</p>
+                                        </li> --}}
                                     </ul>
-                                    <div class="d-flex font-size-22 m-t-15">
+                                    {{-- <div class="d-flex font-size-22 m-t-15">
                                         <a href="" class="text-gray p-r-20">
                                             <i class="anticon anticon-facebook"></i>
                                         </a>
@@ -69,14 +74,13 @@
                                         <a href="" class="text-gray p-r-20">
                                             <i class="anticon anticon-dribbble"></i>
                                         </a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <!-- Content Wrapper END -->

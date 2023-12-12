@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -21,19 +24,22 @@ class UserController extends Controller
     public function dtList(Request $request)
     {
         $columns = ['id', 'title'];
-        $totalData = User::where('user_type', '2')->count();
+        $totalData = User::where('user_type', User::USER_TYPE['USER'])
+            ->where('company_id', Auth::user()->id)->count();
         $start = $request->input('start');
         $length = $request->input('length');
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
         $results = User::orderBy($columns[$order], $dir)
+            ->where('user_type', User::USER_TYPE['USER'])
+            ->where('company_id', Auth::user()->id)
             ->skip($start)
             ->take($length)
             ->get();
         foreach ($results as $result) {
             $profileImgUrl = "";
-            if(!empty($result->profile_image) && file_exists('uploads/company/user-profile/' . $result->profile_image)){
+            if (!empty($result->profile_image) && file_exists('uploads/company/user-profile/' . $result->profile_image)) {
                 $profileImgUrl = asset('uploads/company/user-profile/' . $result->profile_image);
             }
             $list[] = [
@@ -62,6 +68,7 @@ class UserController extends Controller
     function store(Request $request)
     {
         try {
+            $companyId = Auth::user()->id;
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
@@ -71,7 +78,7 @@ class UserController extends Controller
                 'password_confirmation' => 'required|string|min:8',
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
-            if ($validator->fails()){
+            if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
             $user = new User();
@@ -91,7 +98,8 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = hash::make($request->password);
             $user->view_password = $request->password;
-            $user->user_type = '2';
+            $user->user_type = User::USER_TYPE['USER'];
+            $user->company_id = $companyId;
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User added successfuly.');
         } catch (\Exception $e) {
@@ -100,18 +108,73 @@ class UserController extends Controller
     }
 
     function View($id)
-    { 
+    {
         $user_id = base64_decode($id);
         $user = User::where('id', $user_id)->first();
-        return view('company.user.view',compact('user'));
+        if (empty($user)) {
+            return redirect()->back('User not found');
+        }
+        return view('company.user.view', compact('user'));
     }
 
     function edit($id)
     {
-        dd(123);
         $user_id = base64_decode($id);
-        $user=[];
         $user = User::where('id', $user_id)->first();
-        return view('company.user.edit',compact('user'));
+        if (empty($user)) {
+            return redirect()->back('User not found');
+        }
+        return view('company.user.edit', compact('user'));
+    }
+
+    public function update($id, Request $request)
+    {
+        try {
+            $user_id = base64_decode($id);
+            $user = User::where('id', $user_id)->first();
+            if (empty($user)) {
+                return redirect()->back()->with('error', 'Something went wrong');
+            }
+            $validator = Validator::make($request->all(), [
+                'fname' => 'required|string|max:255',
+                'lname' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'number' => 'required|numeric|digits:10',
+                'password' => 'required|string|min:8|confirmed',
+                'password_confirmation' => 'required|string|min:8',
+                'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            $userDetails = [
+                'first_name' => $request->fname,
+                'last_name' => $request->lname,
+                'email' => $request->email,
+                'contact_number' => $request->number,
+                'password' => hash::make($request->password),
+                'view_password' => $request->password,
+            ];
+            if ($request->hasFile('image')) {
+                $extension = $request->file('image')->getClientOriginalExtension();
+                $randomNumber = rand(1000, 9999);
+                $timestamp = time();
+                $image = $timestamp . '_' . $randomNumber . '.' . $extension;
+                $request->file('image')->move('uploads/company/user-profile', $image);
+                $userDetails['profile_image'] = $image;
+            }
+            $user->update($userDetails);
+            return redirect()->route('company.user.list')->with('success', 'User updated successfully');
+        } catch (Exception $e) {
+            Log::error('Company user update error : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong');
+        }
+    }
+
+    public function delete($id)
+    {
+        $user_id = base64_decode($id);
+        User::where('id', $user_id)->delete();
+        return response()->json(['status' => 'success', 'message' => 'User deleted successfully']);
     }
 }
