@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
+use App\Models\CampaignModel;
 use Illuminate\Http\Request;
 
 class CampaignController extends Controller
@@ -27,6 +28,19 @@ class CampaignController extends Controller
     function create()
     {
         return view('company.campaign.create');
+    }
+    function referralStore(Request $request)
+    {
+        $campaignModel = new CampaignModel();
+        $campaignModel->company_id=auth()->user()->id;
+        $campaignModel->title= $request->title;
+        $campaignModel->description= $request->description;
+        $campaignModel->reward=$request->reaward;
+        $campaignModel->expiry_date=$request->edate;
+        $campaignModel->type=$request->tasktype;
+         $campaignModel->save();
+       
+        return redirect()->route('company.campaign.list')->with('error', 'These credentials do not match our records.');
     }
     function analytics()
     {

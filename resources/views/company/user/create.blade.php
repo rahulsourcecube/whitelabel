@@ -16,45 +16,69 @@
         <div class="card-body">
             <h4>Add User</h4>
             <div class="m-t-50" style="">
-                <form id="userform" method="POST" action="" enctype="multipart/form-data">
+                <form id="userform" method="POST" action="{{route('company.user.store')}}"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="fname">First Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name"
-                                maxlength="150">
+                                maxlength="150" value="{{old('fname')}}">
+                            @error('fname')
+                            <label id="fname-error" class="error" for="fname">{{ $message }}</label>
+                            @enderror
                         </div>
                         <div class="form-group col-md-6">
                             <label for="lname">Last Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name"
-                                maxlength="150">
+                                maxlength="150" value="{{old('lname')}}">
+                            @error('lname')
+                            <label id="lname-error" class="error" for="lname">{{ $message }}</label>
+                            @enderror
                         </div>
                         <div class="form-group col-md-6">
                             <label for="number">Mobile Number <span class="error">*</span></label>
                             <input type="text" class="form-control" id="number" name="number"
                                 placeholder="Mobile Number" maxlength="10" minlength="10"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                value="{{old('number')}}">
+                            @error('number')
+                            <label id="number-error" class="error" for="number">{{ $message }}</label>
+                            @enderror
                         </div>
                         <div class="form-group col-md-6">
                             <label for="email">Email Address <span class="error">*</span></label>
                             <input type="text" class="form-control" id="email" name="email" placeholder="Email Address"
-                                maxlength="150">
+                                maxlength="150" value="{{old('email')}}">
+                            @error('email')
+                            <label id="email-error" class="error" for="email">{{ $message }}</label>
+                            @enderror
                         </div>
                         <div class="form-group col-md-6">
                             <label for="password"> Password <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="password" name="password"
-                                placeholder="Password">
+                            <input type="text" class="form-control" id="password" name="password" placeholder="Password"
+                                value="{{old('password')}}">
+                            @error('password')
+                            <label id="password-error" class="error" for="password">{{ $message }}</label>
+                            @enderror
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="cpassword"> Comfirm Password <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="cpassword" name="cpassword"
-                                placeholder="Comfirm Password">
+                            <label for="password_confirmation"> Comfirm Password <span class="error">*</span></label>
+                            <input type="text" class="form-control" id="password_confirmation"
+                                name="password_confirmation" placeholder="Comfirm Password"
+                                value="{{old('password_confirmation')}}">
+                            @error('password_confirmation')
+                            <label id="password_confirmation-error" class="error" for="password_confirmation">{{
+                                $message }}</label>
+                            @enderror
                         </div>
-
                         <div class="form-group col-md-6">
-                            <label for="file">Image <span class="error">*</span></label>
+                            <label for="file">Image</label>
                             <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg"
                                 onchange="previewImage()">
+                            @error('image')
+                            <label id="image-error" class="error" for="image">{{ $message }}</label>
+                            @enderror
                         </div>
                         <div class="form-group col-md-6">
                         </div>
@@ -67,8 +91,7 @@
                         <div class="form-group col-md-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
-
-
+                    </div>
                 </form>
             </div>
         </div>
@@ -76,139 +99,153 @@
 </div>
 <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
 <script>
-    $('#userform').validate({
-            rules: {
-                fname: {
-                    required: true
-                },
-                lname: {
-                    required: true
-                },
-                email: {
-                    required: true
-                },
-                number: {
-                    required: true
-                },
-                password: {
-                minlength: 8,
-                maxlength: 30,
-                required: true,
-                // pwcheck: true,
-                // checklower: true,
-                // checkupper: true,
-                // checkdigit: true
-            },
-            cpassword: {
-                    required: true,
-                    equalTo: "#password"
-                },
-                // image: {
-                //     required: true,
-                //     maxfilesize: 1024 *
-                //         1024, // Specify the maximum file size in bytes (1MB in this example)
-                //     extension: "png|jpg|jpeg" // Specify the allowed file extensions
-                // },
+    $.validator.addMethod('fileExtension', function(value, element) {
+        var fileInput = $(element);
+        var file = fileInput[0].files[0];
+        if(file != undefined){
+            var allowedExtensions = 'jpeg,png,jpg,gif'.split(',');
+            var fileExtension = file.name.split('.').pop().toLowerCase().toString();
+            if ($.inArray(fileExtension, allowedExtensions) == -1) {
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return true;
+        }
+    }, 'Image type should be .png, .jpg, .jpeg or .gif');
 
+    $.validator.addMethod('fileSize', function(value, element) {
+        var fileInput = $(element);
+        var file = fileInput[0].files[0];
+        if(file != undefined){
+            var maxSizeKB = parseInt(2048, 10) || 0;
+            return file.size <= maxSizeKB * 1024;
+        }else{
+            return true;
+        }
+    }, 'Image size is not valid');
+
+    $('#userform').validate({
+        rules: {
+            fname: {
+                required: true
             },
-            messages: {
-                fname: {
-                    required: "Please enter first name  "
-                },
-                lname: {
-                    required: "Please enter last name "
-                },
-                email: {
-                    required: "Please enter email address"
-                },
-                number: {
-                    required: "Please mobile number address"
-                },
-                password: {
+            lname: {
+                required: true
+            },
+            email: {
+                required: true
+            },
+            number: {
+                required: true
+            },
+            password: {
+            minlength: 8,
+            maxlength: 30,
+            required: true,
+            },
+            password_confirmation: {
+                required: true,
+                equalTo: "#password",
+            },
+            image: {
+                fileExtension: true,
+                fileSize: true,
+            },
+        },
+        messages: {
+            fname: {
+                required: "Please enter first name  "
+            },
+            lname: {
+                required: "Please enter last name "
+            },
+            email: {
+                required: "Please enter email address"
+            },
+            number: {
+                required: "Please mobile number address"
+            },
+            password: {
                 required: "Please enter password",
-                // pwcheck: "Password is not strong enough",
-                // checklower: "Need atleast 1 lowercase alphabet",
-                // checkupper: "Need atleast 1 uppercase alphabet",
-                // checkdigit: "Need atleast 1 digit"
             },
-            cpassword: {
+            password_confirmation: {
                 required: "Please enter confirm password",
                 equalTo: "The password you entered does not match.",
             },
-                // image: {
-                //     required: "Please select an image",
-                //     maxfilesize: "File size must be less than 1MB",
-                //     extension: "Only PNG, JPG, and JPEG files are allowed"
-                // },
-            }
-        });
+        },
+        submitHandler: function () {
+            return false;
+        }
+    });
 
+    isFreePackage();
+
+    $(document).on("change", '#inputype', function() {
+        type = $(this).val();
         isFreePackage();
 
-        $(document).on("change", '#inputype', function() {
-            type = $(this).val();
-            isFreePackage();
+        if (type == '1') {
+            $('.day_title').html('No Of Day');
+            $(".day_place").attr("placeholder", "No Of Day").placeholder();
+        } else if (type == '2') {
+            $('.day_title').html('No Of Month');
+            $(".day_place").attr("placeholder", "No Of Month").placeholder();
 
-            if (type == '1') {
-                $('.day_title').html('No Of Day');
-                $(".day_place").attr("placeholder", "No Of Day").placeholder();
-            } else if (type == '2') {
-                $('.day_title').html('No Of Month');
-                $(".day_place").attr("placeholder", "No Of Month").placeholder();
-
-            } else {
-                $('.day_title').html('No Of Year');
-                $(".day_place").attr("placeholder", "No Of Year").placeholder();
-            }
-        })
-
-        function isFreePackage() {
-
-            if ($("#inputype option:selected").val() == '1') {
-                $("#price-section").hide();
-                $("#price").val("0");
-            } else {
-                $("#price-section").show();
-                $("#price").val("");
-            }
+        } else {
+            $('.day_title').html('No Of Year');
+            $(".day_place").attr("placeholder", "No Of Year").placeholder();
         }
+    })
 
-        function previewImage() {
-            var input = document.getElementById('file');
-            var preview = document.getElementById('imagePreview');
-            var deleteButton = document.getElementById('deleteImageButton');
+    function isFreePackage() {
 
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    deleteButton.style.display = 'block';
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.src = '#';
-                preview.style.display = 'none';
-                deleteButton.style.display = 'none';
-            }
+        if ($("#inputype option:selected").val() == '1') {
+            $("#price-section").hide();
+            $("#price").val("0");
+        } else {
+            $("#price-section").show();
+            $("#price").val("");
         }
+    }
 
-        function deleteImage() {
-            var input = document.getElementById('file');
-            var preview = document.getElementById('imagePreview');
-            var deleteButton = document.getElementById('deleteImageButton');
+    function previewImage() {
+        var input = document.getElementById('file');
+        var preview = document.getElementById('imagePreview');
+        var deleteButton = document.getElementById('deleteImageButton');
 
-            input.value = ''; // Clear the file input
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                deleteButton.style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
             preview.src = '#';
             preview.style.display = 'none';
             deleteButton.style.display = 'none';
         }
-        $(document).ready(function() {
-            window.onload = () => {
-                CKEDITOR.replace("description");
-            };
-        });
+    }
+
+    function deleteImage() {
+        var input = document.getElementById('file');
+        var preview = document.getElementById('imagePreview');
+        var deleteButton = document.getElementById('deleteImageButton');
+
+        input.value = ''; // Clear the file input
+        preview.src = '#';
+        preview.style.display = 'none';
+        deleteButton.style.display = 'none';
+    }
+    $(document).ready(function() {
+        window.onload = () => {
+            CKEDITOR.replace("description");
+        };
+    });
 </script>
 @endsection

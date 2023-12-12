@@ -11,8 +11,12 @@
 
     <!-- page css -->
 
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Core css -->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
 
 </head>
 
@@ -27,22 +31,27 @@
                                 <div class="card-body">
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
                                         <img class="img-fluid" alt="" src="{{asset('assets/images/logo/logo.png')}}">
-                                        <h2 class="m-b-0">Confirm Password</h2>
+                                        <h2 class="m-b-0">Change Password</h2>
                                     </div>
-                                    <form>
+                                    
+                                    <form  id="changePass" method="POST" action="{{ route('company.change.password',$id) }}">
+                                        @csrf
+                                        @method('PUT')
                                         <div class="form-group">
-                                            <label class="font-weight-semibold" for="userName">Password:</label>
+                                            <label class="font-weight-semibold" for="Password">Password:</label>
                                             <div class="input-affix">
                                                 <i class="prefix-icon anticon anticon-user"></i>
-                                                <input type="text" class="form-control" id="userName" placeholder="Password:">
+                                                <input type="text" class="form-control" name="password" id="password" placeholder="Password:">
                                             </div>
+                                            <label id="password-error" class="error" for="password"></label>
                                         </div>
                                         <div class="form-group">
-                                            <label class="font-weight-semibold" for="password">Confirm Password:</label>                                           
+                                            <label class="font-weight-semibold" for="cpassword"></label>                                           
                                             <div class="input-affix m-b-10">
                                                 <i class="prefix-icon anticon anticon-lock"></i>
-                                                <input type="password" class="form-control" id="password" placeholder="Confirm Password">
+                                                <input type="password" class="form-control"  name="cpassword" id="cpassword" placeholder="Confirm Password">
                                             </div>
+                                            <label id="cpassword-error" class="error" for="cpassword"></label>
                                         </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between">
@@ -50,7 +59,7 @@
                                                     Don't have an account? 
                                                     <a class="small" href="{{route('company.signup')}}"> Signup</a>
                                                 </span>
-                                                <button class="btn btn-primary">Change</button>
+                                                <button  type="submit"  class="btn btn-primary">Change</button>
                                             </div>
                                         </div>
                                     </form>
@@ -74,7 +83,36 @@
         </div>
     </div>
 
-    
+    <script>
+       
+        $('#changePass').validate({
+            rules: {
+               
+                password: {
+                minlength: 8,
+                maxlength: 30,
+                required: true,                
+               },
+                cpassword: {
+                        required: true,
+                        equalTo: "#password"
+                    },
+               
+
+           
+            },
+            messages: {                
+                password: {
+                required: "Please enter password",                
+                },
+                cpassword: {
+                    required: "Please enter confirm password",
+                    equalTo: "The password you entered does not match.",
+                },
+            }
+        });
+   
+</script>
    <!-- Core Vendors JS -->
    <script src="{{ asset('assets/js/vendors.min.js') }}"></script>
 
