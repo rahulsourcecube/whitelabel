@@ -42,9 +42,10 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         $(document).ready(function() {
-            var type = "{{ $type }}";
+            var taskType = "{{ $type }}";
+            var taskTypeString = "{{ $taskType }}";
             var url = "{{ route('company.campaign.tdlist', ':type') }}";
-            url = url.replace(':type', type);
+            url = url.replace(':type', taskType);
             var table = $('#campaign_tables').DataTable({
                 "processing": false,
                 "serverSide": true,
@@ -80,10 +81,13 @@
                     'visible': true,
                     'orderable': false,
                     'render': function(data, type, row) {
-                        var viewUrl = '{{ route('company.campaign.view', ':id') }}';
-                        var editUrl = '{{ route('company.campaign.edit', ':id') }}';
+                        console.log(taskTypeString);
+                        var viewUrl = '{{ route('company.campaign.view', [':taskType' ,':id']) }}';
+                        var editUrl = '{{ route('company.campaign.edit', [':taskType', ':id']) }}';
+                        viewUrl = viewUrl.replace(':taskType', taskTypeString);
                         viewUrl = viewUrl.replace(':id', row[0]);
-                        editUrl = editUrl.replace(':package', row[0]);
+                        editUrl = editUrl.replace(':taskType', taskTypeString);
+                        editUrl = editUrl.replace(':id', row[0]);
                         var deleteUrl = '{{ route('company.campaign.delete', ':del') }}';
                         deleteUrl = deleteUrl.replace(':del', row[0]);
                         return '<a class="btn btn-success  btn-sm" href="' + viewUrl +

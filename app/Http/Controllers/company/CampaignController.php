@@ -16,8 +16,9 @@ class CampaignController extends Controller
 
     function index($type)
     {
+        $taskType = $type;
         $type = CampaignModel::TYPE[strtoupper($type)];
-        return view('company.campaign.list', compact('type'));
+        return view('company.campaign.list', compact('type', 'taskType'));
     }
 
     public function tdlist($type, Request $request)
@@ -37,7 +38,7 @@ class CampaignController extends Controller
                 ->get();
             foreach ($results as $result) {
                 $imgUrl = "";
-                if(!empty($result->image) && file_exists('uploads/campaign/' . $result->image)){
+                if (!empty($result->image) && file_exists('uploads/campaign/' . $result->image)) {
                     $imgUrl = asset('uploads/campaign/' . $result->image);
                 }
                 $list[] = [
@@ -58,7 +59,6 @@ class CampaignController extends Controller
                 "data" => $list
             ]);
         } catch (Exception $e) {
-            // dd($e);
             Log::error('Task list error : ' . $e->getMessage());
             return response()->json([
                 "draw" => 0,
@@ -104,46 +104,35 @@ class CampaignController extends Controller
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task added successfuly.');
         } catch (Exception $e) {
-            dd($e);
             Log::error('Campaign store error : ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong');
         }
     }
 
-    function referralTasks()
-    {
-        return view('company.campaign.referralTasks');
-    }
-    function socialShare()
-    {
-        return view('company.campaign.socialShare');
-    }
-    function customTasks()
-    {
-        return view('company.campaign.customTasks');
-    }
-    
-    function referralStore(Request $request)
-    {
-        $campaignModel = new CampaignModel();
-        $campaignModel->company_id=auth()->user()->id;
-        $campaignModel->title= $request->title;
-        $campaignModel->description= $request->description;
-        $campaignModel->reward=$request->reaward;
-        $campaignModel->expiry_date=$request->edate;
-        $campaignModel->type=$request->tasktype;
-         $campaignModel->save();
-       
-        return redirect()->route('company.campaign.list')->with('error', 'These credentials do not match our records.');
-    }
     function analytics()
     {
         return view('company.campaign.analytics');
     }
 
-    function view()
+    public function view($type, $id)
     {
-        return view('company.campaign.view');
+        $type = CampaignModel::TYPE[strtoupper($type)];
+        $taskId = base64_decode($id);
+        $task = CampaignModel::where('id', $taskId)->where('type', $type)->first();
+        if (empty($task)) {
+            return back()->with('error', 'Task not found');
+        }
+        return view('company.campaign.view', compact('type', 'taskId', 'task'));
     }
 
+    public function edit($type, $id)
+    {
+        $type = CampaignModel::TYPE[strtoupper($type)];
+        $taskId = base64_decode($id);
+        $task = CampaignModel::where('id', $taskId)->where('type', $type)->first();
+        if (empty($task)) {
+            return back()->with('error', 'Task not found');
+        }
+        return view('company.campaign.view', compact('type', 'taskId', 'task'));
+    }
 }
