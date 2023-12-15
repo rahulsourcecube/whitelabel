@@ -17,7 +17,7 @@
             <div class="card-body">
                 <h4>Update User</h4>
                 <div class="m-t-50" style="">
-                    <form id="userform" method="POST"
+                    <form id="userUpdateform" method="POST"
                         action="{{ route('company.user.update', base64_encode($user->id)) }}" enctype="multipart/form-data">
                         @csrf
                         <div class="form-row">
@@ -60,21 +60,21 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="password"> Password <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="password" name="password"
-                                    placeholder="Password" value="{{ isset($user) ? $user->view_password : '' }}">
-                                @error('password')
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="Password" value="">
+                                {{-- @error('password')
                                     <label id="password-error" class="error" for="password">{{ $message }}</label>
-                                @enderror
+                                @enderror --}}
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="password_confirmation"> Comfirm Password <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="password_confirmation"
+                                <input type="password" class="form-control" id="password_confirmation"
                                     name="password_confirmation" placeholder="Comfirm Password"
-                                    value="{{ isset($user) ? $user->view_password : '' }}">
-                                @error('password_confirmation')
+                                    value="">
+                                {{-- @error('password_confirmation')
                                     <label id="password_confirmation-error" class="error"
                                         for="password_confirmation">{{ $message }}</label>
-                                @enderror
+                                @enderror --}}
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="file">Image</label>
@@ -84,15 +84,22 @@
                                     <label id="image-error" class="error" for="image">{{ $message }}</label>
                                 @enderror
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="col-md-6 pl-5">
+                                <label for="expiry_date">Status</label>
+                                <div class="form-group align-items-center">
+                                    <div class="switch m-r-10">
+                                        <input type="checkbox" id="switch-1" name="status" value="true" @if (isset( $user->status) && $user->status == 0 ) checked="" @endif>
+                                        <label for="switch-1"></label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group col-md-3" style="max-height: 200px;">
                                 @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image))
                                     <img id="imagePreview"
                                         src="{{ asset('uploads/company/user-profile/' . $user->profile_image) }}"
                                         alt="Image Preview" style="max-width: 100%; max-height: 80%;">
-                                    <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2" onclick="deleteImage()"><i
-                                            class="fa fa-trash"></i></button>
+                                    {{-- <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2" onclick="deleteImage()"><i
+                                            class="fa fa-trash"></i></button> --}}
                                 @else
                                     <img id="imagePreview" src="#" alt="Image Preview"
                                         style="max-width: 100%; max-height: 80%; display: none;">

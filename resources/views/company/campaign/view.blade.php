@@ -19,22 +19,21 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <img class="img-fluid" src="{{ asset('assets/images/others/img-2.jpg') }}" alt="">
+                            <img class="img-fluid" src="{{asset('uploads/company/campaign').'/'.$task->image}}" alt="">
                         </div>
                         <div class="col-md-8">
-                            <h4 class="m-b-10">You Should Know About Enlink</h4>
+                            <h4 class="m-b-10">{{$task->title??""}}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">
-                                <div class="avatar avatar-image avatar-sm">
+                                {{-- <div class="avatar avatar-image avatar-sm">
                                     <img src="{{ asset('assets/images/avatars/thumb-2.jpg') }}" alt="">
-                                </div>
+                                </div> --}}
                                 <div class="m-l-10">
-                                    <span class="text-gray font-weight-semibold">Darryl Day</span>
+                                    <span class="text-gray font-weight-semibold">@if($task->type=='1') {{'Referral'}} @elseif($task->type=='2'){{'Social Share'}} @else {{'Custom'}} @endif</span>
                                     <span class="m-h-5 text-gray">|</span>
-                                    <span class="text-gray">Jan 2, 2019</span>
+                                    <span class="text-gray">{{$task->expiry_date??""}}</span>
                                 </div>
                             </div>
-                            <p class="m-b-20">Jelly-o sesame snaps halvah croissant oat cake cookie. Cheesecake bear claw
-                                topping. Chupa chups apple pie carrot cake chocolate cake caramels</p>
+                            <p class="m-b-20">{!! $task->description !!}</p>
                             <div class="text-right">
                                 {{-- <a class="btn btn-hover font-weight-semibold" href="blog-post.html">
                                     <span>Read More</span>
@@ -43,11 +42,11 @@
                         </div>
                     </div>
                 </div>
-                <hr>
+                
                 <div class="card">
                     <div class="card-body">
-                        <h4>Tabs With Pill</h4>
-                        <p>Tabs also works with pills.</p>
+                        {{-- <h4>Tabs With Pill</h4>
+                        <p>Tabs also works with pills.</p> --}}
                         <div class="m-t-25">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                 <li class="nav-item">
@@ -71,10 +70,10 @@
                     </div>
                 </div>
                 <div class="card-body tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade show active" id="user" role="tabpanel" aria-labelledby="user-tab">
+                    <div class="tab-pane fade show active" id="Joined_user" role="tabpanel" aria-labelledby="user-tab">
                         <h4>Recently User Joined List</h4>
                         <div class="m-t-25">
-                            <table id="user_complete" class="table">
+                            <table id="user_joind" class="table">
                                 <thead>
                                     <tr>
                                         {{-- <th></th> --}}
@@ -125,72 +124,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>John Doe</td>
-                                        <td>john@mailinator.com</td>
-                                        <td>1234567890</td>
-                                        <td>$50</td>
-                                        <td>2023/12/02</td>
-                                        <td>
-                                            <a class="btn btn-success  btn-sm" href="#" role="button"
-                                                title="View">Accept</a>
-
-                                            <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                                onclick="sweetAlertAjax()">Reject</i></a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>John Doe</td>
-                                        <td>john@mailinator.com</td>
-                                        <td>1234567890</td>
-                                        <td>$50</td>
-                                        <td>2023/12/02</td>
-                                        <td>
-                                            <a class="btn btn-success  btn-sm" href="#" role="button"
-                                                title="View">Accept</a>
-
-                                            <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                                onclick="sweetAlertAjax()">Reject</i></a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>John Doe</td>
-                                        <td>john@mailinator.com</td>
-                                        <td>1234567890</td>
-                                        <td>$50</td>
-                                        <td>2023/12/02</td>
-                                        <td>
-                                            <a class="btn btn-success  btn-sm" href="#" role="button"
-                                                title="View">Accepted</a>
-
-
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>John Doe</td>
-                                        <td>john@mailinator.com</td>
-                                        <td>1234567890</td>
-                                        <td>$50</td>
-                                        <td>2023/12/02</td>
-                                        <td>
-                                            <a class="btn btn-success  btn-sm" href="#" role="button"
-                                                title="View">Accept</a>
-
-                                            <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                                onclick="sweetAlertAjax()">Reject</i></a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>John Doe</td>
-                                        <td>john@mailinator.com</td>
-                                        <td>1234567890</td>
-                                        <td>$50</td>
-                                        <td>2023/12/02</td>
-                                        <td>
-                                            <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                                onclick="sweetAlertAjax()">Rejected</i></a>
-                                        </td>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
                         </div>

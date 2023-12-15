@@ -64,15 +64,36 @@ class UserController extends Controller
     {
         return view('company.user.create');
     }
+    function checkEmail(Request $request)
+    {
+        $companyId = Auth::user()->id;
+        $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
+       if(!empty($useremail)){
+            echo 'false';
+        } else {
+            echo 'true';
+        }
+    }
+    function checkContactNumber(Request $request)
+    {
+        $companyId = Auth::user()->id;
+        $usernumber =User::where('company_id',$companyId)->where('contact_number',$request->number)->first();
+       if(!empty($usernumber)){
+        echo 'false';
+        } else {
+            echo 'true';
+        }
+    }
 
     function store(Request $request)
     {
+        
         try {
             $companyId = Auth::user()->id;
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
-                'email' => 'required|email|unique:users',
+                'email' => 'required|email',
                 'number' => 'required|numeric|digits:10',
                 'password' => 'required|string|min:8|confirmed',
                 'password_confirmation' => 'required|string|min:8',
@@ -80,6 +101,15 @@ class UserController extends Controller
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
+            }
+            $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
+           
+            if(!empty($useremail)){
+                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();                
+            }
+            $usernumber =User::where('company_id',$companyId)->where('contact_number',$request->number)->first();
+            if(!empty($usernumber)){
+                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();                
             }
             $user = new User();
             if ($request->hasFile('image')) {
@@ -100,6 +130,7 @@ class UserController extends Controller
             $user->view_password = $request->password;
             $user->user_type = User::USER_TYPE['USER'];
             $user->company_id = $companyId;
+            $user->status = !empty($request->status)?'0':'1';
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User added successfuly.');
         } catch (\Exception $e) {
@@ -132,36 +163,49 @@ class UserController extends Controller
         try {
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->first();
+           
             if (empty($user)) {
+             
                 return redirect()->back()->with('error', 'Something went wrong');
             }
+       
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
-                'number' => 'required|numeric|digits:10',
-                'password' => 'required|string|min:8|confirmed',
-                'password_confirmation' => 'required|string|min:8',
+                'number' => 'required|numeric|digits:10|unique:users,contact_number,' .$user->id,
+                // 'password' => 'required|string|min:8|confirmed',
+                // 'password_confirmation' => 'required|string|min:8',
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+         
             $userDetails = [
                 'first_name' => $request->fname,
                 'last_name' => $request->lname,
                 'email' => $request->email,
                 'contact_number' => $request->number,
-                'password' => hash::make($request->password),
-                'view_password' => $request->password,
-            ];
+                'password' => !empty($request->password)? hash::make($request->password):hash::make($user->view_password),
+                'status' =>!empty($request->status)? '0' : '1',
+                'view_password' =>!empty($request->password)? $request->password:$user->view_password,
+
+            ];           
             if ($request->hasFile('image')) {
+                $oldImage=$user->profile_image;
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
                 $request->file('image')->move('uploads/company/user-profile', $image);
                 $userDetails['profile_image'] = $image;
+                if (!empty($oldImage)) {
+                    $oldImagePath = 'uploads/company/user-profile/' . $oldImage;
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
             }
             $user->update($userDetails);
             return redirect()->route('company.user.list')->with('success', 'User updated successfully');
@@ -173,8 +217,20 @@ class UserController extends Controller
 
     public function delete($id)
     {
-        $user_id = base64_decode($id);
-        User::where('id', $user_id)->delete();
-        return response()->json(['status' => 'success', 'message' => 'User deleted successfully']);
+        try {
+            $user_id = base64_decode($id);
+            $user=User::where('id', $user_id)->first();
+            if (!empty($user->profile_image)) {
+                $oldImagePath = 'uploads/company/user-profile/' . $user->profile_image;
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+            $user=User::where('id', $user_id)->delete();
+            return response()->json(['success' => 'error', 'message' => 'User deleted successfully']);
+        } catch (Exception $e) {
+            Log::error('Company user delete error : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong');
+        }
     }
 }

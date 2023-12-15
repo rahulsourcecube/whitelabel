@@ -101,6 +101,8 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('', [UserController::class, 'index'])->name('list');
         Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/email/check', [UserController::class, 'checkEmail'])->name('checkEmail');
+        Route::post('/number/check', [UserController::class, 'checkContactNumber'])->name('checkContactNumber');
         Route::post('/store', [UserController::class, 'store'])->name('store');
         Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
@@ -115,6 +117,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::post('/store', [CampaignController::class, 'store'])->name('store');
         Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
         Route::get('/edit/{type}/{id}', [CampaignController::class, 'edit'])->name('edit');
+        Route::post('/update/{Campaign}', [CampaignController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
         Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
     });
