@@ -8,7 +8,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\company\forgetpass;
+use App\Models\SettingModel;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Mail;
 use App\Models\CampaignModel;
@@ -65,12 +67,7 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', 'These credentials do not match our records.');
         }
     }
-    public function editProfile(){
-        return view('company.editprofile');
-    }
-    public function Profile(){
-        return view('company.profile');
-    }
+   
     public function signup(){
         return view('company.signup');
     }
@@ -172,6 +169,57 @@ class CompanyLoginController extends Controller
 
         }catch(Exception $e){
             Log::info("change password in profile LogError".$e->getMessage());
+            return $this->sendError($e->getMessage());
+        }
+    }
+    public function editProfile()
+    {
+        $editprofiledetail = User::where('id', Auth::user()->id)->first();
+        return view('company.editprofile', compact('editprofiledetail'));
+    }
+    public function updateprofile(Request $request)
+    {
+        try {
+            $updateprofiledetail = User::where('id', Auth::user()->id)->first();
+            $updateprofiledetail['first_name'] = isset($request->first_name) ? $request->first_name : '';
+            $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
+            $updateprofiledetail['email'] = isset($request->email) ? $request->last_name : '';
+            $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
+            $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
+            if ($request->hasFile('profile_image')) {
+                if (file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
+                    unlink('uploads/user-profile/' . $updateprofiledetail->profile_image);
+                }
+                $filename = rand(111111, 999999) . '.' . $request->profile_image->extension();
+                $request->file('profile_image')->move('uploads/user-profile/', $filename);
+                $updateprofiledetail['profile_image'] = isset($filename) ? $filename : '';
+            }
+            $updateprofiledetail->save();
+            return redirect()->route('company.dashboard');
+        } catch (Exception $e) {
+            Log::info('message', 'Update Profile error');
+            return redirect()->back()->with($e->getMessage());
+        }
+    }
+    public function Profile()
+    {
+        $profiledetail = User::where('id', Auth::user()->id)->first();
+        $companydetail = SettingModel::where('user_id', Auth::user()->id)->first();
+        return view('company.profile', compact('profiledetail', 'companydetail'));
+    }
+    public function updatepassword(Request $request)
+    {
+        try {
+            $userCheck = User::where('id', Auth::user()->id)->first();
+            if (empty($userCheck)) {
+                return redirect()->back()->with('error', 'User not found!');
+            }
+            $userCheck->password = Hash::make($request->newPassword);
+            $userCheck->view_password = $request->newPassword;
+            $userCheck->update();
+            return redirect()->route('company.dashboard')->with('message', 'Password Update Successfully!');
+        } catch (Exception $e) {
+            Log::info("change password in profile error" . $e->getMessage());
             return $this->sendError($e->getMessage());
         }
     }

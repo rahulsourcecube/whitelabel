@@ -7,10 +7,24 @@ $('#userform').validate({
             required: true
         },
         email: {
-            required: true
+            required: true,
+            remote: {
+                url: emailCheckUrl,
+                type: "post",
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+            }
         },
         number: {
-            required: true
+            required: true,
+            remote: {
+                url: numberCheckUrl,
+                type: "post",
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+            }
         },
         password: {
             minlength: 8,
@@ -20,6 +34,68 @@ $('#userform').validate({
         password_confirmation: {
             required: true,
             equalTo: "#password",
+        },
+        image: {
+            fileExtension: true,
+            fileSize: true,
+        },
+    },
+    messages: {
+        fname: {
+            required: "Please enter first name  "
+        },
+        lname: {
+            required: "Please enter last name "
+        },
+        email: {
+            required: "Please enter email address", 
+            remote: "Email already exists. Choose a different one."           
+               
+        },
+        number: {
+            required: "Please mobile number address",
+            remote: " Mobile Number already exists." 
+        },
+        password: {
+            required: "Please enter password",
+        },
+        password_confirmation: {
+            required: "Please enter confirm password",
+            equalTo: "The password you entered does not match.",
+        },
+    }
+});
+
+
+$('#userUpdateform').validate({
+    rules: {
+        fname: {
+            required: true
+        },
+        lname: {
+            required: true
+        },
+        email: {
+            required: true
+        },
+        number: {
+            required: true
+        },
+        password: {
+            minlength: 8,
+            maxlength: 30,
+            // required: true,
+        },
+        password_confirmation: {
+            equalTo: "#password",
+            required: function() {
+                if ($('#password').val() !== "") {
+                    return true;
+                } else {
+                    return false;
+                }
+             
+            }    
         },
         image: {
             fileExtension: true,
@@ -48,6 +124,7 @@ $('#userform').validate({
         },
     }
 });
+
 
 isFreePackage();
 

@@ -40,7 +40,8 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-    $(document).ready(function () {
+   
+ 
         $(document).ready(function() {
             var table = $('#user_tables').DataTable({
                 // Processing indicator
@@ -89,6 +90,20 @@
                                 '" style="height: 100px; width: 100px;">';
                         }
                     },
+                },
+                {
+                    'targets': 5,
+                    'visible': true,
+                    'orderable': false,
+                    'render': function(data, type, row) {
+                        var status = row[5];
+                        if(status == "Active"){
+                            return '  <button class="btn btn-success ">'+status+'</button>'
+
+                        }else{
+                            return '  <button class="btn btn-danger ">'+status+'</button>'
+                        }
+                    },
                 }, {
                     'targets': 6,
                     'visible': true,
@@ -110,9 +125,9 @@
                 }],
             });
         });
-    })
+   
 
-    function sweetAlertAjax(deleteUrl) {
+    function sweetAlertAjax(deleteUrl) {       
             // Use SweetAlert for confirmation
             Swal.fire({
                 title: 'Are you sure?',
@@ -132,9 +147,10 @@
                             "_token": "{{ csrf_token() }}"
                         },
                         success: (response) => {
-                            if (response.status === 'error') {
+                         
+                            if (response.status == 'error') {
                                 // Handle error case
-                                swal({
+                                Swal.fire({
                                     text: response.message,
                                     icon: "error",
                                     button: "Ok",
@@ -143,8 +159,9 @@
                                     location.reload();
                                 });
                             } else {
+                               
                                 // Handle success case
-                                swal({
+                                Swal.fire({
                                     text: response.message,
                                     icon: "success",
                                     button: "Ok",
