@@ -35,7 +35,7 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
             <div class="page-container">
                 <div class="container notification">
                     <div class="alert alert-danger alert-dismissible fade show">
-                        <strong>Please purchase package</strong>. <a href="{{route('company.package.list')}}">Click</a>
+                        <strong>Please purchase package</strong>. <a href="{{route('company.package.list', 'Free')}}">Click</a>
                         here to buy package.
                     </div>
                     <div class="row">
