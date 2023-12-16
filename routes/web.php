@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Auth::routes();
 Route::get('/', [AdminController::class, 'index'])->name('admin');
-Route::get('user', [LoginController::class, 'form']);
+// Route::get('user', [LoginController::class, 'form']);
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
@@ -139,10 +139,14 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');
     });
     Route::prefix('employee')->name('employee.')->group(function () {
+
         Route::get('', [EmployeeController::class, 'index'])->name('list');
         Route::get('/create', [EmployeeController::class, 'create'])->name('create');
         Route::post('/store', [EmployeeController::class, 'store'])->name('store');
-
         Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
+        Route::get('/lists', [EmployeeController::class, 'elist'])->name('elist');
+        Route::get('edit/{id}', [EmployeeController::class, 'edit'])->name('edit');
+        Route::delete('delete/{id}', [EmployeeController::class, 'delete'])->name('delete');
+        Route::post('/update/{id}', [EmployeeController::class, 'update'])->name('update');
     });
 });

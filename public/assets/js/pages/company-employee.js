@@ -26,7 +26,7 @@ $('#employeeform').validate({
     },
     messages: {
         fname: {
-            required: "Please enter first name  "
+            required: "Please enter first name "
         },
         lname: {
             required: "Please enter last name "

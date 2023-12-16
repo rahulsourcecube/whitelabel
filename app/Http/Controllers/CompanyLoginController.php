@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Mail;
 use App\Models\CampaignModel;
-use Illuminate\Support\Facades\Auth;
+
 
 class CompanyLoginController extends Controller
 {
@@ -67,7 +67,7 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', 'These credentials do not match our records.');
         }
     }
-   
+
     public function signup(){
         return view('company.signup');
     }

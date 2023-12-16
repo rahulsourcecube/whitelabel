@@ -17,23 +17,24 @@
         <div class="card-body">
             <h4>Add Employee</h4>
             <div class="m-t-50" style="">
-                <form id="employeeform" method="POST" action="{{ route('company.employee.store') }}">
+
+                <form id="employeeform" method="POST" action="{{ route('company.employee.update', base64_encode($user->id)) }}">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="fname">First Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name"
-                                maxlength="150" value="{{ old('fname') }}">
+                                maxlength="150" value="{{isset($user->first_name) ? $user->first_name : '' }}">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="lname">Last Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name"
-                                maxlength="150" value="{{ old('lname') }}">
+                                maxlength="150" value="{{isset($user->last_name) ? $user->last_name : '' }}">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="number">Email Address <span class="error">*</span></label>
                             <input type="email" class="form-control" id="email" name="email"
-                                placeholder="Email Address" value="{{ old('email') }}">
+                                placeholder="Email Address" value="{{isset($user->email) ? $user->email : '' }}">
                         </div>
 
                         <div class="form-group col-md-6">
@@ -45,7 +46,7 @@
                                 <option value="3" >Lead</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-6">
+                        {{-- <div class="form-group col-md-6">
                             <label for="password"> Password <span class="error">*</span></label>
                             <input type="text" class="form-control" id="password" name="password"
                                 placeholder="Password">
@@ -54,7 +55,7 @@
                             <label for="cpassword"> Comfirm Password <span class="error">*</span></label>
                             <input type="text" class="form-control" id="cpassword" name="cpassword"
                                 placeholder="Comfirm Password">
-                        </div>
+                        </div> --}}
 
                         <div class="form-group col-md-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
