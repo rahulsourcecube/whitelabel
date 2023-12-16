@@ -96,6 +96,8 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
     Route::get('dashboard', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
     Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');
+    Route::post('update_profile/{id}', [CompanyLoginController::class, 'updateprofile'])->name('update_profile');
+    Route::post('update_passsword', [CompanyLoginController::class, 'updatepassword'])->name('update_password');
     Route::get('profile', [CompanyLoginController::class, 'profile'])->name('profile');
 
     Route::prefix('user')->name('user.')->group(function () {
