@@ -2,6 +2,7 @@
 @section('title', 'Add Employee')
 @section('main-content')
 <div class="main-content">
+    @include('company.includes.message')
     <div class="page-header">
         <div class="header-sub-title">
             <nav class="breadcrumb breadcrumb-dash">
@@ -16,32 +17,32 @@
         <div class="card-body">
             <h4>Add Employee</h4>
             <div class="m-t-50" style="">
-                <form >
+                <form id="employeeform" method="POST" action="{{ route('company.employee.store') }}">
+                    @csrf
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="fname">First Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name"
-                                maxlength="150">
+                                maxlength="150" value="{{ old('fname') }}">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="lname">Last Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name"
-                                maxlength="150">
+                                maxlength="150" value="{{ old('lname') }}">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="number">Email Address <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="number" name="number"
-                                placeholder="Email Address" maxlength="10" minlength="10"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            <input type="email" class="form-control" id="email" name="email"
+                                placeholder="Email Address" value="{{ old('email') }}">
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="Type">Role</label>
-                            <select id="Type" class="form-control">
-                                <option >Select</option>
-                                <option >Staff</option>
-                                <option >Manager</option>
-                                <option >Lead</option>
+                            <select id="Type" class="form-control" name="role">
+                                <option value="" >Select</option>
+                                <option value="1" >Staff</option>
+                                <option value="2" >Manager</option>
+                                <option value="3" >Lead</option>
                             </select>
                         </div>
                         <div class="form-group col-md-6">
@@ -67,7 +68,7 @@
 </div>
 <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
 <script>
-    $('#userform').validate({
+    $('#employeeform').validate({
             rules: {
                 fname: {
                     required: true
@@ -202,4 +203,8 @@
             };
         });
 </script>
+@endsection
+
+@section('js')
+    <script src="{{ asset('assets/js/pages/company-employee.js') }}"></script>
 @endsection

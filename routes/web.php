@@ -136,6 +136,8 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::prefix('employee')->name('employee.')->group(function () {
         Route::get('', [EmployeeController::class, 'index'])->name('list');
         Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+        Route::post('/store', [EmployeeController::class, 'store'])->name('store');
+
         Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
     });
 });

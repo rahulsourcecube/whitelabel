@@ -11,6 +11,8 @@ use App\Mail\company\forgetpass;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Mail;
+use App\Models\CampaignModel;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyLoginController extends Controller
 {
@@ -27,10 +29,18 @@ class CompanyLoginController extends Controller
     }
     function dashboard()
     {
+
+        $companyId = Auth::user()->id;
         $data = [];
-        $data['total_campaign'] = 0;
-        $data['total_user'] = 0;
+        $data['total_campaign'] = CampaignModel::where('company_id',$companyId)->where('status','1')->count();
+        $data['total_user'] = User::where('company_id',$companyId)->where('user_type','4')->count();
+        // dd($data);
         $data['total_campaignReq'] = 0;
+        $data['referral_tasks'] = CampaignModel::where('company_id',$companyId)->where('type','1')->orderBy("id", "DESC")->take(10)->get();
+        $data['social_share_tasks'] = CampaignModel::where('company_id',$companyId)->where('type','2')->orderBy("id", "DESC")->take(10)->get();
+        $data['custom_tasks'] = CampaignModel::where('company_id',$companyId)->where('type','3')->orderBy("id", "DESC")->take(10)->get();
+
+        // dd($data);
         return view('company.dashboard', $data);
     }
     public function login(Request $request)
@@ -84,17 +94,17 @@ class CompanyLoginController extends Controller
             $compnay->user_id = $user->user_id;
             $compnay->user_subdomainid = $request->dname;
             $compnay->company_name = $request->cnmae;
-            }  
+            }
             $input = $request->all();
-        
+
             // $this->validate($request, [
             //     'email' => 'required|email',
             //     'password' => 'required',
             // ]);
-        
+
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-            
-            
+
+
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == env('COMPANY_ROLE')) {
 
                     return redirect()->route('company.dashboard');
@@ -107,7 +117,7 @@ class CompanyLoginController extends Controller
     } catch (\Exception $e) {
         return redirect()->back()->with('error', $e->getMessage());
     }
-       
+
     }
     public function forget(){
         return view('company.forgetPassword');
@@ -123,7 +133,7 @@ class CompanyLoginController extends Controller
         ];
         $details=$user;
         \Mail::to($request->email)->send(new forgetpass($details));
-   
+
         return redirect()->back()->with('success','Mail Send Successfully');
         }
         else{
@@ -136,13 +146,13 @@ class CompanyLoginController extends Controller
     public function confirmPassword($id){
         return view('company.confirmPassword',compact('id'));
     }
-   
+
         public function changePassword(Request $request,$id)
         {
-          
+
             try{
                 $userCheck = User::where('id',$id)->first();
-                if(empty($userCheck)){                   
+                if(empty($userCheck)){
                     return redirect()->back()->with('error','User not found!');
                 }
                 // $validator = Validator::make($request->all(), [
