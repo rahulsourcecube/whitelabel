@@ -11,6 +11,7 @@
 </style>
 
 <!-- Content Wrapper START -->
+
 <div class="main-content">
     <div class="page-header">
         <h2 class="header-title">Campaign View</h2>
