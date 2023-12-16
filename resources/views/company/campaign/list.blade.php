@@ -76,7 +76,21 @@
                         return '<input type="checkbox" name="chk_row" value="' + row[0] +
                             '" class="chk-row">';
                     },
-                }, {
+                }, 
+                {
+                    'targets': 5,
+                    'visible': true,
+                    'orderable': false,
+                    'render': function(data, type, row) {
+                        var status = row[5];
+                        if(status == "Active"){
+                            return '  <button class="btn btn-success ">'+status+'</button>'
+
+                        }else{
+                            return '  <button class="btn btn-danger ">'+status+'</button>'
+                        }
+                    },
+                },{
                     'targets': 6,
                     'visible': true,
                     'orderable': false,
@@ -100,5 +114,62 @@
                 }],
             });
         });
+        function sweetAlertAjax(deleteUrl) {       
+            // Use SweetAlert for confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, proceed with AJAX deletion
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'DELETE',
+                        data: {
+                            "_token": "{{ csrf_token() }}"
+                        },
+                        success: (response) => {
+                         
+                            if (response.status == 'error') {
+                                // Handle error case
+                                Swal.fire({
+                                    text: response.message,
+                                    icon: "error",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            } else {
+                               
+                                // Handle success case
+                                Swal.fire({
+                                    text: response.message,
+                                    icon: "success",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: (xhr, status, error) => {
+                            // Handle AJAX request error
+                            console.error(xhr.responseText);
+                            swal({
+                                text: 'An error occurred while processing your request.',
+                                icon: "error",
+                                button: "Ok",
+                            });
+                        }
+                    });
+                }
+            });
+        }
     </script>
 @endsection

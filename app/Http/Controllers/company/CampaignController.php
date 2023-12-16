@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str; 
 
 class CampaignController extends Controller
 {
@@ -45,7 +46,7 @@ class CampaignController extends Controller
                     base64_encode($result->id),
                     $result->title ?? "-",
                     $result->reward ?? "-",
-                    $result->description ?? "-",
+                    Str::limit($result->description, 60) ?? "-",
                     $result->task_type,
                     $result->task_status,
                     // $imgUrl,
@@ -95,14 +96,75 @@ class CampaignController extends Controller
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('image')->move('uploads/company/campaign', $image);
+                $request->file('image')->move('uploads/company/campaign/', $image);
             } else {
                 $image = null;
             }
             $request->merge(['image' => $image, 'company_id' => $companyId]);
-            CampaignModel::create($request->all());
+
+            $Campaign = new CampaignModel();
+            $Campaign->title = $request->title; 
+            $Campaign->reward = $request->reward; 
+            $Campaign->description = $request->description; 
+            $Campaign->expiry_date = $request->expiry_date; 
+            $Campaign->type = $request->type; 
+            $Campaign->image = $image; 
+            $Campaign->company_id = $companyId; 
+            $Campaign->status = !empty($request->status)?'0':"1";         
+
+            $Campaign->save();
+            // CampaignModel::create($request->all());
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task added successfuly.');
+        } catch (Exception $e) {
+            Log::error('Campaign store error : ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Something went wrong');
+        }
+    }
+
+    public function update(Request $request,CampaignModel $Campaign)
+    {
+        try {
+            $companyId = Auth::user()->id;
+            $validator = Validator::make($request->all(), [
+                'title' => 'required|string|max:255',
+                'reward' => 'required|numeric',
+                'description' => 'required',
+                'expiry_date' => 'required|date',
+                'type' => 'required',
+                'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            if ($request->hasFile('image')) {
+                $extension = $request->file('image')->getClientOriginalExtension();
+                $randomNumber = rand(1000, 9999);
+                $timestamp = time();
+                $image = $timestamp . '_' . $randomNumber . '.' . $extension;
+                $request->file('image')->move('uploads/company/campaign/', $image);
+                if (!empty($Campaign->image)) {
+                    $oldImagePath = 'uploads/company/campaign/' . $Campaign->image;
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+            } else {
+                $image = $Campaign->image;
+            }
+            $request->merge(['image' => $image, 'company_id' => $companyId]);
+
+            $Campaign->title = $request->title; 
+            $Campaign->reward = $request->reward; 
+            $Campaign->description = $request->description; 
+            $Campaign->expiry_date = $request->expiry_date; 
+            $Campaign->type = $request->type; 
+            $Campaign->image = $image; 
+            $Campaign->company_id = $companyId; 
+            $Campaign->status = !empty($request->status)?'0':'1'; 
+            $Campaign->save();
+            $taskType = Helper::taskType($request->type);
+            return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task update successfuly.');
         } catch (Exception $e) {
             Log::error('Campaign store error : ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Something went wrong');
@@ -133,6 +195,25 @@ class CampaignController extends Controller
         if (empty($task)) {
             return back()->with('error', 'Task not found');
         }
-        return view('company.campaign.view', compact('type', 'taskId', 'task'));
+        return view('company.campaign.edit', compact('type', 'taskId', 'task'));
     }
+    public function delete($id)
+    {
+        try {
+            $id = base64_decode($id);
+            $campaignModel=CampaignModel::where('id', $id)->first();
+            if (!empty($campaignModel->image)) {
+                $oldImagePath = 'uploads/company/campaign/' . $campaignModel->image;
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+            $campaignModel=CampaignModel::where('id', $id)->delete();
+            return response()->json(['success' => 'error', 'message' => 'Task deleted successfully']);
+        } catch (Exception $e) {
+            Log::error('Campaign delete error : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong');
+        }
+    }
+    
 }
