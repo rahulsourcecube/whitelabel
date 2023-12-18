@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Company;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
+use App\Models\User;
+use App\Models\UserCampaignHistoryModel;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +51,7 @@ class CampaignController extends Controller
                     Str::limit($result->description, 60) ?? "-",
                     $result->task_type,
                     $result->task_status,
+                    $result->task_status,
                     // $imgUrl,
                 ];
             }
@@ -69,6 +72,159 @@ class CampaignController extends Controller
             ]);
         }
     }
+    public function joined($id,Request $request)
+    {
+       
+        $columns = ['id', 'title'];
+       
+        $start = $request->input('start');
+        $length = $request->input('length');
+        $order = $request->input('order.0.column');
+        $dir = $request->input('order.0.dir');
+        $list = [];
+        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
+        // ->where('company_id', Auth::user()->id)
+        ->where('campaign_id', $id)
+            ->skip($start)
+            ->take($length)
+            ->get();
+           
+        foreach ($results as $result) {
+          
+            $list[] = [
+                base64_encode($result->id),
+                $result->getuser->full_name ?? "-",
+                $result->getuser->email ?? "-",
+                $result->getuser->contact_number ?? "-",              
+                $result->reward ?? "-",              
+                date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
+                $result->TaskStatus?? "-",                     
+            
+            ];
+        }
+        $totalFiltered = $results->count();
+        return response()->json([
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => count($results),
+            "recordsFiltered" => $totalFiltered,
+            "data" => $list
+        ]);
+    }
+    public function accept($id,Request $request)
+    {
+       
+        $columns = ['id', 'title'];
+       
+        $start = $request->input('start');
+        $length = $request->input('length');
+        $order = $request->input('order.0.column');
+        $dir = $request->input('order.0.dir');
+        $list = [];
+        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
+        // ->where('company_id', Auth::user()->id)
+        ->where('campaign_id', $id)
+        ->where('status', '3')
+            ->skip($start)
+            ->take($length)
+            ->get();
+           
+        foreach ($results as $result) {
+          
+            $list[] = [
+                base64_encode($result->id),
+                $result->getuser->full_name ?? "-",
+                $result->getuser->email ?? "-",
+                $result->getuser->contact_number ?? "-",
+                 date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
+                                  
+            
+            ];
+        }
+        $totalFiltered = $results->count();
+        return response()->json([
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => count($results),
+            "recordsFiltered" => $totalFiltered,
+            "data" => $list
+        ]);
+    }
+    public function reject($id,Request $request)
+    {
+       
+        $columns = ['id', 'title'];
+       
+        $start = $request->input('start');
+        $length = $request->input('length');
+        $order = $request->input('order.0.column');
+        $dir = $request->input('order.0.dir');
+        $list = [];
+        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
+        // ->where('company_id', Auth::user()->id)
+        ->where('campaign_id', $id)
+        ->where('status', '4')
+            ->skip($start)
+            ->take($length)
+            ->get();
+           
+        foreach ($results as $result) {
+          
+            $list[] = [
+                base64_encode($result->id),
+                $result->getuser->full_name ?? "-",
+                $result->getuser->email ?? "-",
+                $result->getuser->contact_number ?? "-",
+                 date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
+                                  
+            
+            ];
+        }
+        $totalFiltered = $results->count();
+        return response()->json([
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => count($results),
+            "recordsFiltered" => $totalFiltered,
+            "data" => $list
+        ]);
+    }
+    public function request($id,Request $request)
+    {
+      
+        $columns = ['id', 'title'];
+       
+        $start = $request->input('start');
+        $length = $request->input('length');
+        $order = $request->input('order.0.column');
+        $dir = $request->input('order.0.dir');
+        $list = [];
+        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
+         ->where('status',2)
+        ->where('campaign_id', $id)
+       
+            ->skip($start)
+            ->take($length)
+            ->get();
+           
+        foreach ($results as $result) {
+          
+            $list[] = [
+                base64_encode($result->id),
+                $result->getuser->full_name ?? "-",
+                $result->getuser->email ?? "-",
+                $result->getuser->contact_number ?? "-",              
+                date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
+                $result->TaskStatus?? "-",                     
+            
+            ];
+        }
+        $totalFiltered = $results->count();
+        return response()->json([
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => count($results),
+            "recordsFiltered" => $totalFiltered,
+            "data" => $list
+        ]);
+    }
+
 
     function create($type)
     {

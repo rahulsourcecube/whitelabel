@@ -91,7 +91,7 @@
                                         <td>Now you can browse privately, and other people who ...</td>
                                         <td>Referral</td> 
                                         <td>
-                                            <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view')}}"
+                                            <a class="btn btn-success  btn-sm" href="#"
                                                 role="button" title="View"><i class="fa fa-eye"></i></a>                               
                                         </td>
                                     </tr>
@@ -101,7 +101,7 @@
                                         <td>Now you can browse privately, and other people who ...</td>
                                         <td>Referral</td> 
                                         <td>
-                                            <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view')}}"
+                                            <a class="btn btn-success  btn-sm" href="#"
                                                 role="button" title="View"><i class="fa fa-eye"></i></a>                               
                                         </td>
                                     </tr>
@@ -111,7 +111,7 @@
                                         <td>Now you can browse privately, and other people who ...</td>
                                         <td>Completed</td>   
                                         <td>
-                                            <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view')}}"
+                                            <a class="btn btn-success  btn-sm" href="#"
                                                 role="button" title="View"><i class="fa fa-eye"></i></a>                               
                                         </td>  
                                     </tr>

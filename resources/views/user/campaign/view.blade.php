@@ -3,14 +3,14 @@
 @section('main-content')
 
 <style>
-.social-icons a {
-    font-size: 50px; /
-    margin-right: 25px; 
-    
-  }
+    .social-icons a {
+        font-size: 50px;/ margin-right: 25px;
+
+    }
 </style>
 
 <!-- Content Wrapper START -->
+
 <div class="main-content">
     <div class="page-header">
         <h2 class="header-title">Campaign View</h2>
@@ -26,8 +26,11 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="card">
-                    <img class="card-img-top" src="{{asset('assets/images/others/img-2.jpg')}}" alt="">
-                    
+                    @if (isset($campagin_detail) && $campagin_detail->image == '')
+                    <img src="{{ asset('assets/images/others/No_image_available.png') }}">
+                    @else
+                    <img class="card-img-top" src="{{asset('uploads/company/campaign/'.$campagin_detail->image)}}">
+                    @endif
                     <div class="card-footer">
                         <div class="text-center m-t-15">
                             <button class="m-r-5 btn btn-icon btn-hover btn-rounded">
@@ -41,36 +44,34 @@
                             </button>
                         </div>
                         <div class="text-center m-t-30">
-                            <a onclick="showSuccessAlert()" href="#" class="btn btn-primary btn-tone">                               
+                            {{-- @php $url = route('user.campaign.getusercampaign',$campagin_detail->id) @endphp --}}
+                            <a onclick="showSuccessAlert()" href="#" data-id="{{$campagin_detail->id}}"
+                                class="btn btn-primary btn-tone">
                                 <span class="m-l-5">Join</span>
                             </a>
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
             <div class="col-md-12 col-lg-8">
                 <div class="card">
-                    <div class="card-body">                  
-                            <h4 class="m-b-10">Jelly-o sesame snaps halvah croissant oat cake cookie.</h4>                          
-                          
-                            <h4 class="m-b-10"></h4>  
-                          
-                        
+                    <div class="card-body">
+                        <h4 class="m-b-10">{{isset($campagin_detail->title) ? $campagin_detail->title:''}}</h4>
                         <div class="d-flex align-items-center m-t-5 m-b-15">
                             <div class="m-l-1">
-                                <span class="text-gray font-weight-semibold">Reward: <b>$500</b></span>  
+                                <span class="text-gray font-weight-semibold">Reward:
+                                    <b>{{isset($campagin_detail->reward) ? $campagin_detail->reward:''}}</b></span>
                                 <span class="m-h-5 text-gray">|</span>
-                                <span class="text-gray">Custom Task</span>
+                                <span class="text-gray">{{isset($campagin_detail->task_type) ?
+                                    $campagin_detail->task_type:''}}</span>
                                 <span class="m-h-5 text-gray">|</span>
-                                <span class="text-gray">Expire on Jan 2, 2024</span>
+                                <span class="text-gray">Expire on
+                                    {{isset($campagin_detail->expiry_date) ? $campagin_detail->expiry_date:''}}</span>
                             </div>
                         </div>
-                        <p class="m-b-20">Jelly-o sesame snaps halvah croissant oat cake cookie. Cheesecake bear claw
-                            topping. Chupa chups apple pie carrot cake chocolate cake caramels
-                            Jelly-o sesame snaps halvah croissant oat cake cookie. Cheesecake bear claw
-                            topping. Chupa chups apple pie carrot cake chocolate cake caramels
-                            Jelly-o sesame snaps halvah croissant oat cake cookie. Cheesecake bear claw
-                            topping. Chupa chups apple pie carrot cake chocolate cake caramels</p>
+                        <p class="m-b-20">{!! isset($campagin_detail->description) ? $campagin_detail->description:''
+                            !!}
+                        </p>
                         <div class="text-right">
                             {{-- <a class="btn btn-hover font-weight-semibold" href="blog-post.html">
                                 <span>Read More</span>
@@ -84,81 +85,45 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5>Recent Conected Uers</h5>                        
+                        <h5>Recent Conected Uers</h5>
                     </div>
                     <div class="m-t-30">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover" id="user_tables">
                                 <thead>
                                     <tr>
+                                        {{-- <th></th> --}}
                                         <th>ID</th>
                                         <th>User</th>
                                         <th>Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @foreach ($user_detail as $user_detail_get)
                                     <tr>
-                                        <td>#5331</td>
+                                        <td>{{$user_detail_get->user_id}}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-image" style="height: 30px; min-width: 30px; max-width:30px">
-                                                        <img src="{{asset('assets/images/avatars/thumb-1.jpg')}}" alt="">
+                                                    <div class="avatar avatar-image"
+                                                        style="height: 30px; min-width: 30px; max-width:30px">
+                                                        @if(isset($user_detail_get->getuser->profile_image) &&
+                                                        $user_detail_get->getuser->profile_image == '')
+                                                        <img src="{{asset('assets/images/avatars/thumb-1.jpg')}}"
+                                                            alt="">
+                                                        @else
+                                                        <img src="{{asset('uploads/company/user-profile/'.$user_detail_get->getuser->profile_image)}}"
+                                                            alt="">
+                                                        @endif
                                                     </div>
-                                                    <h6 class="m-l-10 m-b-0">Erin Gonzales</h6>
+                                                    <h6 class="m-l-10 m-b-0">{{$user_detail_get->getuser->first_name}}
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>8 May 2019</td>
-                                       
                                     </tr>
-                                    <tr>
-                                        <td>#5375</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-image" style="height: 30px; min-width: 30px; max-width:30px">
-                                                        <img src="{{asset('assets/images/avatars/thumb-2.jpg')}}" alt="">
-                                                    </div>
-                                                    <h6 class="m-l-10 m-b-0">Darryl Day</h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>6 May 2019</td>
-                                        
-                                    </tr>
-                                    <tr>
-                                        <td>#5762</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-image" style="height: 30px; min-width: 30px; max-width:30px">
-                                                        <img src="{{asset('assets/images/avatars/thumb-3.jpg')}}" alt="">
-                                                    </div>
-                                                    <h6 class="m-l-10 m-b-0">Marshall Nichols</h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>1 May 2019</td>
-                                       
-                                    </tr>
-                                    <tr>
-                                        <td>#5865</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-image" style="height: 30px; min-width: 30px; max-width:30px">
-                                                        <img src="{{asset('assets/images/avatars/thumb-4.jpg')}}" alt="">
-                                                    </div>
-                                                    <h6 class="m-l-10 m-b-0">Virgil Gonzales</h6>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>28 April 2019</td>
-                                        
-                                       
-                                    </tr>
-                                  
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -167,17 +132,93 @@
             </div>
         </div>
     </div>
+    <script>
+        //     $(document).ready(function() {
+    //     var table = $('#user_tables').DataTable({
+    //             // Processing indicator
+    //             "processing": true,
+    //             // DataTables server-side processing mode
+    //             "serverSide": true,
+    //             responsive: true,
+    //             pageLength: 25,
+    //             // Initial no order.
+    //             'order': [
+    //                 [0, 'desc']
+    //             ],
+    //             language: {
+    //                 search: "",
+    //                 searchPlaceholder: "Search Here",
+    //             },
+    //             // Load data from an Ajax source
+    //             "ajax": {
+    //                 "url": "{{ route('user.campaign.userlist') }}",
+    //                 "type": "GET",
+    //                 "headers": {
+    //                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
+    //                 },
+    //                 "data": function(d) {
+    //                     // d.search_name = $('#search_name').val();
+    //                 }
+    //             },
+    //             'columnDefs': [{
+    //                 'targets': 0,
+    //                 'visible': false,
+    //                 'orderable': false,
+    //                 'render': function(data, type, row) {
+    //                     return '<input type="checkbox" name="chk_row" value="' + row[0] +
+    //                         '" class="chk-row">';
+    //                 },
+    //             }, 
+    //             // {
+    //             //     'targets': 5,
+    //             //     'visible': true,
+    //             //     'orderable': false,
+    //             //     'render': function(data, type, row) {
+    //             //         var url = '{{ route('user.campaign.getusercampaign', ':id') }}';
+    //             //         url = url.replace(':id', row[0]);
+    //             //         return '<button type="submit" class="btn btn-primary  btn-sm" onclick="showSuccessAlert(\''+url+'\')" role="button" title="View">Join</button>'
+    //             //     },
+    //             // }, 
+    //             {
+    //                 'targets': 6,
+    //                 'visible': true,
+    //                 'orderable': false,
+    //                 'render': function(data, type, row) {
+    //                     var viewUrl = '{{ route('user.campaign.view',':id') }}';
+    //                     viewUrl = viewUrl.replace(':id', row[0]);
+    //                     return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
+    //                         '" role="button" title="View"><i class="fa fa-eye"></i></a>'
+    //                         // '<a class="btn btn-primary btn-sm" href="' +
+    //                         // editUrl +
+    //                         // '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+    //                         // deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
+
+    //                 },
+    //             }],
+    //         });
+    // });
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
-        function showSuccessAlert() {
-            // Trigger a success sweet alert
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: 'Campaign joined',
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK'
+        function showSuccessAlert(url) {
+            var ID = $(this).data("id");
+            alert(ID);
+            $.ajax({
+                url:url,
+                method:"POST",
+                data:{
+                    "_token":"{{csrf_token()}}",
+                },
+                success:function(data){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Joined',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    });
+                }
             });
         }
     </script>
