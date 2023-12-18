@@ -13,7 +13,7 @@
                 </a>
             </li>
             <li class="nav-item dropdown open">
-                <a class="dropdown-toggle" href="{{ route('user.campaign.list') }}">
+                <a class="dropdown-toggle" href="{{ route('user.campaign') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
                     </span>
@@ -90,7 +90,7 @@
                 </a>
             </li>
              <li class="nav-item dropdown open">
-                <a class="dropdown-toggle"  href="{{ route('user.logout') }}">
+                <a class="dropdown-toggle"  href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <span class="icon-holder">
                         <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
                     </span>

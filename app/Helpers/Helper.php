@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use App\Models\CampaignModel;
-use App\Models\CompanyPackage;
 use App\Models\SettingModel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -26,12 +25,5 @@ class Helper
     {
         $types = array_flip(CampaignModel::TYPE);
         return ucfirst(strtolower($types[$type])); 
-    }
-
-    public static function isActivePackage()
-    {
-        $user = Auth::user();
-        $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
-        return $checkPackage;
     }
 }

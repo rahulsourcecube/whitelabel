@@ -50,7 +50,7 @@
                         <div class="m-t-25">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" id="user-tab" data-toggle="pill" href="#Joined_user"
+                                    <a class="nav-link active" id="user-tab" data-toggle="pill" href="#user"
                                         role="tab" aria-controls="user" aria-selected="true">Recently User Joined</a>
                                 </li>
                                 <li class="nav-item">
@@ -69,7 +69,6 @@
                         </div>
                     </div>
                 </div>
-               
                 <div class="card-body tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="Joined_user" role="tabpanel" aria-labelledby="user-tab">
                         <h4>Recently User Joined List</h4>
@@ -77,7 +76,7 @@
                             <table id="user_joind" class="table">
                                 <thead>
                                     <tr>
-                                        <th></th>
+                                        {{-- <th></th> --}}
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Mobile</th>
@@ -86,7 +85,26 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+                                    <tr>
+                                        <td>John Doe</td>
+                                        <td>john@mailinator.com</td>
+                                        <td>1234567890</td>
+                                        <td>2023-10-22</td>
+                                        <td>
+                                            <a class="btn btn-success  btn-sm" href="#" role="button"
+                                                title="View"><i class="fa fa-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>John Doe</td>
+                                        <td>john@mailinator.com</td>
+                                        <td>1234567890</td>
+                                        <td>2023-10-22</td>
+                                        <td>
+                                            <a class="btn btn-success  btn-sm" href="#" role="button"
+                                                title="View"><i class="fa fa-eye"></i></a>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -94,15 +112,15 @@
                     <div class="tab-pane fade" id="request" role="tabpanel" aria-labelledby="request-tab">
                         <h4>User Request list</h4>
                         <div class="m-t-25">
-                            <table id="requests" class="table">
+                            <table id="user_tables" class="table">
                                 <thead>
                                     <tr>
-                                        <th></th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Mobile</th>
                                         <th>Reward</th>
                                         <th>Completed Date</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -117,7 +135,7 @@
                             <table id="accept_user" class="table">
                                 <thead>
                                     <tr>
-                                        <th></th>
+                                        {{-- <th></th> --}}
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Mobile</th>
@@ -147,14 +165,14 @@
                             <table id="reject_user" class="table">
                                 <thead>
                                     <tr>
-                                        <th></th>
+                                        {{-- <th></th> --}}
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Mobile</th>
                                         <th>Date</th>
                                     </tr>
                                 </thead>
-                                {{-- <tbody>
+                                <tbody>
                                     <tr>
                                         <td>John Doe</td>
                                         <td>john@mailinator.com</td>
@@ -167,7 +185,7 @@
                                         <td>1234567890</td>
                                         <td>2023-10-22</td>
                                     </tr>
-                                </tbody> --}}
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -175,172 +193,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            var id = "{{ $taskId }}";
-            var url = "{{ route('company.campaign.joined', ':id') }}";
-            var urlrequest = "{{ route('company.campaign.request', ':id') }}";
-            var urlaccept = "{{ route('company.campaign.accept', ':id') }}";
-            var urlreject = "{{ route('company.campaign.accept', ':id') }}";
-            url = url.replace(':id', id);
-            urlrequest = urlrequest.replace(':id', id);
-            urlaccept = urlaccept.replace(':id', id);
-            urlreject = urlreject.replace(':id', id);
-            
-            var table1 = $('#user_joind').DataTable({
-                // Processing indicator
-                "processing": false,
-                // DataTables server-side processing mode
-                "serverSide": true,
-                responsive: true,
-                pageLength: 25,
-                // Initial no order.
-                'order': [
-                    [0, 'desc']
-                ],
-                language: {
-                    search: "",
-                    searchPlaceholder: "Search Here",
-                },
-                // Load data from an Ajax source
-                "ajax": {
-                    "url": url,
-                    "type": "GET",
-                    "headers": {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    "data": function(d) {
-                        // d.search_name = $('#search_name').val();
-                    }
-                },
-                'columnDefs': [{
-                    'targets': 0,
-                    'width': 'auto',
-                    'visible': false,
-                    'orderable': false,
-                    'render': function(data, type, row) {
-                        return '<input type="checkbox" name="chk_row" value="' + row[0] +
-                            '" class="chk-row">';
-                    },
-                
-                }],
-            });
-
-            var table2 = $('#requests').DataTable({
-                // Processing indicator
-                "processing": false,
-                // DataTables server-side processing mode
-                "serverSide": true,
-                responsive: true,
-                pageLength: 25,
-                // Initial no order.
-                'order': [
-                    [0, 'desc']
-                ],
-                language: {
-                    search: "",
-                    searchPlaceholder: "Search Here",
-                },
-                // Load data from an Ajax source
-                "ajax": {
-                    "url": urlrequest,
-                    "type": "GET",
-                    "headers": {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    "data": function(d) {
-                        // d.search_name = $('#search_name').val();
-                    }
-                },
-                'columnDefs': [{
-                    'targets': 0,
-                    'width': 'auto',
-                    'visible': false,
-                    'orderable': false,
-                    'render': function(data, type, row) {
-                        return '<input type="checkbox" name="chk_row" value="' + row[0] +
-                            '" class="chk-row">';
-                    },
-                
-                }],
-            });
-            var table3 = $('#accept_user').DataTable({
-                // Processing indicator
-                "processing": false,
-                // DataTables server-side processing mode
-                "serverSide": true,
-                responsive: true,
-                pageLength: 25,
-                // Initial no order.
-                'order': [
-                    [0, 'desc']
-                ],
-                language: {
-                    search: "",
-                    searchPlaceholder: "Search Here",
-                },
-                // Load data from an Ajax source
-                "ajax": {
-                    "url": urlaccept,
-                    "type": "GET",
-                    "headers": {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    "data": function(d) {
-                        // d.search_name = $('#search_name').val();
-                    }
-                },
-                'columnDefs': [{
-                    'targets': 0,
-                    'width': 'auto',
-                    'visible': false,
-                    'orderable': false,
-                    'render': function(data, type, row) {
-                        return '<input type="checkbox" name="chk_row" value="' + row[0] +
-                            '" class="chk-row">';
-                    },
-                
-                }],
-            });
-            var table4 = $('#reject_user').DataTable({
-                // Processing indicator
-                "processing": false,
-                // DataTables server-side processing mode
-                "serverSide": true,
-                responsive: true,
-                pageLength: 25,
-                // Initial no order.
-                'order': [
-                    [0, 'desc']
-                ],
-                language: {
-                    search: "",
-                    searchPlaceholder: "Search Here",
-                },
-                // Load data from an Ajax source
-                "ajax": {
-                    "url": urlreject,
-                    "type": "GET",
-                    "headers": {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                    },
-                    "data": function(d) {
-                        // d.search_name = $('#search_name').val();
-                    }
-                },
-                'columnDefs': [{
-                    'targets': 0,
-                    'width': 'auto',
-                    'visible': false,
-                    'orderable': false,
-                    'render': function(data, type, row) {
-                        return '<input type="checkbox" name="chk_row" value="' + row[0] +
-                            '" class="chk-row">';
-                    },
-                
-                }],
-            });
-        });
-        </script>
 @endsection

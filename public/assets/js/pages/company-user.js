@@ -48,13 +48,13 @@ $('#userform').validate({
             required: "Please enter last name "
         },
         email: {
-            required: "Please enter email address", 
-            remote: "Email already exists. Choose a different one."           
-               
+            required: "Please enter email address",
+            remote: "Email already exists. Choose a different one."
+
         },
         number: {
             required: "Please mobile number address",
-            remote: " Mobile Number already exists." 
+            remote: " Mobile Number already exists."
         },
         password: {
             required: "Please enter password",
@@ -94,8 +94,8 @@ $('#userUpdateform').validate({
                 } else {
                     return false;
                 }
-             
-            }    
+
+            }
         },
         image: {
             fileExtension: true,

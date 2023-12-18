@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\company\forgetpass;
 use App\Models\SettingModel;
-use Exception;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Mail;
+use App\Models\CampaignModel;
+
 
 class CompanyLoginController extends Controller
 {
@@ -31,10 +31,18 @@ class CompanyLoginController extends Controller
     }
     function dashboard()
     {
+
+        $companyId = Auth::user()->id;
         $data = [];
-        $data['total_campaign'] = 0;
-        $data['total_user'] = 0;
+        $data['total_campaign'] = CampaignModel::where('company_id',$companyId)->where('status','1')->count();
+        $data['total_user'] = User::where('company_id',$companyId)->where('user_type','4')->count();
+        // dd($data);
         $data['total_campaignReq'] = 0;
+        $data['referral_tasks'] = CampaignModel::where('company_id',$companyId)->where('type','1')->orderBy("id", "DESC")->take(10)->get();
+        $data['social_share_tasks'] = CampaignModel::where('company_id',$companyId)->where('type','2')->orderBy("id", "DESC")->take(10)->get();
+        $data['custom_tasks'] = CampaignModel::where('company_id',$companyId)->where('type','3')->orderBy("id", "DESC")->take(10)->get();
+
+        // dd($data);
         return view('company.dashboard', $data);
     }
     public function login(Request $request)
@@ -60,18 +68,16 @@ class CompanyLoginController extends Controller
         }
     }
 
-    public function signup()
-    {
+    public function signup(){
         return view('company.signup');
     }
-    public function signupStore(Request $request)
-    {
-        // $user = User::first();
-        try {
-            $user = User::where('email', $request->email)->first();
-            if (!empty($user)) {
-                return redirect()->back()->with('error', 'email is alardy user');
-            }
+    public function signupStore(Request $request){
+    // $user = User::first();
+    try {
+        $user = User::where('email',$request->email)->first();
+        if(!empty($user)){
+            return redirect()->back()->with('error', 'email is alardy user');
+        }
             $user = new User();
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;
@@ -80,20 +86,13 @@ class CompanyLoginController extends Controller
             $user->view_password = $request->password;
             $user->user_type = '2';
             $user->save();
-            if (isset($user)) {
-                $compnay = new CompanyModel();
-                $compnay->user_id = $user->id;
-                $compnay->company_name = $request->cname;
-                $compnay->contact_email = $request->email;
-                $compnay->subdomain = $request->dname;
-                $compnay->save();
+            if(isset($user)){
+            $compnay = new CompanyModel();
+            $compnay->user_id = $user->user_id;
+            $compnay->user_subdomainid = $request->dname;
+            $compnay->company_name = $request->cnmae;
             }
-            if (isset($user)) {
-                $settingModel = new SettingModel();
-                $settingModel->user_id = $user->id;
-                $settingModel->save();
-                $input = $request->all();
-            }
+            $input = $request->all();
 
             // $this->validate($request, [
             //     'email' => 'required|email',
@@ -112,64 +111,64 @@ class CompanyLoginController extends Controller
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
             }
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', $e->getMessage());
     }
-    public function forget()
-    {
+
+    }
+    public function forget(){
         return view('company.forgetPassword');
     }
-    public function forgetPassSendmail(Request $request)
-    {
+    public function forgetPassSendmail(Request $request){
         try {
-            $request->validate(['email' => 'required|email']);
-            $user = User::where('email', $request->email)->first();
-            if (!empty($user)) {
-                $mailData = [
-                    "email" => $request->email,
-                    "_token" => $request->_token
-                ];
-                $details = $user;
-                \Mail::to($request->email)->send(new forgetpass($details));
+        $request->validate(['email' => 'required|email']);
+        $user = User::where('email',$request->email)->first();
+        if(!empty($user)){
+        $mailData = [
+            "email" => $request->email,
+            "_token" => $request->_token
+        ];
+        $details=$user;
+        \Mail::to($request->email)->send(new forgetpass($details));
 
-                return redirect()->back()->with('success', 'Mail Send Successfully');
-            } else {
-                return redirect()->back()->with('error', 'email not found');
-            }
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+        return redirect()->back()->with('success','Mail Send Successfully');
         }
+        else{
+            return redirect()->back()->with('error','email not found');
+        }
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', $e->getMessage());
     }
-    public function confirmPassword($id)
-    {
-        return view('company.confirmPassword', compact('id'));
+    }
+    public function confirmPassword($id){
+        return view('company.confirmPassword',compact('id'));
     }
 
-    public function changePassword(Request $request, $id)
-    {
+        public function changePassword(Request $request,$id)
+        {
 
-        try {
-            $userCheck = User::where('id', $id)->first();
-            if (empty($userCheck)) {
-                return redirect()->back()->with('error', 'User not found!');
-            }
-            // $validator = Validator::make($request->all(), [
-            //     // 'old_password' => 'required',
-            //     'new_password' => 'required',
-            //     'confirm_password' => 'required|same:new_password',
-            // ]);
-            // if ($validator->fails()) {
-            //     return $this->sendError($validator->errors()->first());
-            // }
-            $userCheck->password = Hash::make($request->new_password);
-            $userCheck->view_password = $request->password;
+            try{
+                $userCheck = User::where('id',$id)->first();
+                if(empty($userCheck)){
+                    return redirect()->back()->with('error','User not found!');
+                }
+                // $validator = Validator::make($request->all(), [
+                //     // 'old_password' => 'required',
+                //     'new_password' => 'required',
+                //     'confirm_password' => 'required|same:new_password',
+                // ]);
+                // if ($validator->fails()) {
+                //     return $this->sendError($validator->errors()->first());
+                // }
+                $userCheck->password = Hash::make($request->new_password);
+                $userCheck->view_password = $request->password;
 
-            $userCheck->update();
+               $userCheck->update();
 
-            return redirect()->route('company.signin')->with('error', 'These credentials do not match our records.');
-        } catch (Exception $e) {
-            Log::info("change password in profile LogError" . $e->getMessage());
+               return redirect()->route('company.signin')->with('error', 'These credentials do not match our records.');
+
+        }catch(Exception $e){
+            Log::info("change password in profile LogError".$e->getMessage());
             return $this->sendError($e->getMessage());
         }
     }
@@ -184,10 +183,11 @@ class CompanyLoginController extends Controller
             $updateprofiledetail = User::where('id', Auth::user()->id)->first();
             $updateprofiledetail['first_name'] = isset($request->first_name) ? $request->first_name : '';
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
-            $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
+            $updateprofiledetail['email'] = isset($request->email) ? $request->last_name : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
+            $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             if ($request->hasFile('profile_image')) {
-                if ($updateprofiledetail->profile_image && file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
+                if (file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
                     unlink('uploads/user-profile/' . $updateprofiledetail->profile_image);
                 }
                 $filename = rand(111111, 999999) . '.' . $request->profile_image->extension();
@@ -197,7 +197,7 @@ class CompanyLoginController extends Controller
             $updateprofiledetail->save();
             return redirect()->route('company.dashboard');
         } catch (Exception $e) {
-            Log::info(['message', 'Update Profile error']);
+            Log::info('message', 'Update Profile error');
             return redirect()->back()->with($e->getMessage());
         }
     }
@@ -214,9 +214,6 @@ class CompanyLoginController extends Controller
             if (empty($userCheck)) {
                 return redirect()->back()->with('error', 'User not found!');
             }
-            // if(!Hash::check($request->oldpassword,$userCheck->password)){
-            //     return redirect()->back()->with('error', 'Password is incorrect');
-            // }
             $userCheck->password = Hash::make($request->newPassword);
             $userCheck->view_password = $request->newPassword;
             $userCheck->update();

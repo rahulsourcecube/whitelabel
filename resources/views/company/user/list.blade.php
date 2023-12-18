@@ -40,8 +40,8 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-   
- 
+
+
         $(document).ready(function() {
             var table = $('#user_tables').DataTable({
                 // Processing indicator
@@ -125,9 +125,9 @@
                 }],
             });
         });
-   
 
-    function sweetAlertAjax(deleteUrl) {       
+
+    function sweetAlertAjax(deleteUrl) {
             // Use SweetAlert for confirmation
             Swal.fire({
                 title: 'Are you sure?',
@@ -147,7 +147,7 @@
                             "_token": "{{ csrf_token() }}"
                         },
                         success: (response) => {
-                         
+
                             if (response.status == 'error') {
                                 // Handle error case
                                 Swal.fire({
@@ -159,7 +159,7 @@
                                     location.reload();
                                 });
                             } else {
-                               
+
                                 // Handle success case
                                 Swal.fire({
                                     text: response.message,

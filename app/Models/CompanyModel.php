@@ -21,10 +21,8 @@ class CompanyModel extends Model
         'is_indivisual',
         // Add more fields as needed
     ];*/
-    
     public function user()
     {
         return $this->belongsTo(User::class,'user_id');
     }
-  
 }
