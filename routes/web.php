@@ -6,12 +6,14 @@ use App\Http\Controllers\CompanyLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\UserController;
+use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +69,13 @@ Route::prefix('user')->name('user.')->group(function () {
     });
 
 });
+Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {
+    Route::get('/', [UserCampaignController::class, 'campaign'])->name('list');
+    Route::get('/list', [UserCampaignController::class, 'dtlist'])->name('dtlist');
+    Route::get('/view/{id}', [UserCampaignController::class, 'campaignview'])->name('view');
+    Route::post('/usercampaign/{id}', [UserCampaignController::class, 'getusercampaign'])->name('getusercampaign');
+    Route::get('/userlist', [UserCampaignController::class, 'userlist'])->name('userlist');
+});
 
 Route::prefix('company')->name('company.')->group(function () {
     Route::get('/', [CompanyLoginController::class, 'index'])->name('login');
@@ -109,6 +118,19 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::post('update_profile/{id}', [CompanyLoginController::class, 'updateprofile'])->name('update_profile');
     Route::post('update_passsword', [CompanyLoginController::class, 'updatepassword'])->name('update_password');
     Route::get('profile', [CompanyLoginController::class, 'profile'])->name('profile');
+
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('', [UserController::class, 'index'])->name('list');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/email/check', [UserController::class, 'checkEmail'])->name('checkEmail');
+        Route::post('/number/check', [UserController::class, 'checkContactNumber'])->name('checkContactNumber');
+        Route::post('/store', [UserController::class, 'store'])->name('store');
+        Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
+        Route::get('view/{id}', [UserController::class, 'view'])->name('view');
+        Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
+        Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
+    });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
         Route::post('/buy', [CompanyPackageController::class, 'buy'])->name('buy');
@@ -130,6 +152,11 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::prefix('campaign')->name('campaign.')->group(function () {
             Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
             Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');
+            Route::get('joined/user/{id}', [CampaignController::class, 'joined'])->name('joined');
+            Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
+            Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
+            Route::get('request/accept/{id}', [CampaignController::class, 'accept'])->name('accept');
+            Route::get('request/reject/{id}', [CampaignController::class, 'reject'])->name('reject');
             Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
             Route::post('/store', [CampaignController::class, 'store'])->name('store');
             Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
@@ -157,8 +184,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         });
     });
 });
-Route::get('migrate', function ()
-{
+Route::get('migrate', function () {
     Artisan::call('migrate');
     return 'Yupp, migrations ran successfully!';
 });

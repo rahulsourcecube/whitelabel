@@ -3,7 +3,7 @@
 @section('main-content')
 <style>
     .image {
-        display: none;
+        /* display: none; */
     }
 </style>
 <!-- Content Wrapper START -->
@@ -14,7 +14,8 @@
     <div class="container">
         <div class="tab-content m-t-15">
             <div class="tab-pane fade show active" id="tab-account">
-                <form action="{{route('company.update_profile', $editprofiledetail->id)}}" method="post" enctype="multipart/form-data">
+                <form action="{{route('company.update_profile', $editprofiledetail->id)}}" method="post"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="card">
                         <div class="card-header">
@@ -26,12 +27,15 @@
                                     @if (isset($editprofiledetail) && $editprofiledetail->profile_image == '')
                                     <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
                                     @else
-                                    <img src="{{ asset('uploads/user-profile/'.$editprofiledetail->profile_image) }}" alt="" id="imagePreviews">
+                                    <img src="{{ asset('uploads/user-profile/'.$editprofiledetail->profile_image) }}"
+                                        alt="" id="imagePreviews">
                                     @endif
                                 </div>
                                 <!-- <button class="btn btn-tone btn-primary" onclick="getimage()">Upload</button> -->
                                 <div class="m-l-20 m-r-20">
-                                    <h5 class="m-b-5 font-size-18">{{$editprofiledetail->first_name}} {{$editprofiledetail->last_name}}</h5>
+                                    <h5 class="m-b-5 font-size-18">
+                                        {{isset($editprofiledetail->first_name)?$editprofiledetail->first_name:''}}
+                                        {{isset($editprofiledetail->last_name)?$editprofiledetail->last_name:''}}</h5>
                                 </div>
                                 <!-- <button class="btn btn-primary">Upload</button> -->
                                 <div class="image">
@@ -42,19 +46,26 @@
                             <div class="form-row">
                                 <div class="form-group col-md-6">
                                     <label class="font-weight-semibold" for="userName">First Name:</label>
-                                    <input type="text" class="form-control" name="first_name" id="userName" placeholder="User Name" value="{{$editprofiledetail->first_name}}">
+                                    <input type="text" class="form-control" name="first_name" id="userName"
+                                        placeholder="User Name"
+                                        value="{{isset($editprofiledetail->first_name)?$editprofiledetail->first_name:''}}">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="font-weight-semibold" for="userName">Last Name:</label>
-                                    <input type="text" class="form-control" name="last_name" id="userName" placeholder="User Name" value="{{$editprofiledetail->last_name}}">
+                                    <input type="text" class="form-control" name="last_name" id="userName"
+                                        placeholder="User Name"
+                                        value="{{isset($editprofiledetail->last_name)?$editprofiledetail->last_name:''}}">
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label class="font-weight-semibold" for="email">Email:</label>
-                                    <input type="email" class="form-control" name="email" id="email" placeholder="email" value="{{$editprofiledetail->email}}">
+                                    <input type="email" class="form-control" name="email" id="email" placeholder="email"
+                                        value="{{isset($editprofiledetail->email)?$editprofiledetail->email:''}}">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label class="font-weight-semibold" for="phoneNumber">Phone Number:</label>
-                                    <input type="number" class="form-control" name="contact_number" id="phoneNumber" placeholder="Phone Number" value="{{$editprofiledetail->contact_number}}">
+                                    <input type="number" class="form-control" name="contact_number" id="phoneNumber"
+                                        placeholder="Phone Number"
+                                        value="{{isset($editprofiledetail->contact_number)?$editprofiledetail->contact_number:''}}">
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-tone btn-primary">Submit</button>
@@ -71,15 +82,18 @@
                             <div class="form-row">
                                 <div class="form-group col-md-3">
                                     <label class="font-weight-semibold" for="oldPassword">Old Password:</label>
-                                    <input type="password" class="form-control" value="" id="oldPassword" placeholder="Old Password">
+                                    <input type="password" class="form-control" name="oldpassword" id="oldPassword"
+                                        placeholder="Old Password">
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label class="font-weight-semibold" for="newPassword">New Password:</label>
-                                    <input type="password" class="form-control" name="newPassword" id="newPassword" placeholder="New Password">
+                                    <input type="password" class="form-control" name="newPassword" id="newPassword"
+                                        placeholder="New Password">
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label class="font-weight-semibold" for="confirmPassword">Confirm Password:</label>
-                                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password">
+                                    <input type="password" class="form-control" name="confirmPassword"
+                                        id="confirmPassword" placeholder="Confirm Password">
                                 </div>
                                 <div class="form-group col-md-3">
                                     <button type="submit" class="btn btn-primary m-t-30">Change</button>
