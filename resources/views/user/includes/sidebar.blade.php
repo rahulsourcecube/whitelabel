@@ -90,7 +90,7 @@
                 </a>
             </li>
              <li class="nav-item dropdown open">
-                <a class="dropdown-toggle"  href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <a class="dropdown-toggle"  href="{{ route('user.logout') }}">
                     <span class="icon-holder">
                         <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
                     </span>

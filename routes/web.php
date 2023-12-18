@@ -39,22 +39,32 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
 });
+
 Route::prefix('user')->name('user.')->group(function () {
     Route::get('/', [UsrController::class, 'index'])->name('login');
     Route::get('/login', [UsrController::class, 'index'])->name('login');
-    Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
-    Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
-    Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
-    Route::get('edit_profile', [UsrController::class, 'editProfile'])->name('edit_profile');
-    Route::get('profile', [UsrController::class, 'profile'])->name('profile');
-    Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
-    Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
-    Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
-    Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
-    Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
-    Route::get('/signup', [UsrController::class, 'signup'])->name('signup');
+    Route::get('/signup/{referral_code?}', [UsrController::class, 'signup'])->name('signup');
+    Route::post('/store', [UsrController::class, 'login'])->name('userLogin');
+    Route::post('/signup-store', [UsrController::class, 'store'])->name('store');
     Route::get('/forget', [UsrController::class, 'forget'])->name('forgetpassword');
-    Route::get('/confirm/password', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::post('/forget-password', [UsrController::class, 'submitForgetPassword'])->name('forget-password');
+    Route::get('/confirm/password/{token}', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::post('/reset-password', [UsrController::class, 'submitResetPassword'])->name('reset-password');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
+        Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
+        Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
+        Route::get('edit_profile', [UsrController::class, 'editProfile'])->name('edit_profile');
+        Route::get('profile', [UsrController::class, 'profile'])->name('profile');
+        Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
+        Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
+        Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
+        Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
+        Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
+        Route::get('/logout',[UsrController::class,'Logout'])->name('logout');  
+    });
+
 });
 
 Route::prefix('company')->name('company.')->group(function () {
