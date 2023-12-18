@@ -9,22 +9,23 @@
                 <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                     <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                 <a href="{{ route('admin.package.list') }}" class="breadcrumb-item">Task</a>
-                <span class="breadcrumb-item active">Add</span>
+                <span class="breadcrumb-item active">Edit</span>
             </nav>
         </div>
     </div>
+ 
     <div class="card">
         <div class="card-body">
-            <h4>Add Task</h4>
+            <h4>Edit Task</h4>
             <div class="m-t-50" style="">
-                <form id="taskadd" method="POST" action="{{ route('company.campaign.store') }}"
+                <form id="taskadd" method="POST" action="{{ route('company.campaign.update', $task->id) }}"
                     enctype="multipart/form-data">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="title">Task Titles <span class="error">*</span></label>
                             <input type="text" class="form-control" id="title" name="title" placeholder="Task Title"
-                                maxlength="150" value="{{ old('title') }}">
+                                maxlength="150" value="{{$task->title ?? ''}}">
                             @error('title')
                             <label id="title-error" class="error" for="title">{{ $message }}</label>
                             @enderror
@@ -33,7 +34,7 @@
                             <label for="reward"> Reward <span class="error">*</span></label>
                             <input type="text" class="form-control" id="reward" name="reward" placeholder="Reward"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                value="{{ old('reward') }}">
+                                value="{{$task->reward ?? ''}}">
                             @error('reward')
                             <label id="reward-error" class="error" for="reward">{{ $message }}</label>
                             @enderror
@@ -41,7 +42,7 @@
                         <div class="form-group col-md-12">
                             <label for="description">Description</label>
                             <textarea type="text" class="form-control" id="description" name="description"
-                                placeholder="description">{{ old('description') }}</textarea>
+                                placeholder="description">{{ $task->description ?? ''}}</textarea>
                             @error('description')
                             <label id="description-error" class="error" for="description">{{ $message }}</label>
                             @enderror
@@ -51,7 +52,7 @@
                             <input type="date" class="form-control" id="expiry_date" name="expiry_date"
                                 placeholder="No Of Task"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                value="{{ old('expiry_date') }}" min="{{ date('Y-m-d') }}">
+                                value="{{ $task->expiry_date ?? '' }}" min="{{ date($task->expiry_date) }}">
                             @error('expiry_date')
                             <label id="expiry_date-error" class="error" for="expiry_date">{{ $message }}</label>
                             @enderror
@@ -61,7 +62,7 @@
                             <label for="expiry_date">Status</label>
                             <div class="form-group align-items-center">
                                 <div class="switch m-r-10">
-                                    <input type="checkbox" id="switch-1" data-toggle="switch" name="status" value="true" checked>
+                                    <input type="checkbox" id="switch-1" name="status" value="true" @if (isset( $task->status) && $task->status == 0 ) checked="" @endif>
                                     <label for="switch-1"></label>
                                 </div>
                             </div>
@@ -79,10 +80,19 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3" style="max-height: 200px;">
-                            <img id="imagePreview" src="#" alt="Image Preview"
-                                style="max-width: 100%; max-height: 80%;display: none;">
-                            <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
-                                style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
+                            @if (isset($task) && !empty($task->image) && file_exists('uploads/company/campaign/' . $task->image))
+                                    <img id="imagePreview"
+                                        src="{{ asset('uploads/company/campaign/' . $task->image) }}"
+                                        alt="Image Preview" style="max-width: 100%; max-height: 80%;">
+                                    {{-- <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2" onclick="deleteImage()"><i
+                                            class="fa fa-trash"></i></button> --}}
+                                @else
+                                    <img id="imagePreview" src="#" alt="Image Preview"
+                                        style="max-width: 100%; max-height: 80%; display: none;">
+                                    <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
+                                        style="display: none;" onclick="deleteImage()"><i
+                                            class="fa fa-trash"></i></button>
+                                @endif
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -94,7 +104,6 @@
 @endsection
 @section('js')
 <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
-
 <script>
     $(document).ready(function() {
             window.onload = () => {

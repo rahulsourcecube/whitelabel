@@ -13,6 +13,7 @@ use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\User\UsrController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -104,48 +105,60 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 });
 
 Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
-    Route::get('dashboard', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
     Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');
+    Route::post('update_profile/{id}', [CompanyLoginController::class, 'updateprofile'])->name('update_profile');
+    Route::post('update_passsword', [CompanyLoginController::class, 'updatepassword'])->name('update_password');
     Route::get('profile', [CompanyLoginController::class, 'profile'])->name('profile');
-
-    Route::prefix('user')->name('user.')->group(function () {
-        Route::get('', [UserController::class, 'index'])->name('list');
-        Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::post('/store', [UserController::class, 'store'])->name('store');
-        Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
-        Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
-        Route::get('view/{id}', [UserController::class, 'view'])->name('view');
-        Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
-        Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
-    });
-    Route::prefix('campaign')->name('campaign.')->group(function () {
-        Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
-        Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');
-        Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
-        Route::post('/store', [CampaignController::class, 'store'])->name('store');
-        Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
-        Route::get('/edit/{type}/{id}', [CampaignController::class, 'edit'])->name('edit');
-        Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
-        Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
-    });
     Route::prefix('package')->name('package.')->group(function () {
-        Route::get('', [CompanyPackageController::class, 'index'])->name('list');
+        Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
+        Route::post('/buy', [CompanyPackageController::class, 'buy'])->name('buy');
     });
-    Route::prefix('billing')->name('billing.')->group(function () {
-        Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
+    Route::middleware('buy.package')->group(function () {
+        Route::get('dashboard', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
+        Route::prefix('user')->name('user.')->group(function () {
+            Route::get('', [UserController::class, 'index'])->name('list');
+            Route::get('/create', [UserController::class, 'create'])->name('create');
+            Route::post('/email/check', [UserController::class, 'checkEmail'])->name('checkEmail');
+            Route::post('/number/check', [UserController::class, 'checkContactNumber'])->name('checkContactNumber');
+            Route::post('/store', [UserController::class, 'store'])->name('store');
+            Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
+            Route::get('view/{id}', [UserController::class, 'view'])->name('view');
+            Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
+            Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
+        });
+        Route::prefix('campaign')->name('campaign.')->group(function () {
+            Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
+            Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');
+            Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
+            Route::post('/store', [CampaignController::class, 'store'])->name('store');
+            Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
+            Route::get('/edit/{type}/{id}', [CampaignController::class, 'edit'])->name('edit');
+            Route::post('/update/{Campaign}', [CampaignController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
+            Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
+        });
+        Route::prefix('billing')->name('billing.')->group(function () {
+            Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
+        });
+        Route::prefix('setting')->name('setting.')->group(function () {
+            Route::get('', [CompanySettingController::class, 'index'])->name('index');
+            Route::post('store', [CompanySettingController::class, 'store'])->name('store');
+        });
+        Route::prefix('role')->name('role.')->group(function () {
+            Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');
+            Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
+            Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');
+        });
+        Route::prefix('employee')->name('employee.')->group(function () {
+            Route::get('', [EmployeeController::class, 'index'])->name('list');
+            Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+            Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
+        });
     });
-    Route::prefix('setting')->name('setting.')->group(function () {
-        Route::get('', [CompanySettingController::class, 'index'])->name('index');
-        Route::post('store', [CompanySettingController::class, 'store'])->name('store');
-    });
-    Route::prefix('role')->name('role.')->group(function () {
-        Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');
-        Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
-        Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');
-    });
-    Route::prefix('employee')->name('employee.')->group(function () {
-        Route::get('', [EmployeeController::class, 'index'])->name('list');
-        Route::get('/create', [EmployeeController::class, 'create'])->name('create');
-        Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
-    });
+});
+Route::get('migrate', function ()
+{
+    Artisan::call('migrate');
+    return 'Yupp, migrations ran successfully!';
 });
