@@ -227,7 +227,7 @@
                 }],
             });
 
-            var table = $('#requests').DataTable({
+            var table2 = $('#requests').DataTable({
                 // Processing indicator
                 "processing": false,
                 // DataTables server-side processing mode
@@ -265,7 +265,7 @@
                 
                 }],
             });
-            var table = $('#accept_user').DataTable({
+            var table3 = $('#accept_user').DataTable({
                 // Processing indicator
                 "processing": false,
                 // DataTables server-side processing mode
@@ -293,6 +293,7 @@
                 },
                 'columnDefs': [{
                     'targets': 0,
+                    'width': 'auto',
                     'visible': false,
                     'orderable': false,
                     'render': function(data, type, row) {
@@ -302,7 +303,7 @@
                 
                 }],
             });
-            var table = $('#reject_user').DataTable({
+            var table4 = $('#reject_user').DataTable({
                 // Processing indicator
                 "processing": false,
                 // DataTables server-side processing mode
@@ -330,6 +331,7 @@
                 },
                 'columnDefs': [{
                     'targets': 0,
+                    'width': 'auto',
                     'visible': false,
                     'orderable': false,
                     'render': function(data, type, row) {

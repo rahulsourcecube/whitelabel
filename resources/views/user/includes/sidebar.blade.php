@@ -13,7 +13,7 @@
                 </a>
             </li>
             <li class="nav-item dropdown open">
-                <a class="dropdown-toggle" href="{{ route('user.campaign') }}">
+                <a class="dropdown-toggle" href="{{ route('user.campaign.list') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
                     </span>

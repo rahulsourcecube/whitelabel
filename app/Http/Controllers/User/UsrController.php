@@ -30,16 +30,6 @@ class UsrController extends Controller
         $data['total_package'] = 0;
         return view('user.dashboard', $data);
     }
-    function campaign()
-    {
-
-        return view('user.campaign.list');
-    }
-    function campaignview()
-    {
-
-        return view('user.campaign.view');
-    }
     public function editProfile()
     {
         return view('user.editprofile');
