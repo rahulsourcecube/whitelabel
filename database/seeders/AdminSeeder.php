@@ -26,26 +26,8 @@ class AdminSeeder extends Seeder
                 'view_password' => 'Admin@2023',
                 'user_type' => '1',
             ],
-            [
-                'first_name' => 'Demo',
-                'last_name' => 'Company',
-                'email' => 'company@mailinator.com',
-                'contact_number' => '1234567890',
-                'user_type' => 'Company',
-                'password' => Hash::make('Company@2023'),
-                'view_password' => 'Company@2023',
-                'user_type' => '2',
-            ],
-            [
-                'first_name' => 'Demo',
-                'last_name' => 'User',
-                'email' => 'user@mailinator.com',
-                'contact_number' => '1234567890',
-                'user_type' => 'User',
-                'password' => Hash::make('User@2023'),
-                'view_password' => 'User@2023',
-                'user_type' => '4',
-            ],
+            
+            
         ];
 
         foreach ($user as $key => $value) {
