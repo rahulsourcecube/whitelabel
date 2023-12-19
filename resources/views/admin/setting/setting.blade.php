@@ -25,7 +25,6 @@
                     <form id="settings" method="POST" action="{{ route('admin.setting.store') }}"
                         enctype="multipart/form-data">
                         @csrf
-
                         <div class="form-row">
                             <div class="form-group col-md-4">
                                 <label for="title">Title</label>
@@ -71,7 +70,6 @@
                                     value="{{ !empty($setting) ? $setting->linkedin_link : '' }}">
 
                             </div>
-
                             <div class="form-group col-md-4">
                                 <label for="leader_image">Logo</label>
                                 <input type="file" class="form-control" name="logo" id="logofiles"
@@ -82,8 +80,6 @@
                                         <img id="logoimagePreviews"
                                             src="{{ !empty($setting) && $setting->logo ? asset('uploads/setting/' . $setting->logo) : '' }}"
                                             alt="Logo Preview" class="img-reposive w-100">
-                                        <button type="button" id="logodeleteImageButtons"
-                                            class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -99,8 +95,6 @@
                                         <img id="imagePreviews"
                                             src="{{ !empty($setting) && $setting->favicon ? asset('uploads/setting/' . $setting->favicon) : '' }}"
                                             alt="Favicon Icon Preview" class="img-reposive w-100">
-                                        <button type="button" id="deleteImageButtons"
-                                            class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
