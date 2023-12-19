@@ -28,7 +28,7 @@
                                 <i class="anticon anticon-line-chart"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">5000</h2>
+                                <h2 class="m-b-0">{{ isset($totalReward) ? $totalReward->count() : 0 }}</h2>
                                 <p class="m-b-0 text-muted">My Total Reward </p>
                             </div>
                         </div>
@@ -43,8 +43,10 @@
                                 <i class="anticon anticon-profile"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">3</h2>
-                                <p class="m-b-0 text-muted">Joined Campaigns</p>
+                                <h2 class="m-b-0">{{ isset($totalJoinedCampaign) ? $totalJoinedCampaign->count() : 0 }}
+                                </h2>
+                                <p class="m-b-0 text-muted">Joined Campaign
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -58,8 +60,10 @@
                                 <i class="anticon anticon-user"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">5</h2>
-                                <p class="m-b-0 text-muted">Completed Campaigns</p>
+                                <h2 class="m-b-0">
+                                    {{ isset($totalCompletedCampaign) ? $totalCompletedCampaign->count() : 0 }}</h2>
+                                <p class="m-b-0 text-muted">Completed Campaign
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -85,36 +89,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Join Our Facebook Page</td>
-                                        <td>$500</td>
-                                        <td>Now you can browse privately, and other people who ...</td>
-                                        <td>Referral</td>
-                                        <td>
-                                            <a class="btn btn-success  btn-sm" href="#" role="button"
-                                                title="View"><i class="fa fa-eye"></i></a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Join Our Facebook Page</td>
-                                        <td>$500</td>
-                                        <td>Now you can browse privately, and other people who ...</td>
-                                        <td>Referral</td>
-                                        <td>
-                                            <a class="btn btn-success  btn-sm" href="#" role="button"
-                                                title="View"><i class="fa fa-eye"></i></a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Join Our Facebook Page</td>
-                                        <td>$500</td>
-                                        <td>Now you can browse privately, and other people who ...</td>
-                                        <td>Completed</td>
-                                        <td>
-                                            <a class="btn btn-success  btn-sm" href="#" role="button"
-                                                title="View"><i class="fa fa-eye"></i></a>
-                                        </td>
-                                    </tr>
+                                    @foreach ($campaignList as $data)
+                                        {{-- {{ dd($data->getCampaign->title) }} --}}
+                                        <tr>
+                                            <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
+                                            <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
+                                            <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td>
+                                            <td>{{ isset($data->getCampaign->type) ? $data->getCampaign->type : '' }}</td>
+                                            <td>
+                                                <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view',$data->id)}}" role="button"
+                                                    title="View"><i class="fa fa-eye"></i></a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+
                                 </tbody>
                             </table>
                         </div>
@@ -142,8 +130,9 @@
                                     </button>
                                 </a>
                                 {{-- <a href="http://www.twitter.com/share?url={{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}">Tweet</a> --}}
-                                <a href="https://www.twitter.com/share?u={{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}">
-                                {{-- <a href="#" onclick="shareOnTwitter()"> --}}
+                                <a
+                                    href="https://www.twitter.com/share?u={{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}">
+                                    {{-- <a href="#" onclick="shareOnTwitter()"> --}}
                                     <button class="m-r-5 btn btn-icon btn-hover btn-rounded">
                                         <i class="anticon anticon-twitter"></i>
                                     </button>
