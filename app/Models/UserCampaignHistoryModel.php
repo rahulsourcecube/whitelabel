@@ -23,6 +23,7 @@ class UserCampaignHistoryModel extends Model
         'status',
         'verified_by',        
     ];
+    
     function getuser(){
         return $this->belongsTo(User::class,'user_id');
     }

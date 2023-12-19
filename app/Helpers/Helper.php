@@ -14,7 +14,7 @@ class Helper
     public static function getSiteSetting()
     {
         try {
-            $generalSetting = SettingModel::first();
+            $generalSetting = SettingModel::where('user_id', Auth::user()->id)->first();
             return $generalSetting;
         } catch (\Exception $exception) {
             Log::info('site setting error : ' . $exception->getMessage());
@@ -33,5 +33,13 @@ class Helper
         $user = Auth::user();
         $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
         return $checkPackage;
+    }
+    public static function isInactivePackage()
+    {
+        $user = Auth::user();
+        // dd($user);
+        $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', '1')->count();
+        // dd($checkPackage);
+        return (int)$checkPackage > 0 ? true : false;
     }
 }

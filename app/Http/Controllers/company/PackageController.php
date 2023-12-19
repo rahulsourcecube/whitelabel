@@ -40,7 +40,7 @@ class PackageController extends Controller
          $addPackage->no_of_campaign = $package->no_of_campaign;
          $addPackage->price = $package->price;
          $addPackage->paymnet_method = 'card';
-         $addPackage->status = '0';
+         $addPackage->status = '1';
          $addPackage->paymnet_response = null;
          $addPackage->save();
 

@@ -8,8 +8,18 @@
 </style>
 <!-- Content Wrapper START -->
 <div class="main-content">
-    <div class="page-header no-gutters has-tab">
+    {{-- <div class="page-header no-gutters has-tab">
         <h2 class="font-weight-normal">Edit Profile</h2>
+    </div> --}}
+    <div class="page-header">
+        <div class="header-sub-title">
+            <nav class="breadcrumb breadcrumb-dash">
+                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                        class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                {{-- <a class="breadcrumb-item" href="#">Edit Profile</a> --}}
+                <span class="breadcrumb-item active">Edit Profile</span>
+            </nav>
+        </div>
     </div>
     <div class="container">
         <div class="tab-content m-t-15">
@@ -80,11 +90,11 @@
                         </div>
                         <div class="card-body">
                             <div class="form-row">
-                                <div class="form-group col-md-3">
+                                {{-- <div class="form-group col-md-3">
                                     <label class="font-weight-semibold" for="oldPassword">Old Password:</label>
                                     <input type="password" class="form-control" name="oldpassword" id="oldPassword"
                                         placeholder="Old Password">
-                                </div>
+                                </div> --}}
                                 <div class="form-group col-md-3">
                                     <label class="font-weight-semibold" for="newPassword">New Password:</label>
                                     <input type="password" class="form-control" name="newPassword" id="newPassword"
@@ -131,6 +141,9 @@
     $(document).ready(function() {
         $('#change_password').validate({
             rules: {
+                oldpassword:{
+                    required:true
+                },
                 newPassword: {
                     minlength: 6,
                     maxlength: 15
@@ -140,6 +153,9 @@
                 },
             },
             messages: {
+                oldpassword:{
+                    required:"Please enter old password"
+                },
                 newPassword: {
                     minlength: 'Please enter at least 6 cheracter.',
                     maxlength: 'Maximum password length 15 character.'
