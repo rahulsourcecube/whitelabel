@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 <div class="d-none d-md-flex p-h-40 justify-content-between">
-                    <span class="">© 2019 ThemeNate</span>
+                    {{-- <span class="">© 2019 ThemeNate</span>
                     <ul class="list-inline">
                         <li class="list-inline-item">
                             <a class="text-dark text-link" href="#">Legal</a>
@@ -69,7 +69,7 @@
                         <li class="list-inline-item">
                             <a class="text-dark text-link" href="#">Privacy</a>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
             </div>
         </div>

@@ -36,7 +36,7 @@
                         </div>
                         <div class="form-group col-md-4">
                             <label for="cemail">Contact Email</label>
-                            <input type="cemail" class="form-control mb-2" name="email" id="cemail"
+                            <input type="email" class="form-control mb-2" name="email" id="cemail"
                                 placeholder="Company Email" value="{{ !empty($setting) ? $setting->email : '' }}">
                         </div>
                         <div class="form-group col-md-4">
