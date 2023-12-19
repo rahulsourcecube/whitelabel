@@ -21,7 +21,7 @@
                                 <div class="d-md-flex align-items-center">
                                     <div class="text-center text-sm-left ">
                                         <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                            @if (isset($userData->profile_image) && file_exists(public_path('user/profile_image/' . $userData->profile_image)))
+                                            @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
                                                 <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
                                             @else
                                                 <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
@@ -94,7 +94,7 @@
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar avatar-image"
                                                                 style="height: 30px; min-width: 30px; max-width:30px">
-                                                                @if (isset($data->profile_image) && file_exists(public_path('user/profile_image/' . $data->profile_image)))
+                                                                @if (isset($data->profile_image) && file_exists(asset('user/profile_image/' . $data->profile_image)))
                                                                     <img src="{{ asset('user/profile_image/' . $data->profile_image) }}"
                                                                         style="width: 50px; height: auto;" class="mt-2">
                                                                 @else
