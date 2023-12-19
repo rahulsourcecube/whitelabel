@@ -207,7 +207,7 @@ class UsrController extends Controller
             $userRegister->company_id = $companyId->id;
             $userRegister->referral_code = Str::random(6);
             $userRegister->password = Hash::make($request->password);
-            $userRegister->referral_user_id = ($referrer_user) ? $referrer_user->id : null;
+            $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
 
             // $baseUrl = config('app.url');
             // $affiliateLink = $baseUrl . '/user/signup?referral_code=' . $userRegister->referral_code;
@@ -217,6 +217,7 @@ class UsrController extends Controller
 
             return redirect()->route('user.login')->with('success', "Registration Successfully!");
         } catch (Exception $exception) {
+            dd($exception);
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
