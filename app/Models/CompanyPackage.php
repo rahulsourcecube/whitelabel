@@ -10,8 +10,8 @@ class CompanyPackage extends Model
     use HasFactory;
     protected $table = 'company_package';
     const STATUS = [
-        'ACTIVE' => '0',
-        'INACTIVE' => '1',
+        'ACTIVE' => '1',
+        'INACTIVE' => '0',
     ];
     protected $fillable = [
         'payment_id',

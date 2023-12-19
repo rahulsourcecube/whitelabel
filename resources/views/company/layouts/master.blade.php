@@ -2,6 +2,7 @@
 <html lang="en">
 @php
 $siteSetting = App\Helpers\Helper::getSiteSetting();
+$packagebuymessage = App\Helpers\Helper::isInactivePackage(); 
 @endphp
 
 <head>
@@ -34,18 +35,21 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
             <!-- Page Container START -->
             <div class="page-container">
                 <div class="container notification">
+                    @if(!$packagebuymessage)
+                    
                     <div class="alert alert-danger alert-dismissible fade show">
                         <strong>Please purchase package</strong>. <a href="{{route('company.package.list', 'Free')}}">Click</a>
                         here to buy package.
                     </div>
-                    <div class="row">
+                    @endif
+                    {{-- <div class="row">
                         <div class="col-md-12">
                             <div class="alert alert-info">
                                 Please update your profile!! <a href="{{route('company.edit_profile')}}">Click</a> here
                                 update profile.
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <!-- Content Wrapper START -->
                 @yield('main-content')

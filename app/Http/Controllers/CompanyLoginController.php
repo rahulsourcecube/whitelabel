@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\company\forgetpass;
+use App\Models\CampaignModel;
 use App\Models\SettingModel;
 use Exception;
 use Illuminate\Contracts\Validation\Validator;
@@ -31,10 +32,16 @@ class CompanyLoginController extends Controller
     }
     function dashboard()
     {
+        $companyId = Auth::user()->id;
         $data = [];
-        $data['total_campaign'] = 0;
-        $data['total_user'] = 0;
+        $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
+        $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
+        // dd($data);
         $data['total_campaignReq'] = 0;
+        $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(10)->get();
+        $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(10)->get();
+        $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
+        // dd($data);
         return view('company.dashboard', $data);
     }
     public function login(Request $request)
@@ -205,7 +212,8 @@ class CompanyLoginController extends Controller
     {
         $profiledetail = User::where('id', Auth::user()->id)->first();
         $companydetail = SettingModel::where('user_id', Auth::user()->id)->first();
-        return view('company.profile', compact('profiledetail', 'companydetail'));
+        $companyname = CompanyModel::where('user_id', Auth::user()->id)->first();
+        return view('company.profile', compact('profiledetail', 'companydetail', 'companyname'));
     }
     public function updatepassword(Request $request)
     {
@@ -214,12 +222,13 @@ class CompanyLoginController extends Controller
             if (empty($userCheck)) {
                 return redirect()->back()->with('error', 'User not found!');
             }
-            // if(!Hash::check($request->oldpassword,$userCheck->password)){
+            // if (Hash::check($request->oldpassword, $userCheck->password)) {
+                $userCheck->password = Hash::make($request->newPassword);
+                $userCheck->view_password = $request->newPassword;
+                $userCheck->update();
+            // } else {
             //     return redirect()->back()->with('error', 'Password is incorrect');
             // }
-            $userCheck->password = Hash::make($request->newPassword);
-            $userCheck->view_password = $request->newPassword;
-            $userCheck->update();
             return redirect()->route('company.dashboard')->with('message', 'Password Update Successfully!');
         } catch (Exception $e) {
             Log::info("change password in profile error" . $e->getMessage());

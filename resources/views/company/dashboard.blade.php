@@ -14,8 +14,10 @@
                                 <i class="anticon anticon-dollar"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ $total_campaign }}</h2>
-                                <p class="m-b-0 text-muted">Total Point's Earned</p>
+                                <h2 class="m-b-0">{{ isset($total_user) ? $total_user : "" }}</h2>
+                                {{-- <p class="m-b-0 text-muted">Total Point's Earned</p> --}}
+                                <p class="m-b-0 text-muted">Total Number Users</p>
+
                             </div>
                         </div>
                     </div>
@@ -29,7 +31,7 @@
                                 <i class="anticon anticon-dollar"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ $total_campaign }}</h2>
+                                <h2 class="m-b-0">{{ isset($total_campaign) ? $total_campaign : "" }}</h2>
                                 <p class="m-b-0 text-muted">Number of Active Tasks</p>
                             </div>
                         </div>
@@ -44,7 +46,7 @@
                                 <i class="anticon anticon-profile"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ $total_campaignReq }}</h2>
+                                <h2 class="m-b-0">{{ isset($total_campaignReq) ? $total_campaignReq : "" }}</h2>
                                 <p class="m-b-0 text-muted">Campaign Approval Request</p>
                             </div>
                         </div>
@@ -64,55 +66,23 @@
                             </div>
                         </div>
                         <div class="m-t-30">
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Follow us on facebook</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$500</p>
+                            @if (!empty($referral_tasks) && count($referral_tasks) > 0)
+                                @foreach ($referral_tasks as $referral_task)
+                                <div class="m-b-25">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="media align-items-center">
+                                            <div class="m-l-15">
+                                                <h6 class="m-b-0">
+                                                    <a class="text-dark" href="javascript:void(0);">{{isset($referral_task->title) ? $referral_task->title   : ""}}</a>
+                                                </h6>
+                                                <p class="text-muted m-b-0">${{isset($referral_task->reward) ? $referral_task->reward   : ""}}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Follow us on instagram</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$200</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                @endforeach
+                            @endif
 
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Follow us on thread</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$600</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Subscribe to our chanel on youtube</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$100</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,55 +100,23 @@
                             </div>
                         </div>
                         <div class="m-t-30">
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Follow us on facebook</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$500</p>
+                            @if (!empty($social_share_tasks) && count($social_share_tasks) > 0)
+                                @foreach ($social_share_tasks as $social_share_task)
+                                <div class="m-b-25">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="media align-items-center">
+                                            <div class="m-l-15">
+                                                <h6 class="m-b-0">
+                                                    <a class="text-dark" href="javascript:void(0);">{{isset($social_share_task->title) ? $social_share_task->title   : ""}}</a>
+                                                </h6>
+                                                <p class="text-muted m-b-0">${{isset($social_share_task->reward) ? $social_share_task->reward   : ""}}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Follow us on instagram</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$200</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                @endforeach
+                            @endif
 
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Follow us on thread</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$600</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Subscribe to our chanel on youtube</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$100</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -194,55 +132,23 @@
                             </div>
                         </div>
                         <div class="m-t-30">
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Comment on our blog</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$500</p>
+                            @if (!empty($custom_tasks) && count($custom_tasks) > 0)
+                                @foreach ($custom_tasks as $custom_task)
+                                <div class="m-b-25">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="media align-items-center">
+                                            <div class="m-l-15">
+                                                <h6 class="m-b-0">
+                                                    <a class="text-dark" href="javascript:void(0);">{{isset($custom_task->title) ? $custom_task->title   : ""}}</a>
+                                                </h6>
+                                                <p class="text-muted m-b-0">${{isset($custom_task->reward) ? $custom_task->reward   : ""}}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Share blog on instagram</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$200</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                @endforeach
+                            @endif
 
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Like our post</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$600</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="m-b-25">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="media align-items-center">
-                                        <div class="m-l-15">
-                                            <h6 class="m-b-0">
-                                                <a class="text-dark" href="javascript:void(0);">Subscribe to our chanel on youtube</a>
-                                            </h6>
-                                            <p class="text-muted m-b-0">$100</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

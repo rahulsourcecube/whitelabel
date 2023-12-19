@@ -29,6 +29,9 @@ class UserCampaignHistoryModel extends Model
     function getcompany(){
         return $this->belongsTo(CompanyModel::class,'id');
     }
+    function gettasktype(){
+        return $this->belongsTo(CampaignModel::class,'campaign_id');
+    }
     public function getTaskStatusAttribute() {
         $status = $this->status;
         $string = 'Pending';

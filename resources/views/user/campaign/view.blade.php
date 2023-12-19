@@ -99,9 +99,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($user_detail as $user_detail_get)
+                                    @foreach ($user_detail as $key => $user_detail_get)
+                                    @if($user_detail_get->gettasktype->task_type)
+                                    {{-- @dd($user_detail_get->gettasktype->task_type) --}}
                                     <tr>
-                                        <td>{{$user_detail_get->user_id}}</td>
+                                        <td>{{++$key}}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="d-flex align-items-center">
@@ -123,6 +125,7 @@
                                         </td>
                                         <td>8 May 2019</td>
                                     </tr>
+                                    @endif
                                     @endforeach
                                 </tbody>
                             </table>

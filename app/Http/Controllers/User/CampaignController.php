@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\UserCampaignHistoryModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CampaignController extends Controller
 {
@@ -15,15 +16,16 @@ class CampaignController extends Controller
     }
     function dtlist(Request $request)
     {
+        
         $columns = ['id', 'title'];
-        $totalData = CampaignModel::where('company_id', 33)->count();
+        $totalData = CampaignModel::where('company_id', Auth::user()->id)->count();
         $start = $request->input('start');
         $length = $request->input('length');
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
         $results = CampaignModel::orderBy($columns[$order], $dir)
-            ->where('company_id', 33)
+            ->where('company_id', Auth::user()->id)
             ->skip($start)
             ->take($length)
             ->get();
@@ -81,7 +83,7 @@ class CampaignController extends Controller
     {
         $campagin_id = base64_decode($request->id);
         $campagin_detail = CampaignModel::where('id', $campagin_id)->first();
-        $user_detail = UserCampaignHistoryModel::whereNot('user_id',33)->orderBy('user_id','desc')->get();
+        $user_detail = UserCampaignHistoryModel::whereNot('user_id',Auth::user()->id)->with(['gettasktype'])->orderBy('user_id','desc')->get();
         if (isset($campagin_detail)) {
             return view('user.campaign.view', compact('campagin_detail','user_detail'));
         }
@@ -92,7 +94,7 @@ class CampaignController extends Controller
         $getcampaign = CampaignModel::where('id', $campagin_id)->first();
         $input = new UserCampaignHistoryModel;
         $input->campaign_id = isset($getcampaign->id) ? $getcampaign->id : '';
-        $input->user_id = 35;
+        $input->user_id = Auth::user()->id;
         $input->reward = isset($getcampaign->reward) ? $getcampaign->reward : '';
         $input->status = 1;
         $input->verified_by = 1;
