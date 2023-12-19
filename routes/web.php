@@ -58,16 +58,17 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
         Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
         Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
-        Route::get('edit_profile', [UsrController::class, 'editProfile'])->name('edit_profile');
+        Route::get('/edit_profile/{id?}', [UsrController::class, 'editProfile'])->name('edit_profile');
+        Route::post('/edit_profile_store/{id}', [UsrController::class, 'editProfileStore'])->name('editProfileStore');
         Route::get('profile', [UsrController::class, 'profile'])->name('profile');
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
         Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
         Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
         Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
         Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
-        Route::get('/logout',[UsrController::class,'Logout'])->name('logout');  
+        Route::post('/changePassword-store', [UsrController::class, 'changePasswordStore'])->name('changePasswordStore');
+        Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
     });
-
 });
 Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {
     Route::get('/', [UserCampaignController::class, 'campaign'])->name('list');

@@ -1,5 +1,3 @@
-
-
 <div class="header">
     <div class="logo logo-dark">
         <a href="{{ route('user.dashboard') }}">
@@ -39,18 +37,28 @@
             <li class="dropdown dropdown-animated scale-left">
                 <div class="pointer" data-toggle="dropdown">
                     <div class="avatar avatar-image  m-h-10 m-r-15">
-                        <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                        @if (isset($userData->profile_image) && file_exists(public_path('user/profile_image/' . $userData->profile_image)))
+                            <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
+                        @else
+                            <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                        @endif
                     </div>
                 </div>
                 <div class="p-b-15 p-t-20 dropdown-menu pop-profile">
                     <div class="p-h-20 p-b-15 m-b-10 border-bottom">
                         <div class="d-flex m-r-50">
                             <div class="avatar avatar-lg avatar-image">
-                                <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                @if (isset($userData->profile_image) && file_exists(public_path('user/profile_image/' . $userData->profile_image)))
+                                    <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
+                                @else
+                                    <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                @endif
                             </div>
                             <div class="m-l-10">
-                                <p class="m-b-0 text-dark font-weight-semibold">User Name</p>
-                                <p class="m-b-0 opacity-07">User Name</p>
+                                <p class="m-b-0 text-dark font-weight-semibold">
+                                    {{ isset(Auth::user()->first_name) ? Auth::user()->first_name : '' }}</p>
+                                <p class="m-b-0 opacity-07">
+                                    {{ isset(Auth::user()->last_name) ? Auth::user()->last_name : '' }}</p>
                             </div>
                         </div>
                     </div>
@@ -63,7 +71,13 @@
                             <i class="anticon font-size-10 anticon-right"></i>
                         </div>
                     </a>
-                    <a href="{{ route('user.edit_profile') }}" class="dropdown-item d-block p-h-15 p-v-10">
+                    @if (session('status'))
+                        <div class="alert alert-success">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+                    <a href="{{ route('user.edit_profile', Auth::user()->id) }}"
+                        class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <i class="anticon opacity-04 font-size-16 anticon-edit"></i>
@@ -73,7 +87,7 @@
                         </div>
                     </a>
                     {{-- <a href="{{ route('user.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item d-block p-h-15 p-v-10"> --}}
-                        <a href="{{ route('user.logout') }}"  class="dropdown-item d-block p-h-15 p-v-10">
+                    <a href="{{ route('user.logout') }}" class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
@@ -87,4 +101,3 @@
         </ul>
     </div>
 </div>
-

@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Session;
 
 class UsrController extends Controller
 {
+
+
     function index()
     {
 
@@ -32,12 +34,17 @@ class UsrController extends Controller
 
     public function dashboard()
     {
-        $data = [];
-        $data['total_comapny'] = 0;
-        $data['total_user'] = 0;
-        $data['total_campaign'] = 0;
-        $data['total_package'] = 0;
-        return view('user.dashboard', $data);
+        try {
+            $userData = User::get();
+            $data = [];
+            $data['total_comapny'] = 0;
+            $data['total_user'] = 0;
+            $data['total_campaign'] = 0;
+            $data['total_package'] = 0;
+            return view('user.dashboard', compact('userData', 'data'));
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
     }
 
     public function login(Request $request)
@@ -78,11 +85,73 @@ class UsrController extends Controller
     }
     public function editProfile()
     {
-        return view('user.editprofile');
+        try {
+            $userData = Auth::user();
+            return view('user.editprofile', compact('userData'));
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
     }
+
+    public function changePasswordStore(Request $request)
+    {
+
+        try {
+
+            $currentPasswordStatus = Hash::check($request->current_password, Auth::user()->password);
+            if ($currentPasswordStatus) {
+
+                User::findOrFail(Auth::user()->id)->update([
+                    'password' => Hash::make($request->password),
+                ]);
+
+                return redirect()->back()->with('success', 'Password Updated Successfully');
+            } else {
+                return redirect()->back()->with('error', 'Old Password does not match');
+            }
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
+    public function editProfileStore(Request $request)
+    {
+        try {
+            $profileEdit = Auth::user();
+            if (empty($profileEdit)) {
+                $profileEdit = new User();
+            }
+            $profileEdit->first_name = $request->first_name;
+            $profileEdit->last_name = $request->last_name;
+            $profileEdit->email = $request->email;
+            $profileEdit->contact_number = $request->contact_number;
+
+            if ($request->hasfile('profile_image')) {
+
+                if (\File::exists(public_path('user/profile_image/' . $profileEdit->profile_image))) {
+                    \File::delete(public_path('user/profile_image/' . $profileEdit->profile_image));
+                }
+
+                $file = $request->file('profile_image');
+                $extension = $file->getClientOriginalExtension();
+                $filename = uniqid() . '.' . $extension;
+                $file->move('user/profile_image', $filename);
+                $profileEdit->profile_image = $filename;
+            }
+            $profileEdit->update();
+
+
+            return redirect()->route('user.edit_profile')->with('success', "Edit Profile Successfully!");
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
     public function Profile()
     {
-        return view('user.profile');
+        $userData = Auth::user();
+        $referralUser = User::orderBy('id','DESC')->where('referral_user_id', Auth::user()->id)->get();
+        return view('user.profile', compact('userData','referralUser'));
     }
     function myreward()
     {
@@ -142,7 +211,6 @@ class UsrController extends Controller
 
             return redirect()->route('user.login')->with('success', "Registration Successfully!");
         } catch (Exception $exception) {
-            dd($exception);
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
@@ -219,6 +287,6 @@ class UsrController extends Controller
 
         Auth::logout();
 
-        return redirect('user');
+        return redirect()->route('user.login');
     }
 }

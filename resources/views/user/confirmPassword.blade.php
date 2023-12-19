@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.png') }}">
 
     <style>
-        .error{
+        .error {
             color: red;
         }
     </style>
@@ -47,7 +47,8 @@
                                                 <i class="prefix-icon anticon anticon-user"></i>
                                                 <input id="email" type="email"
                                                     class="form-control @error('email') is-invalid @enderror"
-                                                    name="email" value="{{ $user->email }}" placeholder="Email">
+                                                    name="email" value="{{ isset($user->email) ? $user->email : '' }}"
+                                                    placeholder="Email">
                                             </div>
                                         </div>
                                         <div class="form-group">

@@ -43,6 +43,13 @@
                                             {!! \Session::get('error') !!}
                                         </div>
                                     @endif
+                                    @if (\Session::has('message'))
+                                    <div class="alert alert-success alert-dismissible fade show error"
+                                        style="margin-top: 17px;}" role="alert">
+                                        <i class="uil uil-times me-2"></i>
+                                        {!! \Session::get('message') !!}
+                                    </div>
+                                @endif
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
                                         <img class="img-fluid" alt=""
                                             src="{{ asset('assets/images/logo/logo.png') }}">
