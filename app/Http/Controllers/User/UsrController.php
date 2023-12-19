@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserCampaignHistoryModel;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -35,13 +36,18 @@ class UsrController extends Controller
     public function dashboard()
     {
         try {
+
+            $campaignList = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
+            $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status','1')->where('user_id',Auth::user()->id)->get();
+            $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status','3')->where('user_id',Auth::user()->id)->get();
+            $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id',Auth::user()->id)->get();
             $userData = User::get();
             $data = [];
             $data['total_comapny'] = 0;
             $data['total_user'] = 0;
             $data['total_campaign'] = 0;
             $data['total_package'] = 0;
-            return view('user.dashboard', compact('userData', 'data'));
+            return view('user.dashboard', compact('userData', 'data', 'campaignList','totalJoinedCampaign','totalCompletedCampaign','totalReward'));
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
@@ -150,8 +156,8 @@ class UsrController extends Controller
     public function Profile()
     {
         $userData = Auth::user();
-        $referralUser = User::orderBy('id','DESC')->where('referral_user_id', Auth::user()->id)->get();
-        return view('user.profile', compact('userData','referralUser'));
+        $referralUser = User::orderBy('id', 'DESC')->where('referral_user_id', Auth::user()->id)->get();
+        return view('user.profile', compact('userData', 'referralUser'));
     }
     function myreward()
     {

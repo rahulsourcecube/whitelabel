@@ -59,7 +59,7 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
         Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
         Route::get('/edit_profile/{id?}', [UsrController::class, 'editProfile'])->name('edit_profile');
-        Route::post('/edit_profile_store/{id}', [UsrController::class, 'editProfileStore'])->name('editProfileStore');
+        Route::post('/edit_profile_store', [UsrController::class, 'editProfileStore'])->name('editProfileStore');
         Route::get('profile', [UsrController::class, 'profile'])->name('profile');
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
         Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');

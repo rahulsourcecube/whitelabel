@@ -4,7 +4,7 @@
             <img src="@if (
                 !empty($siteSetting) &&
                     isset($siteSetting->logo) &&
-                    file_exists(public_path('uploads/setting/' . $siteSetting->logo))) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
+                    file_exists(asset('uploads/setting/' . $siteSetting->logo))) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
                 alt="Logo">
             <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold.png') }}" alt="Logo">
         </a>
@@ -37,7 +37,7 @@
             <li class="dropdown dropdown-animated scale-left">
                 <div class="pointer" data-toggle="dropdown">
                     <div class="avatar avatar-image  m-h-10 m-r-15">
-                        @if (isset($userData->profile_image) && file_exists(public_path('user/profile_image/' . $userData->profile_image)))
+                        @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
                             <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
                         @else
                             <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
@@ -48,7 +48,7 @@
                     <div class="p-h-20 p-b-15 m-b-10 border-bottom">
                         <div class="d-flex m-r-50">
                             <div class="avatar avatar-lg avatar-image">
-                                @if (isset($userData->profile_image) && file_exists(public_path('user/profile_image/' . $userData->profile_image)))
+                                @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
                                     <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
                                 @else
                                     <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
@@ -76,7 +76,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <a href="{{ route('user.edit_profile', Auth::user()->id) }}"
+                    <a href="{{ route('user.edit_profile') }}"
                         class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
