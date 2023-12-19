@@ -95,7 +95,7 @@
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                             <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
                                             <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td>
-                                            <td>{{ isset($data->getCampaign->type) ? $data->getCampaign->type : '' }}</td>
+                                            <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}</td>
                                             <td>
                                                 <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view',$data->id)}}" role="button"
                                                     title="View"><i class="fa fa-eye"></i></a>
