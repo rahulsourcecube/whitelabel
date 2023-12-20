@@ -72,6 +72,43 @@ class CampaignController extends Controller
             ]);
         }
     }
+    public function statuswiselist(Request $request){
+        $columns = ['id', 'title'];
+       
+        $start = $request->input('start');
+        $length = $request->input('length');
+        $order = $request->input('order.0.column');
+        $dir = $request->input('order.0.dir');
+        $list = [];
+        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
+        // ->where('company_id', Auth::user()->id)
+        ->where('campaign_id', $request->input('id'))
+        ->where('status', $request->input('status'))
+            ->skip($start)
+            ->take($length)
+            ->get();
+           
+        foreach ($results as $result) {
+          
+            $list[] = [
+                base64_encode($result->id),
+                $result->getuser->full_name ?? "-",
+                $result->getuser->email ?? "-",
+                $result->getuser->contact_number ?? "-",              
+                $result->reward ?? "-",              
+                date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
+                $result->TaskStatus?? "-",                     
+            
+            ];
+        }
+        $totalFiltered = $results->count();
+        return response()->json([
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => count($results),
+            "recordsFiltered" => $totalFiltered,
+            "data" => $list
+        ]);
+    }
     public function joined($id,Request $request)
     {
        
@@ -368,6 +405,29 @@ class CampaignController extends Controller
             return response()->json(['success' => 'error', 'message' => 'Task deleted successfully']);
         } catch (Exception $e) {
             Log::error('Campaign delete error : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong');
+        }
+    }
+    public function action(Request $request)
+    {      
+      
+        try {
+            $id = base64_decode($request->id);
+            $action = UserCampaignHistoryModel::where('id',$id)->first();
+            
+          
+            if($request->action=='3'){
+                $action->status = '3';
+                $action->save();
+                return response()->json(['success' => 'error', 'message' => 'Task Accept  Approval Requset successfully']);             
+            }else{
+                $action->status = '4';
+                $action->save();
+                return response()->json(['success' => 'error', 'message' => 'Task Reject  Approval Requset successfully']); 
+            }
+           
+        } catch (Exception $e) {
+            Log::error('ation error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }
     }
