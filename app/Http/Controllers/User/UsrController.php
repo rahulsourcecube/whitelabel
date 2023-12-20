@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class UsrController extends Controller
 {
@@ -37,18 +38,20 @@ class UsrController extends Controller
     {
         try {
 
-            $campaignList = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
-            $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status','1')->where('user_id',Auth::user()->id)->get();
-            $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status','3')->where('user_id',Auth::user()->id)->get();
-            $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id',Auth::user()->id)->get();
+            $campaignList = UserCampaignHistoryModel::orderBy('user_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
+            $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
+            $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
+            $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->get();
+
             $userData = User::get();
             $data = [];
             $data['total_comapny'] = 0;
             $data['total_user'] = 0;
             $data['total_campaign'] = 0;
             $data['total_package'] = 0;
-            return view('user.dashboard', compact('userData', 'data', 'campaignList','totalJoinedCampaign','totalCompletedCampaign','totalReward'));
+            return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward'));
         } catch (Exception $exception) {
+            
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
@@ -123,28 +126,53 @@ class UsrController extends Controller
     public function editProfileStore(Request $request)
     {
         try {
-            $profileEdit = Auth::user();
-            if (empty($profileEdit)) {
-                $profileEdit = new User();
+            $profileId = Auth::user()->id;
+
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|email',
+                'contact_number' => 'required|numeric|digits:10',
+                'profile_image' => 'file|mimes:jpeg,png,jpg|max:2048',
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
             }
+
+            $userEmail = User::where('company_id', $profileId)->where('email', $request->email)->first();
+
+            if (!empty($userEmail)) {
+                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
+            }
+            $userNumber = User::where('company_id', $profileId)->where('contact_number', $request->contact_number)->first();
+
+            if (!empty($userNumber)) {
+                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
+            }
+
+            $profileEdit = User::where('id', $profileId)->first();
+
             $profileEdit->first_name = $request->first_name;
             $profileEdit->last_name = $request->last_name;
             $profileEdit->email = $request->email;
             $profileEdit->contact_number = $request->contact_number;
 
-            if ($request->hasfile('profile_image')) {
 
-                if (\File::exists(public_path('user/profile_image/' . $profileEdit->profile_image))) {
-                    \File::delete(public_path('user/profile_image/' . $profileEdit->profile_image));
+            if ($request->hasFile('profile_image')) {
+
+                if (\File::exists('uploads/user/user-profile/' . $profileEdit->profile_image)) {
+                    \File::delete('uploads/user/user-profile/' . $profileEdit->profile_image);
                 }
 
-                $file = $request->file('profile_image');
-                $extension = $file->getClientOriginalExtension();
-                $filename = uniqid() . '.' . $extension;
-                $file->move('user/profile_image', $filename);
-                $profileEdit->profile_image = $filename;
+                $extension = $request->file('profile_image')->getClientOriginalExtension();
+                $randomNumber = rand(1000, 9999);
+                $timestamp = time();
+                $image = $timestamp . '_' . $randomNumber . '.' . $extension;
+                $request->file('profile_image')->move('uploads/user/user-profile', $image);
+                $profileEdit->profile_image = $image;
             }
-            $profileEdit->update();
+
+            $profileEdit->save();
 
 
             return redirect()->route('user.edit_profile')->with('success', "Edit Profile Successfully!");
@@ -217,13 +245,13 @@ class UsrController extends Controller
 
             return redirect()->route('user.login')->with('success', "Registration Successfully!");
         } catch (Exception $exception) {
-            dd($exception);
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
 
-    public function forget()
+    public function forget(Request $request)
     {
+
         return view('user.forgetPassword');
     }
 
@@ -241,6 +269,7 @@ class UsrController extends Controller
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]);
+                   
 
             Mail::send('user.email.forgetPassword', ['token' => $token], function ($message) use ($request) {
                 $message->to($request->email);
@@ -282,7 +311,7 @@ class UsrController extends Controller
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 
-            return redirect('/user')->with('success', 'Your password has been changed!');
+            return redirect()->route('user.login')->with('success', 'Your password has been changed!');
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }

@@ -89,15 +89,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($campaignList as $data)
-                                        {{-- {{ dd($data->getCampaign->title) }} --}}
+                                    @foreach ($campaignList as $data)                                      
                                         <tr>
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                             <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
                                             <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td>
-                                            <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}</td>
+                                            <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
+                                            </td>
                                             <td>
-                                                <a class="btn btn-success  btn-sm" href="{{route('user.campaign.view',$data->id)}}" role="button"
+                                                <a class="btn btn-success  btn-sm"
+                                                    href="{{ route('user.campaign.view',base64_decode($data->id)) }}" role="button"
                                                     title="View"><i class="fa fa-eye"></i></a>
                                             </td>
                                         </tr>
@@ -116,7 +117,13 @@
                         <div class="card-body">
                             <div class="m-t-20 text-center">
                                 <div class="avatar avatar-image" style="height: 100px; width: 100px;">
-                                    <img src="{{ asset('assets/images/avatars/thumb-1.jpg') }}" alt="">
+                                    @if (isset(Auth::user()->profile_image) &&
+                                            !empty(Auth::user()->profile_image) &&
+                                            file_exists('uploads/user/user-profile/' . Auth::user()->profile_image))
+                                        <img src="{{ asset('uploads/user/user-profile/' . Auth::user()->profile_image) }}">
+                                    @else
+                                        <img src="{{ asset('assets/images/profile_image.jpg') }}">
+                                    @endif
                                 </div>
                                 <h3 class="m-t-30">
                                     {{ isset(Auth::user()->referral_code) ? Auth::user()->referral_code : '' }}</h3>
@@ -145,9 +152,11 @@
                                 </a>
                             </div>
                             <div class="text-center m-t-30">
+                                <p id="p1" style="display: none;">{{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}</p>
                                 <a href="#" onclick="showSuccessAlert()" class="btn btn-primary btn-tone">
                                     <i class="anticon anticon-copy"></i>
-                                    <span class="m-l-5">Copy</span>
+                                    {{-- <button onclick="copyToClipboard('#p1')">Copy</button> --}}
+                                    <span class="m-l-5" onclick="copyToClipboard('#p1')">Copy</span>
                                 </a>
                             </div>
                         </div>
@@ -172,9 +181,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="m-t-50" style="height: 330px">
-                            <canvas class="chart" id="revenue-chart"></canvas>
+                        <div class="m-t-50">
+                            <canvas class="chart" id="myChart"></canvas>
                         </div>
+                        {{-- <div class="m-t-50">
+                            <canvas class="chart" id="revenue-chart"></canvas>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -226,4 +238,59 @@
                 window.open(twitterShareURL, '_blank');
             }
         </script>
+
+        <script>
+            function copyToClipboard(element) {
+                var $temp = $("<input>");
+                $("body").append($temp);
+                $temp.val($(element).text()).select();
+                document.execCommand("copy");
+                $temp.remove();
+            }
+        </script>
+
+    @endsection
+    @section('js')
+        <script>
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ["Jun 2016", "Jul 2016", "Aug 2016", "Sep 2016", "Oct 2016", "Nov 2016", "Dec 2016",
+                        "Jan 2017", "Feb 2017", "Mar 2017", "Apr 2017", "May 2017"
+                    ],
+                    datasets: [{
+                        label: {
+                            display: false,
+                        },
+                        borderColor: 'royalblue',
+                        data: [26.4, 39.8, 66.8, 66.4, 40.6, 55.2, 77.4, 69.8, 57.8, 76, 110.8, 142.6],
+                    }]
+                },
+                options: {
+                    layout: {
+                        padding: 10,
+                    },
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                    },
+                    scales: {
+                        yAxes: [{
+                            scaleLabel: {
+                                display: true,
+                            }
+                        }],
+                        xAxes: [{
+                            scaleLabel: {
+                                display: true,
+                            }
+                        }]
+                    }
+                }
+            });
+        </script>
+
     @endsection
