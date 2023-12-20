@@ -60,8 +60,10 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="m-b-0">Referral Tasks</h5>
                         <div>
-                            <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']))}}" class="btn btn-sm btn-info">View All</a>
-                            <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']))}}" class="btn btn-sm btn-success">Add New</a>
+                            <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']))}}"
+                                class="btn btn-sm btn-info">View All</a>
+                            <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']))}}"
+                                class="btn btn-sm btn-success">Add New</a>
                         </div>
                     </div>
                     <div class="m-t-30">
@@ -72,14 +74,27 @@
                                 <div class="media align-items-center">
                                     <div class="m-l-15">
                                         <h6 class="m-b-0">
-                                            <a class="text-dark" href="javascript:void(0);">{{isset($referral_task->title) ? $referral_task->title   : ""}}</a>
+                                            <a class="text-dark"
+                                                href="{{route('company.campaign.view',[\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']),  base64_encode($referral_task->id)]) }}">{{isset($referral_task->title)
+                                                ? $referral_task->title : ""}}</a>
                                         </h6>
-                                        <p class="text-muted m-b-0">${{isset($referral_task->reward) ? $referral_task->reward   : ""}}</p>
+                                        <p class="text-muted m-b-0">${{isset($referral_task->reward) ?
+                                            $referral_task->reward : ""}}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
+                        @else
+                        <div class="m-b-25">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="media align-items-center">
+                                    <div class="m-l-15">
+                                        <p class="text-muted m-b-0">Task not added it.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -92,8 +107,10 @@
                         <h5 class="m-b-0">Social Share Tasks</h5>
                         <div>
                             <div>
-                                <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']))}}" class="btn btn-sm btn-info">View All</a>
-                                <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']))}}" class="btn btn-sm btn-success">Add New</a>
+                                <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']))}}"
+                                    class="btn btn-sm btn-info">View All</a>
+                                <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']))}}"
+                                    class="btn btn-sm btn-success">Add New</a>
                             </div>
                         </div>
                     </div>
@@ -105,14 +122,28 @@
                                 <div class="media align-items-center">
                                     <div class="m-l-15">
                                         <h6 class="m-b-0">
-                                            <a class="text-dark" href="javascript:void(0);">{{isset($social_share_task->title) ? $social_share_task->title   : ""}}</a>
+                                            <a class="text-dark"
+                                                href="{{route('company.campaign.view',[\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']),  base64_encode($social_share_task->id)]) }}">{{isset($social_share_task->title)
+                                                ?
+                                                $social_share_task->title : ""}}</a>
                                         </h6>
-                                        <p class="text-muted m-b-0">${{isset($social_share_task->reward) ? $social_share_task->reward   : ""}}</p>
+                                        <p class="text-muted m-b-0">${{isset($social_share_task->reward) ?
+                                            $social_share_task->reward : ""}}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
+                        @else
+                        <div class="m-b-25">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="media align-items-center">
+                                    <div class="m-l-15">
+                                        <p class="text-muted m-b-0">Task not added it.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -124,8 +155,10 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="m-b-0">Custom Tasks</h5>
                         <div>
-                            <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']))}}" class="btn btn-sm btn-info">View All</a>
-                            <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']))}}" class="btn btn-sm btn-success">Add New</a>
+                            <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']))}}"
+                                class="btn btn-sm btn-info">View All</a>
+                            <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']))}}"
+                                class="btn btn-sm btn-success">Add New</a>
                         </div>
                     </div>
                     <div class="m-t-30">
@@ -136,14 +169,27 @@
                                 <div class="media align-items-center">
                                     <div class="m-l-15">
                                         <h6 class="m-b-0">
-                                            <a class="text-dark" href="javascript:void(0);">{{isset($custom_task->title) ? $custom_task->title   : ""}}</a>
+                                            <a class="text-dark"
+                                                href="{{route('company.campaign.view',[\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']),  base64_encode($custom_task->id)]) }}">{{isset($custom_task->title)
+                                                ? $custom_task->title : ""}}</a>
                                         </h6>
-                                        <p class="text-muted m-b-0">${{isset($custom_task->reward) ? $custom_task->reward   : ""}}</p>
+                                        <p class="text-muted m-b-0">${{isset($custom_task->reward) ?
+                                            $custom_task->reward : ""}}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         @endforeach
+                        @else
+                        <div class="m-b-25">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="media align-items-center">
+                                    <div class="m-l-15">
+                                        <p class="text-muted m-b-0">Task not added it.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -168,7 +214,7 @@
                         </div>
                     </div>
                     <div class="m-t-50" style="height: 330px">
-                        <canvas class="chart" id="revenue-chart"></canvas>
+                        <canvas class="chart" id="myChart" data-info="{{ $user_campaign_history_reward }}"></canvas>
                     </div>
                 </div>
             </div>

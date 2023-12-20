@@ -95,7 +95,6 @@
                     'visible': true,
                     'orderable': false,
                     'render': function(data, type, row) {
-                        console.log(taskTypeString);
                         var viewUrl = '{{ route('company.campaign.view', [':taskType' ,':id']) }}';
                         var editUrl = '{{ route('company.campaign.edit', [':taskType', ':id']) }}';
                         viewUrl = viewUrl.replace(':taskType', taskTypeString);
