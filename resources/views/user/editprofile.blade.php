@@ -34,10 +34,12 @@
                         <div class="card-body">
                             <div class="media align-items-center">
                                 <div class="avatar avatar-image  m-h-10 m-r-15" style="height: 80px; width: 80px">
-                                    @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
-                                        <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
+                                    @if (isset($userData) &&
+                                            !empty($userData->profile_image) &&
+                                            file_exists('uploads/user/user-profile/' . $userData->profile_image))
+                                        <img src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}">
                                     @else
-                                        <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                    <img src="{{asset('assets/images/profile_image.jpg')}}">
                                     @endif
                                 </div>
                                 <div class="m-l-20 m-r-20">
@@ -83,8 +85,10 @@
                                         <label class="font-weight-semibold" for="profileImage">Profile Image:</label>
                                         <input type="file" min="0" class="form-control" id="profile_image"
                                             name="profile_image">
-                                        @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
-                                            <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}"
+                                        @if (isset($userData) &&
+                                                !empty($userData->profile_image) &&
+                                                file_exists('uploads/user/user-profile/' . $userData->profile_image))
+                                            <img src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}"
                                                 style="width: 50px; height: auto;" class="mt-2">
                                         @else
                                         @endif

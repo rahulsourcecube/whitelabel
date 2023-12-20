@@ -41,6 +41,15 @@
                                         </div>
                                     @endif
 
+                                    @if (\Session::has('error'))
+                                        <div class="alert alert-danger alert-dismissible fade show error"
+                                            style="margin-top: 17px;}" role="alert">
+                                            <i class="uil uil-times me-2"></i>
+                                            {!! \Session::get('error') !!}
+                                        </div>
+                                    @endif
+
+
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
                                         <img class="img-fluid" alt=""
                                             src="{{ asset('assets/images/logo/logo.png') }}">
