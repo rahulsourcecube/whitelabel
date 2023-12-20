@@ -154,6 +154,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
             Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');
             Route::get('joined/user/{id}', [CampaignController::class, 'joined'])->name('joined');
+            Route::post('statuswiselist/user', [CampaignController::class, 'statuswiselist'])->name('statuswiselist');
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
             Route::get('request/accept/{id}', [CampaignController::class, 'accept'])->name('accept');
@@ -165,6 +166,8 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::post('/update/{Campaign}', [CampaignController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
             Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
+            Route::post('/action', [CampaignController::class, 'action'])->name('action');
+
         });
         Route::prefix('billing')->name('billing.')->group(function () {
             Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
@@ -181,7 +184,12 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::prefix('employee')->name('employee.')->group(function () {
             Route::get('', [EmployeeController::class, 'index'])->name('list');
             Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+            Route::post('/store', [EmployeeController::class, 'store'])->name('store');
             Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
+            Route::get('/lists', [EmployeeController::class, 'elist'])->name('elist');
+            Route::get('edit/{id}', [EmployeeController::class, 'edit'])->name('edit');
+            Route::delete('delete/{id}', [EmployeeController::class, 'delete'])->name('delete');
+            Route::post('/update/{id}', [EmployeeController::class, 'update'])->name('update');
         });
     });
 });
