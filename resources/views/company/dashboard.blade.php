@@ -3,6 +3,7 @@
 @section('main-content')
 <!-- Page Container START -->
 <!-- Content Wrapper START -->
+@php $currency = App\Helpers\Helper::getcurrency() @endphp
 <div class="main-content">
     @include('admin.includes.message')
     <div class="row">
@@ -78,7 +79,7 @@
                                                 href="{{route('company.campaign.view',[\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']),  base64_encode($referral_task->id)]) }}">{{isset($referral_task->title)
                                                 ? $referral_task->title : ""}}</a>
                                         </h6>
-                                        <p class="text-muted m-b-0">${{isset($referral_task->reward) ?
+                                        <p class="text-muted m-b-0">{{$currency}} {{isset($referral_task->reward) ?
                                             $referral_task->reward : ""}}</p>
                                     </div>
                                 </div>
@@ -127,7 +128,7 @@
                                                 ?
                                                 $social_share_task->title : ""}}</a>
                                         </h6>
-                                        <p class="text-muted m-b-0">${{isset($social_share_task->reward) ?
+                                        <p class="text-muted m-b-0">{{$currency}} {{isset($social_share_task->reward) ?
                                             $social_share_task->reward : ""}}</p>
                                     </div>
                                 </div>
@@ -173,7 +174,7 @@
                                                 href="{{route('company.campaign.view',[\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']),  base64_encode($custom_task->id)]) }}">{{isset($custom_task->title)
                                                 ? $custom_task->title : ""}}</a>
                                         </h6>
-                                        <p class="text-muted m-b-0">${{isset($custom_task->reward) ?
+                                        <p class="text-muted m-b-0">{{$currency}} {{isset($custom_task->reward) ?
                                             $custom_task->reward : ""}}</p>
                                     </div>
                                 </div>
@@ -214,7 +215,7 @@
                         </div>
                     </div>
                     <div class="m-t-50" style="height: 330px">
-                        <canvas class="chart" id="myChart" data-info="{{ $user_campaign_history_reward }}"></canvas>
+                        <canvas class="chart" id="myChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -266,4 +267,11 @@
         </div>
     </div>
 </div>
+@endsection
+@section('js')
+<script>
+    var chartdata = {!! json_encode($user_reward_and_days) !!};
+    chartdata = JSON.parse(chartdata);
+    var currency =  "{{$currency}}";
+</script>
 @endsection
