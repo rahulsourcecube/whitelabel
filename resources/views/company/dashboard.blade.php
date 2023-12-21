@@ -54,7 +54,7 @@
             </div>
         </div>
     </div>
-    @if(Auth::user()->hasPermissionTo('task-list')||Auth::user()->hasPermissionTo('task-create'))
+    @if(Auth::user()->hasPermissionTo('task-list'))
         <div class="row">
             <div class="col-md-12 col-lg-4">
                 <div class="card">

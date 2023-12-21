@@ -13,6 +13,21 @@ use Illuminate\Support\Facades\Log;
 
 class PackageController extends Controller
 {
+
+
+   /**
+    * Display a listing of the resource.
+    *
+    * @return \Illuminate\Http\Response
+    */
+   function __construct()
+   {
+      // check user permission
+      $this->middleware('permission:package-list', ['only' => ['index']]);
+      $this->middleware('permission:package-create', ['only' => ['buy']]);
+   }
+
+    
    public function index($type)
    {
       $type = PackageModel::TYPE[strtoupper($type)];

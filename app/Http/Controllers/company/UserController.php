@@ -13,6 +13,23 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        // check user permission
+        $this->middleware('permission:user-list', ['only' => ['index', 'view']]);
+        $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:user-delete', ['only' => ['delete']]);
+    }
+
+
     function index(Request $request)
     {
         if ($request->ajax()) {

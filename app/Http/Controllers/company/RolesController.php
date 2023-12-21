@@ -21,17 +21,21 @@ class RolesController extends Controller
      */
     function __construct()
     {
-        $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index', 'store']]);
+    // check user permission
+        $this->middleware('permission:role-list', ['only' => ['rolelist', 'roleview']]);
         $this->middleware('permission:role-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:role-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:role-delete', ['only' => ['destroy']]);
     }
 
+    // this function yous for role list
+
     function rolelist()
     {
-        $roles = Role::where('name', '!=' ,'Company')->orderBy('id', 'DESC')->get();
+        $roles = Role::where('name', '!=', 'Company')->orderBy('id', 'DESC')->get();
         return view('company.roles.rolelist', compact('roles'));
     }
+    // this function yous for role create
     function rolecreate()
     {
         try {
@@ -46,6 +50,7 @@ class RolesController extends Controller
             // dd($e);
         }
     }
+    // this function yous for role store
     /**
      * Store a newly created resource in storage.
      *
@@ -73,7 +78,7 @@ class RolesController extends Controller
             // dd($e);
         }
     }
-
+    // this function yous for role edit
     public function edit($id)
     {
         $role = Role::find($id);
@@ -85,7 +90,7 @@ class RolesController extends Controller
 
         return view('company.roles.edit', compact('role', 'permission', 'rolePermissions', 'ModelPermission'));
     }
-
+    // this function yous for role update
     public function update(Request $request, $id)
     {
         $this->validate($request, [
@@ -109,7 +114,7 @@ class RolesController extends Controller
             // dd($e);
         }
     }
-
+    // this function yous for role view
     function roleview($id)
     {
         try {
@@ -132,6 +137,7 @@ class RolesController extends Controller
             // dd($e);
         }
     }
+    // this function yous for role destroy
     public function destroy($id)
     {
         Role::where('id', $id)->delete();
