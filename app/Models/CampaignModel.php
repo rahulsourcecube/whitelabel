@@ -43,4 +43,5 @@ class CampaignModel extends Model
         }
         return $string;
     }
+   
 }
