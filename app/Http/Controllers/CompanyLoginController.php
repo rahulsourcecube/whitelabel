@@ -46,14 +46,25 @@ class CompanyLoginController extends Controller
         $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
 
         DB::enableQueryLog();
+        // dd(Carbon::today()->toDateString());
         $user_campaign_history = DB::table('users as u')
             ->where('company_id', $companyId)
             ->whereDate('uch.created_at', Carbon::today())
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-            ->select('uch.user_id', DB::raw('sum(uch.reward) as total_reward'))
-            ->groupBy('uch.user_id')
+            ->select('uch.user_id', DB::raw('SUM(uch.reward) as total_reward , DATE_FORMAT(uch.created_at, "%d-%m-%Y") as date'))
+            ->groupBy('uch.user_id', 'date')
             ->get();
         // dd(DB::getQueryLog());
+        $dateandtime = Carbon::now();
+        $start_date = "01-" . $dateandtime->month . "-" . $dateandtime->year;
+        $start_time = strtotime($start_date);
+
+        $end_time = strtotime("+1 month", $start_time);
+
+        for ($i = $start_time; $i < $end_time; $i += 86400) {
+            $list[] = date('d', $i);
+        }
+        // dd($list);
         $user_campaign_history_reward = json_encode([]);
         return view('company.dashboard', $data, compact('user_campaign_history_reward'));
     }
