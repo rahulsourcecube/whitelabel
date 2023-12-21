@@ -95,6 +95,7 @@
                     'visible': true,
                     'orderable': false,
                     'render': function(data, type, row) {
+                        console.log(taskTypeString);
                         var viewUrl = '{{ route('company.campaign.view', [':taskType' ,':id']) }}';
                         var editUrl = '{{ route('company.campaign.edit', [':taskType', ':id']) }}';
                         viewUrl = viewUrl.replace(':taskType', taskTypeString);
@@ -104,10 +105,10 @@
                         var deleteUrl = '{{ route('company.campaign.delete', ':del') }}';
                         deleteUrl = deleteUrl.replace(':del', row[0]);
                         return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
-                            '" role="button" title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
+                            '" role="button" title="View"><i class="fa fa-eye"></i></a> @can("task-edit") <a class="btn btn-primary btn-sm" href="' +
                             editUrl +
-                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
-                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
+                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can("task-delete") <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>@endcan';
 
                     },
                 }],

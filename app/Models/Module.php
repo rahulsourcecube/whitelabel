@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Permission;
 
-class PackageModel extends Model
+class Module extends Model
 {
     use HasFactory;
-    protected $table="package";
-    public function user()
+
+    function modules()
     {
-        return $this->belongsTo(User::class,'created_by');
+        return $this->hasMany(Permission::class, 'modules_id');
     }
 }

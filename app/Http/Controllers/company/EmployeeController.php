@@ -15,9 +15,9 @@ class EmployeeController extends Controller
 {
     function index(Request $request)
     {
+
         if ($request->ajax()) {
-        } else {
-            return view('company.employee.list');
+        } else {return view('company.employee.list');
         }
     }
     public function elist(Request $request)
@@ -37,6 +37,7 @@ class EmployeeController extends Controller
             ->take($length)
             ->get();
         foreach ($results as $result) {
+
             $list[] = [
                 base64_encode($result->id),
                 $result->full_name ?? "-",
@@ -67,8 +68,9 @@ class EmployeeController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'cpassword' => 'required|string|min:8',
             ]);
-            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->first();
-            if (!empty($useremail)) {
+            $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
+
+            if(!empty($useremail)){
                 return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
             }
             // if ($validator->fails()) {
@@ -83,6 +85,7 @@ class EmployeeController extends Controller
             $user->view_password = $request->password;
             $user->user_type = User::USER_TYPE['STAFF'];
             $user->company_id = $companyId;
+
             $user->save();
             return redirect()->route('company.employee.list')->with('success', 'Employee added successfuly.');
         } catch (\Exception $e) {
@@ -94,6 +97,7 @@ class EmployeeController extends Controller
     {
         return view('company.roles.roleview');
     }
+
     function edit($id)
     {
         $user_id = base64_decode($id);
@@ -103,14 +107,18 @@ class EmployeeController extends Controller
         }
         return view('company.employee.edit', compact('user'));
     }
+
     public function update($id, Request $request)
     {
         try {
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->first();
+
             if (empty($user)) {
+
                 return redirect()->back()->with('error', 'Something went wrong');
             }
+
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
@@ -124,6 +132,7 @@ class EmployeeController extends Controller
                 'last_name' => $request->lname,
                 'email' => $request->email,
             ];
+
             $user->update($userDetails);
             return redirect()->route('company.employee.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {
@@ -135,11 +144,12 @@ class EmployeeController extends Controller
     {
         try {
             $user_id = base64_decode($id);
-            $user = User::where('id', $user_id)->delete();
+            $user=User::where('id', $user_id)->delete();
             return response()->json(['success' => 'error', 'message' => 'User deleted successfully']);
         } catch (Exception $e) {
             Log::error('Company user delete error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }
     }
+
 }

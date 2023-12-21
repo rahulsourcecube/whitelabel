@@ -6,8 +6,7 @@
     <div class="page-header">
         <div class="header-sub-title">
             <nav class="breadcrumb breadcrumb-dash">
-                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
-                        class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                 <span class="breadcrumb-item active">Setting</span>
             </nav>
         </div>
@@ -17,78 +16,58 @@
         <div class="card-body">
             <h4>Setting</h4>
             <div class="m-t-50">
-                <form id="settings" method="POST" action="{{ route('company.setting.store')}}"
-                    enctype="multipart/form-data">
+                <form id="settings" method="POST" action="{{ route('company.setting.store')}}" enctype="multipart/form-data">
                     @csrf
+                    <!-- <input type="hidden" name="user_id" value="{{Auth::user()->id}}"> -->
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="cname">Company Name</label>
-                            <input type="text" class="form-control mb-2" name="title" id="cname"
-                                placeholder="Company Name"
-                                value="{{ !empty($setting) && $setting->title  ? $setting->title  : $companyname->company_name}}"
-                                required>
+                            <input type="text" class="form-control mb-2" name="title" id="cname" placeholder="Company Name" value="{{ !empty($setting) ? $setting->title : env('APP_NAME') }}" required>
                         </div>
                         <div class="form-group col-md-4">
                             <label for="cdomainname">Company Domain</label>
-                            <input type="text" class="form-control mb-2" name="" id=""
-                                value="{{!empty($companyname->subdomain)?$companyname->subdomain:'my.whitelabel.com'}}"
-                                readonly>
+                            <input type="text" class="form-control mb-2" name="" id="" value="my.whitelabel.com" readonly>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="cemail">Contact Email</label>
-                            <input type="email" class="form-control mb-2" name="email" id="cemail"
-                                placeholder="Company Email" value="{{ !empty($setting) ? $setting->email : '' }}">
+                            <label for="cemail">Company Email</label>
+                            <input type="cemail" class="form-control mb-2" name="email" id="cemail" placeholder="Company Email" value="{{ !empty($setting) ? $setting->email : '' }}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="contact">Contact Number</label>
-                            <input type="text" min="0" maxlength="10" minlength="10" class="form-control mb-2"
-                                name="contact_number" id="contact" placeholder="Contact Number"
-                                value="{{ !empty($setting) ? $setting->contact_number : '' }}">
+                            <input type="text" min="0" maxlength="10" minlength="10" class="form-control mb-2" name="contact_number" id="contact" placeholder="Contact Number" value="{{ !empty($setting) ? $setting->contact_number : '' }}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="flink">Facebook Link</label>
-                            <input type="url" class="form-control mb-2" name="facebook_link" id="flink"
-                                placeholder="Facebook Link"
-                                value="{{ !empty($setting) ? $setting->facebook_link : '' }}">
+                            <input type="url" class="form-control mb-2" name="facebook_link" id="flink" placeholder="Facebook Link" value="{{ !empty($setting) ? $setting->facebook_link : '' }}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="t_link">Twitter Link</label>
-                            <input type="url" class="form-control mb-2" name="twitter_link" id="t_link"
-                                placeholder="Twitter Link" value="{{ !empty($setting) ? $setting->twitter_link : '' }}">
+                            <input type="url" class="form-control mb-2" name="twitter_link" id="t_link" placeholder="Twitter Link" value="{{ !empty($setting) ? $setting->twitter_link : '' }}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="l_link">Linkedin Link</label>
-                            <input type="url" class="form-control mb-2" name="linkedin_link" id="l_link"
-                                placeholder="Linkedin Link"
-                                value="{{ !empty($setting) ? $setting->linkedin_link : '' }}">
+                            <input type="url" class="form-control mb-2" name="linkedin_link" id="l_link" placeholder="Linkedin Link" value="{{ !empty($setting) ? $setting->linkedin_link : '' }}">
                         </div>
                         <div class="form-group col-md-12">
                             <label for="descriptions">Description <span class="error">*</span></label>
-                            <textarea type="text" class="form-control" id="descriptions" name="description"
-                                placeholder="description"> {{ !empty($setting->description) ? $setting->description : '' }} </textarea>
+                            <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> {{ !empty($setting->description) ? $setting->description : '' }} </textarea>
                         </div>
                         <div class="form-group col-md-4">
                             <label for="leader_image">Logo</label>
-                            <input type="file" class="form-control" name="logo" id="logofiles"
-                                accept=".png, .jpg, .jpeg">
+                            <input type="file" class="form-control" name="logo" id="logofiles" accept=".png, .jpg, .jpeg">
                             <div class="form-row">
                                 <div class="form-group col-md-3  mt-2">
-                                    <img id="logoimagePreviews"
-                                        src="{{ !empty($setting) && $setting->logo ? asset('uploads/setting/' . $setting->logo) : '' }}"
-                                        alt="Logo Preview" class="img-reposive w-100">
+                                    <img id="logoimagePreviews" src="{{ !empty($setting) && $setting->logo ? asset('uploads/setting/' . $setting->logo) : '' }}" alt="Logo Preview" class="img-reposive w-100">
                                     <!-- <button type="button" id="logodeleteImageButtons" class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button> -->
                                 </div>
                             </div>
                         </div>
                         <div class="form-group col-md-4">
                             <label for="leader_image">Favicon</label>
-                            <input type="file" class="form-control" name="favicon" id="files"
-                                accept=".png, .jpg, .jpeg">
+                            <input type="file" class="form-control" name="favicon" id="files" accept=".png, .jpg, .jpeg">
                             <div class="form-row">
                                 <div class="form-group col-md-1 mt-2">
-                                    <img id="imagePreviews"
-                                        src="{{ !empty($setting) && $setting->favicon ? asset('uploads/setting/' . $setting->favicon) : '' }}"
-                                        alt="Favicon Icon Preview" class="img-reposive w-100">
+                                    <img id="imagePreviews" src="{{ !empty($setting) && $setting->favicon ? asset('uploads/setting/' . $setting->favicon) : '' }}" alt="Favicon Icon Preview" class="img-reposive w-100">
                                     <!-- <button type="button" id="deleteImageButtons" class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button> -->
                                 </div>
                             </div>

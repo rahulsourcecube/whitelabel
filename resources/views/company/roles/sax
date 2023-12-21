@@ -1,5 +1,5 @@
 @extends('company.layouts.master')
-@section('title', 'Role List')
+@section('title', 'Role view')
 @section('main-content')
 
     <div class="main-content">
@@ -10,63 +10,80 @@
                 <nav class="breadcrumb breadcrumb-dash">
                     <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
                             class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                    <span class="breadcrumb-item active">Role Manage</span>
+                    <span class="breadcrumb-item active">View Role </span>
                 </nav>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Roles List</h4>
-                <a class="btn btn-primary float-right" href="{{ route('company.role.rolecreate') }}" role="button">Add
-                    New</a>
+                <h1>Staff Role</h1>
+                
+               
                 <div class="m-t-25">
-                    <table id="user_tables" class="table">
+                    <table id="data-table" class="table">
                         <thead>
                             <tr>
-                                {{-- <th></th> --}}
-                                <th>Role Name</th>
-
-                                <th>Action</th>
+                                <th>Name</th>
+                                <th>View</th>
+                                <th>Add</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                                
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- <tr>
-                                <td>Staff</td>
-
-                                <td>
-                                    <a class="btn btn-success  btn-sm" href="{{ route('company.role.roleview') }}"
-                                        role="button" title="View"><i class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary btn-sm" href="{{ route('company.role.rolecreate') }}"
-                                        role="button" title="Edit"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                        onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
-                                </td>
-                            </tr> --}}
-                            @foreach ($roles as $key => $role)
-                                <tr>
-                                    <td>{{ $role->name ?? '' }}</td>
-
-                                    <td>
-                                        <a class="btn btn-success  btn-sm" href="{{ route('company.role.roleview', $role->id) }}"
-                                            role="button" title="View"><i class="fa fa-eye"></i></a>
-                                        @can('role-edit')
-                                            <a href="{{ route('company.role.edit', $role->id) }}"
-                                                class="btn btn-primary btn-sm action-btn" title="Update Role"><i
-                                                    class="fas fa-pen-fancy"></i></a>
-                                        @endcan 
-                                        @can('role-delete')
-                                            <a href="{{ route('company.role.destroy', $role->id) }}"
-                                                class="btn btn-danger btn-sm action-btn show_confirm"
-                                                title="Deactivate Profile"><i class="fas fa-trash-alt"></i></a>
-                                        @endcan
-                                    </td>
-                                </tr>
-                            @endforeach
+                             <tr>
+                                <td>Dashboard</td>
+                                <td><input type="checkbox"   checked  name="1"></td>
+                                <td><input type="checkbox"   checked  name="1"></td>
+                                <td><input type="checkbox"    checked name="1"></td>
+                                <td><input type="checkbox"   checked  name="1"></td>
+                            </tr>
+                            <tr>
+                                <td>User</td>
+                                <td><input type="checkbox"  checked   name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox"   checked name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Create New Task</td>
+                                <td><input type="checkbox"  checked  name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox"   checked   name="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Task Analytics</td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Buy Package</td>
+                                <td><input type="checkbox"  checked  name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Setting</td>
+                                <td><input type="checkbox"   checked  name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Role Manage</td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                                <td><input type="checkbox" name="1"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>

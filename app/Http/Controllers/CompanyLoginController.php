@@ -8,16 +8,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\company\forgetpass;
-use App\Models\CampaignModel;
 use App\Models\SettingModel;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Mail;
+use App\Models\CampaignModel;
+use Spatie\Permission\Models\Role;
 
 class CompanyLoginController extends Controller
 {
@@ -34,28 +31,19 @@ class CompanyLoginController extends Controller
     }
     function dashboard()
     {
+
         $companyId = Auth::user()->id;
         $data = [];
-        $data['total_campaign'] = 0;
-        $data['total_user'] = 0;
         $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
         $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
+        // dd($data);
         $data['total_campaignReq'] = 0;
         $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(10)->get();
         $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(10)->get();
         $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
 
-        DB::enableQueryLog();
-        $user_campaign_history = DB::table('users as u')
-            ->where('company_id', $companyId)
-            ->whereDate('uch.created_at', Carbon::today())
-            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-            ->select('uch.user_id', DB::raw('sum(uch.reward) as total_reward'))
-            ->groupBy('uch.user_id')
-            ->get();
-        // dd(DB::getQueryLog());
-        $user_campaign_history_reward = json_encode([]);
-        return view('company.dashboard', $data, compact('user_campaign_history_reward'));
+        // dd($data);
+        return view('company.dashboard', $data);
     }
     public function login(Request $request)
     {
@@ -67,6 +55,8 @@ class CompanyLoginController extends Controller
         ]);
 
         if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
+
+
             if (!empty(auth()->user()) &&  auth()->user()->user_type == env('COMPANY_ROLE')) {
 
                 return redirect()->route('company.dashboard');
@@ -99,19 +89,20 @@ class CompanyLoginController extends Controller
             $user->user_type = '2';
             $user->save();
             if (isset($user)) {
+                $role = Role::where('name', 'Company')->first();
+                $user->assignRole([$role->id]);
                 $compnay = new CompanyModel();
-                $compnay->user_id = $user->id;
-                $compnay->company_name = $request->cname;
-                $compnay->contact_email = $request->email;
-                $compnay->subdomain = $request->dname;
-                $compnay->save();
+                $compnay->user_id = $user->user_id;
+                $compnay->user_subdomainid = $request->dname;
+                $compnay->company_name = $request->cnmae;
             }
-            if (isset($user)) {
-                $settingModel = new SettingModel();
-                $settingModel->user_id = $user->id;
-                $settingModel->save();
-                $input = $request->all();
-            }
+            $input = $request->all();
+
+            // $this->validate($request, [
+            //     'email' => 'required|email',
+            //     'password' => 'required',
+            // ]);
+
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
 
 
@@ -166,6 +157,14 @@ class CompanyLoginController extends Controller
             if (empty($userCheck)) {
                 return redirect()->back()->with('error', 'User not found!');
             }
+            // $validator = Validator::make($request->all(), [
+            //     // 'old_password' => 'required',
+            //     'new_password' => 'required',
+            //     'confirm_password' => 'required|same:new_password',
+            // ]);
+            // if ($validator->fails()) {
+            //     return $this->sendError($validator->errors()->first());
+            // }
             $userCheck->password = Hash::make($request->new_password);
             $userCheck->view_password = $request->password;
 
@@ -188,10 +187,11 @@ class CompanyLoginController extends Controller
             $updateprofiledetail = User::where('id', Auth::user()->id)->first();
             $updateprofiledetail['first_name'] = isset($request->first_name) ? $request->first_name : '';
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
-            $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
+            $updateprofiledetail['email'] = isset($request->email) ? $request->last_name : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
+            $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             if ($request->hasFile('profile_image')) {
-                if ($updateprofiledetail->profile_image && file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
+                if (file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
                     unlink('uploads/user-profile/' . $updateprofiledetail->profile_image);
                 }
                 $filename = rand(111111, 999999) . '.' . $request->profile_image->extension();
@@ -201,7 +201,7 @@ class CompanyLoginController extends Controller
             $updateprofiledetail->save();
             return redirect()->route('company.dashboard');
         } catch (Exception $e) {
-            Log::info(['message', 'Update Profile error']);
+            Log::info('message', 'Update Profile error');
             return redirect()->back()->with($e->getMessage());
         }
     }
@@ -209,8 +209,7 @@ class CompanyLoginController extends Controller
     {
         $profiledetail = User::where('id', Auth::user()->id)->first();
         $companydetail = SettingModel::where('user_id', Auth::user()->id)->first();
-        $companyname = CompanyModel::where('user_id', Auth::user()->id)->first();
-        return view('company.profile', compact('profiledetail', 'companydetail', 'companyname'));
+        return view('company.profile', compact('profiledetail', 'companydetail'));
     }
     public function updatepassword(Request $request)
     {

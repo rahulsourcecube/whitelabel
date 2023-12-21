@@ -25,8 +25,6 @@ class CampaignModel extends Model
         'status',
     ];
 
-    protected $append = ["task_type"];
-
     public function getTaskTypeAttribute()
     {
         $typeConst = array_flip(CampaignModel::TYPE);
