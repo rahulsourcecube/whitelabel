@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->float('reward');
             $table->enum('status', ['1', '2' , '3'])->default('1')->comment('1) Pending 2) Claim Request 3) Completed');
-            $table->unsignedBigInteger('verified_by')->default('0');
+            $table->unsignedBigInteger('verified_by');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

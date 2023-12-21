@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Company;
 use App\Http\Controllers\Controller;
-use App\Models\CompanyModel;
 use App\Models\SettingModel;
 use App\Models\User;
 use Exception;
@@ -13,7 +12,6 @@ class SettingController extends Controller
    function index()
    {
       $data['setting'] = SettingModel::where('user_id', Auth::user()->id)->first();
-      $data['companyname'] = CompanyModel::where('user_id', Auth::user()->id)->first();
       return view('company.setting.setting', $data);
    }
    function store(Request $request)

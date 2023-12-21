@@ -2,7 +2,6 @@
 <html lang="en">
 @php
 $siteSetting = App\Helpers\Helper::getSiteSetting();
-$packagebuymessage = App\Helpers\Helper::isInactivePackage();
 @endphp
 
 <head>
@@ -12,7 +11,7 @@ $packagebuymessage = App\Helpers\Helper::isInactivePackage();
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists('uploads/setting/' . $siteSetting->favicon)) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
+        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -35,21 +34,18 @@ $packagebuymessage = App\Helpers\Helper::isInactivePackage();
             <!-- Page Container START -->
             <div class="page-container">
                 <div class="container notification">
-                    @if(!$packagebuymessage)
                     <div class="alert alert-danger alert-dismissible fade show">
-                        <strong>Please purchase package</strong>. <a
-                            href="{{route('company.package.list', 'Free')}}">Click</a>
+                        <strong>Please purchase package</strong>. <a href="{{route('company.package.list')}}">Click</a>
                         here to buy package.
                     </div>
-                    @endif
-                    {{-- <div class="row">
+                    <div class="row">
                         <div class="col-md-12">
                             <div class="alert alert-info">
                                 Please update your profile!! <a href="{{route('company.edit_profile')}}">Click</a> here
                                 update profile.
                             </div>
                         </div>
-                    </div> --}}
+                    </div>
                 </div>
                 <!-- Content Wrapper START -->
                 @yield('main-content')

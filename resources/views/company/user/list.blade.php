@@ -40,8 +40,8 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-   
- 
+
+
         $(document).ready(function() {
             var table = $('#user_tables').DataTable({
                 // Processing indicator
@@ -116,18 +116,18 @@
                         var deleteUrl = '{{ route('company.user.delete', ':del') }}';
                         deleteUrl = deleteUrl.replace(':del', row[0]);
                         return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
-                            '" role="button" title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
+                            '" role="button" title="View"><i class="fa fa-eye"></i></a> @can("user-edit") <a class="btn btn-primary btn-sm" href="' +
                             editUrl +
-                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
-                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
+                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can("user-delete")<a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> @endcan';
 
                     },
                 }],
             });
         });
-   
 
-    function sweetAlertAjax(deleteUrl) {       
+
+    function sweetAlertAjax(deleteUrl) {
             // Use SweetAlert for confirmation
             Swal.fire({
                 title: 'Are you sure?',
@@ -147,7 +147,7 @@
                             "_token": "{{ csrf_token() }}"
                         },
                         success: (response) => {
-                         
+
                             if (response.status == 'error') {
                                 // Handle error case
                                 Swal.fire({
@@ -159,7 +159,7 @@
                                     location.reload();
                                 });
                             } else {
-                               
+
                                 // Handle success case
                                 Swal.fire({
                                     text: response.message,

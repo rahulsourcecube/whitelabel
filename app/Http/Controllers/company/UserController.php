@@ -87,7 +87,7 @@ class UserController extends Controller
 
     function store(Request $request)
     {
-        
+
         try {
             $companyId = Auth::user()->id;
             $validator = Validator::make($request->all(), [
@@ -103,13 +103,13 @@ class UserController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
             $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
-           
+
             if(!empty($useremail)){
-                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();                
+                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
             }
             $usernumber =User::where('company_id',$companyId)->where('contact_number',$request->number)->first();
             if(!empty($usernumber)){
-                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();                
+                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
             }
             $user = new User();
             if ($request->hasFile('image')) {
@@ -163,12 +163,12 @@ class UserController extends Controller
         try {
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->first();
-           
+
             if (empty($user)) {
-             
+
                 return redirect()->back()->with('error', 'Something went wrong');
             }
-       
+
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
@@ -181,7 +181,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-         
+
             $userDetails = [
                 'first_name' => $request->fname,
                 'last_name' => $request->lname,
@@ -191,7 +191,7 @@ class UserController extends Controller
                 'status' =>!empty($request->status)? '0' : '1',
                 'view_password' =>!empty($request->password)? $request->password:$user->view_password,
 
-            ];           
+            ];
             if ($request->hasFile('image')) {
                 $oldImage=$user->profile_image;
                 $extension = $request->file('image')->getClientOriginalExtension();
