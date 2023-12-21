@@ -89,7 +89,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($campaignList as $data)                                      
+                                    @foreach ($campaignList as $data)
                                         <tr>
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                             <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
@@ -98,8 +98,8 @@
                                             </td>
                                             <td>
                                                 <a class="btn btn-success  btn-sm"
-                                                    href="{{ route('user.campaign.view',base64_decode($data->id)) }}" role="button"
-                                                    title="View"><i class="fa fa-eye"></i></a>
+                                                    href="{{ route('user.campaign.view', base64_encode($data->campaign_id)) }}"
+                                                    role="button" title="View"><i class="fa fa-eye"></i></a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -152,7 +152,9 @@
                                 </a>
                             </div>
                             <div class="text-center m-t-30">
-                                <p id="p1" style="display: none;">{{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}</p>
+                                <p id="p1" style="display: none;">
+                                    {{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}
+                                </p>
                                 <a href="#" onclick="showSuccessAlert()" class="btn btn-primary btn-tone">
                                     <i class="anticon anticon-copy"></i>
                                     {{-- <button onclick="copyToClipboard('#p1')">Copy</button> --}}

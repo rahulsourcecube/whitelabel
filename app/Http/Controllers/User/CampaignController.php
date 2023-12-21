@@ -22,11 +22,16 @@ class CampaignController extends Controller
         $length = $request->input('length');
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
-        $list = [];
+        $list = [];  
         $results = CampaignModel::orderBy($columns[$order], $dir)
-            ->where('company_id', Auth::user()->company_id)
+            ->where('company_id', Auth::user()->company_id) 
+            ->whereNotExists( function ($query) {
+                $query->from('user_campaign_history')
+                ->whereRaw('campaign.id = user_campaign_history.campaign_id');
+            })
             ->skip($start)
             ->take($length)
+            ->select('campaign.*')
             ->get();
         foreach ($results as $result) {
             $list[] = [
@@ -66,7 +71,7 @@ class CampaignController extends Controller
         $input->user_id = Auth::user()->id;
         $input->reward = isset($getcampaign->reward) ? $getcampaign->reward : '';
         $input->status = 1;
-        $input->verified_by = 1;
+        $input->verified_by = 0;
         $input->save();
         return $input;
     }

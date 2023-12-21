@@ -63,6 +63,8 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('profile', [UsrController::class, 'profile'])->name('profile');
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
         Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
+        Route::post('/user/progress/search',[UsrController::class,'searchProgress'])->name('progress.search');
+        Route::post('/claim-reward/{id}', [UsrController::class, 'claimReward'])->name('progress.claimReward');
         Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
         Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
         Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');

@@ -9,8 +9,14 @@
     </style>
     <!-- Content Wrapper START -->
     <div class="main-content">
-        <div class="page-header no-gutters has-tab">
-            <h2 class="font-weight-normal">Edit Profile</h2>
+        <div class="page-header">
+            <div class="header-sub-title">
+                <nav class="breadcrumb breadcrumb-dash">
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <span class="breadcrumb-item active">Edit Profile</span>
+                </nav>
+            </div>
         </div>
         <div class="container">
             @if (\Session::has('success'))
