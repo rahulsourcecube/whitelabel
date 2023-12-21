@@ -345,7 +345,7 @@ class CampaignController extends Controller
                                         </div>
                                     </div>
                                 </div>
-                            </div>';
+                            </div>'; 
             return response()->json(['success' => 'error', 'message' => $html]);  
            
         } catch (Exception $e) {
