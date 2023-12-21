@@ -20,10 +20,30 @@ class Helper
             return redirect()->back()->with('message', $exception->getMessage());
         }
     }
+    public static function getcurrency()
+    {
+        return '$';
+    }
 
     public static function taskType($type)
     {
         $types = array_flip(CampaignModel::TYPE);
         return ucfirst(strtolower($types[$type])); 
     }
+
+    public static function isActivePackage()
+    {
+        $user = Auth::user();
+        $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
+        return $checkPackage;
+    }
+    public static function isInactivePackage()
+    {
+        $user = Auth::user();
+        // dd($user);
+        $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', '1')->count();
+        // dd($checkPackage);
+        return (int)$checkPackage > 0 ? true : false;
+    }
+
 }
