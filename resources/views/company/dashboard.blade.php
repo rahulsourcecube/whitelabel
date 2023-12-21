@@ -54,6 +54,7 @@
                 </div>
             </div>
         </div>
+        @if(Auth::user()->hasPermissionTo('task-list')||Auth::user()->hasPermissionTo('task-create'))
         <div class="row">
             <div class="col-md-12 col-lg-4">
                 <div class="card">
@@ -61,8 +62,12 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="m-b-0">Referral Tasks</h5>
                             <div>
+                                @can('task-list')
                                 <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']))}}" class="btn btn-sm btn-info">View All</a>
+                                @endcan
+                                @can('task-edit')
                                 <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']))}}" class="btn btn-sm btn-success">Add New</a>
+                                @endcan
                             </div>
                         </div>
                         <div class="m-t-30">
@@ -94,8 +99,12 @@
                             <h5 class="m-b-0">Social Share Tasks</h5>
                             <div>
                                 <div>
+                                    @can('task-list')
                                     <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']))}}" class="btn btn-sm btn-info">View All</a>
+                                    @endcan
+                                    @can('task-edit')
                                     <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']))}}" class="btn btn-sm btn-success">Add New</a>
+                                    @endcan
                                 </div>
                             </div>
                         </div>
@@ -127,8 +136,12 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h5 class="m-b-0">Custom Tasks</h5>
                             <div>
+                                @can('task-list')
                                 <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']))}}" class="btn btn-sm btn-info">View All</a>
+                                @endcan
+                                @can('task-edit')
                                 <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']))}}" class="btn btn-sm btn-success">Add New</a>
+                                @endcan
                             </div>
                         </div>
                         <div class="m-t-30">
@@ -154,6 +167,7 @@
                 </div>
             </div>
         </div>
+        @endif
         <div class="row">
             <div class="col-md-12 col-lg-8">
                 <div class="card">

@@ -124,7 +124,7 @@
                     </a>
                 @endcan
             </li>
-            @can('setting-list')
+            @if(Auth::user()->hasPermissionTo('general-setting-list')||Auth::user()->hasPermissionTo('employee-management-list')||Auth::user()->hasPermissionTo('role-list')||Auth::user()->hasPermissionTo('billing-and-payment-list'))
                 <li class="nav-item dropdown">
                     <a class="dropdown-toggle" href="javascript:void(0);">
                         <span class="icon-holder">
@@ -136,23 +136,29 @@
                         </span>
                     </a>
                     <ul class="dropdown-menu">
+                        @can('general-setting-list')
                         <li @if (request()->segment(2) == 'setting') class='active' @endif>
                             <a href="{{ route('company.setting.index') }}">General Setting</a>
                         </li>
+                        @endcan
+                        @can('employee-management-list')
                         <li @if (request()->segment(2) == 'employee') class='active' @endif>
                             <a href="{{ route('company.employee.list') }}">Employee Management</a>
                         </li>
+                        @endcan
                          @can('role-list')
                         <li @if (request()->segment(2) == 'role') class='active' @endif>
                             <a href="{{ route('company.role.rolelist') }}">Role Management</a>
                         </li>
                         @endcan
+                        @can('billing-and-payment-list')
                         <li @if (request()->segment(2) == 'billing') class='active' @endif>
                             <a href="{{ route('company.billing.billing') }}">Billing and Payment</a>
                         </li>
+                        @endcan
                     </ul>
                 </li>
-            @endcan
+            @endif
             <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('logout') }}"
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
