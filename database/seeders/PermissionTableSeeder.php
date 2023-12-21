@@ -53,22 +53,21 @@ class PermissionTableSeeder extends Seeder
         }
 
 
-        $Module = Module::create(['module_name' => 'package']);
-        $permissions = [
-            'package-list',
-            'package-create',
-        ];
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission, 'modules_id' => $Module->id]);
-        }
-
-
         $Module = Module::create(['module_name' => 'setting']);
         $permissions = [
             'setting-list',
             'setting-create',
             'setting-edit',
             'setting-delete',
+        ];
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission, 'modules_id' => $Module->id]);
+        }
+
+        $Module = Module::create(['module_name' => 'package']);
+        $permissions = [
+            'package-list',
+            'package-create',
         ];
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'modules_id' => $Module->id]);
@@ -85,6 +84,15 @@ class PermissionTableSeeder extends Seeder
         $role = Role::create(['name' => 'Staff']);
 
         $permissions = Permission::pluck('id', 'id')->all();
+
+        $rolePermissions = [
+            'role-list',
+            'role-create',
+            'role-edit',
+            'role-delete',
+        ];
+
+        $role->revokePermissionTo($rolePermissions);
 
         $role->syncPermissions($permissions);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
+use App\Models\ModelHasRoles;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
@@ -42,7 +44,7 @@ class EmployeeController extends Controller
                 base64_encode($result->id),
                 $result->full_name ?? "-",
                 $result->email ?? "-",
-                $result->contact_number ?? "-",
+                $result->roles->pluck('name', 'name')->first() ?? "-",
             ];
         }
         $totalFiltered = $results->count();
@@ -55,7 +57,8 @@ class EmployeeController extends Controller
     }
     function create()
     {
-        return view('company.employee.create');
+        $roles = Role::pluck('name', 'name')->all();
+        return view('company.employee.create', compact('roles'));
     }
     function store(Request $request)
     {
@@ -87,6 +90,7 @@ class EmployeeController extends Controller
             $user->company_id = $companyId;
 
             $user->save();
+            $user->assignRole($request->input('role'));
             return redirect()->route('company.employee.list')->with('success', 'Employee added successfuly.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -102,10 +106,12 @@ class EmployeeController extends Controller
     {
         $user_id = base64_decode($id);
         $user = User::where('id', $user_id)->first();
+        $roles = Role::pluck('name', 'name')->all();
+        $userRole = $user->roles->pluck('name', 'name')->first();
         if (empty($user)) {
             return redirect()->back('User not found');
         }
-        return view('company.employee.edit', compact('user'));
+        return view('company.employee.edit', compact('user', 'roles', 'userRole'));
     }
 
     public function update($id, Request $request)
@@ -134,6 +140,8 @@ class EmployeeController extends Controller
             ];
 
             $user->update($userDetails);
+            $roles = ModelHasRoles::where("model_id", $user->id)->delete();
+            $user->assignRole($request->input('role'));
             return redirect()->route('company.employee.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {
             Log::error('Company user update error : ' . $e->getMessage());

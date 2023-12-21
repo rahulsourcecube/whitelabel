@@ -30,17 +30,17 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>View</th>
-                                <th>Add</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
+                                <th style="text-align: center;">View</th>
+                                <th style="text-align: center;">Add</th>
+                                <th style="text-align: center;">Edit</th>
+                                <th style="text-align: center;">Delete</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($ModelPermission as $value)
                                 <tr>
-                                    <th scope="row"><label> {{ $value->module_name }}</label></th>
+                                    <th scope="row" style="text-transform: capitalize;"><label> {{ $value->module_name }}</label></th>
                                     @if (isset($value->modules))
                                         @foreach ($value->modules as $modelPermission)
                                             <td style="text-align: center;">

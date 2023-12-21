@@ -62,6 +62,12 @@ class AdminSeeder extends Seeder
 
         $role->syncPermissions($permissions);
 
+        $rolePermissions = [
+            'role-delete',
+        ];
+
+        $role->revokePermissionTo($rolePermissions);
+
         $user->assignRole([$role->id]);
     }
 }

@@ -16,16 +16,13 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Edit Role<span class="error">*</span></h4>
+                <div style="display: flex;justify-content: space-between;">
+                <h4>Edit {{ $role->name ?? ''}} Role<span class="error">*</span></h4>
+                <button type="submit" class="btn btn-primary">Edit</button>
+                </div>
                 <form id="package" method="POST" action="{{ route('company.role.update', $role->id) }}"enctype="multipart/form-data">
                     @csrf
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <input type="text" id="myTextbox" class="form-control @error('name') is-invalid @enderror"
-                                placeholder="Role Name" name="name" value="{{ $role->name }}" maxlength="150">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Edit</button>
+                    
 
 
                     <div class="m-t-25">
@@ -33,17 +30,17 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>View</th>
-                                    <th>Add</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
+                                    <th style="text-align: center;">View</th>
+                                    <th style="text-align: center;">Add</th>
+                                    <th style="text-align: center;">Edit</th>
+                                    <th style="text-align: center;">Delete</th>
 
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($ModelPermission as $value)
                                     <tr>
-                                        <th scope="row"><label> {{ $value->module_name }}</label></th>
+                                        <th scope="row" style="text-transform: capitalize;"><label> {{ $value->module_name }}</label></th>
                                         @if (isset($value->modules))
                                             @foreach ($value->modules as $modelPermission)
                                                 <td style="text-align: center;">

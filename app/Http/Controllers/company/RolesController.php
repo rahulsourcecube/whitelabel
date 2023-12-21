@@ -29,7 +29,7 @@ class RolesController extends Controller
 
     function rolelist()
     {
-        $roles = Role::orderBy('id', 'DESC')->get();
+        $roles = Role::where('name', '!=' ,'Company')->orderBy('id', 'DESC')->get();
         return view('company.roles.rolelist', compact('roles'));
     }
     function rolecreate()

@@ -56,8 +56,7 @@ class CompanyLoginController extends Controller
 
         if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
 
-
-            if (!empty(auth()->user()) &&  auth()->user()->user_type == env('COMPANY_ROLE')) {
+            if (!empty(auth()->user()) &&  (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('STAFF_ROLE'))) {
 
                 return redirect()->route('company.dashboard');
             } else {
