@@ -98,6 +98,7 @@ class CampaignController extends Controller
                 $result->reward ?? "-",              
                 date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
                 $result->TaskStatus?? "-",                     
+                base64_encode($result->user_id)?? "-",                     
             
             ];
         }
@@ -109,158 +110,7 @@ class CampaignController extends Controller
             "data" => $list
         ]);
     }
-    public function joined($id,Request $request)
-    {
-       
-        $columns = ['id', 'title'];
-       
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
-        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-        // ->where('company_id', Auth::user()->id)
-        ->where('campaign_id', $id)
-            ->skip($start)
-            ->take($length)
-            ->get();
-           
-        foreach ($results as $result) {
-          
-            $list[] = [
-                base64_encode($result->id),
-                $result->getuser->full_name ?? "-",
-                $result->getuser->email ?? "-",
-                $result->getuser->contact_number ?? "-",              
-                $result->reward ?? "-",              
-                date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
-                $result->TaskStatus?? "-",                     
-            
-            ];
-        }
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => count($results),
-            "recordsFiltered" => $totalFiltered,
-            "data" => $list
-        ]);
-    }
-    public function accept($id,Request $request)
-    {
-       
-        $columns = ['id', 'title'];
-       
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
-        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-        // ->where('company_id', Auth::user()->id)
-        ->where('campaign_id', $id)
-        ->where('status', '3')
-            ->skip($start)
-            ->take($length)
-            ->get();
-           
-        foreach ($results as $result) {
-          
-            $list[] = [
-                base64_encode($result->id),
-                $result->getuser->full_name ?? "-",
-                $result->getuser->email ?? "-",
-                $result->getuser->contact_number ?? "-",
-                 date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
-                                  
-            
-            ];
-        }
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => count($results),
-            "recordsFiltered" => $totalFiltered,
-            "data" => $list
-        ]);
-    }
-    public function reject($id,Request $request)
-    {
-       
-        $columns = ['id', 'title'];
-       
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
-        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-        // ->where('company_id', Auth::user()->id)
-        ->where('campaign_id', $id)
-        ->where('status', '4')
-            ->skip($start)
-            ->take($length)
-            ->get();
-           
-        foreach ($results as $result) {
-          
-            $list[] = [
-                base64_encode($result->id),
-                $result->getuser->full_name ?? "-",
-                $result->getuser->email ?? "-",
-                $result->getuser->contact_number ?? "-",
-                 date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
-                                  
-            
-            ];
-        }
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => count($results),
-            "recordsFiltered" => $totalFiltered,
-            "data" => $list
-        ]);
-    }
-    public function request($id,Request $request)
-    {
-      
-        $columns = ['id', 'title'];
-       
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
-        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-         ->where('status',2)
-        ->where('campaign_id', $id)
-       
-            ->skip($start)
-            ->take($length)
-            ->get();
-           
-        foreach ($results as $result) {
-          
-            $list[] = [
-                base64_encode($result->id),
-                $result->getuser->full_name ?? "-",
-                $result->getuser->email ?? "-",
-                $result->getuser->contact_number ?? "-",              
-                date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
-                $result->TaskStatus?? "-",                     
-            
-            ];
-        }
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => count($results),
-            "recordsFiltered" => $totalFiltered,
-            "data" => $list
-        ]);
-    }
+   
 
 
     function create($type)
@@ -425,6 +275,79 @@ class CampaignController extends Controller
                 $action->save();
                 return response()->json(['success' => 'error', 'message' => 'Task Reject  Approval Requset successfully']); 
             }
+           
+        } catch (Exception $e) {
+            Log::error('ation error : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong');
+        }
+    }
+    public function userDetails(Request $request)
+    {      
+      
+        try {
+            $user_id = base64_decode($request->id);
+            $user = User::where('id', $user_id)->first();
+            if (empty($user)) {
+               return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);  
+            }
+            $html="";
+            $html='<div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-12">
+                                        <div class="d-md-flex align-items-center">
+                                            <div class="text-center text-sm-left ">
+                                                <div class="avatar avatar-image" style="width: 150px; height:150px">
+                                                    <img id="image" src="assets/images/avatars/thumb-3.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="text-center text-sm-left m-v-15 p-l-30">
+                                                <h2 class="m-b-5 name" >'. $user->first_name.' '.$user->last.'</h2>
+                                                <p class="text-opacity font-size-13"></p>
+                                                s
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="d-md-block d-none border-left col-1"></div>
+                                            <div class="col">
+                                                <ul class="list-unstyled m-t-10">
+                                                    <li class="row">
+                                                        <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-10 text-primary anticon anticon-mail"></i>
+                                                            <span>Email: </span> 
+                                                        </p>
+                                                        <p class="col font-weight-semibold">'. $user->email .'</p>
+                                                    </li>
+                                                    <li class="row">
+                                                        <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-10 text-primary anticon anticon-phone"></i>
+                                                            <span>Phone: </span> 
+                                                        </p>
+                                                        <p class="col font-weight-semibold"> '.$user->contact_number.'</p>
+                                                    </li>
+                                                   
+                                                </ul>
+                                                <div class="d-flex font-size-22 m-t-15">
+                                                    <a href="#" class="text-gray p-r-20">
+                                                        <i class="anticon anticon-facebook"></i>
+                                                    </a>        
+                                                    <a href="#" class="text-gray p-r-20">    
+                                                        <i class="anticon anticon-twitter"></i>
+                                                    </a>
+                                                    <a href="#" class="text-gray p-r-20">
+                                                        <i class="anticon anticon-behance"></i>
+                                                    </a> 
+                                                    <a href="#" class="text-gray p-r-20">   
+                                                        <i class="anticon anticon-dribbble"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>';
+            return response()->json(['success' => 'error', 'message' => $html]);  
            
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());

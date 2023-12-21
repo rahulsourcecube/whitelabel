@@ -93,6 +93,95 @@
 </div>
 </div>
 <input type="hidden" id="status" value="1">
+<!-- return '<button class="btn btn-success  btn-sm" data-action="accept" onclick="Accept(\'' + actionUrl + '\',\'3\',\'' + id + '\')">Accept</button>' + -->
+<div class="modal fade bd-example-modal-lg" id="view-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title h4">View</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="anticon anticon-close"></i>
+                </button>
+            </div>
+            <div class="main-content">
+                    <div class="page-header">
+                        <h2 class="header-title"></h2>
+                        <div class="header-sub-title">
+                           
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="card addmodle ">
+                            <!-- <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-12">
+                                        <div class="d-md-flex align-items-center">
+                                            <div class="text-center text-sm-left ">
+                                                <div class="avatar avatar-image" style="width: 150px; height:150px">
+                                                    <img id="image" src="assets/images/avatars/thumb-3.jpg" alt="">
+                                                </div>
+                                            </div>
+                                            <div class="text-center text-sm-left m-v-15 p-l-30">
+                                                <h2 class="m-b-5 name" >Marshall Nichols</h2>
+                                                <p class="text-opacity font-size-13">@Marshallnich</p>
+                                                <p class="text-dark m-b-10">Frontend Developer, UI/UX Designer</p>
+                                                <button class="btn btn-primary btn-tone">Contact</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="d-md-block d-none border-left col-1"></div>
+                                            <div class="col">
+                                                <ul class="list-unstyled m-t-10">
+                                                    <li class="row">
+                                                        <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-10 text-primary anticon anticon-mail"></i>
+                                                            <span>Email: </span> 
+                                                        </p>
+                                                        <p class="col font-weight-semibold"> Marshall123@gmail.com</p>
+                                                    </li>
+                                                    <li class="row">
+                                                        <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-10 text-primary anticon anticon-phone"></i>
+                                                            <span>Phone: </span> 
+                                                        </p>
+                                                        <p class="col font-weight-semibold"> +12-123-1234</p>
+                                                    </li>
+                                                    <li class="row">
+                                                        <p class="col-sm-4 col-5 font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-10 text-primary anticon anticon-compass"></i>
+                                                            <span>Location: </span> 
+                                                        </p>
+                                                        <p class="col font-weight-semibold"> Los Angeles, CA</p>
+                                                    </li>
+                                                </ul>
+                                                <div class="d-flex font-size-22 m-t-15">
+                                                    <a href="#" class="text-gray p-r-20">
+                                                        <i class="anticon anticon-facebook"></i>
+                                                    </a>        
+                                                    <a href="#" class="text-gray p-r-20">    
+                                                        <i class="anticon anticon-twitter"></i>
+                                                    </a>
+                                                    <a href="#" class="text-gray p-r-20">
+                                                        <i class="anticon anticon-behance"></i>
+                                                    </a> 
+                                                    <a href="#" class="text-gray p-r-20">   
+                                                        <i class="anticon anticon-dribbble"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                        </div>                       
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>                         <!-- ' <button class="btn btn-danger btn-sm"   data-action="reject"  onclick="Accept(\'' + actionUrl + '\',\'4\',\'' + id + '\')">Reject</button> '; -->
 @endsection
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -140,13 +229,12 @@
 
                 }, {
                     'targets': 6,
-                    'visible': true,
+                    'visible': false,
                     'orderable': false,
                     'render': function(data, type, row) {
-                        var actionUrl = '{{ route("company.campaign.action") }}';
-                        var id = row[0];
-                        return '<button class="btn btn-success  btn-sm" data-action="accept" onclick="Accept(\'' + actionUrl + '\',\'3\',\'' + id + '\')">Accept</button>' +
-                            ' <button class="btn btn-danger btn-sm"   data-action="reject"  onclick="Accept(\'' + actionUrl + '\',\'4\',\'' + id + '\')">Reject</button> ';
+                        var viewUrl = '{{ route("company.campaign.userDetails") }}';
+                        var id = row[7];
+                        return '<button class="btn btn-success  btn-sm" data-action="accept"  data-user_id="'+id +'" title="View" "  onclick="openViewModal(\'' + viewUrl + '\',\'3\',\'' + id + '\')"><i class="fa fa-eye"></button>';                          
 
                     },
                 }
@@ -168,6 +256,24 @@
 
 
     });
+    function openViewModal(url, action, id) { 
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: {
+                "_token": "{{csrf_token()}}",
+                'action': action,
+                'id': id,
+            },
+            success: (response) => {
+            console.log(response.message)
+            // $('#view-modal').modal('show');
+            $('#view-modal').modal('show');
+            $('.addmodle').append("");
+            $('.addmodle').append(response.message);
+            }
+        });
+    }
 
     function Accept(url, action, id) {
 

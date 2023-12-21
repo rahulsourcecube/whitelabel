@@ -20,7 +20,7 @@
 
                                 <div class="d-md-flex align-items-center">
                                     <div class="text-center text-sm-left ">
-                                        <div class="avatar avatar-image" style="width: 150px; height:150px">
+                                        <div class="avatar avatar-image" style="width: 150px; height:150px ">
                                             @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
                                                 <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
                                             @else
