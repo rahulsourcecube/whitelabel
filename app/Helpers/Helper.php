@@ -21,6 +21,10 @@ class Helper
             return redirect()->back()->with('message', $exception->getMessage());
         }
     }
+    public static function getcurrency()
+    {
+        return '$';
+    }
 
     public static function taskType($type)
     {
@@ -42,4 +46,5 @@ class Helper
         // dd($checkPackage);
         return (int)$checkPackage > 0 ? true : false;
     }
+
 }

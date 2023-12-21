@@ -155,12 +155,13 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::prefix('campaign')->name('campaign.')->group(function () {
             Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
             Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');
-            Route::get('joined/user/{id}', [CampaignController::class, 'joined'])->name('joined');
+           ;
             Route::post('statuswiselist/user', [CampaignController::class, 'statuswiselist'])->name('statuswiselist');
+            
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
-            Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
-            Route::get('request/accept/{id}', [CampaignController::class, 'accept'])->name('accept');
-            Route::get('request/reject/{id}', [CampaignController::class, 'reject'])->name('reject');
+            Route::post('request/user/details', [CampaignController::class, 'userDetails'])->name('userDetails');
+        
+            
             Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
             Route::post('/store', [CampaignController::class, 'store'])->name('store');
             Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');

@@ -43,6 +43,7 @@ class CampaignModel extends Model
         }
         return $string;
     }
+   
 
     public function campaign()
     {
