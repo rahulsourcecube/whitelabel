@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
+use App\Models\ModelHasRoles;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
@@ -10,14 +11,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
     function index(Request $request)
     {
+
         if ($request->ajax()) {
-        } else {
-            return view('company.employee.list');
+        } else {return view('company.employee.list');
         }
     }
     public function elist(Request $request)
@@ -37,11 +39,12 @@ class EmployeeController extends Controller
             ->take($length)
             ->get();
         foreach ($results as $result) {
+
             $list[] = [
                 base64_encode($result->id),
                 $result->full_name ?? "-",
                 $result->email ?? "-",
-                $result->contact_number ?? "-",
+                $result->roles->pluck('name', 'name')->first() ?? "-",
             ];
         }
         $totalFiltered = $results->count();
@@ -54,7 +57,8 @@ class EmployeeController extends Controller
     }
     function create()
     {
-        return view('company.employee.create');
+        $roles = Role::pluck('name', 'name')->all();
+        return view('company.employee.create', compact('roles'));
     }
     function store(Request $request)
     {
@@ -67,8 +71,9 @@ class EmployeeController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'cpassword' => 'required|string|min:8',
             ]);
-            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->first();
-            if (!empty($useremail)) {
+            $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
+
+            if(!empty($useremail)){
                 return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
             }
             // if ($validator->fails()) {
@@ -83,7 +88,9 @@ class EmployeeController extends Controller
             $user->view_password = $request->password;
             $user->user_type = User::USER_TYPE['STAFF'];
             $user->company_id = $companyId;
+
             $user->save();
+            $user->assignRole($request->input('role'));
             return redirect()->route('company.employee.list')->with('success', 'Employee added successfuly.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -94,23 +101,30 @@ class EmployeeController extends Controller
     {
         return view('company.roles.roleview');
     }
+
     function edit($id)
     {
         $user_id = base64_decode($id);
         $user = User::where('id', $user_id)->first();
+        $roles = Role::pluck('name', 'name')->all();
+        $userRole = $user->roles->pluck('name', 'name')->first();
         if (empty($user)) {
             return redirect()->back('User not found');
         }
-        return view('company.employee.edit', compact('user'));
+        return view('company.employee.edit', compact('user', 'roles', 'userRole'));
     }
+
     public function update($id, Request $request)
     {
         try {
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->first();
+
             if (empty($user)) {
+
                 return redirect()->back()->with('error', 'Something went wrong');
             }
+
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
@@ -124,7 +138,10 @@ class EmployeeController extends Controller
                 'last_name' => $request->lname,
                 'email' => $request->email,
             ];
+
             $user->update($userDetails);
+            $roles = ModelHasRoles::where("model_id", $user->id)->delete();
+            $user->assignRole($request->input('role'));
             return redirect()->route('company.employee.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {
             Log::error('Company user update error : ' . $e->getMessage());
@@ -135,11 +152,12 @@ class EmployeeController extends Controller
     {
         try {
             $user_id = base64_decode($id);
-            $user = User::where('id', $user_id)->delete();
+            $user=User::where('id', $user_id)->delete();
             return response()->json(['success' => 'error', 'message' => 'User deleted successfully']);
         } catch (Exception $e) {
             Log::error('Company user delete error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }
     }
+
 }

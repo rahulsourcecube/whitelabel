@@ -30,6 +30,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/config', function () {
+    Artisan::call('config:cache');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
+    return "Done!";
+});
+
 // Route::get('/', function () {
 //     return view('auth.login');
 // });
@@ -178,8 +186,12 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         });
         Route::prefix('role')->name('role.')->group(function () {
             Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');
-            Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
-            Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');
+            Route::get('/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
+            Route::post('/store', [RolesController::class, 'store'])->name('store');
+            Route::get('/destroy/{id}', [RolesController::class, 'destroy'])->name('destroy');
+            Route::get('/edit/{id}', [RolesController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [RolesController::class, 'update'])->name('update');
+            Route::get('/view/{id}', [RolesController::class, 'roleview'])->name('roleview');
         });
         Route::prefix('employee')->name('employee.')->group(function () {
             Route::get('', [EmployeeController::class, 'index'])->name('list');
