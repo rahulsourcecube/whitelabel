@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Exports\Export;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
@@ -9,10 +10,13 @@ use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CampaignController extends Controller
 {
@@ -367,6 +371,21 @@ class CampaignController extends Controller
 
     function analytics()
     {
+        // $companyId = Auth::user()->id;
+        // // dd(Carbon::today()->subDays(1));
+        // DB::enableQueryLog();
+        // $user_campaign_history = DB::table('users as u')
+        //     ->where('u.company_id', $companyId)
+        //     ->where('uch.status', '3')
+        //     ->whereDate('uch.updated_at', '>', now()->subWeek())
+        //     ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+        //     ->select(DB::raw('SUM(uch.reward) as total_reward , DAY(uch.updated_at) as day'))
+        //     ->groupBy('day')
+        //     ->get();
+        // dd(DB::getQueryLog());
+        // echo "<pre>";
+        // print_r($user_campaign_history);
+        // dd();
         return view('company.campaign.analytics');
     }
 
@@ -430,5 +449,11 @@ class CampaignController extends Controller
             Log::error('ation error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }
+    }
+    public function export($type)
+    {
+        $date = Carbon::now()->toDateString();
+        $tasktype = CampaignModel::TYPE[strtoupper($type)];
+        return Excel::download(new Export($tasktype), ($type . '_' . $date . '.xlsx'));
     }
 }

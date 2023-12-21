@@ -167,7 +167,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
             Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
             Route::post('/action', [CampaignController::class, 'action'])->name('action');
-
+            Route::get('/export/{type}', [CampaignController::class, 'export'])->name('export');
         });
         Route::prefix('billing')->name('billing.')->group(function () {
             Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
@@ -197,3 +197,5 @@ Route::get('migrate', function () {
     Artisan::call('migrate');
     return 'Yupp, migrations ran successfully!';
 });
+
+
