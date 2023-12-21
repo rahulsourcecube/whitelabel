@@ -15,7 +15,9 @@
     <div class="card">
         <div class="card-body">
             <h4>Users List</h4>
+            @can('user-create')
             <a class="btn btn-primary float-right" href="{{ route('company.user.create') }}" role="button">Add New</a>
+            @endcan
             <div class="m-t-25">
                 <table id="user_tables" class="table">
                     <thead>
@@ -116,11 +118,10 @@
                         var deleteUrl = '{{ route('company.user.delete', ':del') }}';
                         deleteUrl = deleteUrl.replace(':del', row[0]);
                         return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
-                            '" role="button" title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
+                            '" role="button" title="View"><i class="fa fa-eye"></i></a> @can("user-edit") <a class="btn btn-primary btn-sm" href="' +
                             editUrl +
-                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
-                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
-
+                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can("user-delete")<a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> @endcan';
                     },
                 }],
             });

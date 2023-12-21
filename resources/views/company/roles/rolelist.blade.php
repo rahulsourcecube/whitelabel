@@ -17,43 +17,41 @@
         <div class="card">
             <div class="card-body">
                 <h4>Roles List</h4>
-                <a class="btn btn-primary float-right" href="{{ route('company.role.rolecreate') }}" role="button">Add New</a>
+                @can('role-create')
+                    <a class="btn btn-primary float-right" href="{{ route('company.role.rolecreate') }}" role="button">Add
+                        New</a>
+                @endcan
                 <div class="m-t-25">
                     <table id="user_tables" class="table">
                         <thead>
                             <tr>
-                                {{-- <th></th> --}}
                                 <th>Role Name</th>
-                               
+
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Staff</td>
-                                
-                                <td>
-                                    <a class="btn btn-success  btn-sm" href="{{ route('company.role.roleview') }}" role="button" title="View"><i
-                                            class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary btn-sm" href="{{ route('company.role.rolecreate') }}" role="button"
-                                        title="Edit"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                        onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Manager</td>
-                                
-                                <td>
-                                    <a class="btn btn-success  btn-sm" href="{{ route('company.role.roleview') }}" role="button" title="View"><i
-                                            class="fa fa-eye"></i></a>
-                                    <a class="btn btn-primary btn-sm" href="{{ route('company.role.rolecreate') }}" role="button"
-                                        title="Edit"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                        onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
-                                </td>
-                            </tr>
-                           
+                            @foreach ($roles as $key => $role)
+                                <tr>
+                                    <td>{{ $role->name ?? '' }}</td>
+
+                                    <td>
+                                        <a class="btn btn-success  btn-sm"
+                                            href="{{ route('company.role.roleview', $role->id) }}" role="button"
+                                            title="View"><i class="fa fa-eye"></i></a>
+                                        @can('role-edit')
+                                            <a href="{{ route('company.role.edit', $role->id) }}"
+                                                class="btn btn-primary btn-sm action-btn" title="Update Role"><i
+                                                    class="fas fa-pen-fancy"></i></a>
+                                        @endcan
+                                        @can('role-delete')
+                                            <a href="{{ route('company.role.destroy', $role->id) }}"
+                                                class="btn btn-danger btn-sm action-btn show_confirm"
+                                                title="Deactivate Profile"><i class="fas fa-trash-alt"></i></a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
