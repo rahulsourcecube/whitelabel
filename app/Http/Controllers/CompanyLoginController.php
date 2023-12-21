@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Hash;
 use App\Mail\company\forgetpass;
 use App\Models\CampaignModel;
 use App\Models\SettingModel;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Mail;
@@ -42,11 +44,33 @@ class CompanyLoginController extends Controller
         $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(10)->get();
         $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(10)->get();
         $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
-        return view('company.dashboard', $data);
+
+        // DB::enableQueryLog();
+        $user_campaign_history = DB::table('users as u')
+            ->where('u.company_id', $companyId)
+            ->where('uch.status', '3')
+            ->whereMonth('uch.updated_at', '=', Carbon::now()->month)
+            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+            ->select(DB::raw('SUM(uch.reward) as total_reward , DAYOFMONTH(uch.updated_at) as day'))
+            ->groupBy('day')
+            ->get();
+
+        // dd(DB::getQueryLog());
+        $dateandtime = Carbon::now();
+        $start_date = "01-" . $dateandtime->month . "-" . $dateandtime->year;
+        $start_time = strtotime($start_date);
+        $end_time = strtotime("+1 month", $start_time);
+        for ($i = $start_time; $i < $end_time; $i += 86400) {
+            $list[date('d', $i)] = 0;
+        }
+        foreach ($user_campaign_history as $values) {
+            $list[$values->day] = $values->total_reward;
+        }
+        $user_reward_and_days = json_encode(['day' => array_keys($list), 'reward' => array_values($list)]);
+        return view('company.dashboard', $data, compact('user_reward_and_days'));
     }
     public function login(Request $request)
     {
-
         $input = $request->all();
         $this->validate($request, [
             'email' => 'required|email',

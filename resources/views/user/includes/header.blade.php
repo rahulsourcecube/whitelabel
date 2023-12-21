@@ -1,10 +1,7 @@
 <div class="header">
     <div class="logo logo-dark">
         <a href="{{ route('user.dashboard') }}">
-            <img src="@if (
-                !empty($siteSetting) &&
-                    isset($siteSetting->logo) &&
-                    file_exists(asset('uploads/setting/' . $siteSetting->logo))) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
+            <img src="@if (!empty($siteSetting) && isset($siteSetting->logo) && file_exists(asset('uploads/setting/' . $siteSetting->logo))) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
                 alt="Logo">
             <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold.png') }}" alt="Logo">
         </a>
@@ -37,10 +34,12 @@
             <li class="dropdown dropdown-animated scale-left">
                 <div class="pointer" data-toggle="dropdown">
                     <div class="avatar avatar-image  m-h-10 m-r-15">
-                        @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
-                            <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
+                        @if (isset(Auth::user()->profile_image) &&
+                                !empty(Auth::user()->profile_image) &&
+                                file_exists('uploads/user/user-profile/' . Auth::user()->profile_image))
+                            <img src="{{ asset('uploads/user/user-profile/' . Auth::user()->profile_image) }}">
                         @else
-                            <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                        <img src="{{asset('assets/images/profile_image.jpg')}}">
                         @endif
                     </div>
                 </div>
@@ -48,10 +47,12 @@
                     <div class="p-h-20 p-b-15 m-b-10 border-bottom">
                         <div class="d-flex m-r-50">
                             <div class="avatar avatar-lg avatar-image">
-                                @if (isset($userData->profile_image) && file_exists(asset('user/profile_image/' . $userData->profile_image)))
-                                    <img src="{{ asset('user/profile_image/' . $userData->profile_image) }}">
+                                @if (isset(Auth::user()->profile_image) &&
+                                        !empty(Auth::user()->profile_image) &&
+                                        file_exists('uploads/user/user-profile/' . Auth::user()->profile_image))
+                                    <img src="{{ asset('uploads/user/user-profile/' . Auth::user()->profile_image) }}">
                                 @else
-                                    <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                <img src="{{asset('assets/images/profile_image.jpg')}}">
                                 @endif
                             </div>
                             <div class="m-l-10">
@@ -76,8 +77,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <a href="{{ route('user.edit_profile') }}"
-                        class="dropdown-item d-block p-h-15 p-v-10">
+                    <a href="{{ route('user.edit_profile') }}" class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <i class="anticon opacity-04 font-size-16 anticon-edit"></i>
