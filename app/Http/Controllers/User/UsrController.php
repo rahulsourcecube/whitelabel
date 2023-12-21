@@ -38,7 +38,7 @@ class UsrController extends Controller
     {
         try {
 
-            $campaignList = UserCampaignHistoryModel::orderBy('user_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
+            $campaignList = UserCampaignHistoryModel::orderBy('campaign_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
             $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->get();
@@ -51,7 +51,7 @@ class UsrController extends Controller
             $data['total_package'] = 0;
             return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward'));
         } catch (Exception $exception) {
-            
+
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
@@ -189,13 +189,60 @@ class UsrController extends Controller
     }
     function myreward()
     {
-
-        return view('user.reward.myReward');
+        try {
+            $myReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->whereIn('status', [3, 4])->get();
+            return view('user.reward.myReward', compact('myReward'));
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
     }
     function progressreward()
     {
+        try {
+            $progressReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->whereIn('status', [1, 2])->get();
+            return view('user.reward.progressreward', compact('progressReward'));
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+    public function claimReward($id)
+    {
+        try {
+            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();
+            $claimReward->status = '2';
+            $claimReward->save();
+            return redirect()->back()->with('success', "Claim Reward requested successfully!");
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong");
+        }
+    }
+    public function searchProgress(Request $request)
+    {
+        try {
+            $filter = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->whereIn('status', [1, 2]);
+            if ($request->from_date != "") {
+                $from_date = date("d-m-y", strtotime($request->from_date));
+                $filter = $filter->whereDate('created_at', '>=', $from_date);
+            }
+            if ($request->two_date != "") {
+                $two_date = date("d-m-y", strtotime($request->two_date));
+                $filter = $filter->whereDate('updated_at', '<=', $two_date);
+            }
+            if ($request->type != "") {
+                $type = ($request->type);
+                $filter = $filter->where('status', '<=', $type);
+            }
+            if ($request->status != "") {
+                $status = ($request->status);
+                $filter = $filter->where('status', '<=', $status);
+            }
 
-        return view('user.reward.progressReward');
+            $filter = $filter->get();
+            // dd($filter);
+            return redirect()->route('user.progress.reward');
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
     }
     function analytics()
     {
@@ -224,7 +271,6 @@ class UsrController extends Controller
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->first();
             }
-            // dd($referrer_user);
 
             $companyId = User::where('user_type', '2')->where('status', '1')->first();
             $userRegister = new User();
@@ -237,9 +283,6 @@ class UsrController extends Controller
             $userRegister->password = Hash::make($request->password);
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
 
-            // $baseUrl = config('app.url');
-            // $affiliateLink = $baseUrl . '/user/signup?referral_code=' . $userRegister->referral_code;
-            // dd($affiliateLink);
 
             $userRegister->save();
 
@@ -269,7 +312,7 @@ class UsrController extends Controller
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]);
-                   
+
 
             Mail::send('user.email.forgetPassword', ['token' => $token], function ($message) use ($request) {
                 $message->to($request->email);
