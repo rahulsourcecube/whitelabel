@@ -15,6 +15,23 @@ use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        // check user permission
+        $this->middleware('permission:employee-management-list', ['only' => ['index']]);
+        $this->middleware('permission:employee-management-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:employee-management-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:employee-management-delete', ['only' => ['delete']]);
+    }
+
+    
     function index(Request $request)
     {
 
