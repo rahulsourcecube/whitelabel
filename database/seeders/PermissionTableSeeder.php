@@ -53,12 +53,36 @@ class PermissionTableSeeder extends Seeder
         }
 
 
-        $Module = Module::create(['module_name' => 'setting']);
+        $Module = Module::create(['module_name' => 'General Setting']);
         $permissions = [
-            'setting-list',
-            'setting-create',
-            'setting-edit',
-            'setting-delete',
+            'general-setting-list',
+            'general-setting-create',
+            'general-setting-edit',
+            'general-setting-delete',
+        ];
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission, 'modules_id' => $Module->id]);
+        }
+
+
+        $Module = Module::create(['module_name' => 'Employee Management']);
+        $permissions = [
+            'employee-management-list',
+            'employee-management-create',
+            'employee-management-edit',
+            'employee-management-delete',
+        ];
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission, 'modules_id' => $Module->id]);
+        }
+
+
+        $Module = Module::create(['module_name' => 'Billing and Payment']);
+        $permissions = [
+            'billing-and-payment-list',
+            'billing-and-payment-create',
+            'billing-and-payment-edit',
+            'billing-and-payment-delete',
         ];
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'modules_id' => $Module->id]);

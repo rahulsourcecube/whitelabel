@@ -15,14 +15,15 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-body">
-                <div style="display: flex;justify-content: space-between;">
-                <h4>Edit {{ $role->name ?? ''}} Role<span class="error">*</span></h4>
-                <button type="submit" class="btn btn-primary">Edit</button>
-                </div>
-                <form id="package" method="POST" action="{{ route('company.role.update', $role->id) }}"enctype="multipart/form-data">
-                    @csrf
-                    
+            <form id="package" method="POST"
+                action="{{ route('company.role.update', $role->id) }}"enctype="multipart/form-data">
+                @csrf
+                <div class="card-body">
+                    <div style="display: flex;justify-content: space-between;">
+                        <h4>Edit {{ $role->name ?? '' }} Role<span class="error">*</span></h4>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+
 
 
                     <div class="m-t-25">
@@ -40,7 +41,8 @@
                             <tbody>
                                 @foreach ($ModelPermission as $value)
                                     <tr>
-                                        <th scope="row" style="text-transform: capitalize;"><label> {{ $value->module_name }}</label></th>
+                                        <th scope="row" style="text-transform: capitalize;"><label>
+                                                {{ $value->module_name }}</label></th>
                                         @if (isset($value->modules))
                                             @foreach ($value->modules as $modelPermission)
                                                 <td style="text-align: center;">
@@ -53,14 +55,14 @@
                             </tbody>
                         </table>
                         <label id="permission[]-error" class="error" for="permission[]"
-                                    style="display: none !important">Please select at least one Permission.</label>
+                            style="display: none !important">Please select at least one Permission.</label>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-       <script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+        <script>
             jQuery('#frm').validate({
                 rules: {
                     name: "required",

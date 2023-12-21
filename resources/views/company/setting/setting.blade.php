@@ -73,7 +73,9 @@
                             </div>
                         </div>
                     </div>
+                    @can('general-setting-edit')
                     <button class="btn btn-primary" type="submit" id="btnSubmit">Submit</button>
+                    @endcan
                 </form>
             </div>
         </div>

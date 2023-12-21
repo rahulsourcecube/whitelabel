@@ -64,7 +64,7 @@ class RolesController extends Controller
             $role = Role::create(['name' => $request->input('name')]);
             $role->syncPermissions(array_map('intval', $request->input('permission')));
             return redirect()->route('company.role.rolelist')
-                ->with('message', 'Role created successfully');
+                ->with('success', 'Role created successfully');
         } catch (Exception $e) {
 
             Log::error('store role Error: ' . $e->getMessage());
@@ -88,20 +88,18 @@ class RolesController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->validate($request, [
+            // 'name' => 'required',
+            'permission' => 'required',
+        ]);
         try {
-            $this->validate($request, [
-                'name' => 'required',
-                'permission' => 'required',
-            ]);
 
             $role = Role::find($id);
-            $role->name = $request->input('name');
-            $role->save();
 
             $role->syncPermissions(array_map('intval', $request->input('permission')));
 
             return redirect()->route('company.role.rolelist')
-                ->with('message', 'Role updated successfully');
+                ->with('success', 'Role updated successfully');
         } catch (Exception $e) {
 
             Log::error('Update role Error: ' . $e->getMessage());
