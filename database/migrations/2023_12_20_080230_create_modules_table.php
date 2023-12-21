@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('setting', function (Blueprint $table) {
-            // $table->bigInteger('user_id')->unsigned();
-            // $table->foreign('user_id')->references('id')->on('users');
+        Schema::create('modules', function (Blueprint $table) {
+            $table->id();
+            $table->string('module_name')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -26,8 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('setting', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('modules');
     }
 };

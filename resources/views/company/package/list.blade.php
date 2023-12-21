@@ -76,12 +76,14 @@
                             </li>
                         </ul>
                         {!! $list->description !!}
+                        @can('package-create')
                         <div class="text-center">
                             <button class="btn btn-success {{$list->user_bought}}" {{ $list->user_bought == true ?
                                 'disabled' : '' }} onclick="openPaymentModal('{{ $list->id }}')">{{ $list->user_bought
                                 == true ? 'Purchased' : 'Buy
                                 Package' }}</button>
                         </div>
+                        @endcan
                     </div>
                 </div>
             </div>

@@ -42,7 +42,7 @@
 
          // Hide the alert after 3 seconds
          setTimeout(function() {
-         $("#alert").fadeOut();
-         }, 2000);
+         $(".alert").fadeOut();
+         }, 4000);
  });
 </script>

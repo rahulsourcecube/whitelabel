@@ -94,7 +94,9 @@
                             </div>
                         </div>
                     </div>
+                    @can('general-setting-create')
                     <button class="btn btn-primary" type="submit" id="btnSubmit">Submit</button>
+                    @endcan
                 </form>
             </div>
         </div>
