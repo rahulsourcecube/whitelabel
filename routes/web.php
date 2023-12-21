@@ -30,6 +30,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/config', function () {
+    Artisan::call('config:cache');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
+    return "Done!";
+});
+
 // Route::get('/', function () {
 //     return view('auth.login');
 // });
@@ -170,7 +178,6 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
             Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
             Route::post('/action', [CampaignController::class, 'action'])->name('action');
-
         });
         Route::prefix('billing')->name('billing.')->group(function () {
             Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
@@ -179,10 +186,20 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::get('', [CompanySettingController::class, 'index'])->name('index');
             Route::post('store', [CompanySettingController::class, 'store'])->name('store');
         });
+        // roles Route
         Route::prefix('role')->name('role.')->group(function () {
+            // roles list Route
             Route::get('', [RolesController::class, 'rolelist'])->name('rolelist');
-            Route::get('role/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
-            Route::get('role/view', [RolesController::class, 'roleview'])->name('roleview');
+            // roles create , store Route
+            Route::get('/create', [RolesController::class, 'rolecreate'])->name('rolecreate');
+            Route::post('/store', [RolesController::class, 'store'])->name('store');
+            // roles edit , update Route
+            Route::get('/edit/{id}', [RolesController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [RolesController::class, 'update'])->name('update');
+            // roles view Route
+            Route::get('/view/{id}', [RolesController::class, 'roleview'])->name('roleview');
+            // roles destroy Route
+            Route::get('/destroy/{id}', [RolesController::class, 'destroy'])->name('destroy');
         });
         Route::prefix('employee')->name('employee.')->group(function () {
             Route::get('', [EmployeeController::class, 'index'])->name('list');
