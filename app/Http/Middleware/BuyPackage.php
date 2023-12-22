@@ -19,8 +19,14 @@ class BuyPackage
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
-        $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
-        if($checkPackage){
+        if ($user->user_type == env('COMPANY_ROLE')) {
+            $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
+            if ($checkPackage) {
+                return $next($request);
+            }else{
+                return redirect()->route('company.package.list', 'Free')->withErrors('Please buy package to access this page');
+            }
+        } else {
             return $next($request);
         }
         return redirect()->route('company.package.list', 'Free')->withErrors('Please buy package to access this page');
