@@ -17,6 +17,23 @@ use Illuminate\Support\Str;
 class CampaignController extends Controller
 {
 
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        // check user permission
+        $this->middleware('permission:task-list', ['only' => ['index', 'view']]);
+        $this->middleware('permission:task-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:task-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:task-delete', ['only' => ['delete']]);
+    }
+
+    
+
     function index($type)
     {
         $taskType = $type;
