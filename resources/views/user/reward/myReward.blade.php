@@ -17,7 +17,72 @@
         <div class="card">
             <div class="card-body">
                 <h4>my Reward</h4>
-                <div class="m-t-25">
+
+                <form method="get" action="{{ route('user.my.reward') }}" id="searchForm"
+                    onsubmit="return validateForm()">
+
+                    @if (isset(request()->status))
+                        <input type="hidden" name="status" value="{{ request()->status }}">
+                    @elseif(isset(request()->status))
+                        <input type="hidden" name="from_date" value="{{ request()->from_date }}">
+                    @elseif (isset(request()->type))
+                        <input type="hidden" name="type" value="{{ request()->type }}">
+                    @endif
+
+                    <div class="form-row mt-3">
+                        <div class="form-group col-md-2">
+                            <label class="font-weight-semibold" for="name">From Date:</label>
+                            <input class="form-control datepicker-input"
+                                value="{{ isset(request()->from_date) ? request()->from_date : '' }}"
+                                placeholder="Select Date" name="from_date">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="font-weight-semibold" for="name">Two Date:</label>
+                            <input class="form-control datepicker-input"
+                                value="{{ isset(request()->two_date) ? request()->two_date : '' }}"
+                                placeholder="Select Date" name="two_date">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="font-weight-semibold" for="name">Type:</label>
+                            <select name="type" class="form-control">
+                                <option value="">Select Type</option>
+                                <option value="1"
+                                    {{ isset(request()->type) && request()->type === '1' ? 'selected' : '' }}>Referral
+                                </option>
+                                <option value="2"
+                                    {{ isset(request()->type) && request()->type === '2' ? 'selected' : '' }}>Social
+                                </option>
+                                <option value="3"
+                                    {{ isset(request()->type) && request()->type === '3' ? 'selected' : '' }}>Custom
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="font-weight-semibold" for="name">Status:</label>
+                            <select name="status" class="form-control">
+                                <option value="">Select Status</option>
+                                <option value="3"
+                                    {{ isset(request()->status) && request()->status === '3' ? 'selected' : '' }}>Completed
+                                </option>
+                                <option value="4"
+                                    {{ isset(request()->status) && request()->status === '4' ? 'selected' : '' }}>Rejected
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2" style="margin-top: 29px;">
+                            <button type="submit" class="btn btn-success">Search</button>
+                        </div>
+                    </div>
+                    <span class="err" style="display: none;color: red;">Please select any one column</span>
+                </form>
+
+                <div class="form-group col-md-2">
+                    <a href="{{ route('user.my.reward') }}"
+                        style="margin-left: 773px;margin-top: -65px;position: absolute;"><button type="submit"
+                            class="btn btn-success">Refresh</button></a>
+                </div>
+
+                <div class="m-t-15">
                     <table id="user_tables" class="table">
                         <thead>
                             <tr>
@@ -30,12 +95,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($myReward as $data)
+                            @foreach ($filterResults as $data)
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                     <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
                                     <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td>
-                                    <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}</td>
+                                    <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
+                                    </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 3)
                                             <span class="btn btn-success  btn-sm">Completed</span>
@@ -72,5 +138,22 @@
                 },
             });
         });
+
+        function validateForm() {
+            var fromValue = $("input[name='from_date']").val();
+            var twoValue = $("input[name='two_date']").val();
+            var typeValue = $("select[name='type']").val();
+            var statusValue = $("select[name='status']").val();
+
+            if (typeValue === '' && statusValue === '' && fromValue === '' && twoValue === '') {
+                $('.err').css("display", "block");
+                setTimeout(function() {
+                    $(".err").css("display", "none");
+                }, 3000);
+                return false;
+            }
+
+            return true;
+        }
     </script>
 @endsection

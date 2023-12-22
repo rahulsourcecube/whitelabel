@@ -77,6 +77,8 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
         Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
         Route::post('/changePassword-store', [UsrController::class, 'changePasswordStore'])->name('changePasswordStore');
+        Route::post('/social-account', [UsrController::class, 'socialAccount'])->name('socialAccount');
+        Route::post('/bank-details', [UsrController::class, 'bankDetail'])->name('bankDetail');
         Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
     });
 });

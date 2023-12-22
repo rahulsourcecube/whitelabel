@@ -640,6 +640,7 @@ class ComposerStaticInit62d8e3d70cb598c2e0c44d8953582e1e
         'App\\Models\\CampaignModel' => __DIR__ . '/../..' . '/app/Models/CampaignModel.php',
         'App\\Models\\CompanyModel' => __DIR__ . '/../..' . '/app/Models/CompanyModel.php',
         'App\\Models\\CompanyPackage' => __DIR__ . '/../..' . '/app/Models/CompanyPackage.php',
+        'App\\Models\\Notification' => __DIR__ . '/../..' . '/app/Models/Notification.php',
         'App\\Models\\PackageModel' => __DIR__ . '/../..' . '/app/Models/PackageModel.php',
         'App\\Models\\Payment' => __DIR__ . '/../..' . '/app/Models/Payment.php',
         'App\\Models\\SettingModel' => __DIR__ . '/../..' . '/app/Models/SettingModel.php',
