@@ -36,7 +36,7 @@ class CampaignController extends Controller
         $this->middleware('permission:task-delete', ['only' => ['delete']]);
     }
 
-    
+
 
     function index($type)
     {
@@ -93,34 +93,35 @@ class CampaignController extends Controller
             ]);
         }
     }
-    public function statuswiselist(Request $request){
+    public function statuswiselist(Request $request)
+    {
         $columns = ['id', 'title'];
-       
+
         $start = $request->input('start');
         $length = $request->input('length');
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
         $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-        // ->where('company_id', Auth::user()->id)
-        ->where('campaign_id', $request->input('id'))
-        ->where('status', $request->input('status'))
+            // ->where('company_id', Auth::user()->id)
+            ->where('campaign_id', $request->input('id'))
+            ->where('status', $request->input('status'))
             ->skip($start)
             ->take($length)
             ->get();
-           
+
         foreach ($results as $result) {
-          
+
             $list[] = [
                 base64_encode($result->id),
                 $result->getuser->full_name ?? "-",
                 $result->getuser->email ?? "-",
-                $result->getuser->contact_number ?? "-",              
-                $result->reward ?? "-",              
-                date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
-                $result->TaskStatus?? "-",                     
-                base64_encode($result->user_id)?? "-",                     
-            
+                $result->getuser->contact_number ?? "-",
+                $result->reward ?? "-",
+                date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $result->created_at)))  ?? "-",
+                $result->TaskStatus ?? "-",
+                base64_encode($result->user_id) ?? "-",
+
             ];
         }
         $totalFiltered = $results->count();
@@ -131,7 +132,7 @@ class CampaignController extends Controller
             "data" => $list
         ]);
     }
-   
+
 
 
     function create($type)
@@ -237,18 +238,25 @@ class CampaignController extends Controller
 
     function analytics()
     {
-        // $companyId = Auth::user()->id;
-        // // dd(Carbon::today()->subDays(1));
-        // DB::enableQueryLog();
-        // $user_campaign_history = DB::table('users as u')
-        //     ->where('u.company_id', $companyId)
-        //     ->where('uch.status', '3')
-        //     ->whereDate('uch.updated_at', '>', now()->subWeek())
-        //     ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-        //     ->select(DB::raw('SUM(uch.reward) as total_reward , DAY(uch.updated_at) as day'))
-        //     ->groupBy('day')
-        //     ->get();
+        $companyId = Auth::user()->id;
+        // dd(Carbon::today()->subDays(1));
+        DB::enableQueryLog();
+        $user_campaign_history = DB::table('users as u')
+            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+            ->where('u.company_id', $companyId)
+            ->where('uch.status', '3')
+            ->whereDate('uch.created_at', '>', now()->subdays(7))
+            ->select(DB::raw('COUNT(uch.user_id) as total_user , DAY(uch.created_at) as day'))
+            ->groupBy('day')
+            ->get();
         // dd(DB::getQueryLog());
+        $dateandtime = Carbon::now();
+        $start_date = $dateandtime->subDays(7);
+        $start_time = strtotime($start_date);
+        $end_time = strtotime("+1 week", $start_time);
+        for ($i = $start_time; $i < $end_time; $i += 86400) {
+            $list[date('D', $i)] = 0;
+        }
         // echo "<pre>";
         // print_r($user_campaign_history);
         // dd();
@@ -323,16 +331,16 @@ class CampaignController extends Controller
         return Excel::download(new Export($tasktype), ($type . '_' . $date . '.xlsx'));
     }
     public function userDetails(Request $request)
-    {      
-      
+    {
+
         try {
             $user_id = base64_decode($request->id);
             $user = User::where('id', $user_id)->first();
             if (empty($user)) {
-               return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);  
+                return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);
             }
-            $html="";
-            $html='<div class="card-body">
+            $html = "";
+            $html = '<div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col-md-12">
                                         <div class="d-md-flex align-items-center">
@@ -342,7 +350,7 @@ class CampaignController extends Controller
                                                 </div>
                                             </div>
                                             <div class="text-center text-sm-left m-v-15 p-l-30">
-                                                <h2 class="m-b-5 name" >'. $user->first_name.' '.$user->last.'</h2>
+                                                <h2 class="m-b-5 name" >' . $user->first_name . ' ' . $user->last . '</h2>
                                                 <p class="text-opacity font-size-13"></p>
                                                 s
                                             </div>
@@ -358,14 +366,14 @@ class CampaignController extends Controller
                                                             <i class="m-r-10 text-primary anticon anticon-mail"></i>
                                                             <span>Email: </span> 
                                                         </p>
-                                                        <p class="col font-weight-semibold">'. $user->email .'</p>
+                                                        <p class="col font-weight-semibold">' . $user->email . '</p>
                                                     </li>
                                                     <li class="row">
                                                         <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
                                                             <i class="m-r-10 text-primary anticon anticon-phone"></i>
                                                             <span>Phone: </span> 
                                                         </p>
-                                                        <p class="col font-weight-semibold"> '.$user->contact_number.'</p>
+                                                        <p class="col font-weight-semibold"> ' . $user->contact_number . '</p>
                                                     </li>
                                                    
                                                 </ul>
@@ -387,13 +395,11 @@ class CampaignController extends Controller
                                         </div>
                                     </div>
                                 </div>
-                            </div>'; 
-            return response()->json(['success' => 'error', 'message' => $html]);  
-           
+                            </div>';
+            return response()->json(['success' => 'error', 'message' => $html]);
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }
     }
-    
 }

@@ -73,6 +73,8 @@
                                 $message }}</label>
                             @enderror
                         </div>
+
+
                         <div class="form-group col-md-6">
                             <label for="file">Image</label>
                             <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg"
@@ -90,17 +92,85 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="form-group col-md-3" style="max-height: 200px;">
                             <img id="imagePreview" src="#" alt="Image Preview"
                                 style="max-width: 100%; max-height: 80%;display: none;">
                             <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
                                 style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
                         </div>
-
-                        <div class="form-group col-md-12">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-group col-md-6">
+                                <label for="flink">Facebook Link</label>
+                                <input type="url" class="form-control" name="facebook_link" id="flink"
+                                    placeholder="Facebook Link">
+                                @error('facebook_link')
+                                <label id="flink-error" class="error" for="flink">{{ $message }}</label>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="ilink">Instagram Link</label>
+                                <input type="url" class="form-control" name="instagram_link" id="ilink"
+                                    placeholder="Instagram Link">
+                                @error('instagram_link')
+                                <label id="ilink-error" class="error" for="ilink">{{ $message }}</label>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="tlink">Twitter Link</label>
+                                <input type="url" class="form-control" name="twitter_link" id="tlink"
+                                    placeholder="Twitter Link">
+                                @error('twitter_link')
+                                <label id="tlink-error" class="error" for="tlink">{{ $message }}</label>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="ylink">Youtube Link</label>
+                                <input type="url" class="form-control" name="youtube_link" id="ylink"
+                                    placeholder="Youtube Link">
+                                @error('youtube_link')
+                                <label id="ylink-error" class="error" for="ylink">{{ $message }}</label>
+                                @enderror
+                            </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group col-md-6">
+                                <label for="bank_name">Bank Name</label>
+                                <input type="text" class="form-control" name="bank_name" id="bank_name"
+                                    placeholder="Bank Name">
+                                @error('bank_name')
+                                <label id="bank_name-error" class="error" for="bank_name">{{ $message }}</label>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="ac_holder">Account Holder</label>
+                                <input type="text" class="form-control" name="ac_holder" id="ac_holder"
+                                    placeholder="Account Holder">
+                                @error('ac_holder')
+                                <label id="ac_holder-error" class="error" for="ac_holder">{{ $message }}</label>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="ifsc_code">IFSC Code</label>
+                                <input type="text" class="form-control" name="ifsc_code" id="ifsc_code"
+                                    placeholder="IFSC Code">
+                                @error('ifsc_code')
+                                <label id="ifsc_code-error" class="error" for="ifsc_code">{{ $message }}</label>
+                                @enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="ac_no">Account No</label>
+                                <input type="text" class="form-control" name="ac_no" id="ac_no" maxlength="11" minlength="11"
+                                    placeholder="Account No" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                @error('ac_no')
+                                <label id="ac_no-error" class="error" for="ac_no">{{ $message }}</label>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>
