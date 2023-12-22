@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Exports\Export;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
@@ -9,13 +10,33 @@ use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CampaignController extends Controller
 {
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        // check user permission
+        $this->middleware('permission:task-list', ['only' => ['index', 'view']]);
+        $this->middleware('permission:task-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:task-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:task-delete', ['only' => ['delete']]);
+    }
+
+
 
     function index($type)
     {
@@ -72,7 +93,8 @@ class CampaignController extends Controller
             ]);
         }
     }
-    public function statuswiselist(Request $request){
+    public function statuswiselist(Request $request)
+    {
         $columns = ['id', 'title'];
         $start = $request->input('start');
         $length = $request->input('length');
@@ -89,17 +111,17 @@ class CampaignController extends Controller
         // dd($results);
            
         foreach ($results as $result) {
-          
+
             $list[] = [
                 base64_encode($result->id),
                 $result->getuser->full_name ?? "-",
                 $result->getuser->email ?? "-",
-                $result->getuser->contact_number ?? "-",              
-                $result->reward ?? "-",              
-                date('Y-m-d H:i:s', strtotime( str_replace('/', '-', $result->created_at ) ) )  ?? "-", 
-                $result->TaskStatus?? "-",                     
-                base64_encode($result->user_id)?? "-",                     
-            
+                $result->getuser->contact_number ?? "-",
+                $result->reward ?? "-",
+                date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $result->created_at)))  ?? "-",
+                $result->TaskStatus ?? "-",
+                base64_encode($result->user_id) ?? "-",
+
             ];
         }
         $totalFiltered = $results->count();
@@ -110,7 +132,7 @@ class CampaignController extends Controller
             "data" => $list
         ]);
     }
-   
+
 
 
     function create($type)
@@ -216,6 +238,28 @@ class CampaignController extends Controller
 
     function analytics()
     {
+        $companyId = Auth::user()->id;
+        // dd(Carbon::today()->subDays(1));
+        DB::enableQueryLog();
+        $user_campaign_history = DB::table('users as u')
+            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+            ->where('u.company_id', $companyId)
+            ->where('uch.status', '3')
+            ->whereDate('uch.created_at', '>', now()->subdays(7))
+            ->select(DB::raw('COUNT(uch.user_id) as total_user , DAY(uch.created_at) as day'))
+            ->groupBy('day')
+            ->get();
+        // dd(DB::getQueryLog());
+        $dateandtime = Carbon::now();
+        $start_date = $dateandtime->subDays(7);
+        $start_time = strtotime($start_date);
+        $end_time = strtotime("+1 week", $start_time);
+        for ($i = $start_time; $i < $end_time; $i += 86400) {
+            $list[date('D', $i)] = 0;
+        }
+        // echo "<pre>";
+        // print_r($user_campaign_history);
+        // dd();
         return view('company.campaign.analytics');
     }
 
@@ -280,9 +324,15 @@ class CampaignController extends Controller
             return redirect()->back()->with('error', 'Something went wrong');
         }
     }
+    public function export($type)
+    {
+        $date = Carbon::now()->toDateString();
+        $tasktype = CampaignModel::TYPE[strtoupper($type)];
+        return Excel::download(new Export($tasktype), ($type . '_' . $date . '.xlsx'));
+    }
     public function userDetails(Request $request)
-    {      
-      
+    {
+
         try {
             $id = base64_decode($request->id);
             $companyId = Auth::user()->id;
@@ -290,7 +340,7 @@ class CampaignController extends Controller
            
              $user = User::where('id', $camphistory->user_id)->first();
             if (empty($user)) {
-               return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);  
+                return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);
             }
             $html="";
             $html.='<div class="modal-header ">
@@ -408,5 +458,4 @@ class CampaignController extends Controller
             return redirect()->back()->with('error', 'Something went wrong');
         }
     }
-    
 }

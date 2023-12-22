@@ -42,7 +42,7 @@
                                                 <p class="col font-weight-semibold">
                                                     {{isset($profiledetail->email)?$profiledetail->email:'-'}}</p>
                                             </li>
-                                            {{-- <li class="row">
+                                            <li class="row">
                                                 <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-10 text-primary anticon anticon-phone"></i>
                                                     <span>Phone: </span>
@@ -50,7 +50,7 @@
                                                 <p class="col font-weight-semibold">
                                                     {{isset($profiledetail->contact_number)?$profiledetail->contact_number:'-'}}
                                                 </p>
-                                            </li> --}}
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>

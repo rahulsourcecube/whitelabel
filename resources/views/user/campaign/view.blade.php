@@ -41,11 +41,11 @@
                                 </button>
                             </div>
                             <div class="text-center m-t-30">
-                                {{-- @php $url = route('user.campaign.getusercampaign',$campagin_detail->id) @endphp --}}
-                                <a onclick="showSuccessAlert()" href="#" data-id="{{ $campagin_detail->id }}"
+                                <a onclick="showSuccessAlert()" href="#" data-id=""
                                     class="btn btn-primary btn-tone">
                                     <span class="m-l-5">Join</span>
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -95,9 +95,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($user_detail as $key => $user_detail_get)
+                                        @php
+                                            $i = 1;
+                                        @endphp
+                                        @foreach ($user_detail as $user_detail_get)
+                                            <tr>
+                                                <td>{{ isset($i) ? $i : '' }}
+                                                </td>
+                                                <td>{{ isset($user_detail_get->getuser->first_name) ? $user_detail_get->getuser->first_name : '' }}
+                                                </td>
+                                                <td>{{ isset($user_detail_get->getuser->created_at) ? $user_detail_get->getuser->created_at : '' }}
+                                                </td>
+                                            </tr>
+                                            @php
+                                                $i++;
+                                            @endphp
+                                        @endforeach
+                                        {{-- @foreach ($user_detail as $key => $user_detail_get)
                                             @if (isset($user_detail_get->gettasktype->task_type) ? $user_detail_get->gettasktype->task_type : '')
-                                                {{-- @dd($user_detail_get->gettasktype->task_type) --}}
                                                 <tr>
                                                     <td>{{ ++$key }}</td>
                                                     <td>
@@ -122,7 +137,7 @@
                                                     <td>8 May 2019</td>
                                                 </tr>
                                             @endif
-                                        @endforeach
+                                        @endforeach --}}
                                     </tbody>
                                 </table>
                             </div>
@@ -134,10 +149,11 @@
 
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-        <script>
-            function showSuccessAlert(url) {
-                var ID = $(this).data("id");
-                alert(ID);
+        <script>    
+            function showSuccessAlert() {
+                var ID = "{{ base64_encode($campagin_detail->id) }}";
+                var url = "{{ route('user.campaign.getusercampaign', ':id') }}"
+                url = url.replace(':id', ID);
                 $.ajax({
                     url: url,
                     method: "POST",

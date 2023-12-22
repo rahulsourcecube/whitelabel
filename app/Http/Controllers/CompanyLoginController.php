@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Mail;
+use Spatie\Permission\Models\Role;
 
 class CompanyLoginController extends Controller
 {
@@ -78,7 +79,7 @@ class CompanyLoginController extends Controller
         ]);
 
         if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-            if (!empty(auth()->user()) &&  auth()->user()->user_type == env('COMPANY_ROLE')) {
+            if (!empty(auth()->user()) &&  (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('STAFF_ROLE'))) {
 
                 return redirect()->route('company.dashboard');
             } else {
@@ -95,11 +96,14 @@ class CompanyLoginController extends Controller
     }
     public function signupStore(Request $request)
     {
-        // $user = User::first();
         try {
-            $user = User::where('email', $request->email)->first();
-            if (!empty($user)) {
-                return redirect()->back()->with('error', 'email is alardy user');
+            $useremail = User::where('email', $request->email)->where('user_type', env('COMPANY_ROLE'))->first();
+            if (!empty($useremail)) {
+                return redirect()->back()->with('error', 'Email is already registered!!')->withInput();
+            }
+            $usercontact = User::where('contact_number', $request->ccontact)->where('user_type', env('COMPANY_ROLE'))->first();
+            if (!empty($usercontact)) {
+                return redirect()->back()->with('error', 'Contact number is already registered!!')->withInput();
             }
             $user = new User();
             $user->first_name = $request->fname;
@@ -107,6 +111,7 @@ class CompanyLoginController extends Controller
             $user->email = $request->email;
             $user->password = hash::make($request->password);
             $user->view_password = $request->password;
+            $user->contact_number = $request->ccontact;
             $user->user_type = '2';
             $user->save();
             if (isset($user)) {
@@ -115,9 +120,12 @@ class CompanyLoginController extends Controller
                 $compnay->company_name = $request->cname;
                 $compnay->contact_email = $request->email;
                 $compnay->subdomain = $request->dname;
+                $compnay->contact_number = $request->ccontact;
                 $compnay->save();
             }
             if (isset($user)) {
+                $role = Role::where('name', 'Company')->first();
+                $user->assignRole([$role->id]);
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
                 $settingModel->save();
@@ -237,6 +245,26 @@ class CompanyLoginController extends Controller
         } catch (Exception $e) {
             Log::info("change password in profile error" . $e->getMessage());
             return $this->sendError($e->getMessage());
+        }
+    }
+    public function verifyemail(Request $request)
+    {
+        $userId = Auth::user()->id;
+        $email_check = User::where('id', '!=', $userId)->where('email', $request->email)->where('user_type', env('COMPANY_ROLE'))->first();
+        if (!empty($email_check)) {
+            echo 'false';
+        } else {
+            echo 'true';
+        }
+    }
+    public function verifycontact(Request $request)
+    {
+        $userId = Auth::user()->id;
+        $contact_check = User::where('id', '!=', $userId)->where('contact_number', $request->contact_number)->where('user_type', env('COMPANY_ROLE'))->first();
+        if (!empty($contact_check)) {
+            echo 'false';
+        } else {
+            echo 'true';
         }
     }
 }

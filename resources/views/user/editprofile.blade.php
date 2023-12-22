@@ -9,12 +9,19 @@
     </style>
     <!-- Content Wrapper START -->
     <div class="main-content">
-        <div class="page-header no-gutters has-tab">
-            <h2 class="font-weight-normal">Edit Profile</h2>
+        <div class="page-header">
+            <div class="header-sub-title">
+                <nav class="breadcrumb breadcrumb-dash">
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <span class="breadcrumb-item active">Edit Profile</span>
+                </nav>
+            </div>
         </div>
         <div class="container">
             @if (\Session::has('success'))
-                <div class="alert alert-success alert-dismissible fade show success" style="margin-top: 17px;}" role="alert">
+                <div class="alert alert-success alert-dismissible fade show success" style="margin-top: 17px;}"
+                    role="alert">
                     <i class="uil uil-times me-2"></i>
                     {!! \Session::get('success') !!}
                 </div>
@@ -39,7 +46,7 @@
                                             file_exists('uploads/user/user-profile/' . $userData->profile_image))
                                         <img src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}">
                                     @else
-                                    <img src="{{asset('assets/images/profile_image.jpg')}}">
+                                        <img src="{{ asset('assets/images/profile_image.jpg') }}">
                                     @endif
                                 </div>
                                 <div class="m-l-20 m-r-20">
@@ -108,6 +115,101 @@
                             </form>
                         </div>
                     </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Social Accounts Link</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="socialAccountsLink" action="{{ route('user.socialAccount') }}" method="POST">
+                                @csrf
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="Facebook">Facebook:</label>
+                                        <input type="text" class="form-control" id="facebook_link"
+                                            placeholder="Facebook"
+                                            value="{{ isset(Auth::user()->facebook_link) ? Auth::user()->facebook_link : '' }}"
+                                            name="facebook_link">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="Instagram">Instagram:</label>
+                                        <input type="text" class="form-control" id="instagram_link"
+                                            placeholder="Instagram"
+                                            value="{{ isset(Auth::user()->instagram_link) ? Auth::user()->instagram_link : '' }}"
+                                            name="instagram_link">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="Tweeter">Tweeter:</label>
+                                        <input type="text" class="form-control" id="twitter_link"
+                                            placeholder="Tweeter"
+                                            value="{{ isset(Auth::user()->twitter_link) ? Auth::user()->twitter_link : '' }}"
+                                            name="twitter_link">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="YouTube">YouTube:</label>
+                                        <input type="text" class="form-control" id="youtube_link"
+                                            placeholder="YouTube"
+                                            value="{{ isset(Auth::user()->youtube_link) ? Auth::user()->youtube_link : '' }}"
+                                            name="youtube_link">
+                                    </div>
+                                </div>
+                                <div class="center-button">
+                                    <button type="submit" class="btn btn-primary">
+                                        <span>Submit</span>
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Bank Details</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="bankDetails" action="{{route('user.bankDetail')}}" method="POST">
+                                @csrf
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="bank_name">Bank Name:</label>
+                                        <input type="text" class="form-control" id="bank_name"
+                                            placeholder="Bank Name"
+                                            value="{{ isset(Auth::user()->bank_name) ? Auth::user()->bank_name : '' }}"
+                                            name="bank_name">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="ac_holder">Account Holder:</label>
+                                        <input type="text" class="form-control" id="ac_holder"
+                                            placeholder="Account Holder"
+                                            value="{{ isset(Auth::user()->ac_holder) ? Auth::user()->ac_holder : '' }}"
+                                            name="ac_holder">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="ifsc_code">IFSC Code:</label>
+                                        <input type="text" class="form-control" id="ifsc_code"
+                                            placeholder="IFSC Code"
+                                            value="{{ isset(Auth::user()->ifsc_code) ? Auth::user()->ifsc_code : '' }}"
+                                            name="ifsc_code" onkeypress="return /[0-9,a-z,A-Z]/i.test(event.key)">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="ac_no">Account Number:</label>
+                                        <input type="text" class="form-control" id="ac_no"
+                                            placeholder="Acount Number"
+                                            value="{{ isset(Auth::user()->ac_no) ? Auth::user()->ac_no : '' }}"
+                                            name="ac_no" onkeypress="return /[0-9]/i.test(event.key)" maxlength="11">
+                                    </div>
+                                </div>
+                                <div class="center-button">
+                                    <button type="submit" class="btn btn-primary">
+                                        <span>Submit</span>
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+
                     <div class="card">
                         <div class="card-header">
                             <h4 class="card-title">Change Password</h4>
@@ -248,6 +350,76 @@
                     password_confirmation: {
                         required: "Please enter confirmation password",
                         equalTo: "Password and confirm password dose not match",
+                    },
+                },
+            });
+
+            $("#socialAccountsLink").validate({
+                rules: {
+                    facebook_link: {
+                        required: true,
+                        url: true,
+                    },
+                    instagram_link: {
+                        required: true,
+                        url: true,
+                    },
+                    twitter_link: {
+                        required: true,
+                        url: true,
+                    },
+                    youtube_link: {
+                        required: true,
+                        url: true,
+                    },
+                },
+                messages: {
+                    facebook_link: {
+                        required: "Please enter facebook link",
+                        url: "Please enter a valid URL",
+                    },
+                    instagram_link: {
+                        required: "Please enter instagram link",
+                        url: "Please enter a valid URL",
+                    },
+                    twitter_link: {
+                        required: "Please enter twitter link",
+                        url: "Please enter a valid URL",
+                    },
+                    youtube_link: {
+                        required: "Please enter youtube link",
+                        url: "Please enter a valid URL",
+                    },
+                },
+            });
+
+            $("#bankDetails").validate({
+                rules: {
+                    bank_name: {
+                        required: true,
+                    },
+                    ac_holder: {
+                        required: true,
+                    },
+                    ifsc_code: {
+                        required: true,
+                    },
+                    ac_no: {
+                        required: true,
+                    },
+                },
+                messages: {
+                    bank_name: {
+                        required: "Please enter bank name",
+                    },
+                    ac_holder: {
+                        required: "Please enter account holder",
+                    },
+                    ifsc_code: {
+                        required: "Please enter IFSC code",
+                    },
+                    ac_no: {
+                        required: "Please enter account number",
                     },
                 },
             });

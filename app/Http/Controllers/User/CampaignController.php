@@ -15,7 +15,7 @@ class CampaignController extends Controller
         return view('user.campaign.list');
     }
     function dtlist(Request $request)
-    {   
+    {
         $columns = ['id', 'title'];
         $totalData = CampaignModel::where('company_id', Auth::user()->company_id)->count();
         $start = $request->input('start');
@@ -25,8 +25,14 @@ class CampaignController extends Controller
         $list = [];
         $results = CampaignModel::orderBy($columns[$order], $dir)
             ->where('company_id', Auth::user()->company_id)
+            ->whereNotExists(function ($query) {
+                $query->from('user_campaign_history')
+                    ->whereRaw('campaign.id = user_campaign_history.campaign_id')
+                    ->where('user_campaign_history.user_id',Auth::user()->id);
+            })
             ->skip($start)
             ->take($length)
+            ->select('campaign.*')
             ->get();
         foreach ($results as $result) {
             $list[] = [
@@ -46,27 +52,34 @@ class CampaignController extends Controller
             "data" => $list
         ]);
     }
-   
+
     function campaignview(Request $request)
     {
         $campagin_id = base64_decode($request->id);
         $campagin_detail = CampaignModel::where('id', $campagin_id)->first();
-        $user_detail = UserCampaignHistoryModel::whereNot('user_id',Auth::user()->id)->orderBy('user_id','desc')->get();
+        $user_detail = UserCampaignHistoryModel::where('campaign_id', $campagin_id)
+            ->whereExists(function ($query) {
+                $query->from('users')
+                    ->whereRaw('user_campaign_history.user_id = users.id')
+                    ->where('users.referral_user_id',Auth::user()->id)
+                    ->whereNotNull('users.referral_user_id');
+            })
+            ->orderBy('user_id', 'desc')->get();
         if (isset($campagin_detail)) {
-            return view('user.campaign.view', compact('campagin_detail','user_detail'));
+            return view('user.campaign.view', compact('campagin_detail', 'user_detail'));
         }
     }
     function getusercampaign(Request $request)
     {
         $campagin_id = base64_decode($request->id);
-        
+
         $getcampaign = CampaignModel::where('id', $campagin_id)->first();
         $input = new UserCampaignHistoryModel;
         $input->campaign_id = isset($getcampaign->id) ? $getcampaign->id : '';
         $input->user_id = Auth::user()->id;
         $input->reward = isset($getcampaign->reward) ? $getcampaign->reward : '';
         $input->status = 1;
-        $input->verified_by = 1;
+        $input->verified_by = 0;
         $input->save();
         return $input;
     }

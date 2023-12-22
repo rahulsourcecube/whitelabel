@@ -13,6 +13,23 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+        // check user permission
+        $this->middleware('permission:user-list', ['only' => ['index', 'view']]);
+        $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:user-delete', ['only' => ['delete']]);
+    }
+
+
     function index(Request $request)
     {
         if ($request->ajax()) {
@@ -67,8 +84,8 @@ class UserController extends Controller
     function checkEmail(Request $request)
     {
         $companyId = Auth::user()->id;
-        $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
-       if(!empty($useremail)){
+        $useremail = User::where('company_id', $companyId)->where('email', $request->email)->first();
+        if (!empty($useremail)) {
             echo 'false';
         } else {
             echo 'true';
@@ -77,9 +94,9 @@ class UserController extends Controller
     function checkContactNumber(Request $request)
     {
         $companyId = Auth::user()->id;
-        $usernumber =User::where('company_id',$companyId)->where('contact_number',$request->number)->first();
-       if(!empty($usernumber)){
-        echo 'false';
+        $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->first();
+        if (!empty($usernumber)) {
+            echo 'false';
         } else {
             echo 'true';
         }
@@ -87,7 +104,7 @@ class UserController extends Controller
 
     function store(Request $request)
     {
-        
+
         try {
             $companyId = Auth::user()->id;
             $validator = Validator::make($request->all(), [
@@ -102,14 +119,14 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
-           
-            if(!empty($useremail)){
-                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();                
+            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->first();
+
+            if (!empty($useremail)) {
+                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
             }
-            $usernumber =User::where('company_id',$companyId)->where('contact_number',$request->number)->first();
-            if(!empty($usernumber)){
-                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();                
+            $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->first();
+            if (!empty($usernumber)) {
+                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
             }
             $user = new User();
             if ($request->hasFile('image')) {
@@ -130,7 +147,15 @@ class UserController extends Controller
             $user->view_password = $request->password;
             $user->user_type = User::USER_TYPE['USER'];
             $user->company_id = $companyId;
-            $user->status = !empty($request->status)?'0':'1';
+            $user->status = !empty($request->status) ? '0' : '1';
+            $user->facebook_link = $request->facebook_link;
+            $user->instagram_link = $request->instagram_link;
+            $user->twitter_link = $request->twitter_link;
+            $user->youtube_link = $request->youtube_link;
+            $user->bank_name = $request->bank_name;
+            $user->ac_holder = $request->ac_holder;
+            $user->ifsc_code = $request->ifsc_code;
+            $user->ac_no = $request->ac_no;
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User added successfuly.');
         } catch (\Exception $e) {
@@ -163,17 +188,17 @@ class UserController extends Controller
         try {
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->first();
-           
+
             if (empty($user)) {
-             
+
                 return redirect()->back()->with('error', 'Something went wrong');
             }
-       
+
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
-                'number' => 'required|numeric|digits:10|unique:users,contact_number,' .$user->id,
+                'number' => 'required|numeric|digits:10|unique:users,contact_number,' . $user->id,
                 // 'password' => 'required|string|min:8|confirmed',
                 // 'password_confirmation' => 'required|string|min:8',
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
@@ -181,25 +206,14 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-         
-            $userDetails = [
-                'first_name' => $request->fname,
-                'last_name' => $request->lname,
-                'email' => $request->email,
-                'contact_number' => $request->number,
-                'password' => !empty($request->password)? hash::make($request->password):hash::make($user->view_password),
-                'status' =>!empty($request->status)? '0' : '1',
-                'view_password' =>!empty($request->password)? $request->password:$user->view_password,
-
-            ];           
             if ($request->hasFile('image')) {
-                $oldImage=$user->profile_image;
+                $oldImage = $user->profile_image;
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
                 $request->file('image')->move('uploads/company/user-profile', $image);
-                $userDetails['profile_image'] = $image;
+                $user['profile_image'] = $image;
                 if (!empty($oldImage)) {
                     $oldImagePath = 'uploads/company/user-profile/' . $oldImage;
                     if (file_exists($oldImagePath)) {
@@ -207,7 +221,22 @@ class UserController extends Controller
                     }
                 }
             }
-            $user->update($userDetails);
+            $user->first_name = $request->fname;
+            $user->last_name = $request->lname;
+            $user->contact_number = $request->number;
+            $user->email = $request->email;
+            $user->password = !empty($request->password) ? hash::make($request->password) : hash::make($user->view_password);
+            $user->view_password = !empty($request->password) ? $request->password : $user->view_password;
+            $user->status = !empty($request->status) ? '0' : '1';
+            $user->facebook_link = $request->facebook_link;
+            $user->instagram_link = $request->instagram_link;
+            $user->twitter_link = $request->twitter_link;
+            $user->youtube_link = $request->youtube_link;
+            $user->bank_name = $request->bank_name;
+            $user->ac_holder = $request->ac_holder;
+            $user->ifsc_code = $request->ifsc_code;
+            $user->ac_no = $request->ac_no;
+            $user->save();
             return redirect()->route('company.user.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {
             Log::error('Company user update error : ' . $e->getMessage());
@@ -219,14 +248,14 @@ class UserController extends Controller
     {
         try {
             $user_id = base64_decode($id);
-            $user=User::where('id', $user_id)->first();
+            $user = User::where('id', $user_id)->first();
             if (!empty($user->profile_image)) {
                 $oldImagePath = 'uploads/company/user-profile/' . $user->profile_image;
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
             }
-            $user=User::where('id', $user_id)->delete();
+            $user = User::where('id', $user_id)->delete();
             return response()->json(['success' => 'error', 'message' => 'User deleted successfully']);
         } catch (Exception $e) {
             Log::error('Company user delete error : ' . $e->getMessage());

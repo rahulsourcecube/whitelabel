@@ -25,13 +25,12 @@
 
 <body>
     <div class="app">
-
         <div class="container-fluid p-h-0 p-v-20 bg full-height d-flex"
             style="background-image: url('{{asset('assets/images/others/login-3.png')}}">
             <div class="d-flex flex-column justify-content-between w-100">
                 <div class="container d-flex h-100">
                     <div class="row align-items-center w-100">
-                        <div class="col-md-7 col-lg-5 m-h-auto">
+                        <div class="col-md-7 col-lg-6 m-h-auto">
                             <div class="card shadow-lg">
                                 <div class="card-body">
                                     @include('admin.includes.message')
@@ -45,45 +44,59 @@
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="fname">First Name:</label>
                                                 <input type="text" class="form-control" name="fname" id="fname"
-                                                    placeholder="First Name">
+                                                    placeholder="First Name" value="{{old('fname')}}">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="lname">Last name</label>
                                                 <input type="text" class="form-control" name="lname" id="lname"
-                                                    placeholder="Last name">
+                                                    placeholder="Last name" value="{{old('lname')}}">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
                                                 <input type="email" class="form-control" name="email" id="email"
-                                                    placeholder="Email">
+                                                    placeholder="Email" value="{{old('email')}}">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="cname">Company Name:</label>
                                                 <input type="text" class="form-control" name="cname" id="cname"
-                                                    placeholder="Company Name">
+                                                    placeholder="Company Name" value="{{old('cname')}}">
                                             </div>
                                             <div class="form-group col-md-12">
-                                                <label class="font-weight-semibold" for="userName">Domain Name:</label>
-                                                <input type="text" class="form-control" name="dname" id="userName"
-                                                    placeholder="Domain Name">
+                                                <label class="font-weight-semibold" for="ccontact">Contact
+                                                    Number:</label>
+                                                <input type="number" class="form-control" name="ccontact" id="ccontact"
+                                                    placeholder="Contact Number" maxlength="10" minlength="10"
+                                                    value="{{old('ccontact')}}">
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="font-weight-semibold" for="dname">Domain Name:</label>
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" name="dname"
+                                                        placeholder="Domain Name" id="dname" value="{{old('dname')}}">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text" id="basic-addon2">{{
+                                                            Request::getHost() }}</span>
+                                                    </div>
+                                                </div>
+                                                <label id="dname-error" class="error" for="dname"></label>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
                                                 <input type="password" class="form-control" name="password"
-                                                    id="password" placeholder="Password">
+                                                    id="password" placeholder="Password" value="{{old('password')}}">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
                                                 <input type="password" class="form-control" name="cpassword"
-                                                    id="confirmPassword" placeholder="Confirm Password">
+                                                    id="confirmPassword" placeholder="Confirm Password"
+                                                    value="{{old('cpassword')}}">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between p-t-15">
                                                 {{-- <div class="checkbox">
                                                     <input id="checkbox" type="checkbox">
-
                                                 </div> --}}
                                                 <button type="submit" class="btn btn-primary">Sign Up</button>
                                             </div>
@@ -124,6 +137,9 @@
                 cname: {
                     required: true
                 },
+                ccontact: {
+                    required: true
+                },
                 dname: {
                     required: true
                 },
@@ -131,17 +147,14 @@
                     required: true
                 },
                 password: {
-                minlength: 8,
-                maxlength: 30,
-                required: true,                
-               },
+                    minlength: 8,
+                    maxlength: 30,
+                    required: true,                
+                },
                 cpassword: {
-                        required: true,
-                        equalTo: "#password"
-                    },
-               
-
-           
+                    required: true,
+                    equalTo: "#password"
+                },
             },
             messages: {
                 fname: {
@@ -153,11 +166,14 @@
                 cname: {
                     required: "Please enter company name"
                 },
+                ccontact: {
+                    required: "Please enter contact number"
+                },
                 dname: {
                     required: "Please enter domain name"
                 },
                 email: {
-                    required: "Please enter Email"
+                    required: "Please enter email"
                 },
                 password: {
                 required: "Please enter password",                

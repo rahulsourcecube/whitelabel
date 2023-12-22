@@ -28,7 +28,7 @@
                                 <i class="anticon anticon-line-chart"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ isset($totalReward) ? $totalReward->count() : 0 }}</h2>
+                                <h2 class="m-b-0">{{ isset($totalReward) ? $totalReward : '' }}</h2>
                                 <p class="m-b-0 text-muted">My Total Reward </p>
                             </div>
                         </div>
@@ -89,7 +89,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($campaignList as $data)                                      
+                                    @foreach ($campaignList as $data)
                                         <tr>
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                             <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
@@ -98,8 +98,8 @@
                                             </td>
                                             <td>
                                                 <a class="btn btn-success  btn-sm"
-                                                    href="{{ route('user.campaign.view',base64_decode($data->id)) }}" role="button"
-                                                    title="View"><i class="fa fa-eye"></i></a>
+                                                    href="{{ route('user.campaign.view', base64_encode($data->campaign_id)) }}"
+                                                    role="button" title="View"><i class="fa fa-eye"></i></a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -152,12 +152,13 @@
                                 </a>
                             </div>
                             <div class="text-center m-t-30">
-                                <p id="p1" style="display: none;">{{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}</p>
-                                <a href="#" onclick="showSuccessAlert()" class="btn btn-primary btn-tone">
+                                <p id="referral_code_copy" style="display: none;">
+                                    {{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}
+                                </p>
+                                <button onclick="copyToClipboard('#referral_code_copy')" class="btn btn-primary btn-tone">
                                     <i class="anticon anticon-copy"></i>
-                                    {{-- <button onclick="copyToClipboard('#p1')">Copy</button> --}}
-                                    <span class="m-l-5" onclick="copyToClipboard('#p1')">Copy</span>
-                                </a>
+                                    <span class="m-l-5">Copy</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -240,12 +241,26 @@
         </script>
 
         <script>
-            function copyToClipboard(element) {
-                var $temp = $("<input>");
-                $("body").append($temp);
-                $temp.val($(element).text()).select();
-                document.execCommand("copy");
-                $temp.remove();
+            function copyToClipboard(elementId) {
+                var el = document.querySelector(elementId);
+                var textArea = document.createElement("textarea");
+                textArea.value = el.textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                showSuccessAlert();
+            }
+
+            function showSuccessAlert() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Copied!',
+                    text: 'URL copied to clipboard.',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
         </script>
 

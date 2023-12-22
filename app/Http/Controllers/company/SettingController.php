@@ -10,6 +10,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 class SettingController extends Controller
 {
+
+
+   /**
+    * Display a listing of the resource.
+    *
+    * @return \Illuminate\Http\Response
+    */
+   function __construct()
+   {
+      // check user permission
+      $this->middleware('permission:general-setting-list', ['only' => ['index']]);
+      $this->middleware('permission:general-setting-create', ['only' => ['store']]);;
+   }
+
+    
    function index()
    {
       $data['setting'] = SettingModel::where('user_id', Auth::user()->id)->first();
