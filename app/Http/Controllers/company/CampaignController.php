@@ -74,7 +74,6 @@ class CampaignController extends Controller
     }
     public function statuswiselist(Request $request){
         $columns = ['id', 'title'];
-       
         $start = $request->input('start');
         $length = $request->input('length');
         $order = $request->input('order.0.column');
@@ -84,9 +83,10 @@ class CampaignController extends Controller
         // ->where('company_id', Auth::user()->id)
         ->where('campaign_id', $request->input('id'))
         ->where('status', $request->input('status'))
-            ->skip($start)
-            ->take($length)
-            ->get();
+        ->skip($start)
+        ->take($length)
+        ->get();
+        // dd($results);
            
         foreach ($results as $result) {
           
@@ -263,17 +263,17 @@ class CampaignController extends Controller
 
         try {
             $id = base64_decode($request->id);
+            
             $action = UserCampaignHistoryModel::where('id', $id)->first();
-
 
             if ($request->action == '3') {
                 $action->status = '3';
                 $action->save();
-                return response()->json(['success' => 'error', 'message' => 'Task Accept  Approval Requset successfully']);
+                return response()->json(['success' => 'success', 'messages' => 'Task Accept  Approval Requset successfully']);
             } else {
                 $action->status = '4';
                 $action->save();
-                return response()->json(['success' => 'error', 'message' => 'Task Reject  Approval Requset successfully']);
+                return response()->json(['success' => 'success', 'messages' => 'Task Reject  Approval Requset successfully']);
             }
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());
@@ -284,68 +284,123 @@ class CampaignController extends Controller
     {      
       
         try {
-            $user_id = base64_decode($request->id);
-            $user = User::where('id', $user_id)->first();
+            $id = base64_decode($request->id);
+            $companyId = Auth::user()->id;
+            $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
+           
+             $user = User::where('id', $camphistory->user_id)->first();
             if (empty($user)) {
                return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);  
             }
             $html="";
-            $html='<div class="card-body">
-                                <div class="row align-items-center">
+            $html.='<div class="modal-header ">
+                        <h5 class="modal-title h4">View</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <i class="anticon anticon-close"></i>
+                        </button>
+                    </div>  
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="row align-items-center">
+                            <div class="text-center text-sm-left col-md-2">
+                                <div class="avatar avatar-image" style="width: 150px; height:150px">';
+                                
+                                if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image)) {
+                                    $html .= '<img src="' . asset('uploads/company/user-profile/' . $user->profile_image) . '" alt="">';
+                                } else {
+                                    $html .= '<img src="' . asset('assets/images/default-user.jpg') . '" alt="">';
+                                };                                
+                                $html .= ' </div>
+                            </div>
+                            <div class="text-center text-sm-left m-v-15 p-l-30">
+                                <h2 class="m-b-5"></h2>
+                                <div class="row">
+                                    <div class="d-md-block d-none border-left col-1"></div>
                                     <div class="col-md-12">
-                                        <div class="d-md-flex align-items-center">
-                                            <div class="text-center text-sm-left ">
-                                                <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                                    <img id="image" src="assets/images/avatars/thumb-3.jpg" alt="">
-                                                </div>
-                                            </div>
-                                            <div class="text-center text-sm-left m-v-15 p-l-30">
-                                                <h2 class="m-b-5 name" >'. $user->first_name.' '.$user->last.'</h2>
-                                                <p class="text-opacity font-size-13"></p>
-                                                s
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="d-md-block d-none border-left col-1"></div>
-                                            <div class="col">
-                                                <ul class="list-unstyled m-t-10">
-                                                    <li class="row">
-                                                        <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                            <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                            <span>Email: </span> 
-                                                        </p>
-                                                        <p class="col font-weight-semibold">'. $user->email .'</p>
-                                                    </li>
-                                                    <li class="row">
-                                                        <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                            <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                            <span>Phone: </span> 
-                                                        </p>
-                                                        <p class="col font-weight-semibold"> '.$user->contact_number.'</p>
-                                                    </li>
-                                                   
-                                                </ul>
-                                                <div class="d-flex font-size-22 m-t-15">
-                                                    <a href="#" class="text-gray p-r-20">
-                                                        <i class="anticon anticon-facebook"></i>
-                                                    </a>        
-                                                    <a href="#" class="text-gray p-r-20">    
-                                                        <i class="anticon anticon-twitter"></i>
-                                                    </a>
-                                                    <a href="#" class="text-gray p-r-20">
-                                                        <i class="anticon anticon-behance"></i>
-                                                    </a> 
-                                                    <a href="#" class="text-gray p-r-20">   
-                                                        <i class="anticon anticon-dribbble"></i>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                        <ul class="list-unstyled m-t-10">
+                                            <li class="row">
+                                                <p class="col-sm-6 col-6 font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-10 text-primary anticon anticon-mail"></i>
+                                                    <span>Email: </span>
+                                                </p>
+                                                <p class="col font-weight-semibold">'. $user->email??$user->email;  $html .= '</p>
+                                            </li>
+                                            <li class="row">
+                                                <p class="col-sm-6 col-6 font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-10 text-primary anticon anticon-phone"></i>
+                                                    <span>Phone: </span>
+                                                </p>
+                                                <p class="col font-weight-semibold"> '.$user->contact_number ?? $user->contact_number; $html .= '</p>
+                                            </li>
+                                        
+                                        </ul>
+                                        <div class="d-flex font-size-22 m-t-15">
+                                        ';if(!empty($user->facebook_link)){ $html .= '
+                                            <a href="'.$user->facebook_link ?? $user->facebook_link; $html .= '"
+                                            target="blank" class="text-gray p-r-20">
+                                            <i class="anticon anticon-facebook"></i>
+                                        </a>';
+                                        };if(!empty($user->instagram_link)){ $html .= '
+                                            
+                                            <a href="'.$user->instagram_link ?? $user->instagram_link; $html .= '"
+                                                target="blank" class="text-gray p-r-20">
+                                                <i class="anticon anticon-instagram"></i>
+                                            </a>
+                                            ';};if(!empty($user->twitter_link)){ $html .= '
+                                            <a href="'.$user->twitter_link ?? $user->twitter_link; $html .= '"
+                                                target="blank" class="text-gray p-r-20">
+                                                <i class="anticon anticon-twitter"></i>
+                                            </a>
+                                            ';};if(!empty($user->youtube_link)){ $html .= '
+                                            <a href="'.$user->youtube_link ?? $user->youtube_link; $html .= '"
+                                                target="blank" class="text-gray p-r-20">
+                                                <i class="anticon anticon-youtube"></i>
+                                            </a>
+                                            ';} $html .= '
                                         </div>
                                     </div>
                                 </div>
-                            </div>'; 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h2>Bank Detail:</h2>
+                <div class="table-responsive">
+                    <table class="product-info-table m-t-20">
+                        <tbody>
+                            <tr>
+                                <td>Bank Name:</td>
+                                <td> '.$user->twitter_link ?? $user->twitter_link;  $html .= '</td>
+                            </tr>
+                            <tr>
+                                <td>Bank Holder : </td>
+                                <td>'.$user->ac_holder	 ?? $user->ac_holder	;  $html .= '</td>
+                            </tr>
+                            <tr>
+                                <td>IFSC Code :</td>
+                                <td>'.$user->ifsc_code ?? $user->ifsc_code;  $html .= '</td>
+                            </tr>
+                            <tr>
+                                <td>Account No :</td>
+                                <td> '.$user->ac_no ?? $user->ac_no;  $html .= '</td>
+                            </tr>
+                            <tr>                               
+                                <td> <button class="btn btn-success  btn-sm action" data-action="3"   data-id="'.base64_encode($id ).'" data-url="'.route('company.campaign.action').'"  >Accept</button>
+                                <button class="btn btn-danger  btn-sm action" data-action="4"   data-id="'.base64_encode($id ).'" data-url="'.route('company.campaign.action').'"data-action="Reject" >Reject</button></td>
+                                
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>  
+        </div>  '; 
             return response()->json(['success' => 'error', 'message' => $html]);  
            
         } catch (Exception $e) {
