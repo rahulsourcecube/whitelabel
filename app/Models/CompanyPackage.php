@@ -16,4 +16,9 @@ class CompanyPackage extends Model
     protected $fillable = [
         'payment_id',
     ];
+
+    public function GetPackageData()
+    {
+        return $this->hasOne(PackageModel::class, 'id', 'package_id');
+    }
 }
