@@ -37,7 +37,11 @@ class PackageController extends Controller
 
    function billing()
    {
-      return view('company.billing.list');
+      // get CompanyPackage bills
+      
+      $bills = CompanyPackage::where('company_id', Auth::user()->id)->get();
+
+      return view('company.billing.list',compact('bills'));
    }
 
    public function buy(Request $request)
