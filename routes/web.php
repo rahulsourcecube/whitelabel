@@ -71,12 +71,13 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('profile', [UsrController::class, 'profile'])->name('profile');
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
         Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
-        Route::post('/user/progress/search',[UsrController::class,'searchProgress'])->name('progress.search');
         Route::post('/claim-reward/{id}', [UsrController::class, 'claimReward'])->name('progress.claimReward');
         Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
         Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
         Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
         Route::post('/changePassword-store', [UsrController::class, 'changePasswordStore'])->name('changePasswordStore');
+        Route::post('/social-account', [UsrController::class, 'socialAccount'])->name('socialAccount');
+        Route::post('/bank-details', [UsrController::class, 'bankDetail'])->name('bankDetail');
         Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
     });
 });
@@ -162,14 +163,13 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         });
         Route::prefix('campaign')->name('campaign.')->group(function () {
             Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
-            Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');
-           ;
+            Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');;
             Route::post('statuswiselist/user', [CampaignController::class, 'statuswiselist'])->name('statuswiselist');
-            
+
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
             Route::post('request/user/details', [CampaignController::class, 'userDetails'])->name('userDetails');
-        
-            
+
+
             Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
             Route::post('/store', [CampaignController::class, 'store'])->name('store');
             Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');

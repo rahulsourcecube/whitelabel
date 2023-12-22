@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Carbon\Carbon;
@@ -41,7 +42,8 @@ class UsrController extends Controller
             $campaignList = UserCampaignHistoryModel::orderBy('campaign_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
-            $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->get();
+            $reward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->get();
+            $totalReward = $reward->sum('reward');
 
             $userData = User::get();
             $data = [];
@@ -181,30 +183,118 @@ class UsrController extends Controller
         }
     }
 
+    public function socialAccount(Request $request)
+    {
+        try {
+            $profileId = Auth::user()->id;
+            $socialAccount = User::where('id', $profileId)->first();
+            $socialAccount->facebook_link = $request->facebook_link;
+            $socialAccount->instagram_link = $request->instagram_link;
+            $socialAccount->twitter_link = $request->twitter_link;
+            $socialAccount->youtube_link = $request->youtube_link;
+
+            $socialAccount->save();
+            return redirect()->route('user.edit_profile')->with('success', "Social account link updated successfully!");
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
+    public function bankDetail(Request $request)
+    {
+        try {
+            $profileId = Auth::user()->id;
+            $bankDetail = User::where('id', $profileId)->first();
+            $bankDetail->bank_name = $request->bank_name;
+            $bankDetail->ac_holder = $request->ac_holder;
+            $bankDetail->ifsc_code = $request->ifsc_code;
+            $bankDetail->ac_no = $request->ac_no;
+
+            $bankDetail->save();
+            return redirect()->route('user.edit_profile')->with('success', "Bank detail updated successfully!");
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
     public function Profile()
     {
         $userData = Auth::user();
         $referralUser = User::orderBy('id', 'DESC')->where('referral_user_id', Auth::user()->id)->get();
         return view('user.profile', compact('userData', 'referralUser'));
     }
-    function myreward()
+    function myreward(Request $request)
     {
         try {
-            $myReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->whereIn('status', [3, 4])->get();
-            return view('user.reward.myReward', compact('myReward'));
+            $filter = UserCampaignHistoryModel::where('user_id', Auth::user()->id)
+                ->orderBy('id', 'DESC')
+                ->whereIn('status', [3, 4]);
+            if ($request->filled('from_date')) {
+                $from_date = date("Y-m-d", strtotime($request->from_date));
+                $filter->whereDate('created_at', '>=', $from_date);
+            }
+
+            if ($request->filled('two_date')) {
+                $two_date = date("Y-m-d", strtotime($request->two_date));
+                $filter->whereDate('created_at', '<=', $two_date);
+            }
+
+            if ($request->filled('type')) {
+                $type = $request->type;
+                $filter->whereHas('getCampaign', function ($query) use ($type) {
+                    return $query->where('type', '=', $type);
+                });
+            }
+
+            if ($request->filled('status')) {
+                $status = $request->status;
+                $filter->where('status', '=', $status);
+            }
+
+            $filterResults = $filter->get();
+            return view('user.reward.myReward', compact('filterResults'));
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
-    function progressreward()
+
+    public function progressreward(Request $request)
     {
         try {
-            $progressReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->whereIn('status', [1, 2])->get();
-            return view('user.reward.progressreward', compact('progressReward'));
+            $filter = UserCampaignHistoryModel::where('user_id', Auth::user()->id)
+                ->orderBy('id', 'DESC')
+                ->whereIn('status', [1, 2]);
+
+            if ($request->filled('from_date')) {
+                $from_date = date("Y-m-d", strtotime($request->from_date));
+                $filter->whereDate('created_at', '>=', $from_date);
+            }
+
+            if ($request->filled('two_date')) {
+                $two_date = date("Y-m-d", strtotime($request->two_date));
+                $filter->whereDate('created_at', '<=', $two_date);
+            }
+
+            if ($request->filled('type')) {
+                $type = $request->type;
+                $filter->whereHas('getCampaign', function ($query) use ($type) {
+                    return $query->where('type', '=', $type);
+                });
+            }
+
+            if ($request->filled('status')) {
+                $status = $request->status;
+                $filter->where('status', '=', $status);
+            }
+
+            $filterResults = $filter->get();
+
+            return view('user.reward.progressreward', compact('filterResults'));
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
+
     public function claimReward($id)
     {
         try {
@@ -216,41 +306,24 @@ class UsrController extends Controller
             return redirect()->back()->with('error', "Something Went Wrong");
         }
     }
-    public function searchProgress(Request $request)
-    {
-        try {
-            $filter = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->whereIn('status', [1, 2]);
-            if ($request->from_date != "") {
-                $from_date = date("d-m-y", strtotime($request->from_date));
-                $filter = $filter->whereDate('created_at', '>=', $from_date);
-            }
-            if ($request->two_date != "") {
-                $two_date = date("d-m-y", strtotime($request->two_date));
-                $filter = $filter->whereDate('updated_at', '<=', $two_date);
-            }
-            if ($request->type != "") {
-                $type = ($request->type);
-                $filter = $filter->where('status', '<=', $type);
-            }
-            if ($request->status != "") {
-                $status = ($request->status);
-                $filter = $filter->where('status', '<=', $status);
-            }
-
-            $filter = $filter->get();
-            // dd($filter);
-            return redirect()->route('user.progress.reward');
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
-        }
-    }
     function analytics()
     {
         return view('user.analytics');
     }
     function notification()
     {
-        return view('user.notification');
+        try {
+            $user = Auth::user();
+            $notifications = Notification::orderBy('id', 'DESC')->where('user_id', $user->id)->get();
+            foreach ($notifications as $notification) {
+                $notification->is_read = '1';
+                $notification->save();
+            }
+
+            return view('user.notification', compact('notifications'));
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
     }
     public function signup()
     {

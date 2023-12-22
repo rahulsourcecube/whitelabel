@@ -42,6 +42,7 @@ return array(
     'App\\Models\\CampaignModel' => $baseDir . '/app/Models/CampaignModel.php',
     'App\\Models\\CompanyModel' => $baseDir . '/app/Models/CompanyModel.php',
     'App\\Models\\CompanyPackage' => $baseDir . '/app/Models/CompanyPackage.php',
+    'App\\Models\\Notification' => $baseDir . '/app/Models/Notification.php',
     'App\\Models\\PackageModel' => $baseDir . '/app/Models/PackageModel.php',
     'App\\Models\\Payment' => $baseDir . '/app/Models/Payment.php',
     'App\\Models\\SettingModel' => $baseDir . '/app/Models/SettingModel.php',
