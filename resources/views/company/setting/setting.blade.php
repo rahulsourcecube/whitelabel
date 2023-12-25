@@ -43,7 +43,7 @@
                             <label for="contact">Contact Number</label>
                             <input type="text" min="0" maxlength="10" minlength="10" class="form-control mb-2"
                                 name="contact_number" id="contact" placeholder="Contact Number"
-                                value="{{ !empty($setting) ? $setting->contact_number : '' }}">
+                                value="{{ !empty($setting) && $setting->contact_number ? $setting->contact_number :  $companyname->contact_number }}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="flink">Facebook Link</label>

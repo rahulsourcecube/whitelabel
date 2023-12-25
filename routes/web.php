@@ -180,6 +180,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::post('/update/{Campaign}', [CampaignController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
             Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
+            Route::post('/fetch-data-filter', [CampaignController::class, 'fetch_data'])->name('fetch_data');
             Route::post('/action', [CampaignController::class, 'action'])->name('action');
             Route::get('/export/{type}', [CampaignController::class, 'export'])->name('export');
         });
