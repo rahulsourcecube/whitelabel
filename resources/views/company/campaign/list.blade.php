@@ -1,47 +1,47 @@
 @extends('company.layouts.master')
 @section('title', 'Campaign List')
 @section('main-content')
-    <div class="main-content">
-        @include('company.includes.message')
-        <div class="page-header">
-            <div class="header-sub-title">
-                <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
-                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                    <span class="breadcrumb-item active">Campaign </span>
-                </nav>
-            </div>
+<div class="main-content">
+    @include('company.includes.message')
+    <div class="page-header">
+        <div class="header-sub-title">
+            <nav class="breadcrumb breadcrumb-dash">
+                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                        class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                <span class="breadcrumb-item active">Campaign </span>
+            </nav>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h4>Task List</h4>
-                {{-- <a class="btn btn-primary float-right" href="{{ route('company.campaign.create') }}" role="button">Add
-                    New</a> --}}
-                <div class="m-t-25">
-                    <table id="campaign_tables" class="table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Name</th>
-                                <th>Reward</th>
-                                <th>Description</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h4>Task List</h4>
+            <a class="btn btn-primary float-right btn-sm" href="{{route('company.campaign.export',$taskType)}}"
+                role="button">Export</a>
+            <div class="m-t-25">
+                <table id="campaign_tables" class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Reward</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 @endsection
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script>
-        $(document).ready(function() {
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    $(document).ready(function() {
             var taskType = "{{ $type }}";
             var taskTypeString = "{{ $taskType }}";
             var url = "{{ route('company.campaign.tdlist', ':type') }}";
@@ -84,7 +84,7 @@
                     'render': function(data, type, row) {
                         var status = row[5];
                         if(status == "Active"){
-                            return '  <button class="btn btn-success ">'+status+'</button>'
+                            return '  <button class="btn btn-success btn-sm">'+status+'</button>'
 
                         }else{
                             return '  <button class="btn btn-danger ">'+status+'</button>'
@@ -170,5 +170,5 @@
                 }
             });
         }
-    </script>
+</script>
 @endsection
