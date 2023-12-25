@@ -185,7 +185,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="m-t-50" style="height: 330px">
+                    <div class="m-t-50">
                         <canvas class="chart" id="myChart"></canvas>
                     </div>
                 </div>

@@ -63,22 +63,30 @@
                                             </li> --}}
                                         </ul>
                                         <div class="d-flex font-size-22 m-t-15">
+                                            @if(isset($user->facebook_link) && !empty($user->facebook_link))
                                             <a href="{{ isset($user->facebook_link) ? $user->facebook_link : " #" }}"
                                                 target="blank" class="text-gray p-r-20">
                                                 <i class="anticon anticon-facebook"></i>
                                             </a>
+                                            @endif
+                                            @if(isset($user->instagram_link) && !empty($user->instagram_link))
                                             <a href="{{ isset($user->instagram_link) ? $user->instagram_link : " #" }}"
                                                 target="blank" class="text-gray p-r-20">
                                                 <i class="anticon anticon-instagram"></i>
                                             </a>
+                                            @endif
+                                            @if(isset($user->twitter_link) && !empty($user->twitter_link))
                                             <a href="{{ isset($user->twitter_link) ? $user->twitter_link : " #" }}"
                                                 target="blank" class="text-gray p-r-20">
                                                 <i class="anticon anticon-twitter"></i>
                                             </a>
+                                            @endif
+                                            @if(isset($user->youtube_link) && !empty($user->youtube_link))
                                             <a href="{{ isset($user->youtube_link) ? $user->youtube_link : " #" }}"
                                                 target="blank" class="text-gray p-r-20">
                                                 <i class="anticon anticon-youtube"></i>
                                             </a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

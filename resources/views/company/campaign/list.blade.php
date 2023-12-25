@@ -15,8 +15,10 @@
     <div class="card">
         <div class="card-body">
             <h4>Task List</h4>
+            @if(isset($totalData) && count($totalData) > 0)
             <a class="btn btn-primary float-right btn-sm" href="{{route('company.campaign.export',$taskType)}}"
                 role="button">Export</a>
+            @endif
             <div class="m-t-25">
                 <table id="campaign_tables" class="table">
                     <thead>

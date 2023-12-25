@@ -43,7 +43,8 @@ class CampaignController extends Controller
     {
         $taskType = $type;
         $type = CampaignModel::TYPE[strtoupper($type)];
-        return view('company.campaign.list', compact('type', 'taskType'));
+        $totalData = CampaignModel::where('company_id', Auth::user()->id)->where('type', $type)->get();
+        return view('company.campaign.list', compact('type', 'taskType', 'totalData'));
     }
 
     public function tdlist($type, Request $request)
@@ -103,14 +104,14 @@ class CampaignController extends Controller
         $dir = $request->input('order.0.dir');
         $list = [];
         $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-        // ->where('company_id', Auth::user()->id)
-        ->where('campaign_id', $request->input('id'))
-        ->where('status', $request->input('status'))
-        ->skip($start)
-        ->take($length)
-        ->get();
+            // ->where('company_id', Auth::user()->id)
+            ->where('campaign_id', $request->input('id'))
+            ->where('status', $request->input('status'))
+            ->skip($start)
+            ->take($length)
+            ->get();
         // dd($results);
-           
+
         foreach ($results as $result) {
 
             $list[] = [
@@ -242,31 +243,78 @@ class CampaignController extends Controller
         }
     }
 
-    function analytics()
+    function analytics(Request $request)
     {
         $companyId = Auth::user()->id;
-        // dd(Carbon::today()->subDays(1));
-        DB::enableQueryLog();
-        $user_campaign_history = DB::table('users as u')
+        $date = Carbon::today()->subDays(7);
+        $total_join_users = DB::table('users as u')
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+            ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
             ->where('u.company_id', $companyId)
+            ->where('u.user_type', env('USER_ROLE'))
+            ->where('u.status', '0')
+            ->where('c.status', '0')
             ->where('uch.status', '3')
-            ->whereDate('uch.created_at', '>', now()->subdays(7))
-            ->select(DB::raw('COUNT(uch.user_id) as total_user , DAY(uch.created_at) as day'))
+            ->where('c.type', '1')
+            ->whereDate('uch.created_at', '>=', $date)
+            ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
             ->groupBy('day')
             ->get();
-        // dd(DB::getQueryLog());
+
         $dateandtime = Carbon::now();
         $start_date = $dateandtime->subDays(7);
         $start_time = strtotime($start_date);
         $end_time = strtotime("+1 week", $start_time);
         for ($i = $start_time; $i < $end_time; $i += 86400) {
-            $list[date('D', $i)] = 0;
+            $list[date('l', $i)] = 0;
         }
-        // echo "<pre>";
-        // print_r($user_campaign_history);
-        // dd();
-        return view('company.campaign.analytics');
+        foreach ($total_join_users as $values) {
+            $list[$values->day] = $values->total_user;
+        }
+        $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
+        return view('company.campaign.analytics', compact('user_total'));
+    }
+    function fetch_data(Request $request)
+    {
+        // dd($request->from_date);
+        if ($request->ajax()) {
+            // if ($request->from_date != '' && $request->to_date != '') {
+            $from_date = date('Y-m-d', strtotime($request->from_date));
+            dd($from_date);
+            $to_date = date('Y-m-d', strtotime($request->to_date));
+
+            DB::enableQueryLog();
+            $companyId = Auth::user()->id;
+            $total_join_users = DB::table('users as u')
+                ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+                ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
+                ->where('u.company_id', $companyId)
+                ->where('u.user_type', env('USER_ROLE'))
+                ->where('u.status', '0')
+                ->where('c.status', '0')
+                ->where('uch.status', '3')
+                ->where('c.type', '1')
+                ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
+                ->whereBetween('uch.created_at', [$from_date, $to_date])
+                ->groupBy('day')
+                ->get();
+            //  dd(DB::getQueryLog());
+            // dd($total_join_users);
+            $dateandtime = Carbon::now();
+            $start_date = $dateandtime->subDays(7);
+            $start_time = strtotime($start_date);
+            $end_time = strtotime("+1 week", $start_time);
+            for ($i = $start_time; $i < $end_time; $i += 86400) {
+                $list[date('l', $i)] = 0;
+            }
+            foreach ($total_join_users as $values) {
+                $list[$values->day] = $values->total_user;
+            }
+            $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
+            dd($user_total);
+            return $user_total;
+        }
+        // }
     }
 
     public function view($type, $id)
@@ -313,7 +361,7 @@ class CampaignController extends Controller
 
         try {
             $id = base64_decode($request->id);
-            
+
             $action = UserCampaignHistoryModel::where('id', $id)->first();
             $Notification = new Notification();
 
@@ -361,13 +409,13 @@ class CampaignController extends Controller
             $id = base64_decode($request->id);
             $companyId = Auth::user()->id;
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
-           
-             $user = User::where('id', $camphistory->user_id)->first();
+
+            $user = User::where('id', $camphistory->user_id)->first();
             if (empty($user)) {
                 return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);
             }
-            $html="";
-            $html.='<div class="modal-header ">
+            $html = "";
+            $html .= '<div class="modal-header ">
                         <h5 class="modal-title h4">View</h5>
                         <button type="button" class="close" data-dismiss="modal">
                             <i class="anticon anticon-close"></i>
@@ -381,13 +429,13 @@ class CampaignController extends Controller
                         <div class="row align-items-center">
                             <div class="text-center text-sm-left col-md-2">
                                 <div class="avatar avatar-image" style="width: 150px; height:150px">';
-                                
-                                if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image)) {
-                                    $html .= '<img src="' . asset('uploads/company/user-profile/' . $user->profile_image) . '" alt="">';
-                                } else {
-                                    $html .= '<img src="' . asset('assets/images/default-user.jpg') . '" alt="">';
-                                };                                
-                                $html .= ' </div>
+
+            if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image)) {
+                $html .= '<img src="' . asset('uploads/company/user-profile/' . $user->profile_image) . '" alt="">';
+            } else {
+                $html .= '<img src="' . asset('assets/images/default-user.jpg') . '" alt="">';
+            };
+            $html .= ' </div>
                             </div>
                             <div class="text-center text-sm-left m-v-15 p-l-30">
                                 <h2 class="m-b-5"></h2>
@@ -400,40 +448,58 @@ class CampaignController extends Controller
                                                     <i class="m-r-10 text-primary anticon anticon-mail"></i>
                                                     <span>Email: </span>
                                                 </p>
-                                                <p class="col font-weight-semibold">'. $user->email??$user->email;  $html .= '</p>
+                                                <p class="col font-weight-semibold">' . $user->email ?? $user->email;
+            $html .= '</p>
                                             </li>
                                             <li class="row">
                                                 <p class="col-sm-6 col-6 font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-10 text-primary anticon anticon-phone"></i>
                                                     <span>Phone: </span>
                                                 </p>
-                                                <p class="col font-weight-semibold"> '.$user->contact_number ?? $user->contact_number; $html .= '</p>
+                                                <p class="col font-weight-semibold"> ' . $user->contact_number ?? $user->contact_number;
+            $html .= '</p>
                                             </li>
                                         
                                         </ul>
                                         <div class="d-flex font-size-22 m-t-15">
-                                        ';if(!empty($user->facebook_link)){ $html .= '
-                                            <a href="'.$user->facebook_link ?? $user->facebook_link; $html .= '"
+                                        ';
+            if (!empty($user->facebook_link)) {
+                $html .= '
+                                            <a href="' . $user->facebook_link ?? $user->facebook_link;
+                $html .= '"
                                             target="blank" class="text-gray p-r-20">
                                             <i class="anticon anticon-facebook"></i>
                                         </a>';
-                                        };if(!empty($user->instagram_link)){ $html .= '
+            };
+            if (!empty($user->instagram_link)) {
+                $html .= '
                                             
-                                            <a href="'.$user->instagram_link ?? $user->instagram_link; $html .= '"
+                                            <a href="' . $user->instagram_link ?? $user->instagram_link;
+                $html .= '"
                                                 target="blank" class="text-gray p-r-20">
                                                 <i class="anticon anticon-instagram"></i>
                                             </a>
-                                            ';};if(!empty($user->twitter_link)){ $html .= '
-                                            <a href="'.$user->twitter_link ?? $user->twitter_link; $html .= '"
+                                            ';
+            };
+            if (!empty($user->twitter_link)) {
+                $html .= '
+                                            <a href="' . $user->twitter_link ?? $user->twitter_link;
+                $html .= '"
                                                 target="blank" class="text-gray p-r-20">
                                                 <i class="anticon anticon-twitter"></i>
                                             </a>
-                                            ';};if(!empty($user->youtube_link)){ $html .= '
-                                            <a href="'.$user->youtube_link ?? $user->youtube_link; $html .= '"
+                                            ';
+            };
+            if (!empty($user->youtube_link)) {
+                $html .= '
+                                            <a href="' . $user->youtube_link ?? $user->youtube_link;
+                $html .= '"
                                                 target="blank" class="text-gray p-r-20">
                                                 <i class="anticon anticon-youtube"></i>
                                             </a>
-                                            ';} $html .= '
+                                            ';
+            }
+            $html .= '
                                         </div>
                                     </div>
                                 </div>
@@ -451,32 +517,35 @@ class CampaignController extends Controller
                         <tbody>
                             <tr>
                                 <td>Bank Name:</td>
-                                <td> '.$user->twitter_link ?? $user->twitter_link;  $html .= '</td>
+                                <td> ' . $user->twitter_link ?? $user->twitter_link;
+            $html .= '</td>
                             </tr>
                             <tr>
                                 <td>Bank Holder : </td>
-                                <td>'.$user->ac_holder	 ?? $user->ac_holder	;  $html .= '</td>
+                                <td>' . $user->ac_holder     ?? $user->ac_holder;
+            $html .= '</td>
                             </tr>
                             <tr>
                                 <td>IFSC Code :</td>
-                                <td>'.$user->ifsc_code ?? $user->ifsc_code;  $html .= '</td>
+                                <td>' . $user->ifsc_code ?? $user->ifsc_code;
+            $html .= '</td>
                             </tr>
                             <tr>
                                 <td>Account No :</td>
-                                <td> '.$user->ac_no ?? $user->ac_no;  $html .= '</td>
+                                <td> ' . $user->ac_no ?? $user->ac_no;
+            $html .= '</td>
                             </tr>
                             <tr>                               
-                                <td> <button class="btn btn-success  btn-sm action" data-action="3"   data-id="'.base64_encode($id ).'" data-url="'.route('company.campaign.action').'"  >Accept</button>
-                                <button class="btn btn-danger  btn-sm action" data-action="4"   data-id="'.base64_encode($id ).'" data-url="'.route('company.campaign.action').'"data-action="Reject" >Reject</button></td>
+                                <td> <button class="btn btn-success  btn-sm action" data-action="3"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"  >Accept</button>
+                                <button class="btn btn-danger  btn-sm action" data-action="4"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"data-action="Reject" >Reject</button></td>
                                 
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>  
-        </div>  '; 
-            return response()->json(['success' => 'error', 'message' => $html]);  
-           
+        </div>  ';
+            return response()->json(['success' => 'error', 'message' => $html]);
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
