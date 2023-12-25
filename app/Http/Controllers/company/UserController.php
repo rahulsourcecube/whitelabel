@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Exception;
@@ -119,6 +120,13 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+
+            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
+            $ActivePackageData = Helper::GetActivePackageData();
+            if($userCount >= $ActivePackageData->GetPackageData->no_of_user){
+                return redirect()->back()->with('error', 'you can create only '. $ActivePackageData->GetPackageData->no_of_user.' users');
+            }
+
             $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
            
             if(!empty($useremail)){
