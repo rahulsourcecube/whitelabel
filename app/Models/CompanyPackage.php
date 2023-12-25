@@ -15,6 +15,8 @@ class CompanyPackage extends Model
     ];
     protected $fillable = [
         'payment_id',
+        'no_of_employee',
+        'no_of_user',
     ];
 
     public function GetPackageData()

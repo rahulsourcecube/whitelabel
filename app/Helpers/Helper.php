@@ -5,9 +5,14 @@ namespace App\Helpers;
 use App\Models\CampaignModel;
 use App\Models\CompanyPackage;
 use App\Models\SettingModel;
+use App\Models\User;
 use Carbon\Carbon;
+use DateInterval;
+use DateTime;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class Helper
@@ -30,7 +35,7 @@ class Helper
     public static function taskType($type)
     {
         $types = array_flip(CampaignModel::TYPE);
-        return ucfirst(strtolower($types[$type])); 
+        return ucfirst(strtolower($types[$type]));
     }
 
     public static function isActivePackage()
@@ -54,19 +59,44 @@ class Helper
         $currentDate = $currentDate->format('Y-m-d');
         $user = Auth::user();
         $packageData = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '>=', $currentDate)->first();
-        
+
         return $packageData;
     }
 
-    // get Active Package Data
-    public static function GetNextExpiryPackage()
+    // get Remaining Days
+    public static function getRemainingDays()
     {
+        try {
+            $packageExpiringIN = 7;
+            $Date = Carbon::now()->addDays($packageExpiringIN);
+            $currentDate = $Date->format('Y-m-d');
+            $user = Auth::user();
+            $packageData = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
 
-        $currentDate = Carbon::now()->addDays(7);
-        $currentDate = $currentDate->format('Y-m-d');
-        $user = Auth::user();
-        $packageData = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '>=', $currentDate)->where('end_date', '<=', $currentDate)->first();
-        return $packageData;
+            if ($packageData != null && new DateTime($packageData->end_date) > Carbon::now()) {
+                // Assuming $packageData->end_date is a string representing a date
+                $end_date = new DateTime($packageData->end_date);
+                // Add 24 hours to the end date
+                $end_date->add(new DateInterval('PT24H'));
+                $timeDifference = $end_date->diff(Carbon::now());
+                $days = "";
+                $hours = "";
+                if ($timeDifference->format('%a') != 0) {
+                    $days = $timeDifference->format('%a') . ' days';
+                }
+                if ($timeDifference->format('%a') == 0) {
+                    $hours = $timeDifference->format('%h') . ' hours';
+                }
+                $remainingDays = $days . " " . $hours;
+                return $remainingDays;
+            } else {
+                $remainingDays = null;
+            }
+            return $remainingDays;
+        } catch (Exception $e) {
+            Log::info("helper function get Remaining Days Error" . $e->getMessage());
+            return null;
+        }
     }
 
 }

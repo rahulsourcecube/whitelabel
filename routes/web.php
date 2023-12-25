@@ -180,7 +180,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::post('/action', [CampaignController::class, 'action'])->name('action');
         });
         Route::prefix('billing')->name('billing.')->group(function () {
+            // billing list Route
             Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
+
         });
         Route::prefix('setting')->name('setting.')->group(function () {
             Route::get('', [CompanySettingController::class, 'index'])->name('index');
