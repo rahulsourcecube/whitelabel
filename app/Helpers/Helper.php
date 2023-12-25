@@ -14,8 +14,9 @@ class Helper
 {
     public static function getSiteSetting()
     {
+      
         try {
-            $generalSetting = SettingModel::where('user_id', Auth::user()->id)->first();
+            $generalSetting = SettingModel::where('user_id', Auth::user()->id)->first();           
             return $generalSetting;
         } catch (\Exception $exception) {
             Log::info('site setting error : ' . $exception->getMessage());

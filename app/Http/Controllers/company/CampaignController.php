@@ -6,6 +6,7 @@ use App\Exports\Export;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Exception;
@@ -309,15 +310,33 @@ class CampaignController extends Controller
             $id = base64_decode($request->id);
             
             $action = UserCampaignHistoryModel::where('id', $id)->first();
+            $Notification = new Notification();
 
             if ($request->action == '3') {
                 $action->status = '3';
                 $action->save();
-                return response()->json(['success' => 'success', 'messages' => 'Task Accept  Approval Requset successfully']);
+                if(isset($action)){
+                    $Notification->user_id=  $action->user_id;
+                    $Notification->company_id=  $action->campaign_id;
+                    $Notification->title=  " Campaign approved ";
+                    $Notification->message=  $action->getCampaign->title." Approved.";
+                    $Notification->type=  "1";
+                    $Notification->save();
+                }
+                return response()->json(['success' => 'success', 'messages' => ' Task Approved successfully']);
             } else {
                 $action->status = '4';
                 $action->save();
-                return response()->json(['success' => 'success', 'messages' => 'Task Reject  Approval Requset successfully']);
+                if(isset($action)){
+                    $Notification->user_id=  $action->user_id;
+                    $Notification->company_id=  $action->campaign_id;
+                    $Notification->title=  " Campaign rejected";
+                    $Notification->message=  $action->getCampaign->title ." Rejected.";
+                    $Notification->type=  "1";
+
+                    $Notification->save();
+                }
+                return response()->json(['success' => 'success', 'messages' => ' Task Rejectedz successfully']);
             }
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());

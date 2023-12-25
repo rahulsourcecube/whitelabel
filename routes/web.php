@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
+use App\Http\Controllers\company\Notification;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
@@ -145,6 +146,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('view/{id}', [UserController::class, 'view'])->name('view');
         Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
+       
     });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
@@ -215,7 +217,13 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::delete('delete/{id}', [EmployeeController::class, 'delete'])->name('delete');
             Route::post('/update/{id}', [EmployeeController::class, 'update'])->name('update');
         });
+        Route::prefix('notification')->name('notification.')->group(function () {
+            Route::get('', [Notification::class, 'index'])->name('list');
+            Route::post('/list', [Notification::class, 'dtlist'])->name('dtlist');
+    
+       });
     });
+   
 });
 Route::get('migrate', function () {
     Artisan::call('migrate');
