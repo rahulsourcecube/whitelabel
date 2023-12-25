@@ -95,6 +95,8 @@ class PackageController extends Controller
             $package->title = $request->title;
             $package->description = $request->description; // Fix typo in 'description' discription
             $package->no_of_campaign = $request->campaign;
+            $package->no_of_user = $request->user;
+            $package->no_of_employee = $request->employee;
             $package->duration = $request->day;
             $package->price = $request->price;
             $package->type = $request->type;
@@ -143,6 +145,8 @@ class PackageController extends Controller
             $package->title = $request->title;
             $package->description = $request->description; // Fix typo in 'description' discription
             $package->no_of_campaign = $request->campaign;
+            $package->no_of_user = $request->user;
+            $package->no_of_employee = $request->employee;
             $package->duration = $request->day;
             $package->price = $request->price;
             $package->type = $request->type;

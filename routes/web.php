@@ -186,7 +186,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::get('/export/{type}', [CampaignController::class, 'export'])->name('export');
         });
         Route::prefix('billing')->name('billing.')->group(function () {
+            // billing list Route
             Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
+
         });
         Route::prefix('setting')->name('setting.')->group(function () {
             Route::get('', [CompanySettingController::class, 'index'])->name('index');

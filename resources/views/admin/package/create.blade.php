@@ -31,6 +31,18 @@
                                     placeholder="No Of Campaign"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
+                            <div class="form-group col-md-6">
+                                <label for="user"> No Of User <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="user" name="user"
+                                    placeholder="No Of User"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="employee"> No Of Employee <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="employee" name="employee"
+                                    placeholder="No Of Employee"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            </div>
                             <div class="form-group col-md-12">
                                 <label for="descriptions">Description</label>
                                 <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> </textarea>
@@ -89,6 +101,12 @@
                 campaign: {
                     required: true
                 },
+                employee: {
+                    required: true
+                },
+                user: {
+                    required: true
+                },
                 description: {
                     required: true
                 },
@@ -114,6 +132,12 @@
                 },
                 campaign: {
                     required: "Please enter no of campaign"
+                },
+                employee: {
+                    required: "Please enter no of employee"
+                },
+                user: {
+                    required: "Please enter no of user"
                 },
                 description: {
                     required: "Please enter description"

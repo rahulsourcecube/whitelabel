@@ -3,7 +3,7 @@
 @php
     $siteSetting = App\Helpers\Helper::getSiteSetting();
     $packagebuymessage = App\Helpers\Helper::isInactivePackage();
-    $GetNextExpiryPackage = App\Helpers\Helper::GetNextExpiryPackage();
+    $remainingDays = App\Helpers\Helper::getRemainingDays();
 @endphp
 
 <head>
@@ -43,9 +43,15 @@
                             here to buy package.
                         </div>
                     @endif
-                    @if ($GetNextExpiryPackage && $GetNextExpiryPackage != null)
+                    @if ($remainingDays && $remainingDays != null)
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Your package going to be expires</strong>. <a
+                            <strong>Your package going to be expires in {{ $remainingDays }}</strong>. <a
+                                href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            here to buy package.
+                        </div>
+                    @else
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <strong>Please purchase package</strong>. <a
                                 href="{{ route('company.package.list', 'Free') }}">Click</a>
                             here to buy package.
                         </div>
