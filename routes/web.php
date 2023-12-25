@@ -62,7 +62,7 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/confirm/password/{token}', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
     Route::post('/reset-password', [UsrController::class, 'submitResetPassword'])->name('reset-password');
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['user'])->group(function () {
         Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
         Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
         Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
@@ -82,11 +82,13 @@ Route::prefix('user')->name('user.')->group(function () {
     });
 });
 Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {
-    Route::get('/', [UserCampaignController::class, 'campaign'])->name('list');
-    Route::get('/list', [UserCampaignController::class, 'dtlist'])->name('dtlist');
-    Route::get('/view/{id}', [UserCampaignController::class, 'campaignview'])->name('view');
-    Route::post('/usercampaign/{id}', [UserCampaignController::class, 'getusercampaign'])->name('getusercampaign');
-    Route::get('/userlist', [UserCampaignController::class, 'userlist'])->name('userlist');
+    Route::middleware(['user'])->group(function () {
+        Route::get('/', [UserCampaignController::class, 'campaign'])->name('list');
+        Route::get('/list', [UserCampaignController::class, 'dtlist'])->name('dtlist');
+        Route::get('/view/{id}', [UserCampaignController::class, 'campaignview'])->name('view');
+        Route::post('/usercampaign/{id}', [UserCampaignController::class, 'getusercampaign'])->name('getusercampaign');
+        Route::get('/userlist', [UserCampaignController::class, 'userlist'])->name('userlist');
+    });
 });
 
 Route::prefix('company')->name('company.')->group(function () {

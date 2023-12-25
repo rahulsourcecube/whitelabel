@@ -3,6 +3,7 @@
 @section('main-content')
     <!-- Page Container START -->
     <!-- Content Wrapper START -->
+    <input type="hidden" value="{{ json_encode($chartReward) }}" class="chartReward">
     <div class="main-content">
         <div class="row">
             <div class="col-md-6 col-lg-3">
@@ -13,7 +14,9 @@
                                 <i class="anticon anticon-dollar"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">0</h2>
+                                <h2 class="m-b-0">
+                                    {{ isset($totalReferralUser) ? $totalReferralUser->count() : 0 }}
+                                </h2>
                                 <p class="m-b-0 text-muted">Total Referral User</p>
                             </div>
                         </div>
@@ -93,7 +96,35 @@
                                         <tr>
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                             <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
-                                            <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td>
+                                            {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
+                                            <td>
+                                                @if (isset($data->getCampaign->description))
+                                                    <span class="truncated-description" style="cursor: pointer;"
+                                                        data-full-description="{!! strip_tags($data->getCampaign->description) !!}">
+                                                        {!! \Illuminate\Support\Str::limit(strip_tags($data->getCampaign->description), 10) !!}
+                                                    </span>
+                                                @else
+                                                    -
+                                                @endif
+
+                                                <div class="modal fade" id="descriptionModal" tabindex="-1" role="dialog"
+                                                    aria-labelledby="descriptionModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="descriptionModalLabel">Full
+                                                                    Description</h5>
+                                                                <button type="button" class="close" data- dismiss="modal"
+                                                                    aria-label="Close">
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p id="fullDescription"></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                             </td>
                                             <td>
@@ -185,9 +216,9 @@
                         <div class="m-t-50">
                             <canvas class="chart" id="myChart"></canvas>
                         </div>
-                        {{-- <div class="m-t-50">
+                        <div class="m-t-50">
                             <canvas class="chart" id="revenue-chart"></canvas>
-                        </div> --}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -267,44 +298,91 @@
     @endsection
     @section('js')
         <script>
-            var ctx = document.getElementById('myChart').getContext('2d');
-            var chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ["Jun 2016", "Jul 2016", "Aug 2016", "Sep 2016", "Oct 2016", "Nov 2016", "Dec 2016",
-                        "Jan 2017", "Feb 2017", "Mar 2017", "Apr 2017", "May 2017"
-                    ],
-                    datasets: [{
-                        label: {
-                            display: false,
-                        },
-                        borderColor: 'royalblue',
-                        data: [26.4, 39.8, 66.8, 66.4, 40.6, 55.2, 77.4, 69.8, 57.8, 76, 110.8, 142.6],
-                    }]
-                },
-                options: {
-                    layout: {
-                        padding: 10,
-                    },
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                    },
-                    scales: {
-                        yAxes: [{
-                            scaleLabel: {
-                                display: true,
-                            }
-                        }],
-                        xAxes: [{
-                            scaleLabel: {
-                                display: true,
-                            }
-                        }]
-                    }
+            $(document).ready(function() {
+                var chartReward = $(".chartReward").val();
+                chartReward = JSON.parse(chartReward);
+                console.log(chartReward);
+
+                // var start = new Date(),
+                //     start_date = start.getDate() - 10,
+                //     currentDate = new Date(),
+                //     between = []
+                // ;
+
+                var start = new Date();
+                var start_date = new Date(start);
+                start_date.setDate(start.getDate() - 10);
+
+                var currentDate = new Date();
+                var between = [];
+
+                console.log(start_date)
+
+                while (start_date <= currentDate) {
+                    between.push(new Date(start_date));
+                    start_date.setDate(start_date.getDate() + 1);
                 }
+
+
+                // while (start <= currentDate) {
+                //     between.push(new Date(start));
+                //     start.setDate(start.getDate() + 1);
+                // }
+
+                console.log(between)
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ["Jun 2016", "Jul 2016", "Aug 2016", "Sep 2016", "Oct 2016", "Nov 2016",
+                            "Dec 2016",
+                            "Jan 2017", "Feb 2017", "Mar 2017", "Apr 2017", "May 2017"
+                        ],
+                        datasets: [{
+                            label: {
+                                display: false,
+                            },
+                            borderColor: 'royalblue',
+                            data: [26.4, 39.8, 66.8, 66.4, 40.6, 55.2, 77.4, 69.8, 57.8, 76, 110.8,
+                                142.6
+                            ],
+                        }]
+                    },
+                    options: {
+                        layout: {
+                            padding: 10,
+                        },
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                        },
+                        scales: {
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                }
+                            }],
+                            xAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $(document).ready(function() {
+                $('.truncated-description').click(function() {
+                    var fullDescription = $(this).data('full-description');
+                    $('#fullDescription').text(fullDescription);
+                    $('#descriptionModal').modal('show');
+                });
             });
         </script>
 

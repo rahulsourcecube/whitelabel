@@ -20,14 +20,14 @@
 
                                 <div class="d-md-flex align-items-center">
                                     <div class="text-center text-sm-left ">
-                                        <div class="avatar avatar-image" style="width: 150px; height:150px">                                           
+                                        <div class="avatar avatar-image" style="width: 150px; height:150px">
                                             @if (isset($userData) &&
                                                     !empty($userData->profile_image) &&
                                                     file_exists('uploads/user/user-profile/' . $userData->profile_image))
                                                 <img
                                                     src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}">
                                             @else
-                                            <img src="{{asset('assets/images/profile_image.jpg')}}">
+                                                <img src="{{ asset('assets/images/profile_image.jpg') }}">
                                             @endif
                                         </div>
                                     </div>
@@ -43,19 +43,19 @@
                                                     <li class="row">
                                                         <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
                                                             <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                            <span>Email: </span>
+                                                            <span>:</span>
                                                         </p>
                                                         <p class="col font-weight-semibold">
-                                                            {{ isset($userData->email) ? $userData->email : '' }}</p>
+                                                            {{ isset($userData->email) ? $userData->email : '-' }}</p>
                                                     </li>
 
                                                     <li class="row">
                                                         <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
                                                             <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                            <span>Phone: </span>
+                                                            <span>:</span>
                                                         </p>
                                                         <p class="col font-weight-semibold">
-                                                            {{ isset($userData->contact_number) ? $userData->contact_number : '' }}
+                                                            {{ isset($userData->contact_number) ? $userData->contact_number : '-' }}
                                                         </p>
                                                     </li>
                                                 </ul>
@@ -97,12 +97,12 @@
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar avatar-image"
                                                                 style="height: 30px; min-width: 30px; max-width:30px">
-                                                                @if (isset($data->profile_image) && file_exists(public_path('user/profile_image/' . $data->profile_image)))
-                                                                    <img src="{{ asset('public/user/profile_image/' . $data->profile_image) }}"
+                                                                @if (isset($data->profile_image) && file_exists(public_path('uploads/user/user-profile/' . $data->profile_image)))
+                                                                    <img src="{{ asset('uploads/user/user-profile/' . $data->profile_image) }}"
                                                                         style="width: 50px; height: auto;" class="mt-2">
                                                                 @else
-                                                                    <img src="{{ asset('assets/images/avatars/thumb-1.jpg') }}"
-                                                                        alt="">
+                                                                    <img
+                                                                        src="{{ asset('assets/images/profile_image.jpg') }}">
                                                                 @endif
                                                             </div>
                                                             <h6 class="m-l-10 m-b-0">
@@ -113,7 +113,9 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>{{ isset($data->created_at) ? $data->created_at : '' }}</td>
+                                                <td>{{ isset($data->created_at) ? $data->created_at->format('Y-m-d') : '' }}
+                                                </td>
+                                                {{-- <td>{{ isset($data->created_at) ? $data->created_at : '' }}</td> --}}
                                             </tr>
                                             @php
                                                 $i++;

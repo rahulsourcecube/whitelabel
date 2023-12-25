@@ -96,7 +96,35 @@
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                     <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
-                                    <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td>
+                                    <td>
+                                        @if (isset($data->getCampaign->description))
+                                            <span class="truncated-description" style="cursor: pointer;"
+                                                data-full-description="{!! strip_tags($data->getCampaign->description) !!}">
+                                                {!! \Illuminate\Support\Str::limit(strip_tags($data->getCampaign->description), 10) !!}
+                                            </span>
+                                        @else
+                                            -
+                                        @endif
+
+                                        <div class="modal fade" id="descriptionModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="descriptionModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="descriptionModalLabel">Full
+                                                            Description</h5>
+                                                        <button type="button" class="close" data- dismiss="modal"
+                                                            aria-label="Close">
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p id="fullDescription"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
                                     <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                     </td>
                                     <td>
@@ -159,5 +187,15 @@
 
             return true;
         }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.truncated-description').click(function() {
+                var fullDescription = $(this).data('full-description');
+                $('#fullDescription').text(fullDescription);
+                $('#descriptionModal').modal('show');
+            });
+        });
     </script>
 @endsection
