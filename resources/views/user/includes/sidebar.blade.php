@@ -4,7 +4,7 @@
 $user = Auth::user();
 // $notificationCount = Notification::where('user_id', $user->id)->where('is_read','0')->get();
 use App\Models\Notification;
-$notificationCount = Notification::where('user_id', $user->id)
+$notificationCount = Notification::where('user_id', $user->id)->where('type', '1')
     ->where('is_read', '0')
     ->get();
 ?>

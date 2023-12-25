@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
+use App\Http\Controllers\company\Notification;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
@@ -62,7 +63,7 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/confirm/password/{token}', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
     Route::post('/reset-password', [UsrController::class, 'submitResetPassword'])->name('reset-password');
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['user'])->group(function () {
         Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
         Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
         Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
@@ -83,11 +84,13 @@ Route::prefix('user')->name('user.')->group(function () {
     });
 });
 Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {
-    Route::get('/', [UserCampaignController::class, 'campaign'])->name('list');
-    Route::get('/list', [UserCampaignController::class, 'dtlist'])->name('dtlist');
-    Route::get('/view/{id}', [UserCampaignController::class, 'campaignview'])->name('view');
-    Route::post('/usercampaign/{id}', [UserCampaignController::class, 'getusercampaign'])->name('getusercampaign');
-    Route::get('/userlist', [UserCampaignController::class, 'userlist'])->name('userlist');
+    Route::middleware(['user'])->group(function () {
+        Route::get('/', [UserCampaignController::class, 'campaign'])->name('list');
+        Route::get('/list', [UserCampaignController::class, 'dtlist'])->name('dtlist');
+        Route::get('/view/{id}', [UserCampaignController::class, 'campaignview'])->name('view');
+        Route::post('/usercampaign/{id}', [UserCampaignController::class, 'getusercampaign'])->name('getusercampaign');
+        Route::get('/userlist', [UserCampaignController::class, 'userlist'])->name('userlist');
+    });
 });
 
 Route::prefix('company')->name('company.')->group(function () {
@@ -145,6 +148,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('view/{id}', [UserController::class, 'view'])->name('view');
         Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
+       
     });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
@@ -218,7 +222,13 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::delete('delete/{id}', [EmployeeController::class, 'delete'])->name('delete');
             Route::post('/update/{id}', [EmployeeController::class, 'update'])->name('update');
         });
+        Route::prefix('notification')->name('notification.')->group(function () {
+            Route::get('', [Notification::class, 'index'])->name('list');
+            Route::post('/list', [Notification::class, 'dtlist'])->name('dtlist');
+    
+       });
     });
+   
 });
 Route::get('migrate', function () {
     Artisan::call('migrate');

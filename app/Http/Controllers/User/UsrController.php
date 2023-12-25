@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanyModel;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
@@ -42,8 +43,9 @@ class UsrController extends Controller
             $campaignList = UserCampaignHistoryModel::orderBy('campaign_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
-            $reward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->get();
-            $totalReward = $reward->sum('reward');
+            $totalReferralUser = User::where('referral_user_id',Auth::user()->id)->get();
+            $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->sum('reward');
+            $chartReward = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->select(DB::raw('DATE(created_at) AS day'),DB::raw('SUM(reward) AS total_day_reward'))->whereDate('created_at', '>=', Carbon::now()->subDays(10)->format("Y-m-d"))->groupBy('day')->get()->toArray();
 
             $userData = User::get();
             $data = [];
@@ -51,7 +53,7 @@ class UsrController extends Controller
             $data['total_user'] = 0;
             $data['total_campaign'] = 0;
             $data['total_package'] = 0;
-            return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward'));
+            return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward','chartReward','totalReferralUser'));
         } catch (Exception $exception) {
 
             return redirect()->back()->with('error', "Something Went Wrong!");
@@ -298,9 +300,23 @@ class UsrController extends Controller
     public function claimReward($id)
     {
         try {
-            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();
+            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();     
+          
+      
+            $user = Auth::user();
+           
             $claimReward->status = '2';
             $claimReward->save();
+            if(isset($claimReward)){
+                $Notification = new Notification();
+                $Notification->user_id=  $claimReward->user_id;
+                $Notification->company_id=  $claimReward->getCampaign->company_id;
+                $Notification->type=  '2';
+                $Notification->title=  " Campaign approval request";
+                $Notification->message=  $claimReward->getCampaign->title." approval request by ".$claimReward->getuser->FullName ;
+                $Notification->save();
+            }
+
             return redirect()->back()->with('success', "Claim Reward requested successfully!");
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong");
@@ -314,7 +330,7 @@ class UsrController extends Controller
     {
         try {
             $user = Auth::user();
-            $notifications = Notification::orderBy('id', 'DESC')->where('user_id', $user->id)->get();
+            $notifications = Notification::orderBy('id', 'DESC')->where('user_id', $user->id)->where('type', '1')->get();
             foreach ($notifications as $notification) {
                 $notification->is_read = '1';
                 $notification->save();
@@ -354,6 +370,7 @@ class UsrController extends Controller
             $userRegister->company_id = $companyId->id;
             $userRegister->referral_code = Str::random(6);
             $userRegister->password = Hash::make($request->password);
+            $userRegister->view_password = $request->password;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
 
 

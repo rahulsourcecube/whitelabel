@@ -25,7 +25,7 @@
                             <label for="cname">Company Name</label>
                             <input type="text" class="form-control mb-2" name="title" id="cname"
                                 placeholder="Company Name"
-                                value="{{ !empty($setting) && $setting->title  ? $setting->title  : $companyname->company_name}}"
+                                value="{{ !empty($companyname) && $companyname->company_name  ? $companyname->company_name  : $companyname->company_name}}"
                                 required>
                         </div>
                         <div class="form-group col-md-4">
