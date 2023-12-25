@@ -34,6 +34,19 @@
                                     placeholder="No Of Campaign"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
+                            <div class="form-group col-md-6">
+                                <label for="user"> No Of User <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="user" name="user"
+                                    placeholder="No Of User" value="{{ !empty($package->no_of_user) ? $package->no_of_user : '' }}"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="employee"> No Of Employee <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="employee" name="employee"
+                                    placeholder="No Of Employee" value="{{ !empty($package->no_of_employee) ? $package->no_of_employee : '' }}"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            </div>
+
                             <div class="form-group col-md-12">
                                 <label for="descriptions">Description <span class="error">*</span></label>
                                 <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> {{ !empty($package->description) ? $package->description : '' }} </textarea>
@@ -61,7 +74,7 @@
                                     value="{{ !empty($package->duration) ? $package->duration : '' }}"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
-                            <div class="form-group col-md-6"  id="price-section">
+                            <div class="form-group col-md-6" id="price-section">
                                 <label for="price"> Price <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="price" name="price"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10"
@@ -77,7 +90,7 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-3"  style="max-height: 200px;">
+                            <div class="form-group col-md-3" style="max-height: 200px;">
                                 <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"
                                     alt="Image Preview" style="max-width: 100%; max-height: 80%;">
                                 {{-- <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
@@ -105,6 +118,12 @@
                 campaign: {
                     required: true
                 },
+                employee: {
+                    required: true
+                },
+                user: {
+                    required: true
+                },
                 description: {
                     required: true
                 },
@@ -125,6 +144,12 @@
                 campaign: {
                     required: "Please Enter No Of Campaign"
                 },
+                employee: {
+                    required: "Please Enter No Of Employee"
+                },
+                user: {
+                    required: "Please Enter No Of User"
+                },
                 description: {
                     required: "Please Enter description"
                 },
@@ -141,32 +166,33 @@
         });
 
         isFreePackage();
-        $(document).on("change","#inputype",function() {
+        $(document).on("change", "#inputype", function() {
 
-                type = $(this).val();
-                isFreePackage();
-                if (type == '1') {
-                    $('.day_title').html('No Of Day');
-                    $(".day_place").attr("placeholder", "No Of Day").placeholder();
-                } else if (type == '2') {
-                    $('.day_title').html('No Of Month');
-                    $(".day_place").attr("placeholder", "No Of Month").placeholder();
+            type = $(this).val();
+            isFreePackage();
+            if (type == '1') {
+                $('.day_title').html('No Of Day');
+                $(".day_place").attr("placeholder", "No Of Day").placeholder();
+            } else if (type == '2') {
+                $('.day_title').html('No Of Month');
+                $(".day_place").attr("placeholder", "No Of Month").placeholder();
 
-                } else {
-                    $('.day_title').html('No Of Year');
-                    $(".day_place").attr("placeholder", "No Of Year").placeholder();
-                }
+            } else {
+                $('.day_title').html('No Of Year');
+                $(".day_place").attr("placeholder", "No Of Year").placeholder();
+            }
 
-            });
-            function isFreePackage() {
+        });
 
-        if ($("#inputype option:selected").val() == '1') {
-            $("#price-section").hide();
-            $("#price").val("0");
-        } else {
-            $("#price-section").show();
-            $("#price").val("");
-        }
+        function isFreePackage() {
+
+            if ($("#inputype option:selected").val() == '1') {
+                $("#price-section").hide();
+                $("#price").val("0");
+            } else {
+                $("#price-section").show();
+                $("#price").val("");
+            }
         }
 
         function previewImage() {

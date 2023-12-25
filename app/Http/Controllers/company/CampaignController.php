@@ -156,6 +156,11 @@ class CampaignController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($userCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
+                return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_campaign . ' campaigns');
+            }
             if ($request->hasFile('image')) {
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $randomNumber = rand(1000, 9999);
