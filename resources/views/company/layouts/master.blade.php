@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 @php
-$siteSetting = App\Helpers\Helper::getSiteSetting();
-$packagebuymessage = App\Helpers\Helper::isInactivePackage();
+    $siteSetting = App\Helpers\Helper::getSiteSetting();
+    $packagebuymessage = App\Helpers\Helper::isInactivePackage();
+    $remainingDays = App\Helpers\Helper::getRemainingDays();
 @endphp
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@yield('title') || {{ !empty($siteSetting) && $siteSetting->title ? $siteSetting->title : env('APP_NAME') }}
+    {{-- <title>@yield('title') || {{ !empty($siteSetting) && $siteSetting->title ? $siteSetting->title : env('APP_NAME') }} --}}
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
@@ -35,12 +36,25 @@ $packagebuymessage = App\Helpers\Helper::isInactivePackage();
             <!-- Page Container START -->
             <div class="page-container">
                 <div class="container notification">
-                    @if(!$packagebuymessage)
-                    <div class="alert alert-danger alert-dismissible fade show">
-                        <strong>Please purchase package</strong>. <a
-                            href="{{route('company.package.list', 'Free')}}">Click</a>
-                        here to buy package.
-                    </div>
+                    @if (!$packagebuymessage)
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <strong>Please purchase package</strong>. <a
+                                href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            here to buy package.
+                        </div>
+                    @endif
+                    @if ($remainingDays && $remainingDays != null)
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <strong>Your package going to be expires in {{ $remainingDays }}</strong>. <a
+                                href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            here to buy package.
+                        </div>
+                    @else
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <strong>Please purchase package</strong>. <a
+                                href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            here to buy package.
+                        </div>
                     @endif
                     {{-- <div class="row">
                         <div class="col-md-12">

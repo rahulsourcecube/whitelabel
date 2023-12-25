@@ -25,7 +25,7 @@
         <div class="tab-content m-t-15">
             <div class="tab-pane fade show active" id="tab-account">
                 <form action="{{route('company.update_profile', $editprofiledetail->id)}}" method="post"
-                    enctype="multipart/form-data">
+                    enctype="multipart/form-data" id="profile-update">
                     @csrf
                     <div class="card">
                         <div class="card-header">
@@ -55,15 +55,15 @@
                             <hr class="m-v-25">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label class="font-weight-semibold" for="userName">First Name:</label>
-                                    <input type="text" class="form-control" name="first_name" id="userName"
-                                        placeholder="User Name"
+                                    <label class="font-weight-semibold" for="firstname">First Name:</label>
+                                    <input type="text" class="form-control" name="first_name" id="firstname"
+                                        placeholder="First Name"
                                         value="{{isset($editprofiledetail->first_name)?$editprofiledetail->first_name:''}}">
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label class="font-weight-semibold" for="userName">Last Name:</label>
-                                    <input type="text" class="form-control" name="last_name" id="userName"
-                                        placeholder="User Name"
+                                    <label class="font-weight-semibold" for="last_name">Last Name:</label>
+                                    <input type="text" class="form-control" name="last_name" id="last_name"
+                                        placeholder="Last Name"
                                         value="{{isset($editprofiledetail->last_name)?$editprofiledetail->last_name:''}}">
                                 </div>
                                 <div class="form-group col-md-6">
@@ -71,7 +71,7 @@
                                     <input type="email" class="form-control" name="email" id="email" placeholder="email"
                                         value="{{isset($editprofiledetail->email)?$editprofiledetail->email:''}}">
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class="form-group col-md-6">
                                     <label class="font-weight-semibold" for="phoneNumber">Phone Number:</label>
                                     <input type="number" class="form-control" name="contact_number" id="phoneNumber"
                                         placeholder="Phone Number"
@@ -139,6 +139,46 @@
         }
     });
     $(document).ready(function() {
+        $('#profile-update').validate({
+            rules: {
+                first_name:'required',
+                last_name: 'required',
+                email: {
+                    remote:{
+                        url:'verifyemail/',
+                        type:"GET"
+                    },
+                    required: true,
+                    email:true
+                },
+                contact_number:{
+                    number:true,
+                    minlength:10,
+                    maxlength:10,
+                    required:true,
+                    remote:{
+                        url:'verifycontact/',
+                        type:"GET"
+                    }
+                },
+            },
+            messages: {
+                first_name:'Please enter first name',
+                last_name: 'Please enter last name',
+                email: {
+                    remote: "Email address already registred",
+                    required: "Please enter email address.",
+                    email: "Please enter valid email address.",
+                },
+                contact_number:{
+                    remote: "Contact Number is already registered." ,
+                    required: "Please enter your contact number.",
+                    number: "Only numbers are allowed.",
+                    minlength: "Your phone number must be 10 digits.",
+                    maxlength: "Your phone number must be 10 digits.",
+                }
+            },
+        });
         $('#change_password').validate({
             rules: {
                 oldpassword:{

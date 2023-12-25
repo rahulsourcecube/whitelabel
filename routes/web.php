@@ -71,6 +71,7 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('profile', [UsrController::class, 'profile'])->name('profile');
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
         Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
+        Route::post('/user/progress/search', [UsrController::class, 'searchProgress'])->name('progress.search');
         Route::post('/claim-reward/{id}', [UsrController::class, 'claimReward'])->name('progress.claimReward');
         Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
         Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
@@ -132,6 +133,8 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::post('update_profile/{id}', [CompanyLoginController::class, 'updateprofile'])->name('update_profile');
     Route::post('update_passsword', [CompanyLoginController::class, 'updatepassword'])->name('update_password');
     Route::get('profile', [CompanyLoginController::class, 'profile'])->name('profile');
+    Route::get('verifyemail/', [CompanyLoginController::class, 'verifyemail'])->name('verifyemail');
+    Route::get('verifycontact/', [CompanyLoginController::class, 'verifycontact'])->name('verifycontact');
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('', [UserController::class, 'index'])->name('list');
@@ -180,9 +183,12 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
             Route::get('/analytics', [CampaignController::class, 'analytics'])->name('analytics');
             Route::post('/action', [CampaignController::class, 'action'])->name('action');
+            Route::get('/export/{type}', [CampaignController::class, 'export'])->name('export');
         });
         Route::prefix('billing')->name('billing.')->group(function () {
+            // billing list Route
             Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
+
         });
         Route::prefix('setting')->name('setting.')->group(function () {
             Route::get('', [CompanySettingController::class, 'index'])->name('index');
