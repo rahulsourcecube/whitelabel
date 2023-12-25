@@ -49,4 +49,7 @@ class CampaignModel extends Model
     {
         return $this->belongsTo(CampaignModel::class)->where('campaign_id', '!=', 'id');
     }
+    // function getcompany(){
+    //     return $this->belongsTo(CompanyModel::class)->where('id','company_id');
+    // }  
 }

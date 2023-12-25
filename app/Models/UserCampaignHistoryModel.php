@@ -27,12 +27,11 @@ class UserCampaignHistoryModel extends Model
     function getuser(){
         return $this->belongsTo(User::class,'user_id');
     }
-    function getcompany(){
-        return $this->belongsTo(CompanyModel::class,'id');
-    }
+    
     function getCampaign(){
         return $this->hasOne(CampaignModel::class,'id','campaign_id');
     }
+    
     public function getTaskStatusAttribute() {
         $status = $this->status;
         $string = 'Pending';
