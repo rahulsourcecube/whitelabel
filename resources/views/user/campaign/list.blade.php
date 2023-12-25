@@ -113,7 +113,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
-                        text: 'Joined',
+                        text: 'Campaign joined successfully',
                         confirmButtonColor: '#3085d6',
                         confirmButtonText: 'OK'
                     });
