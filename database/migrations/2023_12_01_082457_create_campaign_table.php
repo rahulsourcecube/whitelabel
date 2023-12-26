@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->date('expiry_date');
             $table->enum('type', ['1', '2' ,'3'])->default('1')->comment('1) Referral 2) Social 3) Custom');
-            $table->enum('status', ['0', '1'])->default('1')->comment('1) Active  2) Inactive');
+            $table->enum('status', ['0', '1'])->default('1')->comment('1) Active  0) Inactive');
             $table->timestamps();
 
             $table->foreign('company_id')->references('id')->on('company');

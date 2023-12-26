@@ -100,10 +100,10 @@
                     'render': function(data, type, row) {
                         var status = row[5];
                         if(status == "Active"){
-                            return '  <button class="btn btn-success ">'+status+'</button>'
+                            return '  <button class="btn btn-success btn-sm">'+status+'</button>'
 
                         }else{
-                            return '  <button class="btn btn-danger ">'+status+'</button>'
+                            return '  <button class="btn btn-danger btn-sm">'+status+'</button>'
                         }
                     },
                 }, {

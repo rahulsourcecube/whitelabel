@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('profile_image')->nullable();
             $table->string('referral_code')->nullable();
             $table->integer('referral_user_id')->nullable();
-            $table->enum('status', ['0', '1'])->default('1')->comment(' 0) Active, 1) Deactive');
-            $table->enum('user_type', ['1', '2', '3', '4'])->default('1')->comment(' 0) Admin, 1) Company 3) Staff 4) User');
+            $table->enum('status', ['0', '1'])->default('1')->comment(' 1) Active, 0) Deactive');
+            $table->enum('user_type', ['1', '2', '3', '4'])->default('1')->comment(' 1) Admin, 2) Company 3) Staff 4) User');
             $table->rememberToken();
             $table->timestamps();
 

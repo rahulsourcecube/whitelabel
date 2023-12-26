@@ -77,7 +77,10 @@
                     </div>
                     <span class="err" style="display: none;color: red;">Please select any one column</span>
                 </form>
-                   
+                <div class="form-group col-md-2">
+                    <a href="{{ route('user.progress.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
+                </div>
+
                 <div class="m-t-15">
                     <table id="user_tables" class="table">
                         <thead>
@@ -94,10 +97,10 @@
                         <tbody>
                             @foreach ($filterResults as $data)
                           <?php $campaign_id= base64_encode($data->campaign_id);?>
-                        
+
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                    <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
+                                    <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency().$data->reward) : '' }}</td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
                                             <span class="truncated-description" style="cursor: pointer;"

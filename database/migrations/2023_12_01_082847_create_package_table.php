@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('duration');
             $table->float('price');
             $table->enum('type', ['1', '2' ,'3'])->default('1')->comment('1) Free 2) Monthly 3) Yearly');
-            $table->enum('status', ['0', '1'])->default('1')->comment('1) Active  2) Inactive');
+            $table->enum('status', ['0', '1'])->default('1')->comment('1) Active  0) Inactive');
             $table->unsignedBigInteger('created_by');
             $table->timestamps();
 

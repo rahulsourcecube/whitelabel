@@ -21,25 +21,25 @@
                     <div class="m-t-25">
                         <div class="row">
                             <div class="col-md-3">
-                                <form id="filtersForm">
-                                    <div class="form-group col-md-12">
-                                        <label class="font-weight-semibold" for="date_filter">Date:</label>
-                                        <input type="text" class="form-control" name="date_range_filter"
-                                            id="date_filter" placeholder="From Date">
-                                    </div>
-                                    {{-- <div class="form-group col-md-12">
-                                        <label class="font-weight-semibold" for="phoneNumber">To Date:</label>
-                                        <input type="date" class="form-control" id="phoneNumber">
-                                    </div> --}}
-                                    <div class="col-md-12">
-                                        <button type="submit" class="btn btn-primary m-t-30">Filter</button>
+                                <div class="form-group col-md-12">
+                                    <label class="font-weight-semibold" for="date_filter">Date:</label>
+                                    <input type="text" class="form-control attribute" name="date_range_filter"
+                                        id="date_filter" placeholder="From Date">
+                                </div>
+                                {{-- <div class="form-group col-md-12">
+                                    <label class="font-weight-semibold" for="phoneNumber">To Date:</label>
+                                    <input type="date" class="form-control" id="phoneNumber">
+                                </div> --}}
+                                <div class="col-md-12">
+                                    <button id="filterdata" class="btn btn-primary m-t-30" disabled>Filter <span
+                                            class="spinner"></span></button>
 
-                                        <button class="btn btn-success m-t-30">Export</button>
-                                    </div>
-                                </form>
+                                    {{-- <button class="btn btn-success m-t-30">Export</button> --}}
+                                </div>
                             </div>
                             <div class="col-md-9">
                                 <div class="ct-chart" id="simple-line-referral"></div>
+                                <div class="ct-chart" id="simple-line-referral-filter"></div>
                             </div>
                         </div>
                     </div>
@@ -127,9 +127,10 @@
                user_total.total_user,
             ]
         }, {
+            showArea: true,
             fullWidth: true,
             chartPadding: {
-                right: 40
+                right: 50
             }
         });
 
@@ -163,24 +164,47 @@
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <script>
+    $('.attribute').on('click',function(){
+        $('#filterdata').removeAttr("disabled");
+    });
     $('#date_filter').daterangepicker({
         dateLimit:{days:7},
         locale:{
-            format:'DD/MM/YYYY'
+            format:'YYYY/MM/DD'
         },
     });
     $('#filterdata').on('click',function(){
         var _token = $('input[name="_token"]').val();
-        var from_date = $('#from_date').val();
-        var to_date = $('#to_date').val();
+        var date_range_filter = $('#date_filter').val();
         $.ajax({
             url:"{{ route('company.campaign.fetch_data') }}",
             method:"POST",
-            data:{from_date:from_date, to_date:to_date, _token:_token},
-            // dataType:"json",
+            data:{date_range_filter:date_range_filter, _token:_token},
+            beforeSend: function() {
+                $(".spinner").html('<i class="fa-solid fa-spinner"></i>');
+                $('#filterdata').prop('disabled',true);
+            },
             success:function(data){
-                console.log(data);
+                $('#simple-line-referral').remove();
+                $(".spinner").html('');
+                $('#filterdata').prop('disabled',false);
                 var user_total = data;
+                console.log(user_total);
+                new Chartist.Line('#simple-line-referral-filter', {
+                        labels: user_total.day,
+                        series: [
+                        user_total.total_user,
+                        ]
+                    }, {
+                        showArea: true,
+                        fullWidth: true,
+                        chartPadding: {
+                            right: 50
+                        }
+                    });
+            },
+            error:function(){
+                var user_total = {!! json_encode($user_total) !!};
                 user_total = JSON.parse(user_total);
                 new Chartist.Line('#simple-line-referral', {
                         labels: user_total.day,
@@ -188,12 +212,13 @@
                         user_total.total_user,
                         ]
                     }, {
+                        showArea: true,
                         fullWidth: true,
                         chartPadding: {
-                            right: 40
+                            right: 50
                         }
-                    });
-                }
+                });
+            }
         });
     });
 </script>

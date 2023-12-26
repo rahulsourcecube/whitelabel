@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\UserCampaignHistoryModel;
@@ -26,11 +27,13 @@ class CampaignController extends Controller
         $list = [];
         $results = CampaignModel::orderBy($columns[$order], $dir)
             ->where('company_id', Auth::user()->company_id)
+            ->where('status','1')
             ->whereNotExists(function ($query) {
                 $query->from('user_campaign_history')
                     ->whereRaw('campaign.id = user_campaign_history.campaign_id')
-                    ->where('user_campaign_history.user_id',Auth::user()->id);
+                    ->where('user_campaign_history.user_id', Auth::user()->id);
             })
+            ->whereDate('expiry_date', '>', now())
             ->skip($start)
             ->take($length)
             ->select('campaign.*')
@@ -39,7 +42,7 @@ class CampaignController extends Controller
             $list[] = [
                 base64_encode($result->id),
                 $result->title ?? "-",
-                $result->reward ?? "-",
+                Helper::getcurrency() . $result->reward ?? "-",
                 Str::limit($result->description, 60) ?? "-",
                 $result->task_type ?? "_",
                 $result->status ?? "_",
@@ -63,17 +66,17 @@ class CampaignController extends Controller
             ->whereExists(function ($query) {
                 $query->from('users')
                     ->whereRaw('user_campaign_history.user_id = users.id')
-                    ->where('users.referral_user_id',Auth::user()->id)
+                    ->where('users.referral_user_id', Auth::user()->id)
                     ->whereNotNull('users.referral_user_id');
             })
             ->orderBy('user_id', 'desc')->get();
-        
-            $data['user_plan'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first(); 
-             
-           
-       
+
+            $data['user_plan'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+
+
+
             return view('user.campaign.view',$data);
-        
+
     }
     function getusercampaign(Request $request)
     {
