@@ -70,6 +70,9 @@
                         </div>
                         <div class="form-group col-md-2" style="margin-top: 29px;">
                             <button type="submit" class="btn btn-success">Search</button>
+                            <a href="{{ route('user.progress.reward') }}" class="btn btn-success">Refresh</a>
+                        </div>
+                        <div class="form-group col-md-2" style="margin-top: 29px;">
                         </div>
                     </div>
                     <span class="err" style="display: none;color: red;">Please select any one column</span>
@@ -77,6 +80,7 @@
                 <div class="form-group col-md-2">
                     <a href="{{ route('user.progress.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
                 </div>
+
                 <div class="m-t-15">
                     <table id="user_tables" class="table">
                         <thead>
@@ -86,11 +90,14 @@
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>Status</th>
+                                <th>Action</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($filterResults as $data)
+                          <?php $campaign_id= base64_encode($data->campaign_id);?>
+
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                     <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency().$data->reward) : '' }}</td>
@@ -126,16 +133,19 @@
                                     <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                     </td>
                                     <td>
-                                        @if (isset($data->status) && $data->status == 1)
-                                            <form method="post"
-                                                action="{{ route('user.progress.claimReward', $data->id) }}">
-                                                @csrf
-                                                <button class="btn btn-primary  btn-sm" role="button">Claim reward</button>
-                                            </form>
-                                        @endif
-                                        @if (isset($data->status) && $data->status == 2)
-                                            <span class="btn btn-info btn-sm">Claim Pending</span>
-                                        @endif
+                                            @if (isset($data->status) && $data->status == 1)
+                                                <form method="post"
+                                                    action="{{ route('user.progress.claimReward', $data->id) }}">
+                                                    @csrf
+                                                    <button class="btn btn-primary  btn-sm" role="button">Claim reward</button>
+                                                </form>
+                                            @endif
+                                            @if (isset($data->status) && $data->status == 2)
+                                                <span class="btn btn-info btn-sm">Claim Pending</span>
+                                            @endif
+                                    </td>
+                                    <td>
+                                    <a class="btn btn-success  btn-sm" href="{{ route('user.campaign.view',$campaign_id)  }}" role="button" title="View"><i class="fa fa-eye"></i></a>
                                     </td>
                                 </tr>
                             @endforeach

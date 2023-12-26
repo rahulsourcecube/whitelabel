@@ -273,4 +273,9 @@ class CompanyLoginController extends Controller
             echo 'true';
         }
     }
+    public function logout(Request $request) {
+     
+        Auth::logout();
+        return redirect()->route('company.signin');
+      }
 }

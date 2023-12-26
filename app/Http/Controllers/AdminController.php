@@ -21,6 +21,7 @@ class AdminController extends Controller
      */
     public function index()
     {
+     
         if (auth()->user()->user_type == env('ADMIN_ROLE')) {
             return redirect()->route('admin.dashboard');
         } elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
@@ -28,6 +29,7 @@ class AdminController extends Controller
         } elseif (auth()->user()->user_type == env('USER_ROLE')) {
             return redirect()->route('user.dashboard');
         } else {
+         
             return view('auth.login');
         }
     }
@@ -63,4 +65,9 @@ class AdminController extends Controller
 
         return redirect()->route('admin.change_password')->with('success', __('Change Password successfully updated.'));
     }
+    public function logout(Request $request) {  
+     
+        Auth::logout();
+        return redirect()->route('admin.login');
+      }
 }

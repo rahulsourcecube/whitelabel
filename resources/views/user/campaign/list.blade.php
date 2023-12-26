@@ -81,9 +81,13 @@
                 'visible': true,
                 'orderable': false,
                 'render': function(data, type, row) {
-                    var url = '{{ route('user.campaign.getusercampaign', ':id') }}';
+                    var url = "{{ route('user.campaign.getusercampaign', ':id') }}";
                     url = url.replace(':id', row[0]);
-                    return '<button type="submit" class="btn btn-primary  btn-sm" onclick="showSuccessAlert(\''+url+'\')" role="button" title="View">Join</button>'
+                    type =  row[4];
+                    var view = "{{ route('user.campaign.view',':v_id')  }}";
+                    view = view.replace(':v_id', row[0]);
+
+                    return '<button type="submit" class="btn btn-primary  btn-sm" onclick="showSuccessAlert(\''+url+'\',\''+type+'\',\''+view+'\')" role="button" title="View">Join</button>'
                     
                 },
             }, {
@@ -91,7 +95,7 @@
                 'visible': true,
                 'orderable': false,
                 'render': function(data, type, row) {
-                    var viewUrl = '{{ route('user.campaign.view',':id') }}';
+                    var viewUrl = "{{ route('user.campaign.view',':id') }}";
                     viewUrl = viewUrl.replace(':id', row[0]);
                     return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
                         '" role="button" title="View"><i class="fa fa-eye"></i></a>'
@@ -101,8 +105,9 @@
 
         
     });
-    function showSuccessAlert(url) {
+    function showSuccessAlert(url,type,view) {
         // Trigger a success sweet alert
+      
             $.ajax({
                 url:url,
                 method:"POST",
@@ -116,8 +121,14 @@
                         text: 'Campaign joined successfully',
                         confirmButtonColor: '#3085d6',
                         confirmButtonText: 'OK'
-                    });
-                    $('#campaign_tables').DataTable().ajax.reload();
+                    }).then(function() {
+                    if(type=="Social"){
+                        window.location.href = view;
+                    }else{
+
+                        $('#campaign_tables').DataTable().ajax.reload();
+                    }
+                });
                 }
             });
         }
