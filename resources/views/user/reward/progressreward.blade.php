@@ -88,11 +88,14 @@
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>Status</th>
+                                <th>Action</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($filterResults as $data)
+                          <?php $campaign_id= base64_encode($data->campaign_id);?>
+                        
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                     <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
@@ -128,16 +131,19 @@
                                     <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                     </td>
                                     <td>
-                                        @if (isset($data->status) && $data->status == 1)
-                                            <form method="post"
-                                                action="{{ route('user.progress.claimReward', $data->id) }}">
-                                                @csrf
-                                                <button class="btn btn-primary  btn-sm" role="button">Claim reward</button>
-                                            </form>
-                                        @endif
-                                        @if (isset($data->status) && $data->status == 2)
-                                            <span class="btn btn-info btn-sm">Claim Pending</span>
-                                        @endif
+                                            @if (isset($data->status) && $data->status == 1)
+                                                <form method="post"
+                                                    action="{{ route('user.progress.claimReward', $data->id) }}">
+                                                    @csrf
+                                                    <button class="btn btn-primary  btn-sm" role="button">Claim reward</button>
+                                                </form>
+                                            @endif
+                                            @if (isset($data->status) && $data->status == 2)
+                                                <span class="btn btn-info btn-sm">Claim Pending</span>
+                                            @endif
+                                    </td>
+                                    <td>
+                                    <a class="btn btn-success  btn-sm" href="{{ route('user.campaign.view',$campaign_id)  }}" role="button" title="View"><i class="fa fa-eye"></i></a>
                                     </td>
                                 </tr>
                             @endforeach

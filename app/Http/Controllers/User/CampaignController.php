@@ -7,6 +7,7 @@ use App\Models\CampaignModel;
 use App\Models\UserCampaignHistoryModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CampaignController extends Controller
 {
@@ -39,7 +40,7 @@ class CampaignController extends Controller
                 base64_encode($result->id),
                 $result->title ?? "-",
                 $result->reward ?? "-",
-                $result->description ?? "-",
+                Str::limit($result->description, 60) ?? "-",
                 $result->task_type ?? "_",
                 $result->status ?? "_",
             ];
@@ -56,8 +57,9 @@ class CampaignController extends Controller
     function campaignview(Request $request)
     {
         $campagin_id = base64_decode($request->id);
-        $campagin_detail = CampaignModel::where('id', $campagin_id)->first();
-        $user_detail = UserCampaignHistoryModel::where('campaign_id', $campagin_id)
+        $data=[];
+        $data['campagin_detail'] = CampaignModel::where('id', $campagin_id)->first();
+        $data['user_detail'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)
             ->whereExists(function ($query) {
                 $query->from('users')
                     ->whereRaw('user_campaign_history.user_id = users.id')
@@ -65,9 +67,13 @@ class CampaignController extends Controller
                     ->whereNotNull('users.referral_user_id');
             })
             ->orderBy('user_id', 'desc')->get();
-        if (isset($campagin_detail)) {
-            return view('user.campaign.view', compact('campagin_detail', 'user_detail'));
-        }
+        
+            $data['user_plan'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first(); 
+             
+           
+       
+            return view('user.campaign.view',$data);
+        
     }
     function getusercampaign(Request $request)
     {
