@@ -14,6 +14,7 @@
     max-width: 100%;
     padding: calc(70px + 25px) 25px 25px;
 }
-.page-container .main-content{
+.company.page-container .main-content,
+.user-panel.page-container .main-content {
     padding: calc(2px) 25px 25px;
 }

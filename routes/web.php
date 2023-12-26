@@ -148,7 +148,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('view/{id}', [UserController::class, 'view'])->name('view');
         Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
-       
+
     });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
@@ -225,12 +225,16 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::prefix('notification')->name('notification.')->group(function () {
             Route::get('', [Notification::class, 'index'])->name('list');
             Route::post('/list', [Notification::class, 'dtlist'])->name('dtlist');
-    
+
        });
     });
-   
+
 });
 Route::get('migrate', function () {
     Artisan::call('migrate');
-    return 'Yupp, migrations ran successfully!';
+    return 'Yupp, migrations run successfully!';
+});
+Route::get('seeder', function () {
+    Artisan::call('db:seed');
+    return 'Yupp, seeder run successfully!';
 });
