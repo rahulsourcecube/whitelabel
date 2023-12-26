@@ -36,7 +36,7 @@ $(document).ready(function () {
                 xAxes: [{
                     scaleLabel: {
                         display: true,
-                        labelString: 'Day of the Current Month'
+                        labelString: chart_title
                     }
                 }]
             }

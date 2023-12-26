@@ -46,29 +46,35 @@ class CompanyLoginController extends Controller
         $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(10)->get();
         $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
 
+        $start_time = strtotime('first day of this month');
+        $end_time = strtotime(date("Y-m-d"));
+        $chart_title = 'Day of the current month';
+        if ($start_time == $end_time) {
+            $start_time = strtotime('first day of last month');
+            $end_time = strtotime('last day of last month');
+            $chart_title = 'Day of the previous month';
+        }
         // DB::enableQueryLog();
         $user_campaign_history = DB::table('users as u')
             ->where('u.company_id', $companyId)
             ->where('uch.status', '3')
-            ->whereMonth('uch.updated_at', '=', Carbon::now()->month)
+            ->whereMonth('uch.updated_at', '=', date("m", $start_time))
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
             ->select(DB::raw('SUM(uch.reward) as total_reward , DAYOFMONTH(uch.updated_at) as day'))
             ->groupBy('day')
             ->get();
 
         // dd(DB::getQueryLog());
-        $dateandtime = Carbon::now();
-        $start_date = "01-" . $dateandtime->month . "-" . $dateandtime->year;
-        $start_time = strtotime($start_date);
-        $end_time = strtotime("+1 month", $start_time);
-        for ($i = $start_time; $i < $end_time; $i += 86400) {
-            $list[date('d', $i)] = 0;
+        
+        $list = [];
+        for ($i = $start_time; $i <= $end_time; $i += 86400) {
+            $list[(int)date('d', $i)] = 0;
         }
         foreach ($user_campaign_history as $values) {
             $list[$values->day] = $values->total_reward;
         }
         $user_reward_and_days = json_encode(['day' => array_keys($list), 'reward' => array_values($list)]);
-        return view('company.dashboard', $data, compact('user_reward_and_days'));
+        return view('company.dashboard', $data, compact('user_reward_and_days','chart_title'));
     }
     public function login(Request $request)
     {

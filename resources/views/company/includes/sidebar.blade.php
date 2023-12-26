@@ -1,4 +1,3 @@
-<script src="{{ asset('assets/vendors/chartist/chartist.min.js') }}"></script>
 @php
 $user = Auth::user();
     $isActivePackage = App\Helpers\Helper::isActivePackage();
