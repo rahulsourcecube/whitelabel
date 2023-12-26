@@ -35,7 +35,7 @@
                             <div class="media align-items-center">
                                 <div class="avatar avatar-image  m-h-10 m-r-15" style="height: 80px; width: 80px">
                                     @if (isset($editprofiledetail) && $editprofiledetail->profile_image == '')
-                                    <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                    <img src="{{ asset('assets/images/default-company.jpg') }}" alt="">
                                     @else
                                     <img src="{{ asset('uploads/user-profile/'.$editprofiledetail->profile_image) }}"
                                         alt="" id="imagePreviews">

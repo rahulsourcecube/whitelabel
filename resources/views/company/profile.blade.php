@@ -20,7 +20,7 @@
                             <div class="text-center text-sm-left col-md-2">
                                 <div class="avatar avatar-image" style="width: 150px; height:150px">
                                     @if(isset($profiledetail) && $profiledetail->profile_image == '')
-                                    <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                    <img src="{{ asset('assets/images/default-company.jpg') }}" alt="">
                                     @else
                                     <img src="{{ asset('uploads/user-profile/'.$profiledetail->profile_image) }}"
                                         alt="">
@@ -35,17 +35,17 @@
                                     <div class="col-md-12">
                                         <ul class="list-unstyled m-t-10">
                                             <li class="row">
-                                                <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                    <span>Email: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-mail"></i>
+                                                    {{-- <span>Email: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{isset($profiledetail->email)?$profiledetail->email:'-'}}</p>
                                             </li>
                                             <li class="row">
-                                                <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                    <span>Phone: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-phone"></i>
+                                                    {{-- <span>Phone: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{isset($profiledetail->contact_number)?$profiledetail->contact_number:'-'}}
@@ -69,11 +69,11 @@
                     <div class="col-md-12">
                         <div class="row align-items-center">
                             <div class="text-center text-sm-left col-md-2">
-                                <div class="avatar avatar-image" style="width: 150px; height:150px">
+                                <div class="">
                                     @if(empty($companydetail->logo))
                                     <img src="{{ asset('assets/images/logo/logo.png')}}" alt="">
                                     @else
-                                    <img src="{{ asset('uploads/setting/'.$companydetail->logo)}}" alt="">
+                                    <img src="{{ asset('uploads/setting/'.$companydetail->logo)}}" alt="" class="w-100">
                                     @endif
                                 </div>
                             </div>
@@ -87,18 +87,18 @@
                                     <div class="col-md-12">
                                         <ul class="list-unstyled m-t-10">
                                             <li class="row">
-                                                <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                    <span>Email: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-mail"></i>
+                                                    {{-- <span>Email: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{!empty($companydetail) &&
                                                     isset($companydetail->email)?$companydetail->email:'-'}}</p>
                                             </li>
                                             <li class="row">
-                                                <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                    <span>Phone: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-phone"></i>
+                                                    {{-- <span>Phone: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{!empty($companydetail) &&

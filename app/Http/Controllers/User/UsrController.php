@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanyModel;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
@@ -302,9 +303,23 @@ class UsrController extends Controller
     public function claimReward($id)
     {
         try {
-            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();
+            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();     
+          
+      
+            $user = Auth::user();
+           
             $claimReward->status = '2';
             $claimReward->save();
+            if(isset($claimReward)){
+                $Notification = new Notification();
+                $Notification->user_id=  $claimReward->user_id;
+                $Notification->company_id=  $claimReward->getCampaign->company_id;
+                $Notification->type=  '2';
+                $Notification->title=  " Campaign approval request";
+                $Notification->message=  $claimReward->getCampaign->title." approval request by ".$claimReward->getuser->FullName ;
+                $Notification->save();
+            }
+
             return redirect()->back()->with('success', "Claim Reward requested successfully!");
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong");
@@ -337,7 +352,7 @@ class UsrController extends Controller
     {
         try {
             $user = Auth::user();
-            $notifications = Notification::orderBy('id', 'DESC')->where('user_id', $user->id)->get();
+            $notifications = Notification::orderBy('id', 'DESC')->where('user_id', $user->id)->where('type', '1')->get();
             foreach ($notifications as $notification) {
                 $notification->is_read = '1';
                 $notification->save();

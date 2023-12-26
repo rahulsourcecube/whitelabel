@@ -38,7 +38,7 @@
                 <div class="pointer" data-toggle="dropdown">
                     <div class="avatar avatar-image  m-h-10 m-r-15">
                         @if(Auth::user()->profile_image == '')
-                        <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                        <img src="{{ asset('assets/images/default-company.jpg') }}" alt="">
                         @else
                         <img src="{{ asset('uploads/user-profile/'.Auth::user()->profile_image) }}" alt="">
                         @endif
@@ -49,7 +49,7 @@
                         <div class="d-flex m-r-50">
                             <div class="avatar avatar-lg avatar-image">
                                 @if(Auth::user()->profile_image == '')
-                                <img src="{{ asset('assets/images/avatars/thumb-3.jpg') }}" alt="">
+                                <img src="{{ asset('assets/images/default-company.jpg') }}" alt="">
                                 @else
                                 <img src="{{ asset('uploads/user-profile/'.Auth::user()->profile_image) }}" alt="">
                                 @endif
