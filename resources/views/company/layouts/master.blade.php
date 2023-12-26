@@ -36,13 +36,6 @@
             <!-- Page Container START -->
             <div class="page-container company">
                 <div class="container notification">
-                    @if (!$packagebuymessage)
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Please purchase package</strong>. <a
-                                href="{{ route('company.package.list', 'Free') }}">Click</a>
-                            here to buy package.
-                        </div>
-                    @endif
                     @if ($remainingDays && $remainingDays != null)
                         <div class="alert alert-danger alert-dismissible fade show">
                             <strong>Your package going to be expires in {{ $remainingDays }}</strong>. <a

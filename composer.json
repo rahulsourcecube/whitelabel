@@ -11,10 +11,9 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^4.2",
-        "laravelcollective/html": "^6.4",
         "maatwebsite/excel": "*",
         "psr/simple-cache": "2.0",
-        "spatie/laravel-html": "^3.3",
+        "laravelcollective/html": "^6.4",
         "spatie/laravel-permission": "^6.2"
     },
     "require-dev": {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\User;
@@ -35,11 +36,18 @@ class CompanyLoginController extends Controller
     }
     function dashboard()
     {
-        $companyId = Auth::user()->id;
+        // Get the current month and year
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+        $companyId = Helper::getCompanyId();
         $data = [];
         $data['total_campaign'] = 0;
         $data['total_user'] = 0;
+        $data['new_user'] = 0;
+        $data['old_user'] = 0;
         $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
+        $data['old_user'] =User::where('company_id', $companyId)->where('user_type', '4')->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
+        $data['new_user'] = User::where('company_id', $companyId)->where('user_type', '4')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
         $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
         $data['total_campaignReq'] = 0;
         $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(10)->get();
@@ -232,9 +240,10 @@ class CompanyLoginController extends Controller
     }
     public function Profile()
     {
+        $companyId = Helper::getCompanyId();
         $profiledetail = User::where('id', Auth::user()->id)->first();
-        $companydetail = SettingModel::where('user_id', Auth::user()->id)->first();
-        $companyname = CompanyModel::where('user_id', Auth::user()->id)->first();
+        $companydetail = SettingModel::where('user_id', $companyId)->first();
+        $companyname = CompanyModel::where('user_id', $companyId)->first();
         return view('company.profile', compact('profiledetail', 'companydetail', 'companyname'));
     }
     public function updatepassword(Request $request)

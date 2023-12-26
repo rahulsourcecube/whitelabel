@@ -50,7 +50,7 @@ class CampaignController extends Controller
     public function tdlist($type, Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $columns = ['id', 'title'];
             $totalData = CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
             $start = $request->input('start');
@@ -145,7 +145,7 @@ class CampaignController extends Controller
     public function store(Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'reward' => 'required|numeric',
@@ -157,9 +157,9 @@ class CampaignController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
+            $CampaignModelCount = CampaignModel::where('company_id', $companyId)->count();
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($userCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
+            if ($CampaignModelCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
                 return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_campaign . ' campaigns');
             }
             if ($request->hasFile('image')) {
@@ -196,7 +196,7 @@ class CampaignController extends Controller
     public function update(Request $request, CampaignModel $Campaign)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'reward' => 'required|numeric',
@@ -244,9 +244,10 @@ class CampaignController extends Controller
 
     function analytics(Request $request)
     {
-        $companyId = Auth::user()->id;
-        $date = Carbon::today()->subDays(7);
-        $total_join_users = DB::table('users as u')
+        $companyId = Helper::getCompanyId();
+        // dd(Carbon::today()->subDays(1));
+        DB::enableQueryLog();
+        $user_campaign_history = DB::table('users as u')
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
             ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
             ->where('u.company_id', $companyId)
@@ -403,7 +404,7 @@ class CampaignController extends Controller
 
         try {
             $id = base64_decode($request->id);
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
 
             $user = User::where('id', $camphistory->user_id)->first();
@@ -416,7 +417,7 @@ class CampaignController extends Controller
                         <button type="button" class="close" data-dismiss="modal">
                             <i class="anticon anticon-close"></i>
                         </button>
-                    </div>  
+                    </div>
 
         <div class="card">
             <div class="card-body">
@@ -455,7 +456,7 @@ class CampaignController extends Controller
                                                 <p class="col font-weight-semibold"> ' . $user->contact_number ?? $user->contact_number;
             $html .= '</p>
                                             </li>
-                                        
+
                                         </ul>
                                         <div class="d-flex font-size-22 m-t-15">
                                         ';
@@ -469,7 +470,7 @@ class CampaignController extends Controller
             };
             if (!empty($user->instagram_link)) {
                 $html .= '
-                                            
+
                                             <a href="' . $user->instagram_link ?? $user->instagram_link;
                 $html .= '"
                                                 target="blank" class="text-gray p-r-20">
@@ -531,15 +532,15 @@ class CampaignController extends Controller
                                 <td> ' . $user->ac_no ?? $user->ac_no;
             $html .= '</td>
                             </tr>
-                            <tr>                               
+                            <tr>
                                 <td> <button class="btn btn-success  btn-sm action" data-action="3"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"  >Accept</button>
                                 <button class="btn btn-danger  btn-sm action" data-action="4"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"data-action="Reject" >Reject</button></td>
-                                
+
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>  
+            </div>
         </div>  ';
             return response()->json(['success' => 'error', 'message' => $html]);
         } catch (Exception $e) {

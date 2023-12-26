@@ -108,6 +108,12 @@ Route::prefix('company')->name('company.')->group(function () {
 // Admin Middleware
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('company-revenue', [AdminController::class, 'CompanyRevenue'])->name('CompanyRevenue');
+      
+    // admin side edit admin edit Profile Route
+    Route::get('/change/password', [AdminController::class, 'ChengPassword'])->name('ChengPassword');
+    Route::post('/update/admin/password', [AdminController::class, 'UpdatePassword'])->name('UpdatePassword');
+
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('', [PackageController::class, 'index'])->name('list');
         Route::post('list', [PackageController::class, 'dtList'])->name('dtlist');

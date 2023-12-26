@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Helpers\Helper;
 use App\Models\CampaignModel;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -21,7 +22,7 @@ class Export implements FromCollection, WithHeadings, WithStyles
     }
     public function collection()
     {
-        $companyId = Auth::user()->id;
+        $companyId = Helper::getCompanyId();
         $export = CampaignModel::where('company_id', $companyId)
             ->select('title', 'description', 'reward', 'expiry_date')
             ->where('type', $this->type)
