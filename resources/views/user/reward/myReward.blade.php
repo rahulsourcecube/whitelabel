@@ -77,9 +77,7 @@
                 </form>
 
                 <div class="form-group col-md-2">
-                    <a href="{{ route('user.my.reward') }}"
-                        style="margin-left: 773px;margin-top: -65px;position: absolute;"><button type="submit"
-                            class="btn btn-success">Refresh</button></a>
+                    <a href="{{ route('user.my.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
                 </div>
 
                 <div class="m-t-15">
