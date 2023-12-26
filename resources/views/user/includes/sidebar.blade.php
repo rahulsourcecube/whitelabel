@@ -12,7 +12,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
 <div class="side-nav">
     <div class="side-nav-inner">
         <ul class="side-nav-menu scrollable">
-            <li class="nav-item dropdown open">
+            <li class="nav-item dropdown open @if(request()->segment(2) == 'dashboard') active @endif ">
                 <a class="dropdown-toggle" href="{{ route('user.dashboard') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-dashboard"></i>
@@ -20,7 +20,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                     <span class="title">Dashboard</span>
                 </a>
             </li>
-            <li class="nav-item dropdown open">
+            <li class="nav-item dropdown open @if(request()->segment(2) == 'campaign' && request()->segment(3) == '') active @endif ">
                 <a class="dropdown-toggle" href="{{ route('user.campaign.list') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
@@ -28,7 +28,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                     <span class="title">Campaign</span>
                 </a>
             </li>
-            <li class="nav-item dropdown open">
+            <li class="nav-item dropdown open @if(request()->segment(2) == 'analytics') active @endif">
                 <a class="dropdown-toggle" href="{{ route('user.analytics') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-build"></i>
@@ -89,7 +89,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                 </ul>
 
             </li>
-            <li class="nav-item dropdown open">
+            <li class="nav-item dropdown open @if(request()->segment(2) == 'notification') active @endif">
                 <a class="dropdown-toggle" href="{{ route('user.notification') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-bell"></i>

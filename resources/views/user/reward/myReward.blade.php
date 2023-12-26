@@ -71,16 +71,15 @@
                         </div>
                         <div class="form-group col-md-2" style="margin-top: 29px;">
                             <button type="submit" class="btn btn-success">Search</button>
+                            <a href="{{ route('user.my.reward') }}" class="btn btn-success">Refresh</a>
+                        </div>
+                        <div class="form-group col-md-2" style="margin-top: 29px;">
                         </div>
                     </div>
                     <span class="err" style="display: none;color: red;">Please select any one column</span>
                 </form>
 
-                <div class="form-group col-md-2">
-                    <a href="{{ route('user.my.reward') }}"
-                        style="margin-left: 773px;margin-top: -65px;position: absolute;"><button type="submit"
-                            class="btn btn-success">Refresh</button></a>
-                </div>
+               
 
                 <div class="m-t-15">
                     <table id="user_tables" class="table">
