@@ -42,6 +42,7 @@ class EmployeeController extends Controller
     }
     public function elist(Request $request)
     {
+        $companyId = Helper::getCompanyId();
         $columns = ['id', 'title'];
         $totalData = User::where('user_type', User::USER_TYPE['STAFF'])
             ->where('company_id', Auth::user()->id)->count();
@@ -52,7 +53,7 @@ class EmployeeController extends Controller
         $list = [];
         $results = User::orderBy($columns[$order], $dir)
             ->where('user_type', User::USER_TYPE['STAFF'])
-            ->where('company_id', Auth::user()->id)
+            ->where('company_id', $companyId)
             ->skip($start)
             ->take($length)
             ->get();
@@ -81,7 +82,7 @@ class EmployeeController extends Controller
     function store(Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',

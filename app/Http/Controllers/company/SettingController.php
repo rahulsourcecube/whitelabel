@@ -1,5 +1,7 @@
 <?php
 namespace App\Http\Controllers\Company;
+
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\SettingModel;
@@ -27,15 +29,19 @@ class SettingController extends Controller
     
    function index()
    {
-      $data['setting'] = SettingModel::where('user_id', Auth::user()->id)->first();
-      $data['companyname'] = CompanyModel::where('user_id', Auth::user()->id)->first();
+      $companyId = Helper::getCompanyId();
+
+      $data['setting'] = SettingModel::where('user_id', $companyId)->first();
+      $data['companyname'] = CompanyModel::where('user_id', $companyId)->first();
       return view('company.setting.setting', $data);
    }
    function store(Request $request)
    {
       try {
+         $companyId = Helper::getCompanyId();
+
          //code...
-         $SettingModel = SettingModel::where('user_id', Auth::user()->id)->first();
+         $SettingModel = SettingModel::where('user_id', $companyId)->first();
          if ($SettingModel->user_id) {
             if (empty($SettingModel)) {
                $SettingModel = new SettingModel;

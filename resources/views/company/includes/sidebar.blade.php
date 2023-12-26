@@ -1,4 +1,3 @@
-<script src="{{ asset('assets/vendors/chartist/chartist.min.js') }}"></script>
 @php
     $isActivePackage = App\Helpers\Helper::isActivePackage();
 @endphp
