@@ -48,7 +48,7 @@ class CampaignController extends Controller
     public function tdlist($type, Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $columns = ['id', 'title'];
             $totalData = CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
             $start = $request->input('start');
@@ -144,7 +144,7 @@ class CampaignController extends Controller
     public function store(Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'reward' => 'required|numeric',
@@ -156,9 +156,9 @@ class CampaignController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
+            $CampaignModelCount = CampaignModel::where('company_id', $companyId)->count();
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($userCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
+            if ($CampaignModelCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
                 return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_campaign . ' campaigns');
             }
             if ($request->hasFile('image')) {
@@ -195,7 +195,7 @@ class CampaignController extends Controller
     public function update(Request $request, CampaignModel $Campaign)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'reward' => 'required|numeric',
@@ -243,7 +243,7 @@ class CampaignController extends Controller
 
     function analytics()
     {
-        $companyId = Auth::user()->id;
+        $companyId = Helper::getCompanyId();
         // dd(Carbon::today()->subDays(1));
         DB::enableQueryLog();
         $user_campaign_history = DB::table('users as u')
@@ -340,7 +340,7 @@ class CampaignController extends Controller
 
         try {
             $id = base64_decode($request->id);
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
            
              $user = User::where('id', $camphistory->user_id)->first();

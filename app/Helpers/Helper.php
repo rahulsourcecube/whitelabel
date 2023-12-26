@@ -20,7 +20,8 @@ class Helper
     public static function getSiteSetting()
     {
         try {
-            $generalSetting = SettingModel::where('user_id', Auth::user()->id)->first();
+            $companyId = Helper::getCompanyId();
+            $generalSetting = SettingModel::where('user_id', $companyId)->first();
             return $generalSetting;
         } catch (\Exception $exception) {
             Log::info('site setting error : ' . $exception->getMessage());
@@ -40,14 +41,24 @@ class Helper
 
     public static function isActivePackage()
     {
-        $user = Auth::user();
-        $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
+        $companyId = Helper::getCompanyId();
+        $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
         return $checkPackage;
+    }
+    public static function getCompanyId()
+    {
+        if(auth()->user()->user_type == env('COMPANY_ROLE')){
+            $companyId = Auth::user()->id;
+        }else{
+            $companyId = Auth::user()->company_id;
+        }
+
+        return $companyId;
     }
     public static function isInactivePackage()
     {
-        $user = Auth::user();
-        $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', '1')->count();
+        $companyId = Helper::getCompanyId();
+        $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', '1')->count();
         return (int)$checkPackage > 0 ? true : false;
     }
 
@@ -57,8 +68,8 @@ class Helper
 
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
-        $user = Auth::user();
-        $packageData = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '>=', $currentDate)->first();
+        $companyId = Helper::getCompanyId();
+        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '>=', $currentDate)->first();
 
         return $packageData;
     }
@@ -70,8 +81,8 @@ class Helper
             $packageExpiringIN = 7;
             $Date = Carbon::now()->addDays($packageExpiringIN);
             $currentDate = $Date->format('Y-m-d');
-            $user = Auth::user();
-            $packageData = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
+            $companyId = Helper::getCompanyId();
+            $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
 
             if ($packageData != null && new DateTime($packageData->end_date) > Carbon::now()) {
                 // Assuming $packageData->end_date is a string representing a date
