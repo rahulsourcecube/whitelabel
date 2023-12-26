@@ -97,9 +97,11 @@
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar avatar-image"
                                                                 style="height: 30px; min-width: 30px; max-width:30px">
-                                                                @if (isset($data->profile_image) && file_exists(public_path('uploads/user/user-profile/' . $data->profile_image)))
-                                                                    <img src="{{ asset('uploads/user/user-profile/' . $data->profile_image) }}"
-                                                                        style="width: 50px; height: auto;" class="mt-2">
+                                                                @if (isset($data->profile_image) &&
+                                                                        !empty($userData->profile_image) &&
+                                                                        file_exists('uploads/user/user-profile/' . $userData->profile_image))
+                                                                    <img
+                                                                        src="{{ asset('uploads/user/user-profile/' . $data->profile_image) }}">
                                                                 @else
                                                                     <img
                                                                         src="{{ asset('assets/images/profile_image.jpg') }}">

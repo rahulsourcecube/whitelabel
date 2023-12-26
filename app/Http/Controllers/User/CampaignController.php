@@ -26,11 +26,13 @@ class CampaignController extends Controller
         $list = [];
         $results = CampaignModel::orderBy($columns[$order], $dir)
             ->where('company_id', Auth::user()->company_id)
+            ->where('status','1')
             ->whereNotExists(function ($query) {
                 $query->from('user_campaign_history')
                     ->whereRaw('campaign.id = user_campaign_history.campaign_id')
                     ->where('user_campaign_history.user_id', Auth::user()->id);
             })
+            ->whereDate('expiry_date', '>', now())
             ->skip($start)
             ->take($length)
             ->select('campaign.*')
