@@ -89,7 +89,7 @@
                             return '  <button class="btn btn-success btn-sm">'+status+'</button>'
 
                         }else{
-                            return '  <button class="btn btn-danger ">'+status+'</button>'
+                            return '  <button class="btn btn-danger btn-sm">'+status+'</button>'
                         }
                     },
                 },{

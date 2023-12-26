@@ -38,7 +38,7 @@ class CampaignModel extends Model
     {
         $status = $this->status;
         $string = 'Active';
-        if ($status == 1) {
+        if ($status == 0) {
             $string = 'Deactive';
         }
         return $string;

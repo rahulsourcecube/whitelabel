@@ -74,7 +74,6 @@ class CampaignController extends Controller
                     Str::limit($result->description, 60) ?? "-",
                     $result->task_type,
                     $result->task_status,
-                    $result->task_status,
                     // $imgUrl,
                 ];
             }
@@ -182,7 +181,7 @@ class CampaignController extends Controller
             $Campaign->type = $request->type;
             $Campaign->image = $image;
             $Campaign->company_id = $companyId;
-            $Campaign->status = !empty($request->status) ? '0' : "1";
+            $Campaign->status = !empty($request->status) ? '1' : "0";
 
             $Campaign->save();
             // CampaignModel::create($request->all());
@@ -252,8 +251,8 @@ class CampaignController extends Controller
             ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
             ->where('u.company_id', $companyId)
             ->where('u.user_type', env('USER_ROLE'))
-            ->where('u.status', '0')
-            ->where('c.status', '0')
+            ->where('u.status', '1')
+            ->where('c.status', '1')
             ->where('uch.status', '3')
             ->where('c.type', '1')
             ->whereDate('uch.created_at', '>=', $date)
@@ -289,8 +288,8 @@ class CampaignController extends Controller
                     ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
                     ->where('u.company_id', $companyId)
                     ->where('u.user_type', env('USER_ROLE'))
-                    ->where('u.status', '0')
-                    ->where('c.status', '0')
+                    ->where('u.status', '1')
+                    ->where('c.status', '1')
                     ->where('uch.status', '3')
                     ->where('c.type', '1')
                     ->whereBetween('uch.created_at', [$from_date, $to_date])

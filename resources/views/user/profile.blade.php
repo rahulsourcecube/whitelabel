@@ -41,18 +41,18 @@
                                             <div class="col-md-12">
                                                 <ul class="list-unstyled m-t-10">
                                                     <li class="row">
-                                                        <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
-                                                            <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                            <span>:</span>
+                                                        <p class="font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-8 text-primary anticon anticon-mail"></i>
+                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($userData->email) ? $userData->email : '-' }}</p>
                                                     </li>
 
                                                     <li class="row">
-                                                        <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
-                                                            <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                            <span>:</span>
+                                                        <p class="font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-8 text-primary anticon anticon-phone"></i>
+                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($userData->contact_number) ? $userData->contact_number : '-' }}

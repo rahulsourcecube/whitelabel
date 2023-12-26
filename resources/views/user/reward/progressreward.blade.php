@@ -95,7 +95,7 @@
                             @foreach ($filterResults as $data)
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                    <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
+                                    <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency().$data->reward) : '' }}</td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
                                             <span class="truncated-description" style="cursor: pointer;"

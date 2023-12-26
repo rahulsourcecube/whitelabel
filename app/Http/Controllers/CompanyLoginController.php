@@ -65,7 +65,7 @@ class CompanyLoginController extends Controller
             ->get();
 
         // dd(DB::getQueryLog());
-        
+
         $list = [];
         for ($i = $start_time; $i <= $end_time; $i += 86400) {
             $list[(int)date('d', $i)] = 0;
@@ -74,7 +74,7 @@ class CompanyLoginController extends Controller
             $list[$values->day] = $values->total_reward;
         }
         $user_reward_and_days = json_encode(['day' => array_keys($list), 'reward' => array_values($list)]);
-        return view('company.dashboard', $data, compact('user_reward_and_days','chart_title'));
+        return view('company.dashboard', $data, compact('user_reward_and_days', 'chart_title'));
     }
     public function login(Request $request)
     {
