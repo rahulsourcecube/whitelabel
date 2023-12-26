@@ -234,9 +234,10 @@ class CompanyLoginController extends Controller
     }
     public function Profile()
     {
+        $companyId = Helper::getCompanyId();
         $profiledetail = User::where('id', Auth::user()->id)->first();
-        $companydetail = SettingModel::where('user_id', Auth::user()->id)->first();
-        $companyname = CompanyModel::where('user_id', Auth::user()->id)->first();
+        $companydetail = SettingModel::where('user_id', $companyId)->first();
+        $companyname = CompanyModel::where('user_id', $companyId)->first();
         return view('company.profile', compact('profiledetail', 'companydetail', 'companyname'));
     }
     public function updatepassword(Request $request)
