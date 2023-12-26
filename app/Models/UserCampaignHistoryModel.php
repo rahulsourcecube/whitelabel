@@ -25,7 +25,7 @@ class UserCampaignHistoryModel extends Model
     ];
     
     function getuser(){
-        return $this->belongsTo(User::class,'user_id');
+        return $this->hasOne(User::class,'id','user_id');
     }
     
     function getCampaign(){

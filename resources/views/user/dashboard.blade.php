@@ -156,8 +156,22 @@
                                         <img src="{{ asset('assets/images/profile_image.jpg') }}">
                                     @endif
                                 </div>
-                                <h3 class="m-t-30">
-                                    {{ isset(Auth::user()->referral_code) ? Auth::user()->referral_code : '' }}</h3>
+                                <div class="row justify-content-center">
+                                    <h3 class="m-t-30">
+                                        {{ isset(Auth::user()->referral_code) ? Auth::user()->referral_code : '' }}
+                                    </h3>
+
+                                    <div class="text-center mt-4 ml-3">
+                                        <p id="referral_code_copy" style="display: none;">
+                                            {{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}
+                                        </p>
+                                        <button onclick="copyToClipboard('#referral_code_copy')"
+                                            class="btn btn-primary btn-tone">
+                                            <i class="anticon anticon-copy"></i>
+                                            <span class="m-l-5">Copy</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="text-center m-t-15">
@@ -182,15 +196,6 @@
                                     </button>
                                 </a>
                             </div>
-                            <div class="text-center m-t-30">
-                                <p id="referral_code_copy" style="display: none;">
-                                    {{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}
-                                </p>
-                                <button onclick="copyToClipboard('#referral_code_copy')" class="btn btn-primary btn-tone">
-                                    <i class="anticon anticon-copy"></i>
-                                    <span class="m-l-5">Copy</span>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -202,23 +207,23 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5>Total Revenue</h5>
-                            <div>
-                                <div class="btn-group">
-                                    <button class="btn btn-default active">
+                            {{-- <div> --}}
+                                {{-- <div class="btn-group"> --}}
+                                    {{-- <button class="btn btn-default active">
                                         <span>Month</span>
                                     </button>
                                     <button class="btn btn-default">
                                         <span>Year</span>
-                                    </button>
-                                </div>
-                            </div>
+                                    </button> --}}
+                                {{-- </div> --}}
+                            {{-- </div> --}}
                         </div>
-                        <div class="m-t-50">
+                        <div class="">
                             <canvas class="chart" id="myChart"></canvas>
                         </div>
-                        <div class="m-t-50">
+                        {{-- <div class="m-t-50">
                             <canvas class="chart" id="revenue-chart"></canvas>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -303,50 +308,38 @@
                 chartReward = JSON.parse(chartReward);
                 console.log(chartReward);
 
-                // var start = new Date(),
-                //     start_date = start.getDate() - 10,
-                //     currentDate = new Date(),
-                //     between = []
-                // ;
-
                 var start = new Date();
                 var start_date = new Date(start);
-                start_date.setDate(start.getDate() - 10);
+                start_date.setDate(start.getDate() - 9);
 
                 var currentDate = new Date();
-                var between = [];
-
-                console.log(start_date)
+                var xArray = [];
+                var yArray = [];
 
                 while (start_date <= currentDate) {
-                    between.push(new Date(start_date));
+                    xArray.push((new Date(start_date)).getDate()+"th");
+                    var check_date = (new Date(start_date)).getFullYear() + '-' + (parseInt((new Date(start_date)).getMonth())+parseInt(1)) + '-' + (new Date(start_date)).getDate();
+                    let obj = chartReward.find(x => x.day == check_date);
+                    if(obj && obj != ''){
+                        yArray.push(obj.total_day_reward)
+                    }
+                    else{
+                        yArray.push(0)
+                    }
                     start_date.setDate(start_date.getDate() + 1);
                 }
-
-
-                // while (start <= currentDate) {
-                //     between.push(new Date(start));
-                //     start.setDate(start.getDate() + 1);
-                // }
-
-                console.log(between)
 
                 var ctx = document.getElementById('myChart').getContext('2d');
                 var chart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: ["Jun 2016", "Jul 2016", "Aug 2016", "Sep 2016", "Oct 2016", "Nov 2016",
-                            "Dec 2016",
-                            "Jan 2017", "Feb 2017", "Mar 2017", "Apr 2017", "May 2017"
-                        ],
+                        labels: xArray,
                         datasets: [{
                             label: {
                                 display: false,
                             },
-                            borderColor: 'royalblue',
-                            data: [26.4, 39.8, 66.8, 66.4, 40.6, 55.2, 77.4, 69.8, 57.8, 76, 110.8,
-                                142.6
-                            ],
+                            borderColor: '#3f87f5',
+                            data: yArray,
                         }]
                     },
                     options: {
