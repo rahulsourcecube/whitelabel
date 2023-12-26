@@ -38,7 +38,7 @@ class CampaignModel extends Model
     {
         $status = $this->status;
         $string = 'Active';
-        if ($status == 1) {
+        if ($status == 0) {
             $string = 'Deactive';
         }
         return $string;
@@ -49,6 +49,7 @@ class CampaignModel extends Model
     {
         return $this->belongsTo(CampaignModel::class)->where('campaign_id', '!=', 'id');
     }
+  
     // function getcompany(){
     //     return $this->belongsTo(CompanyModel::class)->where('id','company_id');
     // }  

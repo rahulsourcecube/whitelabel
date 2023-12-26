@@ -74,7 +74,6 @@ class CampaignController extends Controller
                     Str::limit($result->description, 60) ?? "-",
                     $result->task_type,
                     $result->task_status,
-                    $result->task_status,
                     // $imgUrl,
                 ];
             }
@@ -182,7 +181,7 @@ class CampaignController extends Controller
             $Campaign->type = $request->type;
             $Campaign->image = $image;
             $Campaign->company_id = $companyId;
-            $Campaign->status = !empty($request->status) ? '0' : "1";
+            $Campaign->status = !empty($request->status) ? '1' : "0";
 
             $Campaign->save();
             // CampaignModel::create($request->all());
@@ -252,8 +251,8 @@ class CampaignController extends Controller
             ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
             ->where('u.company_id', $companyId)
             ->where('u.user_type', env('USER_ROLE'))
-            ->where('u.status', '0')
-            ->where('c.status', '0')
+            ->where('u.status', '1')
+            ->where('c.status', '1')
             ->where('uch.status', '3')
             ->where('c.type', '1')
             ->whereDate('uch.created_at', '>=', $date)
@@ -276,45 +275,42 @@ class CampaignController extends Controller
     }
     function fetch_data(Request $request)
     {
-        // dd($request->from_date);
         if ($request->ajax()) {
-            // if ($request->from_date != '' && $request->to_date != '') {
-            $from_date = date('Y-m-d', strtotime($request->from_date));
-            dd($from_date);
-            $to_date = date('Y-m-d', strtotime($request->to_date));
+            if ($request->date_range_filter != null) {
+                $date = explode('-', $request->date_range_filter);
+                $from_date = date('Y-m-d', strtotime($date[0]));
+                $to_date = date('Y-m-d', strtotime($date[1]));
 
-            DB::enableQueryLog();
-            $companyId = Auth::user()->id;
-            $total_join_users = DB::table('users as u')
-                ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-                ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
-                ->where('u.company_id', $companyId)
-                ->where('u.user_type', env('USER_ROLE'))
-                ->where('u.status', '0')
-                ->where('c.status', '0')
-                ->where('uch.status', '3')
-                ->where('c.type', '1')
-                ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
-                ->whereBetween('uch.created_at', [$from_date, $to_date])
-                ->groupBy('day')
-                ->get();
-            //  dd(DB::getQueryLog());
-            // dd($total_join_users);
-            $dateandtime = Carbon::now();
-            $start_date = $dateandtime->subDays(7);
-            $start_time = strtotime($start_date);
-            $end_time = strtotime("+1 week", $start_time);
-            for ($i = $start_time; $i < $end_time; $i += 86400) {
-                $list[date('l', $i)] = 0;
+                // DB::enableQueryLog();
+                $companyId = Auth::user()->id;
+                $total_join_users = DB::table('users as u')
+                    ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+                    ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
+                    ->where('u.company_id', $companyId)
+                    ->where('u.user_type', env('USER_ROLE'))
+                    ->where('u.status', '1')
+                    ->where('c.status', '1')
+                    ->where('uch.status', '3')
+                    ->where('c.type', '1')
+                    ->whereBetween('uch.created_at', [$from_date, $to_date])
+                    ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
+                    ->groupBy('day')
+                    ->get();
+                $start_date = $from_date;
+                $start_time = strtotime($start_date);
+                $end_time = strtotime($to_date, $start_time);
+                for ($i = $start_time; $i < $end_time; $i += 86400) {
+                    $list[date('l', $i)] = 0;
+                }
+                foreach ($total_join_users as $values) {
+                    $list[$values->day] = $values->total_user;
+                }
+                if (isset($list)) {
+                    $user_total = ['day' => array_keys($list), 'total_user' => array_values($list)];
+                }
+                return $user_total;
             }
-            foreach ($total_join_users as $values) {
-                $list[$values->day] = $values->total_user;
-            }
-            $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
-            dd($user_total);
-            return $user_total;
         }
-        // }
     }
 
     public function view($type, $id)
@@ -368,24 +364,24 @@ class CampaignController extends Controller
             if ($request->action == '3') {
                 $action->status = '3';
                 $action->save();
-                if(isset($action)){
-                    $Notification->user_id=  $action->user_id;
-                    $Notification->company_id=  $action->campaign_id;
-                    $Notification->title=  " Campaign approved ";
-                    $Notification->message=  $action->getCampaign->title." Approved.";
-                    $Notification->type=  "1";
+                if (isset($action)) {
+                    $Notification->user_id =  $action->user_id;
+                    $Notification->company_id =  $action->campaign_id;
+                    $Notification->title =  " Campaign approved ";
+                    $Notification->message =  $action->getCampaign->title . " Approved.";
+                    $Notification->type =  "1";
                     $Notification->save();
                 }
                 return response()->json(['success' => 'success', 'messages' => ' Task Approved successfully']);
             } else {
                 $action->status = '4';
                 $action->save();
-                if(isset($action)){
-                    $Notification->user_id=  $action->user_id;
-                    $Notification->company_id=  $action->campaign_id;
-                    $Notification->title=  " Campaign rejected";
-                    $Notification->message=  $action->getCampaign->title ." Rejected.";
-                    $Notification->type=  "1";
+                if (isset($action)) {
+                    $Notification->user_id =  $action->user_id;
+                    $Notification->company_id =  $action->campaign_id;
+                    $Notification->title =  " Campaign rejected";
+                    $Notification->message =  $action->getCampaign->title . " Rejected.";
+                    $Notification->type =  "1";
 
                     $Notification->save();
                 }

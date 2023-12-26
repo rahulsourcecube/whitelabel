@@ -36,57 +36,54 @@
                         <div class="col-md-7 col-lg-5 m-h-auto">
                             <div class="card shadow-lg">
                                 <div class="card-body">
-                                    @if (\Session::has('error'))
-                                        <div class="alert alert-danger alert-dismissible fade show error"
-                                            style="margin-top: 17px;}" role="alert">
-                                            <i class="uil uil-times me-2"></i>
-                                            {!! \Session::get('error') !!}
-                                        </div>
-                                    @endif
-                                    @if (\Session::has('message'))
-                                    <div class="alert alert-success alert-dismissible fade show error"
-                                        style="margin-top: 17px;}" role="alert">
-                                        <i class="uil uil-times me-2"></i>
-                                        {!! \Session::get('message') !!}
-                                    </div>
-                                @endif
+                                    @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
-                                        <img class="img-fluid" alt=""
-                                            src="{{ asset('assets/images/logo/logo.png') }}">
+                                        <img class="img-fluid" alt="" src="{{ asset('assets/images/logo/logo.png') }}">
                                         <h2 class="m-b-0">Signup</h2>
                                     </div>
-                                    <form id="fromData" action="{{ route('user.store') }}" method="POST">
+                                    <form id="fomData" action="{{ route('user.store') }}" method="POST">
                                         @csrf
                                         @if (isset(request()->referral_code))
-                                            <input type="hidden" name="referral_code"
-                                                value="{{ request()->referral_code }}">
+                                        <input type="hidden" name="referral_code"
+                                            value="{{ request()->referral_code }}">
                                         @endif
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">First Name:</label>
                                                 <input type="text" class="form-control" id="first_name"
-                                                    placeholder="First Name" name="first_name">
+                                                    placeholder="First Name" name="first_name"
+                                                    value="{{old('first_name')}}">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">Last name</label>
                                                 <input type="text" class="form-control" id="last_name"
-                                                    placeholder="Last name" name="last_name">
+                                                    placeholder="Last name" name="last_name"
+                                                    value="{{old('last_name')}}">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
-                                                <input type="email" class="form-control" id="email"
-                                                    placeholder="Email" name="email">
+                                                <input type="email" class="form-control" id="email" placeholder="Email"
+                                                    name="email" value="{{old('email')}}">
+                                            </div>
+                                            <div class="form-group col-md-12">
+                                                <label class="font-weight-semibold" for="contact">Contact
+                                                    Number:</label>
+                                                <input type="text" class="form-control" id="contact"
+                                                    placeholder="Contact Number" minlength="10" maxlength="10"
+                                                    name="contact_number" value="{{old('contact_number')}}"
+                                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
                                                 <input type="password" class="form-control" id="password"
-                                                    placeholder="Password" name="password">
+                                                    placeholder="Password" name="password" value="{{old('password')}}">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
                                                 <input type="password" class="form-control" id="confirmPassword"
-                                                    placeholder="Confirm Password" name="password_confirmation">
+                                                    placeholder="Confirm Password" name="password_confirmation"
+                                                    value="{{old('password_confirmation')}}">
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -126,9 +123,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"
-        integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
 
     <script>
         jQuery.validator.addMethod("email", function(value, element) {
@@ -145,7 +140,7 @@
         });
 
         jQuery(document).ready(function($) {
-            $("#fromData").validate({
+            $("#fomData").validate({
                 rules: {
                     first_name: {
                         required: true,
@@ -154,6 +149,9 @@
                         required: true,
                     },
                     email: {
+                        required: true,
+                    },
+                    contact_number: {
                         required: true,
                     },
                     password: {
@@ -170,10 +168,13 @@
                         required: "Please enter first name",
                     },
                     last_name: {
-                        required: "please enter last name",
+                        required: "Please enter last name",
                     },
                     email: {
                         required: "Please enter email",
+                    },
+                    contact_number: {
+                        required: "Please enter contact number",
                     },
                     password: {
                         required: "Please enter password",
@@ -186,13 +187,6 @@
             });
         });
     </script>
-
-    <script>
-        setTimeout(function() {
-            $(".alert").remove();
-        }, 5000); // 5 secs
-    </script>
-
     <!-- Core Vendors JS -->
     <script src="{{ asset('assets/js/vendors.min.js') }}"></script>
 

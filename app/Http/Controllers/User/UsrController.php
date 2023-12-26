@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 
 class UsrController extends Controller
 {
@@ -43,9 +44,9 @@ class UsrController extends Controller
             $campaignList = UserCampaignHistoryModel::orderBy('campaign_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
-            $totalReferralUser = User::where('referral_user_id',Auth::user()->id)->get();
+            $totalReferralUser = User::where('referral_user_id', Auth::user()->id)->get();
             $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->sum('reward');
-            $chartReward = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->select(DB::raw('DATE(created_at) AS day'),DB::raw('SUM(reward) AS total_day_reward'))->whereDate('created_at', '>=', Carbon::now()->subDays(10)->format("Y-m-d"))->groupBy('day')->get()->toArray();
+            $chartReward = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->select(DB::raw('DATE(created_at) AS day'), DB::raw('SUM(reward) AS total_day_reward'))->whereDate('created_at', '>=', Carbon::now()->subDays(10)->format("Y-m-d"))->groupBy('day')->get()->toArray();
 
             $userData = User::get();
             $data = [];
@@ -53,7 +54,7 @@ class UsrController extends Controller
             $data['total_user'] = 0;
             $data['total_campaign'] = 0;
             $data['total_package'] = 0;
-            return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward','chartReward','totalReferralUser'));
+            return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward', 'chartReward', 'totalReferralUser'));
         } catch (Exception $exception) {
 
             return redirect()->back()->with('error', "Something Went Wrong!");
@@ -68,9 +69,8 @@ class UsrController extends Controller
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
-
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-
+            
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'],'status' => '0'))) {
 
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == env('USER_ROLE')) {
 
@@ -96,15 +96,6 @@ class UsrController extends Controller
 
         return view('user.campaign.view');
     }
-    public function editProfile()
-    {
-        try {
-            $userData = Auth::user();
-            return view('user.editprofile', compact('userData'));
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
-        }
-    }
 
     public function changePasswordStore(Request $request)
     {
@@ -127,9 +118,20 @@ class UsrController extends Controller
         }
     }
 
+    public function editProfile()
+    {
+        try {
+            $userData = Auth::user();
+            return view('user.editprofile', compact('userData'));
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
     public function editProfileStore(Request $request)
     {
         try {
+           
             $profileId = Auth::user()->id;
 
             $validator = Validator::make($request->all(), [
@@ -139,19 +141,20 @@ class UsrController extends Controller
                 'contact_number' => 'required|numeric|digits:10',
                 'profile_image' => 'file|mimes:jpeg,png,jpg|max:2048',
             ]);
+
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            $userEmail = User::where('company_id', $profileId)->where('email', $request->email)->first();
+            $userEmail = User::where('company_id', Auth::user()->company_id)->where('email', $request->email)->where('email','!=',$request->hidden_email)->first();
 
-            if (!empty($userEmail)) {
-                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
+            if (isset($userEmail) && $userEmail != null) {
+                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exists.')->withInput();
             }
-            $userNumber = User::where('company_id', $profileId)->where('contact_number', $request->contact_number)->first();
+            $userNumber = User::where('company_id', Auth::user()->company_id)->where('contact_number', $request->contact_number)->where('contact_number','!=',$request->hidden_contact_number)->first();
 
-            if (!empty($userNumber)) {
-                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
+            if (isset($userNumber) && $userNumber != null) {
+                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exists.')->withInput();
             }
 
             $profileEdit = User::where('id', $profileId)->first();
@@ -300,20 +303,20 @@ class UsrController extends Controller
     public function claimReward($id)
     {
         try {
-            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();     
-          
-      
+            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();
+
+
             $user = Auth::user();
-           
+
             $claimReward->status = '2';
             $claimReward->save();
-            if(isset($claimReward)){
+            if (isset($claimReward)) {
                 $Notification = new Notification();
-                $Notification->user_id=  $claimReward->user_id;
-                $Notification->company_id=  $claimReward->getCampaign->company_id;
-                $Notification->type=  '2';
-                $Notification->title=  " Campaign approval request";
-                $Notification->message=  $claimReward->getCampaign->title." approval request by ".$claimReward->getuser->FullName ;
+                $Notification->user_id =  $claimReward->user_id;
+                $Notification->company_id =  $claimReward->getCampaign->company_id;
+                $Notification->type =  '2';
+                $Notification->title =  " Campaign approval request";
+                $Notification->message =  $claimReward->getCampaign->title . " approval request by " . $claimReward->getuser->FullName;
                 $Notification->save();
             }
 
@@ -324,7 +327,26 @@ class UsrController extends Controller
     }
     function analytics()
     {
-        return view('user.analytics');
+        $monthlyReferrals = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('MONTH(created_at) as month'))
+            ->where('referral_user_id', Auth::user()->id)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->get()->toArray();
+
+        $topUserReferral = UserCampaignHistoryModel::whereExists(function ($query) {
+            $query->from('users')
+                ->whereRaw('user_campaign_history.user_id = users.id')
+                ->where('users.referral_user_id', Auth::user()->id)
+                ->whereNotNull('users.referral_user_id');
+        })
+            ->groupBy('user_campaign_history.user_id')
+            ->with(['getuser' => function ($query) {
+                $query->select('id', 'first_name');
+            }])
+            ->selectRaw('user_campaign_history.user_id,Sum(reward) as sum')
+            ->orderBy('sum', 'DESC')->take(5)
+            ->get()->toArray();
+
+        return view('user.analytics', compact('monthlyReferrals', 'topUserReferral'));
     }
     function notification()
     {
@@ -349,19 +371,18 @@ class UsrController extends Controller
     public function store(Request $request)
     {
         try {
-
-            $userEmail = User::where('user_type', '4')->where('status', '1')->where('email', $request->email)->first();
-
+            $userEmail = User::where('user_type', env('USER_ROLE'))->where('email', $request->email)->first();
             if (!empty($userEmail)) {
                 return redirect()->back()->with('error', 'This email already exists');
             }
-
-
+            $usercontactnumber = User::where('user_type', env('USER_ROLE'))->where('contact_number', $request->contact_number)->first();
+            if (!empty($usercontactnumber)) {
+                return redirect()->back()->with('error', 'This contact number already exists');
+            }
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->first();
             }
-
-            $companyId = User::where('user_type', '2')->where('status', '1')->first();
+            $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;
             $userRegister->last_name = $request->last_name;
@@ -371,14 +392,13 @@ class UsrController extends Controller
             $userRegister->referral_code = Str::random(6);
             $userRegister->password = Hash::make($request->password);
             $userRegister->view_password = $request->password;
+            $userRegister->contact_number = $request->contact_number;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
-
-
             $userRegister->save();
 
             return redirect()->route('user.login')->with('success', "Registration Successfully!");
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

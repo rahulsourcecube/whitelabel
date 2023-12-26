@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
-use App\Http\Controllers\company\Notification;
+use App\Http\Controllers\Company\Notification;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
@@ -50,6 +50,7 @@ Route::get('user', [LoginController::class, 'form']);
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
+    Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
 
 Route::prefix('user')->name('user.')->group(function () {
@@ -67,7 +68,7 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
         Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
         Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
-        Route::get('/edit_profile/{id?}', [UsrController::class, 'editProfile'])->name('edit_profile');
+        Route::get('/edit_profile', [UsrController::class, 'editProfile'])->name('edit_profile');
         Route::post('/edit_profile_store', [UsrController::class, 'editProfileStore'])->name('editProfileStore');
         Route::get('profile', [UsrController::class, 'profile'])->name('profile');
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
@@ -104,6 +105,7 @@ Route::prefix('company')->name('company.')->group(function () {
     Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
     Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
 });
+// Admin Middleware
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::prefix('package')->name('package.')->group(function () {
@@ -128,8 +130,9 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
     Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
 });
-
+// {{-- Company Middleware --}}
 Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
+    Route::post('logout', [CompanyLoginController::class, 'logout'])->name('logout');
     Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');
     Route::post('update_profile/{id}', [CompanyLoginController::class, 'updateprofile'])->name('update_profile');
     Route::post('update_passsword', [CompanyLoginController::class, 'updatepassword'])->name('update_password');

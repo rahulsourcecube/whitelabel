@@ -41,18 +41,18 @@
                                             <div class="col-md-12">
                                                 <ul class="list-unstyled m-t-10">
                                                     <li class="row">
-                                                        <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
-                                                            <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                            <span>:</span>
+                                                        <p class="font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-8 text-primary anticon anticon-mail"></i>
+                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($userData->email) ? $userData->email : '-' }}</p>
                                                     </li>
 
                                                     <li class="row">
-                                                        <p class="col-sm-5 col-5 font-weight-semibold text-dark m-b-5">
-                                                            <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                            <span>:</span>
+                                                        <p class="font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-8 text-primary anticon anticon-phone"></i>
+                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($userData->contact_number) ? $userData->contact_number : '-' }}
@@ -97,9 +97,11 @@
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar avatar-image"
                                                                 style="height: 30px; min-width: 30px; max-width:30px">
-                                                                @if (isset($data->profile_image) && file_exists(public_path('uploads/user/user-profile/' . $data->profile_image)))
-                                                                    <img src="{{ asset('uploads/user/user-profile/' . $data->profile_image) }}"
-                                                                        style="width: 50px; height: auto;" class="mt-2">
+                                                                @if (isset($data->profile_image) &&
+                                                                        !empty($userData->profile_image) &&
+                                                                        file_exists('uploads/user/user-profile/' . $userData->profile_image))
+                                                                    <img
+                                                                        src="{{ asset('uploads/user/user-profile/' . $data->profile_image) }}">
                                                                 @else
                                                                     <img
                                                                         src="{{ asset('assets/images/profile_image.jpg') }}">

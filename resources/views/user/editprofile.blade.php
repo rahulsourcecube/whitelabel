@@ -80,12 +80,16 @@
                                         <label class="font-weight-semibold" for="email">Email:</label>
                                         <input type="email" class="form-control" id="email" placeholder="email"
                                             name="email" value="{{ isset($userData->email) ? $userData->email : '' }}">
+                                        <input type="hidden" name="hidden_email"
+                                            value="{{ isset($userData->email) ? $userData->email : '' }}">
                                     </div>
                                     <div class="form-group col-md-4">
                                         <label class="font-weight-semibold" for="phoneNumber">Phone Number:</label>
                                         <input type="tel" min="0" class="form-control" id="contact_number"
                                             placeholder="Phone Number" name="contact_number"
                                             onkeypress="return /[0-9]/i.test(event.key)" maxlength="10"
+                                            value="{{ isset($userData->contact_number) ? $userData->contact_number : '' }}">
+                                        <input type="hidden" name="hidden_contact_number"
                                             value="{{ isset($userData->contact_number) ? $userData->contact_number : '' }}">
                                     </div>
                                     <div class="form-group col-md-4">
@@ -168,7 +172,7 @@
                             <h4 class="card-title">Bank Details</h4>
                         </div>
                         <div class="card-body">
-                            <form id="bankDetails" action="{{route('user.bankDetail')}}" method="POST">
+                            <form id="bankDetails" action="{{ route('user.bankDetail') }}" method="POST">
                                 @csrf
                                 <div class="form-row">
                                     <div class="form-group col-md-6">

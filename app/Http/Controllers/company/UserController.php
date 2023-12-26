@@ -156,7 +156,7 @@ class UserController extends Controller
             $user->view_password = $request->password;
             $user->user_type = User::USER_TYPE['USER'];
             $user->company_id = $companyId;
-            $user->status = !empty($request->status) ? '0' : '1';
+            $user->status = !empty($request->status) ? '1' : '0';
             $user->facebook_link = $request->facebook_link;
             $user->instagram_link = $request->instagram_link;
             $user->twitter_link = $request->twitter_link;
