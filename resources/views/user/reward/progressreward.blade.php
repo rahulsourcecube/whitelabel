@@ -17,6 +17,7 @@
         <div class="card">
             <div class="card-body">
                 <h4>Progress Reward</h4>
+            <div class="d-flex my-3 align-itmes-end gap-3">
                 <form method="get" action="{{ route('user.progress.reward') }}" id="searchForm"
                     onsubmit="return validateForm()">
 
@@ -29,19 +30,19 @@
                     @endif
 
                     <div class="form-row mt-3">
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-2 mb-0">
                             <label class="font-weight-semibold" for="name">From Date:</label>
                             <input class="form-control datepicker-input"
                                 value="{{ isset(request()->from_date) ? request()->from_date : '' }}"
                                 placeholder="Select Date" name="from_date">
                         </div>
-                        <div class="form-group col-md-2">
-                            <label class="font-weight-semibold" for="name">Two Date:</label>
+                        <div class="form-group col-md-2 mb-0">
+                            <label class="font-weight-semibold" for="name">To Date:</label>
                             <input class="form-control datepicker-input"
                                 value="{{ isset(request()->two_date) ? request()->two_date : '' }}"
                                 placeholder="Select Date" name="two_date">
                         </div>
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-3 mb-0">
                             <label class="font-weight-semibold" for="name">Type:</label>
                             <select name="type" class="form-control">
                                 <option value="">Select Type</option>
@@ -56,7 +57,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-3 mb-0">
                             <label class="font-weight-semibold" for="name">Status:</label>
                             <select name="status" class="form-control">
                                 <option value="">Select Status</option>
@@ -68,7 +69,7 @@
                                     Pending</option>
                             </select>
                         </div>
-                        <div class="form-group col-md-2" style="margin-top: 29px;">
+                        <div class="form-group col-md-2 mb-0" style="margin-top: 29px;">
                             <button type="submit" class="btn btn-success">Search</button>
                             <a href="{{ route('user.progress.reward') }}" class="btn btn-success">Refresh</a>
                         </div>
@@ -77,10 +78,10 @@
                     </div>
                     <span class="err" style="display: none;color: red;">Please select any one column</span>
                 </form>
-                <div class="form-group col-md-2">
-                    <a href="{{ route('user.progress.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
+                <div class="form-group mb-0 mt-auto" style="height: fit-content">
+                    <a href="{{ route('user.my.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
                 </div>
-
+            </div>
                 <div class="m-t-15">
                     <table id="user_tables" class="table">
                         <thead>
