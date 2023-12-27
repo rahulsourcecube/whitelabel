@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 
 class CompanyLoginController extends Controller
@@ -176,7 +176,7 @@ class CompanyLoginController extends Controller
                     "_token" => $request->_token
                 ];
                 $details = $user;
-                \Mail::to($request->email)->send(new forgetpass($details));
+                Mail::to($request->email)->send(new forgetpass($details));
 
                 return redirect()->back()->with('success', 'Mail Send Successfully');
             } else {
