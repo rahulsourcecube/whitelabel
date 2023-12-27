@@ -31,7 +31,7 @@
                                 <i class="anticon anticon-line-chart"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ isset($totalReward) ? $totalReward : '' }}</h2>
+                                <h2 class="m-b-0">{{ isset($totalReward) ? (\App\Helpers\Helper::getcurrency().$totalReward) : '' }}</h2>
                                 <p class="m-b-0 text-muted">My Total Reward </p>
                             </div>
                         </div>

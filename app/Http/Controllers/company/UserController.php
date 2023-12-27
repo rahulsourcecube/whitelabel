@@ -237,7 +237,7 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = !empty($request->password) ? hash::make($request->password) : hash::make($user->view_password);
             $user->view_password = !empty($request->password) ? $request->password : $user->view_password;
-            $user->status = !empty($request->status) ? '0' : '1';
+            $user->status = !empty($request->status) ? '1' : '0';
             $user->facebook_link = $request->facebook_link;
             $user->instagram_link = $request->instagram_link;
             $user->twitter_link = $request->twitter_link;

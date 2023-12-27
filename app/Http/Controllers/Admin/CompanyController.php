@@ -53,7 +53,6 @@ class CompanyController extends Controller
     {
         $data = [];
         $data['user_company'] = CompanyModel::where('id', $request->id)->first();
-        // dd( $data['user_company'][]);
         return view('admin.company.view', $data);
     }
 }

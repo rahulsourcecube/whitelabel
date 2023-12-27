@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\CompanyModel;
 use App\Models\PackageModel;
 use App\Models\SettingModel;
 use App\Models\User;
@@ -49,21 +50,12 @@ class AdminSeeder extends Seeder
             'price' => 0.00,
             'type' => '1',
             'status' => '1',
-            'created_by' => $user->id, 
+            'created_by' => $user->id,
             'no_of_user' => 1,
             'no_of_employee' => 1,
         ]);
-        $user = User::create([
-            'first_name' => 'Demo',
-            'last_name' => 'User',
-            'email' => 'user@mailinator.com',
-            'contact_number' => '1234567890',
-            'user_type' => 'User',
-            'password' => Hash::make('User@2023'),
-            'view_password' => 'User@2023',
-            'user_type' => '4',
-        ]);
-        
+
+
 
         $user = User::create([
             'first_name' => 'Demo',
@@ -75,7 +67,25 @@ class AdminSeeder extends Seeder
             'view_password' => 'Company@2023',
             'user_type' => '2',
         ]);
-
+        $user = CompanyModel::create([
+            'company_name' => 'Demo Company',
+            'contact_email' => 'company@mailinator.com',
+            'contact_number' => '1234567890',
+            'subdomain' => 'demo',
+            'user_id' => $user->id,
+        ]);
+        
+        $user = User::create([
+            'first_name' => 'Demo',
+            'last_name' => 'User',
+            'email' => 'user@mailinator.com',
+            'contact_number' => '1234567890',
+            'user_type' => 'User',
+            'password' => Hash::make('User@2023'),
+            'view_password' => 'User@2023',
+            'user_type' => '4',
+            'company_id' => $user->id,
+        ]);
 
         $setting = SettingModel::create([
             'title' => 'WhiteLabel',

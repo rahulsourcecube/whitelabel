@@ -27,6 +27,7 @@
         @endphp
         
         <div class="card">
+            @include('admin.includes.message')
             <div class="card-body">
                 <div class="m-t-25">
                     <form id="form-validation" action="{{ route('admin.UpdatePassword') }}" method="post">

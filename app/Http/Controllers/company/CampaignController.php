@@ -232,7 +232,7 @@ class CampaignController extends Controller
             $Campaign->type = $request->type;
             $Campaign->image = $image;
             $Campaign->company_id = $companyId;
-            $Campaign->status = !empty($request->status) ? '0' : '1';
+            $Campaign->status = !empty($request->status) ? '1' : '0';
             $Campaign->save();
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task update successfuly.');
@@ -245,9 +245,8 @@ class CampaignController extends Controller
     function analytics(Request $request)
     {
         $companyId = Helper::getCompanyId();
-        // dd(Carbon::today()->subDays(1));
-        DB::enableQueryLog();
-        $user_campaign_history = DB::table('users as u')
+        $date = Carbon::today()->subDays(7);
+        $total_join_users  = DB::table('users as u')
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
             ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
             ->where('u.company_id', $companyId)
@@ -425,7 +424,7 @@ class CampaignController extends Controller
                     <div class="col-md-12">
                         <div class="row align-items-center">
                             <div class="text-center text-sm-left col-md-2">
-                                <div class="avatar avatar-image" style="width: 150px; height:150px">';
+                                <div class="avatar avatar-image" style="width: 120px; height:120px">';
 
             if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image)) {
                 $html .= '<img src="' . asset('uploads/company/user-profile/' . $user->profile_image) . '" alt="">';
@@ -434,24 +433,22 @@ class CampaignController extends Controller
             };
             $html .= ' </div>
                             </div>
-                            <div class="text-center text-sm-left m-v-15 p-l-30">
+                            <div class="text-center text-sm-left m-v-15 p-l-40">
                                 <h2 class="m-b-5"></h2>
                                 <div class="row">
                                     <div class="d-md-block d-none border-left col-1"></div>
                                     <div class="col-md-12">
                                         <ul class="list-unstyled m-t-10">
                                             <li class="row">
-                                                <p class="col-sm-6 col-6 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                    <span>Email: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-mail"></i>
                                                 </p>
                                                 <p class="col font-weight-semibold">' . $user->email ?? $user->email;
             $html .= '</p>
                                             </li>
                                             <li class="row">
-                                                <p class="col-sm-6 col-6 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                    <span>Phone: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-phone"></i>
                                                 </p>
                                                 <p class="col font-weight-semibold"> ' . $user->contact_number ?? $user->contact_number;
             $html .= '</p>
@@ -514,7 +511,7 @@ class CampaignController extends Controller
                         <tbody>
                             <tr>
                                 <td>Bank Name:</td>
-                                <td> ' . $user->twitter_link ?? $user->twitter_link;
+                                <td> ' . $user->bank_name ?? $user->bank_name;
             $html .= '</td>
                             </tr>
                             <tr>
