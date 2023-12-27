@@ -71,9 +71,6 @@
                         </div>
                         <div class="form-group col-md-2 mb-0" style="margin-top: 29px;">
                             <button type="submit" class="btn btn-success">Search</button>
-                            <a href="{{ route('user.progress.reward') }}" class="btn btn-success">Refresh</a>
-                        </div>
-                        <div class="form-group col-md-2" style="margin-top: 29px;">
                         </div>
                     </div>
                     <span class="err" style="display: none;color: red;">Please select any one column</span>

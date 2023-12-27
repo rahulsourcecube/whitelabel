@@ -182,7 +182,7 @@ class UsrController extends Controller
             $profileEdit->save();
 
 
-            return redirect()->route('user.edit_profile')->with('success', "Edit Profile Successfully!");
+            return redirect()->route('user.edit_profile')->with('success', "Profile Updated Successfully!");
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
@@ -420,8 +420,8 @@ class UsrController extends Controller
             $userRegister->view_password = $request->password;
             $userRegister->contact_number = $request->contact_number;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
-
-            Mail::send('user.email.welcome', ['user' => $userRegister], function ($message) use ($request) {
+        
+            Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
                 $message->to($request->email);
                 $message->subject('Welcome Mail');
             });
