@@ -260,7 +260,7 @@
     var currency =  "{{$currency}}";
     var chart_title = "{{$chart_title}}";
 </script>
-@endsection
+{{-- @endsection --}}
     <script>
         var chartdata = {!! json_encode($user_reward_and_days) !!};
         chartdata = JSON.parse(chartdata);
