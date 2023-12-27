@@ -7,7 +7,7 @@
     @endphp
     <!-- Page Container START -->
     <!-- Content Wrapper START -->
-    <div class="main-content" style="margin-top: 95px;">
+    <div class="main-content">
         <div class="row">
             <div class="col-md-6 col-lg-3">
                 <div class="card">
@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="m-t-50" style="height: 330px">
+                        <div class="m-t-50">
                             <canvas class="chart" id="myChart"></canvas>
                             {{-- <canvas class="chart" id="revenue-chart"></canvas> --}}
                         </div>
@@ -119,8 +119,8 @@
                                         <span class="badge badge-success badge-dot m-r-10"></span>
                                         <div class="m-l-5">
                                             <input type="hidden" id="new_user"
-                                                value="{{ isset($new_user) ? $new_user : '0' }}">
-                                            <h4 class="m-b-0">{{ isset($new_user) ? $new_user : '' }}</h4>
+                                                value="{{ isset($new_company) ? $new_company : '0' }}">
+                                            <h4 class="m-b-0">{{ isset($new_company) ? $new_company : '' }}</h4>
                                             <p class="m-b-0 muted">New</p>
                                         </div>
                                     </div>
@@ -132,8 +132,8 @@
                                         <span class="badge badge-secondary badge-dot m-r-10"></span>
                                         <div class="m-l-5">
                                             <input type="hidden" id="old_user"
-                                                value="{{ isset($old_user) ? $old_user : '0' }}">
-                                            <h4 class="m-b-0">{{ isset($old_user) ? $old_user : '' }}</h4>
+                                                value="{{ isset($old_company) ? $old_company : '0' }}">
+                                            <h4 class="m-b-0">{{ isset($old_company) ? $old_company : '' }}</h4>
                                             <p class="m-b-0 muted">Returning</p>
                                         </div>
                                     </div>
@@ -144,7 +144,7 @@
                                     <div class="media align-items-center">
                                         <span class="badge badge-warning badge-dot m-r-10"></span>
                                         <div class="m-l-5">
-                                            <h4 class="m-b-0">{{ isset($total_user) ? $total_user : '' }}</h4>
+                                            <h4 class="m-b-0">{{ isset($total_comapny) ? $total_comapny : '' }}</h4>
                                             <p class="m-b-0 muted">Total</p>
                                         </div>
                                     </div>

@@ -48,7 +48,7 @@ class Helper
     }
     public static function getCompanyId()
     {
-        if(auth()->user()->user_type == env('COMPANY_ROLE')){
+        if(auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('ADMIN_ROLE')){
             $companyId = Auth::user()->id;
         }else{
             $companyId = Auth::user()->company_id;
@@ -83,7 +83,7 @@ class Helper
             $currentDate = $Date->format('Y-m-d');
             $companyId = Helper::getCompanyId();
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
- 
+
             if ($packageData != null && new DateTime($packageData->end_date) > Carbon::now()) {
                 // Assuming $packageData->end_date is a string representing a date
                 $end_date = new DateTime($packageData->end_date);

@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
-        $user = User::create([
+        $admin = User::create([
             'first_name' => 'Admin',
             'last_name' => 'Admin',
             'email' => 'admin@mailinator.com',
@@ -40,7 +40,7 @@ class AdminSeeder extends Seeder
             'facebook_link' => 'https://www.facebook.com',
             'twitter_link' => 'https://www.tweeter.com',
             'linkedin_link' => 'https://www.linkedin.com',
-            'user_id' => $user->id,
+            'user_id' => $admin->id,
         ]);
         $package = PackageModel::create([
             'title' => 'Company',
@@ -50,31 +50,42 @@ class AdminSeeder extends Seeder
             'price' => 0.00,
             'type' => '1',
             'status' => '1',
-            'created_by' => $user->id,
+            'created_by' => $admin->id,
             'no_of_user' => 1,
             'no_of_employee' => 1,
         ]);
 
 
 
-        $user = User::create([
+        $company = User::create([
             'first_name' => 'Demo',
             'last_name' => 'Company',
             'email' => 'company@mailinator.com',
             'contact_number' => '1234567890',
-            'user_type' => 'Company',
             'password' => Hash::make('Company@2023'),
             'view_password' => 'Company@2023',
             'user_type' => '2',
         ]);
-        $user = CompanyModel::create([
+
+        CompanyModel::create([
             'company_name' => 'Demo Company',
             'contact_email' => 'company@mailinator.com',
             'contact_number' => '1234567890',
             'subdomain' => 'demo',
-            'user_id' => $user->id,
+            'user_id' => $company->id,
         ]);
-        
+
+        SettingModel::create([
+            'title' => 'WhiteLabel',
+            'email' => 'company@mailinator.com',
+            'contact_number' => '1235435535',
+            'description' => '<p>WhiteLabel</p>',
+            'facebook_link' => 'https://www.facebook.com',
+            'twitter_link' => 'https://www.tweeter.com',
+            'linkedin_link' => 'https://www.linkedin.com',
+            'user_id' => $company->id,
+        ]);
+
         $user = User::create([
             'first_name' => 'Demo',
             'last_name' => 'User',
@@ -84,19 +95,9 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('User@2023'),
             'view_password' => 'User@2023',
             'user_type' => '4',
-            'company_id' => $user->id,
+            'company_id' => $company->id,
         ]);
 
-        $setting = SettingModel::create([
-            'title' => 'WhiteLabel',
-            'email' => 'company@mailinator.com',
-            'contact_number' => '1235435535',
-            'description' => '<p>WhiteLabel</p>',
-            'facebook_link' => 'https://www.facebook.com',
-            'twitter_link' => 'https://www.tweeter.com',
-            'linkedin_link' => 'https://www.linkedin.com',
-            'user_id' => $user->id,
-        ]);
 
 
         $role = Role::create(['name' => 'Company']);

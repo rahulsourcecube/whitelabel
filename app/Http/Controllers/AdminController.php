@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CampaignModel;
 use App\Models\CompanyModel;
+use App\Models\PackageModel;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -26,7 +28,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-     
+
         if (auth()->user()->user_type == env('ADMIN_ROLE')) {
             return redirect()->route('admin.dashboard');
         } elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
@@ -34,7 +36,7 @@ class AdminController extends Controller
         } elseif (auth()->user()->user_type == env('USER_ROLE')) {
             return redirect()->route('user.dashboard');
         } else {
-         
+
             return view('auth.login');
         }
     }
@@ -43,16 +45,15 @@ class AdminController extends Controller
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
         $data = [];
-        $data['total_comapny'] = 0;
-        $data['old_user'] = User::where('user_type', env('COMPANY_ROLE'))->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
-        $data['total_user'] = 0;
-        $data['total_campaign'] = 0;
-        $data['total_package'] = 0;
-        $data['company'] = CompanyModel::get(['id', 'company_name', 'user_id']);
-        $data['old_user'] = User::where('user_type', env('COMPANY_ROLE'))->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
-        $data['new_user'] = User::where('user_type', env('COMPANY_ROLE'))->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
-        $data['total_user'] = User::where('user_type', env('COMPANY_ROLE'))->count();
+        $data['total_comapny'] = User::where('user_type', env('COMPANY_ROLE'))->where('status', '1')->count();
+        $data['total_campaign'] = CampaignModel::where('status', '1')->count();
+        $data['total_package'] =  PackageModel::where('status', '1')->count();
+        $data['total_user'] = User::where('user_type', env('USER_ROLE'))->where('status', '1')->count();
 
+        $data['company'] = CompanyModel::get(['id', 'company_name', 'user_id']);
+
+        $data['old_company'] = User::where('user_type', env('COMPANY_ROLE'))->where('status', '1')->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
+        $data['new_company'] = User::where('user_type', env('COMPANY_ROLE'))->where('status', '1')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
 
         return view('admin.dashboard', $data);
     }
@@ -125,7 +126,7 @@ class AdminController extends Controller
             return redirect()->back()->with('error', "Something went wrong");
         }
     }
-    
+
     public function change_password()
     {
         $user = User::where('id', Auth::user()->id)->first();
@@ -148,8 +149,8 @@ class AdminController extends Controller
 
         return redirect()->route('admin.change_password')->with('success', __('Change Password successfully updated.'));
     }
-    public function logout(Request $request) {  
-     
+    public function logout(Request $request) {
+
         Auth::logout();
         return redirect()->route('admin.login');
       }
