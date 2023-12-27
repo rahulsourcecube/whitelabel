@@ -182,7 +182,7 @@ class UsrController extends Controller
             $profileEdit->save();
 
 
-            return redirect()->route('user.edit_profile')->with('success', "Edit Profile Successfully!");
+            return redirect()->route('user.edit_profile')->with('success', "Profile Updated Successfully!");
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
