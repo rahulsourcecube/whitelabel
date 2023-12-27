@@ -69,8 +69,8 @@ class UsrController extends Controller
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
-            
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'],'status' => '0'))) {
+
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'status' => '1'))) {
 
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == env('USER_ROLE')) {
 
@@ -131,7 +131,7 @@ class UsrController extends Controller
     public function editProfileStore(Request $request)
     {
         try {
-           
+
             $profileId = Auth::user()->id;
 
             $validator = Validator::make($request->all(), [
@@ -146,12 +146,12 @@ class UsrController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            $userEmail = User::where('company_id', Auth::user()->company_id)->where('email', $request->email)->where('email','!=',$request->hidden_email)->first();
+            $userEmail = User::where('company_id', Auth::user()->company_id)->where('email', $request->email)->where('email', '!=', $request->hidden_email)->first();
 
             if (isset($userEmail) && $userEmail != null) {
                 return redirect()->back()->withErrors($validator)->with('error', 'User email id already exists.')->withInput();
             }
-            $userNumber = User::where('company_id', Auth::user()->company_id)->where('contact_number', $request->contact_number)->where('contact_number','!=',$request->hidden_contact_number)->first();
+            $userNumber = User::where('company_id', Auth::user()->company_id)->where('contact_number', $request->contact_number)->where('contact_number', '!=', $request->hidden_contact_number)->first();
 
             if (isset($userNumber) && $userNumber != null) {
                 return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exists.')->withInput();
@@ -303,20 +303,20 @@ class UsrController extends Controller
     public function claimReward($id)
     {
         try {
-            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();     
-          
-      
+            $claimReward = UserCampaignHistoryModel::where('id', $id)->first();
+
+
             $user = Auth::user();
-           
+
             $claimReward->status = '2';
             $claimReward->save();
-            if(isset($claimReward)){
+            if (isset($claimReward)) {
                 $Notification = new Notification();
-                $Notification->user_id=  $claimReward->user_id;
-                $Notification->company_id=  $claimReward->getCampaign->company_id;
-                $Notification->type=  '2';
-                $Notification->title=  " Campaign approval request";
-                $Notification->message=  $claimReward->getCampaign->title." approval request by ".$claimReward->getuser->FullName ;
+                $Notification->user_id =  $claimReward->user_id;
+                $Notification->company_id =  $claimReward->getCampaign->company_id;
+                $Notification->type =  '2';
+                $Notification->title =  " Campaign approval request";
+                $Notification->message =  $claimReward->getCampaign->title . " approval request by " . $claimReward->getuser->FullName;
                 $Notification->save();
             }
 
@@ -325,10 +325,22 @@ class UsrController extends Controller
             return redirect()->back()->with('error', "Something Went Wrong");
         }
     }
-    function analytics()
+    function analytics(Request $request)
     {
+        $fromDate = request('from_date');
+        $toDate = request('to_date');
+
+        $topFromDate = request('top_from_date');
+        $topToDate = request('top_to_date');
+
         $monthlyReferrals = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('MONTH(created_at) as month'))
             ->where('referral_user_id', Auth::user()->id)
+            ->when($fromDate, function ($query) use ($fromDate) {
+                return $query->where('created_at', '>=', $fromDate);
+            })
+            ->when($toDate, function ($query) use ($toDate) {
+                return $query->where('created_at', '<=', $toDate);
+            })
             ->groupBy(DB::raw('MONTH(created_at)'))
             ->get()->toArray();
 
@@ -338,6 +350,12 @@ class UsrController extends Controller
                 ->where('users.referral_user_id', Auth::user()->id)
                 ->whereNotNull('users.referral_user_id');
         })
+            ->when($topFromDate, function ($query) use ($topFromDate) {
+                return $query->where('created_at', '>=', $topFromDate);
+            })
+            ->when($topToDate, function ($query) use ($topToDate) {
+                return $query->where('created_at', '<=', $topToDate);
+            })
             ->groupBy('user_campaign_history.user_id')
             ->with(['getuser' => function ($query) {
                 $query->select('id', 'first_name');
@@ -345,9 +363,17 @@ class UsrController extends Controller
             ->selectRaw('user_campaign_history.user_id,Sum(reward) as sum')
             ->orderBy('sum', 'DESC')->take(5)
             ->get()->toArray();
+        if ($request->ajax()) {
+            return [
+                "monthlyReferrals" => $monthlyReferrals,
+                "topUserReferral" => $topUserReferral,
+            ];
+        }
+
 
         return view('user.analytics', compact('monthlyReferrals', 'topUserReferral'));
     }
+
     function notification()
     {
         try {
@@ -395,6 +421,10 @@ class UsrController extends Controller
             $userRegister->view_password = $request->password;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
 
+            Mail::send('user.email.welcome', ['user' => $userRegister], function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Welcome Mail');
+            });
 
             $userRegister->save();
 

@@ -18,68 +18,69 @@
             <div class="card-body">
                 <h4>my Reward</h4>
 
-                <form method="get" action="{{ route('user.my.reward') }}" id="searchForm"
-                    onsubmit="return validateForm()">
+                <div class="d-flex my-3 align-itmes-end gap-3">
+                    <form method="get" action="{{ route('user.my.reward') }}" id="searchForm"
+                        onsubmit="return validateForm()">
 
-                    @if (isset(request()->status))
-                        <input type="hidden" name="status" value="{{ request()->status }}">
-                    @elseif(isset(request()->status))
-                        <input type="hidden" name="from_date" value="{{ request()->from_date }}">
-                    @elseif (isset(request()->type))
-                        <input type="hidden" name="type" value="{{ request()->type }}">
-                    @endif
+                        @if (isset(request()->status))
+                            <input type="hidden" name="status" value="{{ request()->status }}">
+                        @elseif(isset(request()->status))
+                            <input type="hidden" name="from_date" value="{{ request()->from_date }}">
+                        @elseif (isset(request()->type))
+                            <input type="hidden" name="type" value="{{ request()->type }}">
+                        @endif
 
-                    <div class="form-row mt-3">
-                        <div class="form-group col-md-2">
-                            <label class="font-weight-semibold" for="name">From Date:</label>
-                            <input class="form-control datepicker-input"
-                                value="{{ isset(request()->from_date) ? request()->from_date : '' }}"
-                                placeholder="Select Date" name="from_date">
+                        <div class="form-row">
+                            <div class="form-group col-md-2 mb-0">
+                                <label class="font-weight-semibold" for="name">From Date:</label>
+                                <input class="form-control datepicker-input"
+                                    value="{{ isset(request()->from_date) ? request()->from_date : '' }}"
+                                    placeholder="Select Date" name="from_date">
+                            </div>
+                            <div class="form-group col-md-2 mb-0">
+                                <label class="font-weight-semibold" for="name">To Date:</label>
+                                <input class="form-control datepicker-input"
+                                    value="{{ isset(request()->two_date) ? request()->two_date : '' }}"
+                                    placeholder="Select Date" name="two_date">
+                            </div>
+                            <div class="form-group col-md-3 mb-0">
+                                <label class="font-weight-semibold" for="name">Type:</label>
+                                <select name="type" class="form-control">
+                                    <option value="">Select Type</option>
+                                    <option value="1"
+                                        {{ isset(request()->type) && request()->type === '1' ? 'selected' : '' }}>Referral
+                                    </option>
+                                    <option value="2"
+                                        {{ isset(request()->type) && request()->type === '2' ? 'selected' : '' }}>Social
+                                    </option>
+                                    <option value="3"
+                                        {{ isset(request()->type) && request()->type === '3' ? 'selected' : '' }}>Custom
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3 mb-0">
+                                <label class="font-weight-semibold" for="name">Status:</label>
+                                <select name="status" class="form-control">
+                                    <option value="">Select Status</option>
+                                    <option value="3"
+                                        {{ isset(request()->status) && request()->status === '3' ? 'selected' : '' }}>Completed
+                                    </option>
+                                    <option value="4"
+                                        {{ isset(request()->status) && request()->status === '4' ? 'selected' : '' }}>Rejected
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2 mb-0" style="margin-top: 29px;">
+                                <button type="submit" class="btn btn-success">Search</button>
+                            </div>
                         </div>
-                        <div class="form-group col-md-2">
-                            <label class="font-weight-semibold" for="name">Two Date:</label>
-                            <input class="form-control datepicker-input"
-                                value="{{ isset(request()->two_date) ? request()->two_date : '' }}"
-                                placeholder="Select Date" name="two_date">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label class="font-weight-semibold" for="name">Type:</label>
-                            <select name="type" class="form-control">
-                                <option value="">Select Type</option>
-                                <option value="1"
-                                    {{ isset(request()->type) && request()->type === '1' ? 'selected' : '' }}>Referral
-                                </option>
-                                <option value="2"
-                                    {{ isset(request()->type) && request()->type === '2' ? 'selected' : '' }}>Social
-                                </option>
-                                <option value="3"
-                                    {{ isset(request()->type) && request()->type === '3' ? 'selected' : '' }}>Custom
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label class="font-weight-semibold" for="name">Status:</label>
-                            <select name="status" class="form-control">
-                                <option value="">Select Status</option>
-                                <option value="3"
-                                    {{ isset(request()->status) && request()->status === '3' ? 'selected' : '' }}>Completed
-                                </option>
-                                <option value="4"
-                                    {{ isset(request()->status) && request()->status === '4' ? 'selected' : '' }}>Rejected
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-2" style="margin-top: 29px;">
-                            <button type="submit" class="btn btn-success">Search</button>
-                        </div>
+                        <span class="err" style="display: none;color: red;">Please select any one column</span>
+                    </form>
+
+                    <div class="form-group mb-0 mt-auto" style="height: fit-content">
+                        <a href="{{ route('user.my.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
                     </div>
-                    <span class="err" style="display: none;color: red;">Please select any one column</span>
-                </form>
-
-                <div class="form-group col-md-2">
-                    <a href="{{ route('user.my.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
                 </div>
-
                 <div class="m-t-15">
                     <table id="user_tables" class="table">
                         <thead>
