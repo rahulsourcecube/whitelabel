@@ -3,13 +3,15 @@
 @php
     $siteSetting = App\Helpers\Helper::getSiteSetting();
     $packagebuymessage = App\Helpers\Helper::isInactivePackage();
+    $GetActivePackageData = App\Helpers\Helper::GetActivePackageData();
     $remainingDays = App\Helpers\Helper::getRemainingDays();
 @endphp
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@yield('title') || {{ !empty($siteSetting) && $siteSetting->title ? $siteSetting->title : env('APP_NAME') }}
+    <title>@yield('title') ||
+        {{ !empty($siteSetting) && $siteSetting->title ? $siteSetting->title : env('APP_NAME') }}
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
@@ -42,7 +44,8 @@
                                 href="{{ route('company.package.list', 'Free') }}">Click</a>
                             here to buy package.
                         </div>
-                    @else
+                    @endif
+                    @if ( $GetActivePackageData == null)
                         <div class="alert alert-danger alert-dismissible fade show">
                             <strong>Please purchase package</strong>. <a
                                 href="{{ route('company.package.list', 'Free') }}">Click</a>

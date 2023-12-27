@@ -13,12 +13,13 @@ use App\Models\CampaignModel;
 use App\Models\SettingModel;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Str;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 
 class CompanyLoginController extends Controller
@@ -46,7 +47,9 @@ class CompanyLoginController extends Controller
         $data['new_user'] = 0;
         $data['old_user'] = 0;
         $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
-        $data['old_user'] =User::where('company_id', $companyId)->where('user_type', '4')->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
+        $data['old_user'] = User::where('company_id', $companyId)->where('user_type', '4')->where(function ($query) use ($currentMonth, $currentYear) {
+            $query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);
+        })->count();
         $data['new_user'] = User::where('company_id', $companyId)->where('user_type', '4')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
         $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
         $data['total_campaignReq'] = 0;
@@ -165,6 +168,70 @@ class CompanyLoginController extends Controller
     {
         return view('company.forgetPassword');
     }
+
+    public function submitForgetPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email|exists:users',
+            ]);
+
+            $token = Str::random(64);
+
+            DB::table('password_resets')->insert([
+                'email' => $request->email,
+                'token' => $token,
+                'created_at' => Carbon::now()
+            ]);
+
+
+            Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email], function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Reset Password');
+            });
+
+            return back()->with('success', 'We have e-mailed your password reset link!');
+        } catch (Exception $exception) {
+            dd($exception);
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
+    public function confirmPassword($token)
+    {
+        try {
+            $user = DB::table('password_resets')->where('token', $token)->first();
+            return view('company.confirmPassword', compact('user'), ['token' => $token]);
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
+    public function submitResetPassword(Request $request)
+    {
+        try {
+            $updatePassword = DB::table('password_resets')
+                ->where([
+                    'email' => $request->email,
+                    'token' => $request->token
+                ])
+                ->first();
+
+            if (!$updatePassword) {
+                return back()->withInput()->with('error', 'Invalid token!');
+            }
+
+            $user = User::where('email', $request->email)
+                ->update(['password' => Hash::make($request->password)]);
+
+            DB::table('password_resets')->where(['email' => $request->email])->delete();
+
+            return redirect()->route('company.signin')->with('success', 'Your password has been changed!');
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong!");
+        }
+    }
+
     public function forgetPassSendmail(Request $request)
     {
         try {
@@ -176,7 +243,7 @@ class CompanyLoginController extends Controller
                     "_token" => $request->_token
                 ];
                 $details = $user;
-                \Mail::to($request->email)->send(new forgetpass($details));
+                Mail::to($request->email)->send(new forgetpass($details));
 
                 return redirect()->back()->with('success', 'Mail Send Successfully');
             } else {
@@ -186,10 +253,10 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-    public function confirmPassword($id)
-    {
-        return view('company.confirmPassword', compact('id'));
-    }
+    // public function confirmPassword($id)
+    // {
+    //     return view('company.confirmPassword', compact('id'));
+    // }
 
     public function changePassword(Request $request, $id)
     {
@@ -282,9 +349,10 @@ class CompanyLoginController extends Controller
             echo 'true';
         }
     }
-    public function logout(Request $request) {
-     
+    public function logout(Request $request)
+    {
+
         Auth::logout();
         return redirect()->route('company.signin');
-      }
+    }
 }
