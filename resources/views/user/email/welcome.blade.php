@@ -45,9 +45,11 @@
                                         <td style="text-align: center">
                                             <div class="d-none d-md-flex p-h-40">
                                                 @if (isset($mail) && !empty($mail->logo) && file_exists('uploads/setting/' . $mail->logo))
-                                                    <img src="{{ asset('uploads/setting/' . $mail->logo) }}" style="height: 55px;width: 125px;">
+                                                    <img src="{{ asset('uploads/setting/' . $mail->logo) }}"
+                                                        style="height: 55px;width: 125px;">
                                                 @else
-                                                <img src="{{ asset('assets/images/logo/logo.png') }}" style="height: 55px;width: 125px;" alt="">
+                                                    <img src="{{ asset('assets/images/logo/logo.png') }}"
+                                                        style="height: 55px;width: 125px;" alt="">
                                                 @endif
                                             </div>
                                         </td>
@@ -56,24 +58,24 @@
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                            valign="top"><br>
-                                            We just heard an awesome new person became a part of our team! Welcome to the {{ isset($mail->title) ? $mail->title : 'White Label' }}!
+                                            valign="top"><br><br>
+                                            Welcome {{ $first_name }},
                                         </td>
                                     </tr>
-                                    {{-- <tr
+                                    <tr
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                            valign="top">
-                                            We may need to send you critical information about our service and it is
-                                            important that we have an accurate email address.
+                                            valign="top"><br><br>
+                                            We just heard an awesome new person became a part of our team!<br><br>
+                                            Welcome to the {{ isset($mail->title) ? $mail->title : 'White Label' }} !
                                         </td>
-                                    </tr> --}}
+                                    </tr>
                                     <tr
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block pb-0"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                            valign="top">
+                                            valign="top"><br>
                                             &mdash; <b>Team </b> -
                                             {{ isset($mail->title) ? $mail->title : 'White Label' }}
                                         </td>
