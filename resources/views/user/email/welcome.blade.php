@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Abstack - Responsive Bootstrap 4 Admin Dashboard</title>
+    <title>White label</title>
 
 </head>
 
