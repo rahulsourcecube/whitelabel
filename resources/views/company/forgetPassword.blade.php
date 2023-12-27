@@ -34,7 +34,7 @@
                                         <img class="img-fluid" alt="" src="{{asset('assets/images/logo/logo.png')}}">
                                         <h2 class="m-b-0">Forget Password</h2>
                                     </div>
-                                    <form id="forgetPassSendmail" method="POST" action="{{ route('company.forgetPassSendmail') }}" >
+                                    <form id="forgetPassSendmail" method="POST" action="{{ route('company.forget-password') }}" >
                                         @csrf
                                         <div class="form-group">
                                             <label class="font-weight-semibold" for="email">Email:</label>

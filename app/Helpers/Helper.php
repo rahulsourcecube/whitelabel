@@ -43,7 +43,7 @@ class Helper
     public static function isActivePackage()
     {
         $companyId = Helper::getCompanyId();
-        $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
+        $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id','desc')->exists();
         return $checkPackage;
     }
     public static function getCompanyId()
@@ -70,8 +70,7 @@ class Helper
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
         $companyId = Helper::getCompanyId();
-        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '>=', $currentDate)->first();
-
+        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
         return $packageData;
     }
 
@@ -84,7 +83,7 @@ class Helper
             $currentDate = $Date->format('Y-m-d');
             $companyId = Helper::getCompanyId();
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
-
+ 
             if ($packageData != null && new DateTime($packageData->end_date) > Carbon::now()) {
                 // Assuming $packageData->end_date is a string representing a date
                 $end_date = new DateTime($packageData->end_date);
