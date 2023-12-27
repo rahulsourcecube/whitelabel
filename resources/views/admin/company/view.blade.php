@@ -18,35 +18,29 @@
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-12">
-                            <div class="d-md-flex align-items-center">
-                                <div class="text-center text-sm-left ">
+                            <div class="row align-items-center">
+                                <div class="text-center text-sm-left col-md-2">
                                     <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                        <img src="{{ asset('uploads/user') }}/{{ $user_company->user->profile_image ?: 'avtar.png' }}"
+                                        <img src="{{ $user_company->user->profile_image ? asset('uploads/user/'.$user_company->user->profile_image) : asset('assets/images/default-user.jpg') }}"
                                             alt="">
                                     </div>
                                 </div>
-                                <div class="text-center text-sm-left m-v-15 p-l-30">
+                                <div class="text-center text-sm-left m-v-15 p-l-30 col-md-4">
                                     <h2 class="m-b-5">{{ $user_company->user->first_name }}
                                         {{ $user_company->user->last_name }}</h2>
-                                    ​
                                     <div class="row">
-                                        <div class="d-md-block d-none border-left col-1"></div>
                                         <div class="col-md-12">
                                             <ul class="list-unstyled m-t-10">
                                                 <li class="row">
-                                                    <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                        <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                        <span>Email: </span>
+                                                    <p class="font-weight-semibold text-dark m-b-5">
+                                                        <i class="m-r-10 text-primary anticon anticon-mail"></i> <span>{{ $user_company->user->email }} </span>
                                                     </p>
-                                                    <p class="col font-weight-semibold">{{ $user_company->user->email }}</p>
                                                 </li>
                                                 <li class="row">
-                                                    <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
-                                                        <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                        <span>Phone: </span>
+                                                    <p class="font-weight-semibold text-dark m-b-5">
+                                                        <i class="m-r-10 text-primary anticon anticon-phone"></i> <span>  {{ $user_company->user->contact_number }} </span>
                                                     </p>
-                                                    <p class="col font-weight-semibold">
-                                                        {{ $user_company->user->contact_number }}</p>
+
                                                 </li>
                                             </ul>
                                         </div>
@@ -61,23 +55,22 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-md-flex align-items-center">
+                            <div class=" align-items-center">
                                 <div class="text-center text-sm-left m-v-15 p-l-30">
                                     ​
                                     <div class="row">
                                         <div class="col-md-2">
-                                            <div class="text-center text-sm-left ">
+                                            <div class="text-center text-sm-left m-r-10">
                                                 <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                                    <img src="{{ asset('uploads/company') }}/{{ $user_company->company_logo ?: 'avtar.png' }}"
-                                                        alt="">
+                                                    <img src="{{ $user_company->company_logo ? asset('uploads/company/'.$user_company->company_logo): asset('assets/images/default-company.jpg') }}"                                                        alt="">
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-10 " style="padding-left: 95px;">
+                                        <div class="col-md-10 " >
                                             <div class="text-center text-sm-left ">
                                                 <h2 class="m-b-5">{{ $user_company['company_name'] }}</h2>
-                                                <a href="//{{ $user_company['subdomain'] }}"
-                                                    target="_blank">{{ $user_company['subdomain'] }}</a>
+                                                <a href="//{{ $user_company['subdomain'] }}.{{ Request::getHost()}}"
+                                                    target="_blank">{{ $user_company['subdomain'] }}.{{ Request::getHost()}}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -90,7 +83,7 @@
                                             <h5>Company Contact</h5>
                                             <ul class="list-unstyled m-t-10">
                                                 <li class="row">
-                                                    <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                    <p class="col-2 font-weight-semibold text-dark m-b-5">
                                                         <i class="m-r-10 text-primary anticon anticon-mail"></i>
                                                         <span>Email: </span>
                                                     </p>
@@ -100,7 +93,7 @@
                                                     </p>
                                                 </li>
                                                 <li class="row">
-                                                    <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                    <p class="col-2 font-weight-semibold text-dark m-b-5">
                                                         <i class="m-r-10 text-primary anticon anticon-phone"></i>
                                                         <span>Phone: </span>
                                                     </p>

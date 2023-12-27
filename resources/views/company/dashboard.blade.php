@@ -91,6 +91,16 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                    @else
+                                    <div class="m-b-25">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="media align-items-center">
+                                                <div class="">
+                                                    <p class="text-muted m-b-0">No record found</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endif
 
                             </div>
@@ -135,6 +145,17 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                    @else
+                                    <div class="m-b-25">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="media align-items-center">
+                                                <div class="">
+
+                                                    <p class="text-muted m-b-0">No record found</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endif
 
                             </div>
@@ -176,6 +197,17 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                @else
+                                <div class="m-b-25">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="media align-items-center">
+                                            <div class="">
+
+                                                <p class="text-muted m-b-0">No record found</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 @endif
 
                             </div>
@@ -191,7 +223,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h5>Total Revenue</h5>
                         </div>
-                        <div class="m-t-50" style="height: 330px">
+                        <div class="m-t-50">
                             <canvas class="chart" id="myChart"></canvas>
                         </div>
                     </div>
