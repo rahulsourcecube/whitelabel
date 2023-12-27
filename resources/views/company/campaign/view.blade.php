@@ -5,12 +5,12 @@
 <div class="main-content">
     @include('company.includes.message')
     <div class="page-header">
-        <h2 class="header-title">Blog List</h2>
         <div class="header-sub-title">
             <nav class="breadcrumb breadcrumb-dash">
-                <a href="#" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Home</a>
-                <a class="breadcrumb-item" href="#">Pages</a>
-                <span class="breadcrumb-item active">Blog List</span>
+                <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                        class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                        <span class="breadcrumb-item">Campaign</span>
+                <span class="breadcrumb-item active">VIew </span>
             </nav>
         </div>
     </div>
@@ -190,8 +190,8 @@
 
                 // $('#view-modal').modal('show');
                 $('#view-modal').modal('show');
-                $('.addmodle').append("");
-                $('.addmodle').append(response.message);
+                $('.addmodle').html(" ");
+                $('.addmodle').html (response.message);
 
             }
         });

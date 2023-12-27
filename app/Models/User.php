@@ -13,8 +13,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable , HasRoles;
     const USER_TYPE = [
-        'ADMIN' => 0,
-        'COMPANY' => 1,
+        'ADMIN' => 1,
+        'COMPANY' => 2,
         'STAFF' => 3,
         'USER' => 4,
     ];
@@ -63,7 +63,7 @@ class User extends Authenticatable
     public function getUserStatusAttribute() {
         $status = $this->status;
         $string = 'Active';
-        if($status == 1){
+        if($status == 0){
             $string = 'Deactive';
         }
         return $string;

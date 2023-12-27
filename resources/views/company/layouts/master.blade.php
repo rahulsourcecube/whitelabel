@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@yield('title') || {{ !empty($siteSetting) && $siteSetting->title ? $siteSetting->title : env('APP_NAME') }} 
+    <title>@yield('title') || {{ !empty($siteSetting) && $siteSetting->title ? $siteSetting->title : env('APP_NAME') }}
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
@@ -34,15 +34,8 @@
             @include('company.includes.sidebar')
             <!-- Side Nav END -->
             <!-- Page Container START -->
-            <div class="page-container">
+            <div class="page-container company">
                 <div class="container notification">
-                    @if (!$packagebuymessage)
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Please purchase package</strong>. <a
-                                href="{{ route('company.package.list', 'Free') }}">Click</a>
-                            here to buy package.
-                        </div>
-                    @endif
                     @if ($remainingDays && $remainingDays != null)
                         <div class="alert alert-danger alert-dismissible fade show">
                             <strong>Your package going to be expires in {{ $remainingDays }}</strong>. <a

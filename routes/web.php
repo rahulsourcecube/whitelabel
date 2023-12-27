@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
-use App\Http\Controllers\company\Notification;
+use App\Http\Controllers\Company\Notification;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
@@ -50,6 +50,7 @@ Route::get('user', [LoginController::class, 'form']);
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
+    Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
 
 Route::prefix('user')->name('user.')->group(function () {
@@ -104,8 +105,15 @@ Route::prefix('company')->name('company.')->group(function () {
     Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
     Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
 });
+// Admin Middleware
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('company-revenue', [AdminController::class, 'CompanyRevenue'])->name('CompanyRevenue');
+      
+    // admin side edit admin edit Profile Route
+    Route::get('/change/password', [AdminController::class, 'ChengPassword'])->name('ChengPassword');
+    Route::post('/update/admin/password', [AdminController::class, 'UpdatePassword'])->name('UpdatePassword');
+
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('', [PackageController::class, 'index'])->name('list');
         Route::post('list', [PackageController::class, 'dtList'])->name('dtlist');
@@ -128,8 +136,9 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
     Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
     Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
 });
-
+// {{-- Company Middleware --}}
 Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
+    Route::post('logout', [CompanyLoginController::class, 'logout'])->name('logout');
     Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');
     Route::post('update_profile/{id}', [CompanyLoginController::class, 'updateprofile'])->name('update_profile');
     Route::post('update_passsword', [CompanyLoginController::class, 'updatepassword'])->name('update_password');
@@ -148,7 +157,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::get('view/{id}', [UserController::class, 'view'])->name('view');
         Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
         Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
-       
+
     });
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
@@ -225,12 +234,16 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
         Route::prefix('notification')->name('notification.')->group(function () {
             Route::get('', [Notification::class, 'index'])->name('list');
             Route::post('/list', [Notification::class, 'dtlist'])->name('dtlist');
-    
+
        });
     });
-   
+
 });
 Route::get('migrate', function () {
     Artisan::call('migrate');
-    return 'Yupp, migrations ran successfully!';
+    return 'Yupp, migrations run successfully!';
+});
+Route::get('seeder', function () {
+    Artisan::call('db:seed');
+    return 'Yupp, seeder run successfully!';
 });

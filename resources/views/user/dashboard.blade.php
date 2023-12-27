@@ -95,7 +95,7 @@
                                     @foreach ($campaignList as $data)
                                         <tr>
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                            <td>{{ isset($data->reward) ? $data->reward : '' }}</td>
+                                            <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency(). $data->reward) : '' }}</td>
                                             {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
                                             <td>
                                                 @if (isset($data->getCampaign->description))

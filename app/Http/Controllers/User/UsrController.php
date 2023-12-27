@@ -397,19 +397,18 @@ class UsrController extends Controller
     public function store(Request $request)
     {
         try {
-
-            $userEmail = User::where('user_type', '4')->where('status', '1')->where('email', $request->email)->first();
-
+            $userEmail = User::where('user_type', env('USER_ROLE'))->where('email', $request->email)->first();
             if (!empty($userEmail)) {
                 return redirect()->back()->with('error', 'This email already exists');
             }
-
-
+            $usercontactnumber = User::where('user_type', env('USER_ROLE'))->where('contact_number', $request->contact_number)->first();
+            if (!empty($usercontactnumber)) {
+                return redirect()->back()->with('error', 'This contact number already exists');
+            }
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->first();
             }
-
-            $companyId = User::where('user_type', '2')->where('status', '1')->first();
+            $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;
             $userRegister->last_name = $request->last_name;
@@ -419,6 +418,7 @@ class UsrController extends Controller
             $userRegister->referral_code = Str::random(6);
             $userRegister->password = Hash::make($request->password);
             $userRegister->view_password = $request->password;
+            $userRegister->contact_number = $request->contact_number;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
 
             Mail::send('user.email.welcome', ['user' => $userRegister], function ($message) use ($request) {
@@ -429,8 +429,8 @@ class UsrController extends Controller
             $userRegister->save();
 
             return redirect()->route('user.login')->with('success', "Registration Successfully!");
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

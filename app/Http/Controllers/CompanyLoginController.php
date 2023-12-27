@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\User;
@@ -35,40 +36,53 @@ class CompanyLoginController extends Controller
     }
     function dashboard()
     {
-        $companyId = Auth::user()->id;
+        // Get the current month and year
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+        $companyId = Helper::getCompanyId();
         $data = [];
         $data['total_campaign'] = 0;
         $data['total_user'] = 0;
+        $data['new_user'] = 0;
+        $data['old_user'] = 0;
         $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
+        $data['old_user'] =User::where('company_id', $companyId)->where('user_type', '4')->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
+        $data['new_user'] = User::where('company_id', $companyId)->where('user_type', '4')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
         $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
         $data['total_campaignReq'] = 0;
         $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(10)->get();
         $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(10)->get();
         $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
 
+        $start_time = strtotime('first day of this month');
+        $end_time = strtotime(date("Y-m-d"));
+        $chart_title = 'Day of the current month';
+        if ($start_time == $end_time) {
+            $start_time = strtotime('first day of last month');
+            $end_time = strtotime('last day of last month');
+            $chart_title = 'Day of the previous month';
+        }
         // DB::enableQueryLog();
         $user_campaign_history = DB::table('users as u')
             ->where('u.company_id', $companyId)
             ->where('uch.status', '3')
-            ->whereMonth('uch.updated_at', '=', Carbon::now()->month)
+            ->whereMonth('uch.updated_at', '=', date("m", $start_time))
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
             ->select(DB::raw('SUM(uch.reward) as total_reward , DAYOFMONTH(uch.updated_at) as day'))
             ->groupBy('day')
             ->get();
 
         // dd(DB::getQueryLog());
-        $dateandtime = Carbon::now();
-        $start_date = "01-" . $dateandtime->month . "-" . $dateandtime->year;
-        $start_time = strtotime($start_date);
-        $end_time = strtotime("+1 month", $start_time);
-        for ($i = $start_time; $i < $end_time; $i += 86400) {
-            $list[date('d', $i)] = 0;
+
+        $list = [];
+        for ($i = $start_time; $i <= $end_time; $i += 86400) {
+            $list[(int)date('d', $i)] = 0;
         }
         foreach ($user_campaign_history as $values) {
             $list[$values->day] = $values->total_reward;
         }
         $user_reward_and_days = json_encode(['day' => array_keys($list), 'reward' => array_values($list)]);
-        return view('company.dashboard', $data, compact('user_reward_and_days'));
+        return view('company.dashboard', $data, compact('user_reward_and_days', 'chart_title'));
     }
     public function login(Request $request)
     {
@@ -226,9 +240,10 @@ class CompanyLoginController extends Controller
     }
     public function Profile()
     {
+        $companyId = Helper::getCompanyId();
         $profiledetail = User::where('id', Auth::user()->id)->first();
-        $companydetail = SettingModel::where('user_id', Auth::user()->id)->first();
-        $companyname = CompanyModel::where('user_id', Auth::user()->id)->first();
+        $companydetail = SettingModel::where('user_id', $companyId)->first();
+        $companyname = CompanyModel::where('user_id', $companyId)->first();
         return view('company.profile', compact('profiledetail', 'companydetail', 'companyname'));
     }
     public function updatepassword(Request $request)
@@ -267,4 +282,9 @@ class CompanyLoginController extends Controller
             echo 'true';
         }
     }
+    public function logout(Request $request) {
+     
+        Auth::logout();
+        return redirect()->route('company.signin');
+      }
 }

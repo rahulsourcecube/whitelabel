@@ -13,7 +13,7 @@ class PackageModel extends Model
     protected $table="package";
     const STATUS = [
         'ACTIVE' => '1',
-        'INACTIVE' => '2',
+        'INACTIVE' => '0',
     ];
     const TYPE = [
         'FREE' => 1,

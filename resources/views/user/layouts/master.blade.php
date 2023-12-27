@@ -39,7 +39,7 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
 
             <!-- Side Nav END -->
             <!-- Page Container START -->
-            <div class="page-container">
+            <div class="page-container user-panel">
                 <div class="container notification">
                 </div>
                 <!-- Content Wrapper START -->

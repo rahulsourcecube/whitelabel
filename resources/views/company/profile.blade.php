@@ -70,10 +70,11 @@
                         <div class="row align-items-center">
                             <div class="text-center text-sm-left col-md-2">
                                 <div class="">
-                                    @if(empty($companydetail->logo))
-                                    <img src="{{ asset('assets/images/logo/logo.png')}}" alt="">
-                                    @else
+                                    @if(!empty($companydetail->logo) && file_exists('uploads/setting/' .
+                                    $companydetail->logo))
                                     <img src="{{ asset('uploads/setting/'.$companydetail->logo)}}" alt="" class="w-100">
+                                    @else
+                                    <img src="{{ asset('assets/images/logo/logo.png')}}" alt="">
                                     @endif
                                 </div>
                             </div>
