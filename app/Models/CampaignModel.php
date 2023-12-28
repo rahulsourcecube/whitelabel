@@ -25,7 +25,7 @@ class CampaignModel extends Model
         'status',
     ];
 
-    protected $append = ["task_type"];
+    protected $append = ["task_type", "social_task_user_count"];
 
     public function getTaskTypeAttribute()
     {
@@ -49,8 +49,16 @@ class CampaignModel extends Model
     {
         return $this->belongsTo(CampaignModel::class)->where('campaign_id', '!=', 'id');
     }
+
+    public function social()
+    {
+        return $this->belongsTo(CampaignModel::class)->where('campaign_id', '!=', 'id');
+    }
   
     // function getcompany(){
     //     return $this->belongsTo(CompanyModel::class)->where('id','company_id');
     // }  
+    public function campaignUSerHistory() {
+        return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id','id')->where('status','3');
+    }
 }

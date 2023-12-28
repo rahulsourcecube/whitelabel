@@ -208,7 +208,6 @@
                     var values = data.map(function(item) {
                         return item.value;
                     });
-
                     // Create a line chart with an area
                     var ctx = document.getElementById('myChart').getContext('2d');
                     var myChart = new Chart(ctx, {
@@ -218,6 +217,13 @@
                             datasets: [{
                                 label: 'Company Revenue',
                                 data: values,
+                                // fill: true, // Fill the area under the line
+                                backgroundColor: 'transparent', // Area color
+                                borderColor: '#3F87F5', // Line color
+                                // borderWidth: 1
+                            },{
+                                label: 'Company Revenue',
+                                data: [4, 1, 2, 3],
                                 // fill: true, // Fill the area under the line
                                 backgroundColor: 'transparent', // Area color
                                 borderColor: '#3F87F5', // Line color
