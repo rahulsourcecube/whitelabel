@@ -62,7 +62,7 @@
                             <label for="expiry_date">Status</label>
                             <div class="form-group align-items-center">
                                 <div class="switch m-r-10">
-                                    <input type="checkbox" id="switch-1" name="status" value="true" @if (isset( $task->status) && $task->status == 0 ) checked="" @endif>
+                                    <input type="checkbox" id="switch-1" name="status" value="true" @if (isset( $task->status) && $task->status == 1 ) checked="" @endif>
                                     <label for="switch-1"></label>
                                 </div>
                             </div>

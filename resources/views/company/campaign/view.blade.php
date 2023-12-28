@@ -9,7 +9,7 @@
             <nav class="breadcrumb breadcrumb-dash">
                 <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
                         class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                        <span class="breadcrumb-item">Campaign</span>
+                <span class="breadcrumb-item">Campaign</span>
                 <span class="breadcrumb-item active">VIew </span>
             </nav>
         </div>
@@ -19,78 +19,81 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4">
-                        <img class="img-fluid" src="{{asset('uploads/company/campaign').'/'.$task->image}}" alt="">
+                        @if (isset($task) && $task->image ==
+                        '')
+                        <img src="{{ asset('assets/images/others/No_image_available.png') }}" class="w-100 img-responsive">
+                        @else
+                        <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
+                            class="w-100 img-responsive">
+                        @endif
                     </div>
                     <div class="col-md-8">
                         <h4 class="m-b-10">{{$task->title??""}}</h4>
                         <div class="d-flex align-items-center m-t-5 m-b-15">
-                            {{-- <div class="avatar avatar-image avatar-sm">
-                                    <img src="{{ asset('assets/images/avatars/thumb-2.jpg') }}" alt="">
-                        </div> --}}
-                        <div class="m-l-10">
-                            <span class="text-gray font-weight-semibold">@if($task->type=='1') {{'Referral'}} @elseif($task->type=='2'){{'Social Share'}} @else {{'Custom'}} @endif</span>
-                            <span class="m-h-5 text-gray">|</span>
-                            <span class="text-gray">{{$task->expiry_date??""}}</span>
+                            <div class="m-l-10">
+                                <span class="text-gray font-weight-semibold">@if($task->type=='1') {{'Referral'}}
+                                    @elseif($task->type=='2'){{'Social Share'}} @else {{'Custom'}} @endif</span>
+                                <span class="m-h-5 text-gray">|</span>
+                                <span class="text-gray">{{$task->expiry_date??""}}</span>
+                            </div>
                         </div>
-                    </div>
-                    <p class="m-b-20">{!! $task->description !!}</p>
-                    <div class="text-right">
-                        {{-- <a class="btn btn-hover font-weight-semibold" href="blog-post.html">
-                                    <span>Read More</span>
-                                </a> --}}
+                        <p class="m-b-20">{!! $task->description !!}</p>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="card-body">
-                {{-- <h4>Tabs With Pill</h4>
-                        <p>Tabs also works with pills.</p> --}}
+            <div class="card">
+                <div class="card-body">
+                    {{-- <h4>Tabs With Pill</h4>
+                    <p>Tabs also works with pills.</p> --}}
+                    <div class="m-t-25">
+                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                            <li class="nav-item my-table-tab" data-status="1">
+                                <a class="nav-link active" id="user-tab" data-toggle="pill" href="#Joined_user"
+                                    role="tab" aria-controls="user" aria-selected="true">Recently Joined User </a>
+                            </li>
+                            <li class="nav-item my-table-tab" data-status="2">
+                                <a class="nav-link" id="request-tab" data-toggle="pill" href="#request" role="tab"
+                                    aria-controls="request" aria-selected="false">Approval Requset</a>
+                            </li>
+                            <li class="nav-item my-table-tab" data-status="3">
+                                <a class="nav-link" id="accept-tab" data-toggle="pill" href="#accept" role="tab"
+                                    aria-controls="accept" aria-selected="false">Accepted</a>
+                            </li>
+                            <li class="nav-item my-table-tab" data-status="4">
+                                <a class="nav-link" id="reject-tab" data-toggle="pill" href="#reject" role="tab"
+                                    aria-controls="reject" aria-selected="false">Rejected</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body tab-content" id="pills-tabContent">
+
+                <h4>Recently User Joined List</h4>
                 <div class="m-t-25">
-                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                        <li class="nav-item my-table-tab" data-status="1">
-                            <a class="nav-link active" id="user-tab" data-toggle="pill" href="#Joined_user" role="tab" aria-controls="user" aria-selected="true">Recently Joined User </a>
-                        </li>
-                        <li class="nav-item my-table-tab" data-status="2">
-                            <a class="nav-link" id="request-tab" data-toggle="pill" href="#request" role="tab" aria-controls="request" aria-selected="false">Approval Requset</a>
-                        </li>
-                        <li class="nav-item my-table-tab" data-status="3">
-                            <a class="nav-link" id="accept-tab" data-toggle="pill" href="#accept" role="tab" aria-controls="accept" aria-selected="false">Accepted</a>
-                        </li>
-                        <li class="nav-item my-table-tab" data-status="4">
-                            <a class="nav-link" id="reject-tab" data-toggle="pill" href="#reject" role="tab" aria-controls="reject" aria-selected="false">Rejected</a>
-                        </li>
-                    </ul>
+                    <table id="user_joind" class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Reward</th>
+                                <th>Join Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
+
             </div>
-        </div>
-
-        <div class="card-body tab-content" id="pills-tabContent">
-
-            <h4>Recently User Joined List</h4>
-            <div class="m-t-25">
-                <table id="user_joind" class="table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Mobile</th>
-                            <th>Reward</th>
-                            <th>Join Date</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-
         </div>
     </div>
-</div>
 </div>
 <input type="hidden" id="status" value="1">
 <!-- return '<button class="btn btn-success  btn-sm" data-action="accept" onclick="Accept(\'' + actionUrl + '\',\'3\',\'' + id + '\')">Accept</button>' + -->

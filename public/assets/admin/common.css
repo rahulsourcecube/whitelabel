@@ -3,8 +3,8 @@
 }
 
 .logo  img{
-    width: 100%;
-    max-width: 100px;
+    /* max-width: 100px; */
+    max-height: 70px;
 }
 
 .error {
@@ -46,4 +46,15 @@
     opacity: 1;
     border-right: 2px solid;
     border-color: #3f87f5;
+}
+.readonly{
+    background-color: unset Im !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
 }

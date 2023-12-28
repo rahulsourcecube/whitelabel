@@ -50,7 +50,7 @@ class CampaignController extends Controller
     public function tdlist($type, Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $columns = ['id', 'title'];
             $totalData = CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
             $start = $request->input('start');
@@ -109,7 +109,6 @@ class CampaignController extends Controller
             ->skip($start)
             ->take($length)
             ->get();
-        // dd($results);
 
         foreach ($results as $result) {
 
@@ -145,7 +144,7 @@ class CampaignController extends Controller
     public function store(Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'reward' => 'required|numeric',
@@ -157,9 +156,9 @@ class CampaignController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
+            $CampaignModelCount = CampaignModel::where('company_id', $companyId)->count();
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($userCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
+            if ($CampaignModelCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
                 return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_campaign . ' campaigns');
             }
             if ($request->hasFile('image')) {
@@ -196,7 +195,7 @@ class CampaignController extends Controller
     public function update(Request $request, CampaignModel $Campaign)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
                 'reward' => 'required|numeric',
@@ -232,7 +231,7 @@ class CampaignController extends Controller
             $Campaign->type = $request->type;
             $Campaign->image = $image;
             $Campaign->company_id = $companyId;
-            $Campaign->status = !empty($request->status) ? '0' : '1';
+            $Campaign->status = !empty($request->status) ? '1' : '0';
             $Campaign->save();
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task update successfuly.');
@@ -244,9 +243,9 @@ class CampaignController extends Controller
 
     function analytics(Request $request)
     {
-        $companyId = Auth::user()->id;
+        $companyId = Helper::getCompanyId();
         $date = Carbon::today()->subDays(7);
-        $total_join_users = DB::table('users as u')
+        $total_join_users  = DB::table('users as u')
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
             ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
             ->where('u.company_id', $companyId)
@@ -259,7 +258,6 @@ class CampaignController extends Controller
             ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
             ->groupBy('day')
             ->get();
-
         $dateandtime = Carbon::now();
         $start_date = $dateandtime->subDays(7);
         $start_time = strtotime($start_date);
@@ -271,7 +269,10 @@ class CampaignController extends Controller
             $list[$values->day] = $values->total_user;
         }
         $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
-        return view('company.campaign.analytics', compact('user_total'));
+
+        $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
+
+        return view('company.campaign.analytics', compact('user_total', 'customTasks'));
     }
     function fetch_data(Request $request)
     {
@@ -403,7 +404,7 @@ class CampaignController extends Controller
 
         try {
             $id = base64_decode($request->id);
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
 
             $user = User::where('id', $camphistory->user_id)->first();
@@ -416,7 +417,7 @@ class CampaignController extends Controller
                         <button type="button" class="close" data-dismiss="modal">
                             <i class="anticon anticon-close"></i>
                         </button>
-                    </div>  
+                    </div>
 
         <div class="card">
             <div class="card-body">
@@ -424,7 +425,7 @@ class CampaignController extends Controller
                     <div class="col-md-12">
                         <div class="row align-items-center">
                             <div class="text-center text-sm-left col-md-2">
-                                <div class="avatar avatar-image" style="width: 150px; height:150px">';
+                                <div class="avatar avatar-image" style="width: 120px; height:120px">';
 
             if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image)) {
                 $html .= '<img src="' . asset('uploads/company/user-profile/' . $user->profile_image) . '" alt="">';
@@ -433,29 +434,27 @@ class CampaignController extends Controller
             };
             $html .= ' </div>
                             </div>
-                            <div class="text-center text-sm-left m-v-15 p-l-30">
+                            <div class="text-center text-sm-left m-v-15 p-l-40">
                                 <h2 class="m-b-5"></h2>
                                 <div class="row">
                                     <div class="d-md-block d-none border-left col-1"></div>
                                     <div class="col-md-12">
                                         <ul class="list-unstyled m-t-10">
                                             <li class="row">
-                                                <p class="col-sm-6 col-6 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-mail"></i>
-                                                    <span>Email: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-mail"></i>
                                                 </p>
                                                 <p class="col font-weight-semibold">' . $user->email ?? $user->email;
             $html .= '</p>
                                             </li>
                                             <li class="row">
-                                                <p class="col-sm-6 col-6 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-phone"></i>
-                                                    <span>Phone: </span>
+                                                <p class="font-weight-semibold text-dark m-b-5">
+                                                    <i class="m-r-8 text-primary anticon anticon-phone"></i>
                                                 </p>
                                                 <p class="col font-weight-semibold"> ' . $user->contact_number ?? $user->contact_number;
             $html .= '</p>
                                             </li>
-                                        
+
                                         </ul>
                                         <div class="d-flex font-size-22 m-t-15">
                                         ';
@@ -469,7 +468,7 @@ class CampaignController extends Controller
             };
             if (!empty($user->instagram_link)) {
                 $html .= '
-                                            
+
                                             <a href="' . $user->instagram_link ?? $user->instagram_link;
                 $html .= '"
                                                 target="blank" class="text-gray p-r-20">
@@ -513,7 +512,7 @@ class CampaignController extends Controller
                         <tbody>
                             <tr>
                                 <td>Bank Name:</td>
-                                <td> ' . $user->twitter_link ?? $user->twitter_link;
+                                <td> ' . $user->bank_name ?? $user->bank_name;
             $html .= '</td>
                             </tr>
                             <tr>
@@ -531,20 +530,83 @@ class CampaignController extends Controller
                                 <td> ' . $user->ac_no ?? $user->ac_no;
             $html .= '</td>
                             </tr>
-                            <tr>                               
+                            <tr>
                                 <td> <button class="btn btn-success  btn-sm action" data-action="3"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"  >Accept</button>
                                 <button class="btn btn-danger  btn-sm action" data-action="4"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"data-action="Reject" >Reject</button></td>
-                                
+
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>  
+            </div>
         </div>  ';
             return response()->json(['success' => 'error', 'message' => $html]);
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
+        }
+    }
+
+    function CompanyCustom(Request $request)
+    {
+
+        $results = UserCampaignHistoryModel::selectRaw('MONTH(updated_at) as month')
+            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 3 AND MONTH(updated_at) = month) as total_completed')
+            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 1 AND MONTH(updated_at) = month) as total_joined')
+            ->whereYear('updated_at', $request->year)
+            ->groupBy(DB::raw('MONTH(updated_at)'))
+            ->get();
+
+
+        $data = [];
+
+        foreach ($results as $item) {
+            $data[] = [
+                "label" => Carbon::create()->month($item['month'])->format('F'), // Format the day of the month
+                "total_completed" => $item['total_completed'],
+                "total_joined" => $item['total_joined']
+
+            ];
+        }
+        return response()->json($data);
+    }
+
+    public function getSocialAnalytics(Request $request)
+    {
+        // dd($request->all());
+        $companyId = Helper::getCompanyId();
+        if ($request->ajax()) {
+            $columns = ['title'];
+            $draw = $request->input('draw');
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $order = $request->input('order.0.column');
+            $dir = $request->input('order.0.dir');
+
+            // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
+
+            $query = CampaignModel::select(['id', 'title'])->where('type', 2)->where('company_id', $companyId)->whereBetween('created_at', [date('Y-m-d 00:00:00', strtotime($request->from_date)), date('Y-m-d 00:00:00', strtotime($request->to_date))]);
+            $recordsTotal = $query->count();
+
+            $query->orderBy($columns[$order], $dir)->skip($start)->take($length);
+
+            $userCounts = $query->get();
+            $data = [];
+
+            foreach ($userCounts as $item) {
+                if ($item->campaignUSerHistory->count() != 0) {
+                    $data[] = [
+                        "title" => $item->title, // Format the day of the month
+                        "social_task_user_count" => $item->campaignUSerHistory->count()
+                    ];
+                }
+            }
+            return response()->json([
+                'draw' => $draw,
+                'recordsTotal' => $recordsTotal,
+                'recordsFiltered' => $recordsTotal,
+                'data' => $data,
+            ]);
         }
     }
 }

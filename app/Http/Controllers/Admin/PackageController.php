@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\PackageModel;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 
 class PackageController extends Controller
 {
@@ -28,8 +29,6 @@ class PackageController extends Controller
             ->take($length)
             ->get();
         foreach ($results as $result) {
-            // dd($result);
-            // dd('admin/uploads/packageImage/' . $result->image);
             if ($result->type == '1') {
                 $type = 'Free';
             } elseif ($result->type == '2') {
@@ -43,10 +42,10 @@ class PackageController extends Controller
                 $result->title,
                 $type,
                 $result->duration,
-                $result->price,
+                Helper::getcurrency() . $result->price,
                 $result->no_of_campaign,
                 $result->image,
-                ($result->status == '1') ? 'Active' : 'Deactive',
+                ($result->status == '1') ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
 
             ];
         }
@@ -100,6 +99,7 @@ class PackageController extends Controller
             $package->duration = $request->day;
             $package->price = $request->price;
             $package->type = $request->type;
+            $package->status = $request->status ? '1' : '0';
             // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
 
@@ -119,7 +119,7 @@ class PackageController extends Controller
         try {
             $package = new PackageModel();
             $package =   PackageModel::where('id', $id)->first();
-
+            // dd($request->all());
             if ($request->hasFile('image')) {
                 $originalFilename = $request->file('image')->getClientOriginalName();
                 $extension = $request->file('image')->getClientOriginalExtension();
@@ -150,13 +150,13 @@ class PackageController extends Controller
             $package->duration = $request->day;
             $package->price = $request->price;
             $package->type = $request->type;
+            $package->status = $request->status ? '1' : '0';
             // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
-
             $package->save();
-
             return redirect()->route('admin.package.list')->with('success', 'Package Update successfully');
         } catch (\Exception $e) {
+            Log::error("error while update package: " .  $e->getMessage());
             return redirect()->back()->with('error',  $e->getMessage());
         }
     }

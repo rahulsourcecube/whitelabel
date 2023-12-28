@@ -9,7 +9,7 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <title>@yield('title') {{ !empty($siteSetting) && $siteSetting->title ? $siteSetting->title : env('APP_NAME') }}
+    <title>@yield('title') || {{ !empty($siteSetting) && !empty($siteSetting->title) ? $siteSetting->title : env('APP_NAME') }}
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"

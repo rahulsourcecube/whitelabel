@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('zipcode')->nullable();
             $table->string('status')->default('success');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

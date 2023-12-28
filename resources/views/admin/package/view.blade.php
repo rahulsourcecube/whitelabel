@@ -13,8 +13,7 @@
                 </nav>
             </div>
         </div>
-        <div class="container">
-
+        <div class="container1">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -26,7 +25,7 @@
                             <h4 class="m-b-10">{{ $package->title }}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">
                                 <div class="">
-                                    <h1>Price :- {{ $package->price }} </h1>
+                                    <h1>Price :- {{\App\Helpers\Helper::getcurrency(). $package->price }} </h1>
                                 </div>
                                 <div class="m-l-10">
                                     <span class="text-gray font-weight-semibold"></span>

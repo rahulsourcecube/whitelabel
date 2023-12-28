@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\Auth;
 class Notification extends Controller
 {
     function index(Request $request)
-    {      
+    {
         $user = Auth::user();
         $notifications = ModelsNotification::where('company_id', $user->id)->where('type', '2')->where('is_read', '0')->get();
-       
-        
+
+
         foreach ($notifications as $notification) {
             $notification->is_read = '1';
             $notification->save();
         }
-            return view('company.notification.list');        
+        return view('company.notification.list');
     }
     public function dtList(Request $request)
     {
@@ -35,7 +35,7 @@ class Notification extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        
+
         $results = ModelsNotification::orderBy($columns[$order], $dir)
             ->where('company_id', Auth::user()->id)
             ->where('type', '2')
@@ -50,6 +50,7 @@ class Notification extends Controller
 
                 $result->title ?? "-",
                 $result->message ?? "-",
+                date('d-m-Y', strtotime($result->created_at)) ?? "-",
 
             ];
         }
@@ -62,4 +63,3 @@ class Notification extends Controller
         ]);
     }
 }
-

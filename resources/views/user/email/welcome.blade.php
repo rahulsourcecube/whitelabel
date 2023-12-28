@@ -1,8 +1,3 @@
-{{-- <h1>Forget Password Email</h1>
-   
-You can reset password from bellow link:
-<a href="{{ route('user.confirmPassword', $token) }}">Reset Password</a> --}}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -64,21 +59,16 @@ You can reset password from bellow link:
                                         <td class="content-block"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                             valign="top"><br><br>
-                                            Welcome ,
+                                            Welcome {{ $first_name }},
                                         </td>
                                     </tr>
                                     <tr
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                            valign="top">
-                                            Forget Password Email
-                                            <br><br>
-                                            You can reset password by clicking below link:<br><br>
-                                            <a href="{{ route('user.confirmPassword', $token) }}" class="btn-primary"
-                                                itemprop="url"
-                                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background: linear-gradient(to top, #5d6dc3, #3c86d8); margin: 0;  padding: 8px 16px;">Reset
-                                                Password</a>                                            
+                                            valign="top"><br><br>
+                                            We just heard an awesome new person became a part of our team!<br><br>
+                                            Welcome to the {{ isset($mail->title) ? $mail->title : 'White Label' }} !
                                         </td>
                                     </tr>
                                     <tr

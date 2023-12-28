@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyPackage;
 use App\Models\PackageModel;
@@ -38,8 +39,8 @@ class PackageController extends Controller
    function billing()
    {
       // get CompanyPackage bills
-      
-      $bills = CompanyPackage::where('company_id', Auth::user()->id)->get();
+      $companyId = Helper::getCompanyId();
+      $bills = CompanyPackage::where('company_id', $companyId)->get();
 
       return view('company.billing.list',compact('bills'));
    }
@@ -47,12 +48,14 @@ class PackageController extends Controller
    public function buy(Request $request)
    {
       try {
+         $companyId = Helper::getCompanyId();
+
          $package = PackageModel::where('id', $request->package_id)->first();
          if (empty($package)) {
             return response()->json(['error' => true, 'message' => 'Package not found']);
          }
          $addPackage = new CompanyPackage();
-         $addPackage->company_id = Auth::user()->id;
+         $addPackage->company_id = $companyId;
          $addPackage->package_id = $package->id;
          $addPackage->start_date = $package->start_date;
          $addPackage->end_date = $package->end_date;

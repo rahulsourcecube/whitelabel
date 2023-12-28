@@ -16,7 +16,7 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-md-12">
-                        <div class="align-items-center row">
+                        <div class="row align-items-center">
                             <div class="text-center text-sm-left col-md-2">
                                 <div class="avatar avatar-image" style="width: 150px; height:150px">
                                     @if(isset($profiledetail) && $profiledetail->profile_image == '')

@@ -41,9 +41,10 @@ class UserController extends Controller
 
     public function dtList(Request $request)
     {
+        $companyId = Helper::getCompanyId();
         $columns = ['id', 'title'];
         $totalData = User::where('user_type', User::USER_TYPE['USER'])
-            ->where('company_id', Auth::user()->id)->count();
+            ->where('company_id', $companyId)->count();
         $start = $request->input('start');
         $length = $request->input('length');
         $order = $request->input('order.0.column');
@@ -51,7 +52,7 @@ class UserController extends Controller
         $list = [];
         $results = User::orderBy($columns[$order], $dir)
             ->where('user_type', User::USER_TYPE['USER'])
-            ->where('company_id', Auth::user()->id)
+            ->where('company_id', $companyId)
             ->skip($start)
             ->take($length)
             ->get();
@@ -84,7 +85,7 @@ class UserController extends Controller
     }
     function checkEmail(Request $request)
     {
-        $companyId = Auth::user()->id;
+        $companyId = Helper::getCompanyId();
         $useremail = User::where('company_id', $companyId)->where('email', $request->email)->first();
         if (!empty($useremail)) {
             echo 'false';
@@ -94,7 +95,7 @@ class UserController extends Controller
     }
     function checkContactNumber(Request $request)
     {
-        $companyId = Auth::user()->id;
+        $companyId = Helper::getCompanyId();
         $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->first();
         if (!empty($usernumber)) {
             echo 'false';
@@ -107,7 +108,7 @@ class UserController extends Controller
     {
 
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
@@ -236,7 +237,7 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = !empty($request->password) ? hash::make($request->password) : hash::make($user->view_password);
             $user->view_password = !empty($request->password) ? $request->password : $user->view_password;
-            $user->status = !empty($request->status) ? '0' : '1';
+            $user->status = !empty($request->status) ? '1' : '0';
             $user->facebook_link = $request->facebook_link;
             $user->instagram_link = $request->instagram_link;
             $user->twitter_link = $request->twitter_link;
@@ -248,6 +249,7 @@ class UserController extends Controller
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {
+            // dd($e);
             Log::error('Company user update error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }

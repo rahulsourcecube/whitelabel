@@ -32,7 +32,7 @@ class EmployeeController extends Controller
         $this->middleware('permission:employee-management-delete', ['only' => ['delete']]);
     }
 
-    
+
     function index(Request $request)
     {
 
@@ -42,6 +42,7 @@ class EmployeeController extends Controller
     }
     public function elist(Request $request)
     {
+        $companyId = Helper::getCompanyId();
         $columns = ['id', 'title'];
         $totalData = User::where('user_type', User::USER_TYPE['STAFF'])
             ->where('company_id', Auth::user()->id)->count();
@@ -52,7 +53,7 @@ class EmployeeController extends Controller
         $list = [];
         $results = User::orderBy($columns[$order], $dir)
             ->where('user_type', User::USER_TYPE['STAFF'])
-            ->where('company_id', Auth::user()->id)
+            ->where('company_id', $companyId)
             ->skip($start)
             ->take($length)
             ->get();
@@ -81,7 +82,7 @@ class EmployeeController extends Controller
     function store(Request $request)
     {
         try {
-            $companyId = Auth::user()->id;
+            $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
@@ -89,7 +90,7 @@ class EmployeeController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'cpassword' => 'required|string|min:8',
             ]);
-            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
+            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['STAFF'])->count();
             $ActivePackageData = Helper::GetActivePackageData();
             if ($userCount >= $ActivePackageData->GetPackageData->no_of_employee ) {
                 return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_employee . ' employees');

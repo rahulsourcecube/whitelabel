@@ -10,7 +10,7 @@
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
+        href="@if (!empty($siteSetting) && !empty($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -64,7 +64,7 @@
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="ccontact">Contact
                                                     Number:</label>
-                                                <input type="number" class="form-control" name="ccontact" id="ccontact"
+                                                <input type="number" min="0" class="form-control" name="ccontact" id="ccontact"
                                                     placeholder="Contact Number" maxlength="10" minlength="10"
                                                     value="{{old('ccontact')}}">
                                             </div>
@@ -126,6 +126,10 @@
 
 
     <script>
+        $.validator.addMethod("subdomainV", function(value, element) {
+        var regex = new RegExp("^[a-zA-Z]+[a-zA-Z0-9\\-]*$");
+        return regex.test(value);
+        }, "Please provide proper subdomain name");
         $('#signup').validate({
             rules: {
                 fname: {
@@ -141,7 +145,8 @@
                     required: true
                 },
                 dname: {
-                    required: true
+                    required: true,
+                    subdomainV: true /*** New Rule Applied */
                 },
                 email: {
                     required: true
@@ -149,7 +154,7 @@
                 password: {
                     minlength: 8,
                     maxlength: 30,
-                    required: true,                
+                    required: true,
                 },
                 cpassword: {
                     required: true,
@@ -176,7 +181,7 @@
                     required: "Please enter email"
                 },
                 password: {
-                required: "Please enter password",                
+                required: "Please enter password",
                 },
                 cpassword: {
                     required: "Please enter confirm password",

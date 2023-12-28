@@ -53,6 +53,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
 
+
 Route::prefix('user')->name('user.')->group(function () {
     Route::get('/', [UsrController::class, 'index'])->name('login');
     Route::get('/login', [UsrController::class, 'index'])->name('login');
@@ -100,14 +101,24 @@ Route::prefix('company')->name('company.')->group(function () {
     Route::post('/store', [CompanyLoginController::class, 'login'])->name('login');
     Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup');
     Route::post('/signup/store', [CompanyLoginController::class, 'signupStore'])->name('signup.store');
+
     Route::get('/forget', [CompanyLoginController::class, 'forget'])->name('forgetpassword');
-    Route::post('/forget/store', [CompanyLoginController::class, 'forgetPassSendmail'])->name('forgetPassSendmail');
+    Route::post('/forget-password', [CompanyLoginController::class, 'submitForgetPassword'])->name('forget-password');
+    Route::get('/confirm/password/{token}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::post('/reset-password', [CompanyLoginController::class, 'submitResetPassword'])->name('reset-password');
+
     Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
     Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
 });
 // Admin Middleware
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('company-revenue', [AdminController::class, 'CompanyRevenue'])->name('CompanyRevenue');
+      
+    // admin side edit admin edit Profile Route
+    Route::get('/change/password', [AdminController::class, 'ChengPassword'])->name('ChengPassword');
+    Route::post('/update/admin/password', [AdminController::class, 'UpdatePassword'])->name('UpdatePassword');
+
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('', [PackageController::class, 'index'])->name('list');
         Route::post('list', [PackageController::class, 'dtList'])->name('dtlist');
@@ -178,6 +189,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
 
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
             Route::post('request/user/details', [CampaignController::class, 'userDetails'])->name('userDetails');
+            Route::post('company-custom', [CampaignController::class, 'CompanyCustom'])->name('Custom');
+            Route::post('request/social-analytics', [CampaignController::class, 'getSocialAnalytics'])->name('getSocialAnalytics');
+
 
 
             Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');

@@ -1,28 +1,20 @@
 @extends('company.layouts.master')
 @section('title', 'Edit Profile')
 @section('main-content')
-<style>
-    .image {
-        /* display: none; */
-    }
-</style>
 <!-- Content Wrapper START -->
 <div class="main-content">
-    {{-- <div class="page-header no-gutters has-tab">
-        <h2 class="font-weight-normal">Edit Profile</h2>
-    </div> --}}
     <div class="page-header">
         <div class="header-sub-title">
             <nav class="breadcrumb breadcrumb-dash">
                 <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
                         class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                {{-- <a class="breadcrumb-item" href="#">Edit Profile</a> --}}
                 <span class="breadcrumb-item active">Edit Profile</span>
             </nav>
         </div>
     </div>
     <div class="container">
         <div class="tab-content m-t-15">
+            @include('company.includes.message')
             <div class="tab-pane fade show active" id="tab-account">
                 <form action="{{route('company.update_profile', $editprofiledetail->id)}}" method="post"
                     enctype="multipart/form-data" id="profile-update">
@@ -35,10 +27,10 @@
                             <div class="media align-items-center">
                                 <div class="avatar avatar-image  m-h-10 m-r-15" style="height: 80px; width: 80px">
                                     @if (isset($editprofiledetail) && $editprofiledetail->profile_image == '')
-                                    <img src="{{ asset('assets/images/default-company.jpg') }}" alt="">
+                                    <img src="{{ asset('assets/images/default-company.jpg') }}"  class="imagePreviews">
                                     @else
                                     <img src="{{ asset('uploads/user-profile/'.$editprofiledetail->profile_image) }}"
-                                        alt="" id="imagePreviews">
+                                         class="imagePreviews">
                                     @endif
                                 </div>
                                 <!-- <button class="btn btn-tone btn-primary" onclick="getimage()">Upload</button> -->
@@ -127,7 +119,7 @@
     });
     $("#profile_image").change(function() {
         var input = this;
-        var imagePreview = $("#imagePreviews")[0];
+        var imagePreview = $(".imagePreviews")[0];
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {
