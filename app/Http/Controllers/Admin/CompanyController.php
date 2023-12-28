@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
+use App\Models\SettingModel;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
@@ -53,6 +54,7 @@ class CompanyController extends Controller
     {
         $data = [];
         $data['user_company'] = CompanyModel::where('id', $request->id)->first();
+        $data['user_company_setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
         return view('admin.company.view', $data);
     }
 }

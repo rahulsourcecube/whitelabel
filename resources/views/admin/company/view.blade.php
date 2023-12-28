@@ -21,7 +21,7 @@
                         <div class="row align-items-center">
                             <div class="text-center text-sm-left col-md-2">
                                 <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                    <img src="{{ $user_company->user->profile_image ? asset('uploads/user/'.$user_company->user->profile_image) : asset('assets/images/default-user.jpg') }}"
+                                    <img src="{{ $user_company->user->profile_image ? asset('uploads/user-profile/'.$user_company->user->profile_image) : asset('assets/images/default-user.jpg') }}"
                                         alt="">
                                 </div>
                             </div>
@@ -63,7 +63,7 @@
                                     <div class="col-md-2">
                                         <div class="text-center text-sm-left m-r-10">
                                             <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                                <img src="{{ $user_company->company_logo ? asset('uploads/company/'.$user_company->company_logo): asset('assets/images/default-company.jpg') }}"
+                                                <img src="{{ $user_company_setting->logo ? asset('uploads/setting/'.$user_company_setting->logo): asset('assets/images/default-company.jpg') }}"
                                                     alt="">
                                             </div>
                                         </div>

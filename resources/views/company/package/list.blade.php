@@ -49,9 +49,11 @@
                                     <i class="anticon anticon-dollar font-size-25" style="line-height: 55px"></i>
                                 </div>
                                 <div class="m-l-15">
+                                    
                                     <h2 class="font-weight-bold font-size-30 m-b-0">
-                                        {{App\Helpers\Helper::getcurrency(). $list->plan_price }}
+                                        @if ($list->type != '1'){{App\Helpers\Helper::getcurrency()}}@endif{{ $list->plan_price }}
                                     </h2>
+                                    
                                     <h4 class="m-b-0">{{ $list->title }}</h4>
                                 </div>
                             </div>
