@@ -126,6 +126,10 @@
 
 
     <script>
+        $.validator.addMethod("subdomainV", function(value, element) {
+        var regex = new RegExp("^[a-zA-Z]+[a-zA-Z0-9\\-]*$");
+        return regex.test(value);
+        }, "Please provide proper subdomain name");
         $('#signup').validate({
             rules: {
                 fname: {
@@ -141,7 +145,8 @@
                     required: true
                 },
                 dname: {
-                    required: true
+                    required: true,
+                    subdomainV: true /*** New Rule Applied */
                 },
                 email: {
                     required: true
@@ -149,7 +154,7 @@
                 password: {
                     minlength: 8,
                     maxlength: 30,
-                    required: true,                
+                    required: true,
                 },
                 cpassword: {
                     required: true,
@@ -176,7 +181,7 @@
                     required: "Please enter email"
                 },
                 password: {
-                required: "Please enter password",                
+                required: "Please enter password",
                 },
                 cpassword: {
                     required: "Please enter confirm password",

@@ -47,3 +47,6 @@
     border-right: 2px solid;
     border-color: #3f87f5;
 }
+.readonly{
+    background-color: unset Im !important;
+}

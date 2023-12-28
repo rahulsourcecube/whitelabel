@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use Exception;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -108,6 +109,53 @@ class Helper
             Log::info("helper function get Remaining Days Error" . $e->getMessage());
             return null;
         }
+    }
+
+    //Create host in local
+    public static function createCompanySubDomain($subdomain) {
+
+        $subdomain = $subdomain.'.'.$_SERVER['SERVER_NAME'];
+        $whitelist = array(
+            '127.0.0.1',
+            '::1'
+        );
+
+        if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+
+            $documentRoot = $_SERVER["DOCUMENT_ROOT"];
+            $documentRoot = str_replace('/', '\\', $documentRoot );
+
+            $virtualHostConfig = <<<EOL
+                \n<VirtualHost *:80>
+                        DocumentRoot "{$documentRoot}"
+                        ServerName {$subdomain}
+                        <Directory "{$documentRoot}">
+                        </Directory>
+                    </VirtualHost>
+                EOL;
+            $dirArr = explode('\\',$documentRoot);
+            $vertualHostPath = $dirArr[0].DIRECTORY_SEPARATOR.$dirArr[1].DIRECTORY_SEPARATOR;//.$dirArr[2].DIRECTORY_SEPARATOR;
+
+            exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
+            // dd($dirArr);
+
+            // Path to Apache's httpd-vhosts.conf file
+            $vhostsFilePath = $vertualHostPath .'apache/conf/extra/httpd-vhosts.conf'; // 'C:/xampp8.2/apache/conf/extra/httpd-vhosts.conf';
+
+            // Add the virtual host configuration to httpd-vhosts.conf
+            file_put_contents($vhostsFilePath, $virtualHostConfig, FILE_APPEND);
+
+            // Update the system's hosts file
+            $hostsFilePath = 'C:\Windows\System32\drivers\etc\hosts';
+            $hostsEntry = "\n127.0.0.1\t{$subdomain}\n";
+            file_put_contents($hostsFilePath, $hostsEntry, FILE_APPEND);
+
+            // Restart Apache to apply changes
+            exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
+        }else{
+            // echo  "live";
+        }
+       return;
     }
 
 }

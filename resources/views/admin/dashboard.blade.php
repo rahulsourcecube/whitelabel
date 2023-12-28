@@ -89,7 +89,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <input type="text" class="form-control datepicker-input" id="month"
+                                    <input type="text" class="form-control datepicker-input readonly" id="month"
                                         name="month" placeholder="Select month" value="{{ $currentMonth ?? '' }}" readonly
                                         onchange="fetchDataAndRenderChart()">
 
@@ -134,7 +134,7 @@
                                             <input type="hidden" id="old_user"
                                                 value="{{ isset($old_company) ? $old_company : '0' }}">
                                             <h4 class="m-b-0">{{ isset($old_company) ? $old_company : '' }}</h4>
-                                            <p class="m-b-0 muted">Returning</p>
+                                            <p class="m-b-0 muted">Existing</p>
                                         </div>
                                     </div>
                                 </div>
