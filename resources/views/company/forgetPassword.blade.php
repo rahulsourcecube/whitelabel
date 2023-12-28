@@ -8,7 +8,7 @@
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
+        href="@if (!empty($siteSetting) && !empty($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
         <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
         <!-- Include jQuery -->
@@ -44,11 +44,11 @@
                                             </div>
                                             <label id="email-error" class="error" for="email"></label>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <span class="font-size-13 text-muted">
-                                                    Don't have an account? 
+                                                    Don't have an account?
                                                     <a class="small" href="{{route('company.signup')}}"> Signup</a>
                                                 </span>
                                                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -76,15 +76,15 @@
     </div>
     <script>
     $('#forgetPassSendmail').validate({
-        rules: {          
+        rules: {
             email: {
                 required: true
-            } 
+            }
         },
         messages: {
              email: {
                 required: "Please enter Email"
-            },           
+            },
         }
     });
 

@@ -109,7 +109,7 @@ class CompanyLoginController extends Controller
 
     public function signup()
     {
-        Helper::createCompanySubDomain('aa111');
+        //Helper::createCompanySubDomain('aa111');
         return view('company.signup');
     }
     public function signupStore(Request $request)
