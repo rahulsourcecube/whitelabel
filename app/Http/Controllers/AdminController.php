@@ -59,8 +59,6 @@ class AdminController extends Controller
 
     function CompanyRevenue(Request $request)
     {
-        // dd($request->all());
-        $currentMonth = now()->format('Y-m');
         $userCounts = User::select(
             DB::raw('DATE(created_at) as date'),
             DB::raw('COUNT(*) as count')

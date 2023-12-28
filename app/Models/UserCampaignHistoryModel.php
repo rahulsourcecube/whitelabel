@@ -29,7 +29,7 @@ class UserCampaignHistoryModel extends Model
     }
     
     function getCampaign(){
-        return $this->hasOne(CampaignModel::class,'id','campaign_id');
+        return $this->belongsTo(CampaignModel::class, 'campaign_id');
     }
     
     public function getTaskStatusAttribute() {

@@ -70,7 +70,7 @@ class UsrController extends Controller
                 'password' => 'required',
             ]);
             
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'],'status' => '0'))) {
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'],'status' => '1'))) {
 
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == env('USER_ROLE')) {
 
