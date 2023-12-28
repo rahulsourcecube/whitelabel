@@ -13,7 +13,7 @@
                 </nav>
             </div>
         </div>
-        <div class="container">
+        <div class="container1">
             <div class="card">
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -33,12 +33,12 @@
                                             <ul class="list-unstyled m-t-10">
                                                 <li class="row">
                                                     <p class="font-weight-semibold text-dark m-b-5">
-                                                        <i class="m-r-10 text-primary anticon anticon-mail"></i> <span>{{ $user_company->user->email }} </span>
+                                                        <i class="m-r-10 text-primary anticon anticon-mail"></i> <span>{{ $user_company->user->email?:'-' }} </span>
                                                     </p>
                                                 </li>
                                                 <li class="row">
                                                     <p class="font-weight-semibold text-dark m-b-5">
-                                                        <i class="m-r-10 text-primary anticon anticon-phone"></i> <span>  {{ $user_company->user->contact_number }} </span>
+                                                        <i class="m-r-10 text-primary anticon anticon-phone"></i> <span>  {{ $user_company->user->contact_number?:'-' }} </span>
                                                     </p>
 
                                                 </li>
@@ -57,7 +57,6 @@
                         <div class="card-body">
                             <div class=" align-items-center">
                                 <div class="text-center text-sm-left m-v-15 p-l-30">
-                                    ​
                                     <div class="row">
                                         <div class="col-md-2">
                                             <div class="text-center text-sm-left m-r-10">
@@ -74,9 +73,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    ​
                                     <hr>
-                                    ​
                                     <div class="row">
                                         <div class="d-md-block d-none border-left col-1"></div>
                                         <div class="col-md-12">
@@ -88,8 +85,7 @@
                                                         <span>Email: </span>
                                                     </p>
                                                     <p class="col font-weight-semibold">
-                                                        <a
-                                                            href="mailTo:{{ $user_company['contact_email'] }}">{{ $user_company->contact_email }}</a>
+                                                        <a href="mailTo:{{ $user_company['contact_email'] }}">{{ $user_company->contact_email }}</a>
                                                     </p>
                                                 </li>
                                                 <li class="row">
@@ -98,8 +94,7 @@
                                                         <span>Phone: </span>
                                                     </p>
                                                     <p class="col font-weight-semibold">
-                                                        <a
-                                                            href="tel:{{ $user_company['contact_number'] }}">{{ $user_company->contact_number }}</a>
+                                                        <a href="tel:{{ $user_company['contact_number'] }}">{{ $user_company->contact_number }}</a>
                                                     </p>
                                                 </li>
                                             </ul>
@@ -107,7 +102,7 @@
                                         <div class="col-md-12">
                                             <hr>
                                             <h5>Description</h5>
-                                            {{ $user_company['company_description'] }}
+                                            {{ $user_company['company_description']?:'N/A' }}
                                         </div>
                                     </div>
                                 </div>

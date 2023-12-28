@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->integer('no_of_campaign')->nullable();
-            $table->float('price')->nullable();
+            $table->integer('price')->nullable();
             $table->string('paymnet_method')->nullable();
             $table->string('paymnet_id')->nullable();
             $table->text('paymnet_response')->nullable();

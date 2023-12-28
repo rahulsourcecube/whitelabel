@@ -14,20 +14,13 @@
     <div class="main-content">
         <div class="page-header">
             <h2 class="header-title">Change Password</h2>
-            {{-- <div class="header-sub-title">
-                <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ Route('adminDashboard') }}" class="breadcrumb-item"><i
-                            class="anticon anticon-home m-r-5"></i>Home</a>
-                    <a class="breadcrumb-item" href="#">Change Password </a>
-                </nav>
-            </div> --}}
         </div>
         @php
             $user = Auth::user();
         @endphp
-        
+
+
         <div class="card">
-            @include('admin.includes.message')
             <div class="card-body">
                 <div class="m-t-25">
                     <form id="form-validation" action="{{ route('admin.UpdatePassword') }}" method="post">
@@ -58,7 +51,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Content Wrapper END -->
 
 @endsection

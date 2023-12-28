@@ -39,6 +39,7 @@
             <!-- Side Nav END -->
             <!-- Page Container START -->
             <div class="page-container">
+                @include('admin.includes.message')
                 <!-- Content Wrapper START -->
                 @yield('main-content')
                 <!-- Content Wrapper END -->

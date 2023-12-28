@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PackageModel;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 
 class PackageController extends Controller
 {
@@ -100,6 +100,7 @@ class PackageController extends Controller
             $package->duration = $request->day;
             $package->price = $request->price;
             $package->type = $request->type;
+            $package->status = $request->status?'1':'0';
             // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
 
@@ -119,7 +120,7 @@ class PackageController extends Controller
         try {
             $package = new PackageModel();
             $package =   PackageModel::where('id', $id)->first();
-
+            // dd($request->all());
             if ($request->hasFile('image')) {
                 $originalFilename = $request->file('image')->getClientOriginalName();
                 $extension = $request->file('image')->getClientOriginalExtension();
@@ -150,13 +151,13 @@ class PackageController extends Controller
             $package->duration = $request->day;
             $package->price = $request->price;
             $package->type = $request->type;
+            $package->status = $request->status?'1':'0';
             // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
-
             $package->save();
-
             return redirect()->route('admin.package.list')->with('success', 'Package Update successfully');
         } catch (\Exception $e) {
+            Log::error("error while update package: " .  $e->getMessage());
             return redirect()->back()->with('error',  $e->getMessage());
         }
     }

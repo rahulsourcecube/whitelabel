@@ -116,8 +116,8 @@ class AdminController extends Controller
             if (Hash::check($request->current_password, auth()->user()->password)) {
                 $user->password = Hash::make($request->new_password);
                 $user->save();
-                Auth::logout();
-                return redirect()->route('Login')->with('message', 'Password Update successfully');
+                // Auth::logout();
+                return redirect()->route('admin.ChengPassword')->with('success', 'Password Update successfully');
             } else {
                 return redirect()->back()->with('error', 'Current Password do not match your Password.');
             }

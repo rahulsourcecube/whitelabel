@@ -25,30 +25,25 @@
                                 <input type="text" class="form-control" id="name" name="title" placeholder="Title"
                                     maxlength="150">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="campaign"> No Of Campaign <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="campaign" name="campaign"
                                     placeholder="No Of Campaign"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="user"> No Of User <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="user" name="user"
                                     placeholder="No Of User"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="employee"> No Of Employee <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="employee" name="employee"
                                     placeholder="No Of Employee"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
-                            <div class="form-group col-md-12">
-                                <label for="descriptions">Description</label>
-                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> </textarea>
-                            </div>
-
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="inputype">Type <span class="error">*</span></label>
                                 <select id="inputype" name="type" class="form-control inputype">
                                     <option value="1">Free Trial</option>
@@ -56,17 +51,34 @@
                                     <option value="3">Yearly</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-6">
+
+
+                            <div class="form-group col-md-3">
                                 <label for="day" class="day_title">No Of Day <span class="error">*</span></label>
                                 <input type="text" class="form-control day_place" id="day" name="day"
                                     placeholder="No Of Day"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                            </div>
+                            <div class="col-md-3 pl-5">
+                                <label for="expiry_date">Status</label>
+                                <div class="form-group align-items-center">
+                                    <div class="switch m-r-10">
+                                        <input type="checkbox" id="switch-1" data-toggle="switch" name="status"
+                                            value="true" checked>
+                                        <label for="switch-1"></label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group col-md-6" id="price-section">
                                 <label for="price"> Price <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="price" name="price"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10"
                                     placeholder="Price">
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <label for="descriptions">Description</label>
+                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> </textarea>
                             </div>
                         </div>
                         <div class="form-row">
