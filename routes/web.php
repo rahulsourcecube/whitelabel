@@ -189,6 +189,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
 
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
             Route::post('request/user/details', [CampaignController::class, 'userDetails'])->name('userDetails');
+            Route::post('company-custom', [CampaignController::class, 'CompanyCustom'])->name('Custom');
+            Route::post('request/social-analytics', [CampaignController::class, 'getSocialAnalytics'])->name('getSocialAnalytics');
+
 
 
             Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
