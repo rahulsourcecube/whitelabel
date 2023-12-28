@@ -23,9 +23,9 @@ use Illuminate\Support\Facades\URL;
 
                     <div class="card-content">
                     @if (isset($campagin_detail) && $campagin_detail->image == '')
-                    <img src="{{ asset('assets/images/others/No_image_available.png') }}">
+                    <img src="{{ asset('assets/images/others/No_image_available.png') }}" class="w-100 img-responsive">
                     @else
-                    <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $campagin_detail->image) }}">
+                    <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $campagin_detail->image) }}" class="w-100 img-responsive">
                     @endif
                     </div>
                     <div class="card-footer">
