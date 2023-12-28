@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="m-l-15">
                                     <h2 class="font-weight-bold font-size-30 m-b-0">
-                                        {{ $list->plan_price }}
+                                        {{App\Helpers\Helper::getcurrency(). $list->plan_price }}
                                     </h2>
                                     <h4 class="m-b-0">{{ $list->title }}</h4>
                                 </div>
@@ -78,7 +78,7 @@
                         {!! $list->description !!}
                         @can('package-create')
                         <div class="text-center">
-                            <button class="btn btn-success {{$list->user_bought}}" {{ $list->user_bought == true ?
+                            <button class="btn btn-success" {{ $list->user_bought == true ?
                                 'disabled' : '' }} onclick="openPaymentModal('{{ $list->id }}')">{{ $list->user_bought
                                 == true ? 'Purchased' : 'Buy
                                 Package' }}</button>

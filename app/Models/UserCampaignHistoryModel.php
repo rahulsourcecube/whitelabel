@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 const TASK_STATUS = [
     'Pending ' => 1,
     'Claim Request' => 2,
@@ -12,7 +14,7 @@ const TASK_STATUS = [
 ];
 class UserCampaignHistoryModel extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $table="user_campaign_history";
     protected $fillable = [
         'id',

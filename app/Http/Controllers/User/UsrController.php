@@ -107,6 +107,7 @@ class UsrController extends Controller
 
                 User::findOrFail(Auth::user()->id)->update([
                     'password' => Hash::make($request->password),
+                    'view_password' => $request->password,
                 ]);
 
                 return redirect()->back()->with('success', 'Password Updated Successfully');
@@ -492,7 +493,7 @@ class UsrController extends Controller
             }
 
             $user = User::where('email', $request->email)
-                ->update(['password' => Hash::make($request->password)]);
+                ->update(['password' => Hash::make($request->password),'view_password' => $request->password]);
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 

@@ -34,7 +34,7 @@ class CompanyController extends Controller
                 $result->user->contact_number,
                 $result['company_name'],
                 $result['subdomain'],
-                $result->user->status == '1' ? 'Active' : 'Deactive',
+                $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
                 $result['email'],
                 $result['email'],
                 $result['email'],

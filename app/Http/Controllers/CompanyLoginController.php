@@ -196,6 +196,27 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
+    public function forgetPassSendmail(Request $request)
+    {
+        try {
+            $request->validate(['email' => 'required|email']);
+            $user = User::where('email', $request->email)->first();
+            if (!empty($user)) {
+                $mailData = [
+                    "email" => $request->email,
+                    "_token" => $request->_token
+                ];
+                $details = $user;
+                Mail::to($request->email)->send(new forgetpass($details));
+
+                return redirect()->back()->with('success', 'Mail Send Successfully');
+            } else {
+                return redirect()->back()->with('error', 'email not found');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
 
     public function confirmPassword($token)
     {
@@ -222,7 +243,7 @@ class CompanyLoginController extends Controller
             }
 
             $user = User::where('email', $request->email)
-                ->update(['password' => Hash::make($request->password)]);
+                ->update(['password' => Hash::make($request->password),'view_password' => $request->password]);
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 
@@ -231,32 +252,6 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
-
-    public function forgetPassSendmail(Request $request)
-    {
-        try {
-            $request->validate(['email' => 'required|email']);
-            $user = User::where('email', $request->email)->first();
-            if (!empty($user)) {
-                $mailData = [
-                    "email" => $request->email,
-                    "_token" => $request->_token
-                ];
-                $details = $user;
-                Mail::to($request->email)->send(new forgetpass($details));
-
-                return redirect()->back()->with('success', 'Mail Send Successfully');
-            } else {
-                return redirect()->back()->with('error', 'email not found');
-            }
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
-    }
-    // public function confirmPassword($id)
-    // {
-    //     return view('company.confirmPassword', compact('id'));
-    // }
 
     public function changePassword(Request $request, $id)
     {
@@ -299,7 +294,7 @@ class CompanyLoginController extends Controller
                 $updateprofiledetail['profile_image'] = isset($filename) ? $filename : '';
             }
             $updateprofiledetail->save();
-            return redirect()->route('company.dashboard');
+            return redirect()->route('company.edit_profile')->with('success', 'Profile Update Successfully!');
         } catch (Exception $e) {
             Log::info(['message', 'Update Profile error']);
             return redirect()->back()->with($e->getMessage());
@@ -323,7 +318,7 @@ class CompanyLoginController extends Controller
             $userCheck->password = Hash::make($request->newPassword);
             $userCheck->view_password = $request->newPassword;
             $userCheck->update();
-            return redirect()->route('company.dashboard')->with('message', 'Password Update Successfully!');
+            return redirect()->route('company.edit_profile')->with('success', 'Password Update Successfully!');
         } catch (Exception $e) {
             Log::info("change password in profile error" . $e->getMessage());
             return $this->sendError($e->getMessage());

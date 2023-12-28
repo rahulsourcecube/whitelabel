@@ -5,7 +5,6 @@
     <!-- Content Wrapper START -->
     @php $currency = App\Helpers\Helper::getcurrency() @endphp
     <div class="main-content">
-        @include('admin.includes.message')
         <div class="row">
             <div class="col-md-6 col-lg-4">
                 <div class="card">

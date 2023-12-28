@@ -18,8 +18,7 @@
         @php
             $user = Auth::user();
         @endphp
-
-
+        @include('admin.includes.message')
         <div class="card">
             <div class="card-body">
                 <div class="m-t-25">
