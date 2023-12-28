@@ -109,11 +109,15 @@ class CompanyLoginController extends Controller
 
     public function signup()
     {
+        Helper::createCompanySubDomain('aa111');
         return view('company.signup');
     }
     public function signupStore(Request $request)
     {
         try {
+            $input = $request->all();
+            $input['dname'] = strtolower($input['dname']);
+
             $useremail = User::where('email', $request->email)->where('user_type', env('COMPANY_ROLE'))->first();
             if (!empty($useremail)) {
                 return redirect()->back()->with('error', 'Email is already registered!!')->withInput();
@@ -122,6 +126,11 @@ class CompanyLoginController extends Controller
             if (!empty($usercontact)) {
                 return redirect()->back()->with('error', 'Contact number is already registered!!')->withInput();
             }
+            $subdomain = CompanyModel::where('subdomain',  $input['dname'])->first();
+            if (!empty($subdomain)) {
+                return redirect()->back()->with('error', 'Subdomain is already registered!!')->withInput();
+            }
+
             $user = new User();
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;
@@ -136,7 +145,7 @@ class CompanyLoginController extends Controller
                 $compnay->user_id = $user->id;
                 $compnay->company_name = $request->cname;
                 $compnay->contact_email = $request->email;
-                $compnay->subdomain = $request->dname;
+                $compnay->subdomain = $input['dname'];
                 $compnay->contact_number = $request->ccontact;
                 $compnay->save();
             }
@@ -146,17 +155,14 @@ class CompanyLoginController extends Controller
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
                 $settingModel->save();
-                $input = $request->all();
             }
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-
-
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == env('COMPANY_ROLE')) {
-
                     return redirect()->route('company.dashboard');
                 } else {
                     return redirect()->back()->with('error', 'These credentials do not match our records.');
                 }
+                Helper::createCompanySubDomain($input['dname']);
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
             }

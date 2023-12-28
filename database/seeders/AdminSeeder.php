@@ -112,6 +112,6 @@ class AdminSeeder extends Seeder
 
         $role->revokePermissionTo($rolePermissions);
 
-        $user->assignRole([$role->id]);
+        $company->assignRole([$role->id]);
     }
 }
