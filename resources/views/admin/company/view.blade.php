@@ -108,12 +108,11 @@
                                     <div class="col-md-12">
                                         <hr>
                                         <h5>Description</h5>
-                                        {{ $user_company['company_description']?:'N/A' }}
+                                        {!! $user_company_setting['description']?:'N/A' !!}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        ​
                     </div>
                 </div>
             </div>
