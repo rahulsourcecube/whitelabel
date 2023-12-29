@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Helper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class PackageModel extends Model
 {
     use HasFactory, SoftDeletes;
+  
     protected $table = "package";
     const STATUS = [
         'ACTIVE' => '1',
@@ -48,15 +50,35 @@ class PackageModel extends Model
 
     public function getEndDateAttribute()
     {
+        $GetActivePackageData = Helper::GetActivePackageData();
+        $currentDate = '';
+        if ($GetActivePackageData == null) {
+            $currentDate = Carbon::now();
+        } else {
+            $currentDate = Carbon::parse($GetActivePackageData->end_date);
+            $currentDate = $currentDate->addDays(1);
+        }
         $duration = $this->duration;
-        $currentDate = Carbon::now();
-        $newDate = $currentDate->addDays(5);
+        if ($this->type == PackageModel::TYPE['MONTHLY']) {
+            $newDate = $currentDate->addMonths($duration);
+        } elseif ($this->type == PackageModel::TYPE['YEARLY']) {
+            $newDate = $currentDate->addYears($duration);
+        } else {
+            $newDate = $currentDate->addDays($duration);
+        }
         return $newDate->format('Y-m-d');
     }
 
     public function getStartDateAttribute()
     {
-        $currentDate = Carbon::now();
+        $GetActivePackageData = Helper::GetActivePackageData();
+        $currentDate = '';
+        if ($GetActivePackageData == null) {
+            $currentDate = Carbon::now();
+        } else {
+            $currentDate = Carbon::parse($GetActivePackageData->end_date);
+            $currentDate = $currentDate->addDays(1);
+        }
         return $currentDate->format('Y-m-d');
     }
 

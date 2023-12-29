@@ -44,14 +44,14 @@ class Helper
     public static function isActivePackage()
     {
         $companyId = Helper::getCompanyId();
-        $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id','desc')->exists();
+        $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->exists();
         return $checkPackage;
     }
     public static function getCompanyId()
     {
-        if(auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('ADMIN_ROLE')){
+        if (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('ADMIN_ROLE')) {
             $companyId = Auth::user()->id;
-        }else{
+        } else {
             $companyId = Auth::user()->company_id;
         }
 
@@ -71,7 +71,10 @@ class Helper
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
         $companyId = Helper::getCompanyId();
-        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+
+        // and then you can get query log
+        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+
         return $packageData;
     }
 
@@ -84,8 +87,7 @@ class Helper
             $currentDate = $Date->format('Y-m-d');
             $companyId = Helper::getCompanyId();
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
-
-            if ($packageData != null && new DateTime($packageData->end_date) > Carbon::now()) {
+            if ($packageData != null && new DateTime($packageData->end_date) >= Carbon::now()) {
                 // Assuming $packageData->end_date is a string representing a date
                 $end_date = new DateTime($packageData->end_date);
                 // Add 24 hours to the end date
@@ -104,8 +106,10 @@ class Helper
             } else {
                 $remainingDays = null;
             }
+            
             return $remainingDays;
         } catch (Exception $e) {
+
             Log::info("helper function get Remaining Days Error" . $e->getMessage());
             return null;
         }
@@ -202,4 +206,12 @@ class Helper
        return;
     }
 
+    // get Remaining Days
+    public static function FreePackagePurchased()
+    {
+        $companyId = Helper::getCompanyId();
+
+        $packageData = CompanyPackage::where('company_id', $companyId)->where('price', 0.00)->first();
+        return $packageData;
+    }
 }

@@ -106,16 +106,16 @@
                                         <label>From Date:</label>
                                         <div class="input-affix m-b-10">
                                             <i class="prefix-icon anticon anticon-calendar"></i>
-                                            <input type="text" class="form-control datepicker"
-                                                placeholder="Pick a date" id="from_date" value="{{ $start }}">
+                                            <input type="text" class="form-control datepicker" placeholder="Pick a date"
+                                                id="from_date" value="{{ $start }}">
                                         </div>
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label>To Date:</label>
                                         <div class="input-affix m-b-10">
                                             <i class="prefix-icon anticon anticon-calendar"></i>
-                                            <input type="text" class="form-control datepicker"
-                                                placeholder="Pick a date" id="to_date" value="{{ $end }}">
+                                            <input type="text" class="form-control datepicker" placeholder="Pick a date"
+                                                id="to_date" value="{{ $end }}">
                                         </div>
                                     </div>
                                     <div class="col-md-12">
@@ -336,6 +336,11 @@
                                 y: {
                                     beginAtZero: true
                                 }
+                                yAxes: [{
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }],
                             }
                         }
                     });
