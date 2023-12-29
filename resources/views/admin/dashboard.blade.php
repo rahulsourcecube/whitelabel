@@ -221,20 +221,15 @@
                                 backgroundColor: 'transparent', // Area color
                                 borderColor: '#3F87F5', // Line color
                                 // borderWidth: 1
-                            },{
-                                label: 'Company Revenue',
-                                data: [4, 1, 2, 3],
-                                // fill: true, // Fill the area under the line
-                                backgroundColor: 'transparent', // Area color
-                                borderColor: '#3F87F5', // Line color
-                                // borderWidth: 1
                             }]
                         },
                         options: {
                             scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
+                                 yAxes: [{
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }],
                             }
                         }
                     });

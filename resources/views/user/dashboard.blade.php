@@ -31,7 +31,8 @@
                                 <i class="anticon anticon-line-chart"></i>
                             </div>
                             <div class="m-l-15">
-                                <h2 class="m-b-0">{{ isset($totalReward) ? (\App\Helpers\Helper::getcurrency().$totalReward) : '' }}</h2>
+                                <h2 class="m-b-0">
+                                    {{ isset($totalReward) ? \App\Helpers\Helper::getcurrency() . $totalReward : '' }}</h2>
                                 <p class="m-b-0 text-muted">My Total Reward </p>
                             </div>
                         </div>
@@ -95,7 +96,8 @@
                                     @foreach ($campaignList as $data)
                                         <tr>
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                            <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency(). $data->reward) : '' }}</td>
+                                            <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
+                                            </td>
                                             {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
                                             <td>
                                                 @if (isset($data->getCampaign->description))
@@ -208,14 +210,14 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h5>Total Revenue</h5>
                             {{-- <div> --}}
-                                {{-- <div class="btn-group"> --}}
-                                    {{-- <button class="btn btn-default active">
+                            {{-- <div class="btn-group"> --}}
+                            {{-- <button class="btn btn-default active">
                                         <span>Month</span>
                                     </button>
                                     <button class="btn btn-default">
                                         <span>Year</span>
                                     </button> --}}
-                                {{-- </div> --}}
+                            {{-- </div> --}}
                             {{-- </div> --}}
                         </div>
                         <div class="">
@@ -317,13 +319,13 @@
                 var yArray = [];
 
                 while (start_date <= currentDate) {
-                    xArray.push((new Date(start_date)).getDate()+"th");
-                    var check_date = (new Date(start_date)).getFullYear() + '-' + (parseInt((new Date(start_date)).getMonth())+parseInt(1)) + '-' + (new Date(start_date)).getDate();
+                    xArray.push((new Date(start_date)).getDate() + "th");
+                    var check_date = (new Date(start_date)).getFullYear() + '-' + (parseInt((new Date(start_date))
+                        .getMonth()) + parseInt(1)) + '-' + (new Date(start_date)).getDate();
                     let obj = chartReward.find(x => x.day == check_date);
-                    if(obj && obj != ''){
+                    if (obj && obj != '') {
                         yArray.push(obj.total_day_reward)
-                    }
-                    else{
+                    } else {
                         yArray.push(0)
                     }
                     start_date.setDate(start_date.getDate() + 1);
@@ -354,8 +356,8 @@
                         },
                         scales: {
                             yAxes: [{
-                                scaleLabel: {
-                                    display: true,
+                                ticks: {
+                                    stepSize: 1
                                 }
                             }],
                             xAxes: [{
