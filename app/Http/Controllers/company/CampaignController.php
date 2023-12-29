@@ -63,10 +63,10 @@ class CampaignController extends Controller
                 ->take($length)
                 ->get();
             foreach ($results as $result) {
-                $imgUrl = "";
-                if (!empty($result->image) && file_exists('uploads/campaign/' . $result->image)) {
-                    $imgUrl = asset('uploads/campaign/' . $result->image);
-                }
+                // $imgUrl = "";
+                // if (!empty($result->image) && file_exists('uploads/campaign/' . $result->image)) {
+                //     $imgUrl = asset('uploads/campaign/' . $result->image);
+                // }
                 $list[] = [
                     base64_encode($result->id),
                     $result->title ?? "-",

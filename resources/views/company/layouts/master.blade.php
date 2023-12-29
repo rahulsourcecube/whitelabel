@@ -47,7 +47,7 @@
                             here to buy package.
                         </div>
                     @endif
-                    @if ( $GetActivePackageData == null)
+                    @if ( $remainingDays == null || $GetActivePackageData == null)
                         <div class="alert alert-danger alert-dismissible fade show">
                             <strong>Please purchase package</strong>. <a
                                 href="{{ route('company.package.list', 'Free') }}">Click</a>
