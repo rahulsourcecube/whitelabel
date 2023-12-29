@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -161,6 +162,7 @@ class UserController extends Controller
             $user->facebook_link = $request->facebook_link;
             $user->instagram_link = $request->instagram_link;
             $user->twitter_link = $request->twitter_link;
+            $user->referral_code = Str::random(6);
             $user->youtube_link = $request->youtube_link;
             $user->bank_name = $request->bank_name;
             $user->ac_holder = $request->ac_holder;

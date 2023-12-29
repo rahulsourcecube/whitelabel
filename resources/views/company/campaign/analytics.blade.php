@@ -67,9 +67,13 @@
                                     <div class="form-group col-md-12">
                                         <label for="Tasks">Tasks</label>
                                         <select id="Tasks" class="form-control" name="Tasks">
-                                            @foreach ($customTasks as $item)
-                                                <option value="{{ $item->id }}">{{ $item->title }}</option>
-                                            @endforeach
+                                            @if (count($customTasks) > 0)
+                                                @foreach ($customTasks as $item)
+                                                    <option value="{{ $item->id }}">{{ Str::limit($item->title,35) }}</option>
+                                                @endforeach
+                                            @else
+                                                <option value="">Task not found</option>
+                                            @endif
                                         </select>
                                     </div>
                                     <div class="col-md-12">
@@ -335,7 +339,7 @@
                             scales: {
                                 y: {
                                     beginAtZero: true
-                                }
+                                },
                                 yAxes: [{
                                     ticks: {
                                         stepSize: 1

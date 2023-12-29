@@ -174,6 +174,7 @@ $notificationCount = Notification::where('company_id', $user->id)
             </li>
             @endif
             @endif
+            @can('notification-list')
             <li class="nav-item dropdown open @if(request()->segment(2) == 'notification') active @endif">
                 <a class="dropdown-toggle" href="{{ route('company.notification.list') }}">
                     <span class="icon-holder">
@@ -189,6 +190,7 @@ $notificationCount = Notification::where('company_id', $user->id)
                     @endif
                 </a>
             </li>
+            @endcan
             <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('company.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <span class="icon-holder">

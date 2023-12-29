@@ -34,7 +34,7 @@ class PermissionTableSeeder extends Seeder
         $permissions = [
             'user-list',
             'user-create',
-            'user-edit', 
+            'user-edit',
             'user-delete',
         ];
         foreach ($permissions as $permission) {
@@ -98,6 +98,14 @@ class PermissionTableSeeder extends Seeder
         $Module = Module::create(['module_name' => 'task-analytics']);
         $permissions = [
             'task-analytics-list',
+        ];
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission, 'modules_id' => $Module->id]);
+        }
+
+        $Module = Module::create(['module_name' => 'notification']);
+        $permissions = [
+            'notification-list',
         ];
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'modules_id' => $Module->id]);

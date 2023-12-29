@@ -9,6 +9,18 @@ use Illuminate\Support\Facades\Auth;
 
 class Notification extends Controller
 {
+
+    /**
+    * Display a listing of the resource.
+    *
+    * @return \Illuminate\Http\Response
+    */
+   function __construct()
+   {
+      // check user permission
+      $this->middleware('permission:notification-list', ['only' => ['index']]);
+   }
+
     function index(Request $request)
     {
         $user = Auth::user();

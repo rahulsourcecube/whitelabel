@@ -21,8 +21,7 @@
             <div class="container">
                 <div class="text-center m-t-30 m-b-40">
                     <h2>Purchase Package</h2>
-                    <p class="w-45 m-h-auto m-b-30">Climb leg rub face on everything give attitude nap all day for under the
-                        bed. Chase mice attack feet but rub face.</p>
+
                     <div class="btn-group">
                         <a href="{{ route('company.package.list', 'FREE') }}"type="button" id="monthly-btn"
                             class="btn btn-default {{ $type == App\Models\PackageModel::TYPE['FREE'] ? 'active' : '' }}">
@@ -82,6 +81,7 @@
                                                         @elseif ($list->type == '3')
                                                             Year
                                                         @endif
+                                                        Plan
                                                     </span>
                                                     <div class="text-success font-size-16"> <i
                                                             class="anticon anticon-check"></i> </div>
@@ -94,12 +94,16 @@
                                                     <div class="text-success font-size-16"> <i
                                                             class="anticon anticon-check"></i> </div>
                                                 </div>
+                                            </li>
+                                            <li class="m-b-20">
                                                 <div class="d-flex justify-content-between">
                                                     <span class="text-dark font-weight-semibold">Total Employee
                                                         {{ $list->no_of_employee }}</span>
                                                     <div class="text-success font-size-16"> <i
                                                             class="anticon anticon-check"></i> </div>
                                                 </div>
+                                            </li>
+                                            <li class="m-b-20">
                                                 <div class="d-flex justify-content-between">
                                                     <span class="text-dark font-weight-semibold">Total User
                                                         {{ $list->no_of_user }}</span>
