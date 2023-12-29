@@ -99,13 +99,13 @@ class PackageController extends Controller
             $makePayment->user_id = Auth::user()->id;
             $makePayment->company_package_id = $addPackage->id;
             $makePayment->amount = $addPackage->price;
-            $makePayment->name_on_card = $request->name_on_card;
-            $makePayment->card_number = $request->card_number;
-            $expiryDate = explode('/', $request->expiry_date);
-            $makePayment->card_expiry_month = $request->card_expiry_month;
-            $makePayment->card_expiry_year = $request->card_expiry_year;
-            $makePayment->card_cvv = $request->card_cvv;
-            $makePayment->zipcode = $request->zipcode;
+            $makePayment->name_on_card = $request->name_on_card ?? '';
+            $makePayment->card_number = $request-> card_number ?? '';
+            $expiryDate = explode('/', $request->expiry_date) ?? '';
+            $makePayment->card_expiry_month = $request-> card_expiry_month ?? '';
+            $makePayment->card_expiry_year = $request-> card_expiry_year ?? '';
+            $makePayment->card_cvv = $request-> card_cvv ?? '';
+            $makePayment->zipcode = $request-> zipcode ?? '';
             $makePayment->save();
 
             $addPackage->update(['paymnet_id' => $makePayment->id]);

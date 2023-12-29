@@ -91,8 +91,16 @@
                                                 <div class="d-flex justify-content-between"> <span
                                                         class="text-dark font-weight-semibold">Total campaign
                                                         {{ $list->no_of_campaign }}</span>
+                                                    <div class="text-success font-size-16"> <i
+                                                            class="anticon anticon-check"></i> </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
                                                     <span class="text-dark font-weight-semibold">Total Employee
                                                         {{ $list->no_of_employee }}</span>
+                                                    <div class="text-success font-size-16"> <i
+                                                            class="anticon anticon-check"></i> </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
                                                     <span class="text-dark font-weight-semibold">Total User
                                                         {{ $list->no_of_user }}</span>
                                                     <div class="text-success font-size-16"> <i
@@ -102,14 +110,26 @@
                                         </ul>
                                         {!! $list->description !!}
                                         @can('package-create')
-                                            <div class="text-center">
-                                                <button class="btn btn-success {{ $list->user_bought }}"
-                                                    {{ $list->type == '1' && !empty($FreePackagePurchased) && $FreePackagePurchased->id != null ? 'disabled' : '' }}
-                                                    onclick="openPaymentModal('{{ $list->id }}')">{{ $list->user_bought == true
-                                                        ? 'Purchased'
-                                                        : 'Buy
-                                                                                                                                                                                                                                                                                    Package' }}</button>
-                                            </div>
+                                            @if ($list->type == '1')
+                                                <form action="{{ route('company.package.buy') }}" method="POST"
+                                                    id="package-payment-form">
+                                                    @csrf
+                                                    <input type="hidden" name="package_id" value="{{$list->id}}">
+                                                    <div class="text-center">
+                                                        <button type="submit" class="btn btn-success {{ $list->user_bought }}"
+                                                            {{ $list->type == '1' && !empty($FreePackagePurchased) && $FreePackagePurchased->id != null ? 'disabled' : '' }}>{{ $list->user_bought == true ? 'Purchased' : 'Buy                                                                                                                                                                                                                                                                                                                                                                                                  Package' }}</button>
+                                                    </div>
+                                                </form>
+                                            @else
+                                                <div class="text-center">
+                                                    <button class="btn btn-success {{ $list->user_bought }}"
+                                                        {{ $list->type == '1' && !empty($FreePackagePurchased) && $FreePackagePurchased->id != null ? 'disabled' : '' }}
+                                                        onclick="openPaymentModal('{{ $list->id }}')">{{ $list->user_bought == true
+                                                            ? 'Purchased'
+                                                            : 'Buy
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Package' }}</button>
+                                                </div>
+                                            @endif
                                         @endcan
                                     </div>
                                 </div>
@@ -151,9 +171,10 @@
                                         <label class="paymenttab-label content-para">Exp
                                             Month</label>
                                         <input type="text"
-                                            class="form-control round-input remove-arrow card-expiry-month" placeholder="MM"
-                                            name="card_expiry_month"
-                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="5">
+                                            class="form-control round-input remove-arrow card-expiry-month"
+                                            placeholder="MM" name="card_expiry_month"
+                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                            maxlength="5">
                                         <label class="error" id="card_expiry_month-error"></label>
                                     </div>
                                 </div>
