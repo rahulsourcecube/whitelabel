@@ -71,7 +71,6 @@ class PackageController extends Controller
                'description' => 'Test payment.',
                'payment_method_types' => ['card'],
             ]);
-            // dd($stripe);
          }
 
          $companyId = Helper::getCompanyId();
@@ -89,6 +88,8 @@ class PackageController extends Controller
          $addPackage->start_date = $package->start_date;
          $addPackage->end_date = $package->end_date;
          $addPackage->no_of_campaign = $package->no_of_campaign;
+         $addPackage->no_of_user = $package->no_of_user;
+         $addPackage->no_of_employee = $package->no_of_employee;
          $addPackage->price = $package->price;
          $addPackage->paymnet_method = 'card';
          $addPackage->status = '1';

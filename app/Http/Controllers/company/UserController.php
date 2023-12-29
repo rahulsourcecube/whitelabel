@@ -126,8 +126,8 @@ class UserController extends Controller
 
             $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
             $ActivePackageData = Helper::GetActivePackageData();
-            if($userCount >= $ActivePackageData->GetPackageData->no_of_user){
-                return redirect()->back()->with('error', 'you can create only '. $ActivePackageData->GetPackageData->no_of_user.' users');
+            if($userCount >= $ActivePackageData->no_of_user){
+                return redirect()->back()->with('error', 'you can create only '. $ActivePackageData->no_of_user.' users');
             }
 
             $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
