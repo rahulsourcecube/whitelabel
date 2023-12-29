@@ -10,7 +10,7 @@
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
+        href="@if (!empty($siteSetting) && !empty($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -64,7 +64,7 @@
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="ccontact">Contact
                                                     Number:</label>
-                                                <input type="number" class="form-control" name="ccontact" id="ccontact"
+                                                <input type="number" min="0" class="form-control" name="ccontact" id="ccontact"
                                                     placeholder="Contact Number" maxlength="10" minlength="10"
                                                     value="{{old('ccontact')}}">
                                             </div>

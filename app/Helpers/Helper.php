@@ -113,47 +113,91 @@ class Helper
 
     //Create host in local
     public static function createCompanySubDomain($subdomain) {
+        try {
+            $domain = $_SERVER['SERVER_NAME'];
+            $subdomain = $subdomain.'.'.$_SERVER['SERVER_NAME'];
+            $whitelist = array(
+                '127.0.0.1',
+                '::1'
+            );
+            if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+                $documentRoot = $_SERVER["DOCUMENT_ROOT"];
+                $documentRoot = str_replace('/', '\\', $documentRoot );
 
-        $subdomain = $subdomain.'.'.$_SERVER['SERVER_NAME'];
-        $whitelist = array(
-            '127.0.0.1',
-            '::1'
-        );
+                $virtualHostConfig = <<<EOL
+                    \n<VirtualHost *:80>
+                            DocumentRoot "{$documentRoot}"
+                            ServerName {$subdomain}
+                            <Directory "{$documentRoot}">
+                            </Directory>
+                        </VirtualHost>
+                    EOL;
+                $dirArr = explode('\\',$documentRoot);
+                $vertualHostPath = $dirArr[0].DIRECTORY_SEPARATOR.$dirArr[1].DIRECTORY_SEPARATOR;//.$dirArr[2].DIRECTORY_SEPARATOR;
 
-        if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+                exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
+                // dd($dirArr);
 
-            $documentRoot = $_SERVER["DOCUMENT_ROOT"];
-            $documentRoot = str_replace('/', '\\', $documentRoot );
+                // Path to Apache's httpd-vhosts.conf file
+                $vhostsFilePath = $vertualHostPath .'apache/conf/extra/httpd-vhosts.conf'; // 'C:/xampp8.2/apache/conf/extra/httpd-vhosts.conf';
 
-            $virtualHostConfig = <<<EOL
-                \n<VirtualHost *:80>
-                        DocumentRoot "{$documentRoot}"
-                        ServerName {$subdomain}
-                        <Directory "{$documentRoot}">
-                        </Directory>
-                    </VirtualHost>
-                EOL;
-            $dirArr = explode('\\',$documentRoot);
-            $vertualHostPath = $dirArr[0].DIRECTORY_SEPARATOR.$dirArr[1].DIRECTORY_SEPARATOR;//.$dirArr[2].DIRECTORY_SEPARATOR;
+                // Add the virtual host configuration to httpd-vhosts.conf
+                file_put_contents($vhostsFilePath, $virtualHostConfig, FILE_APPEND);
 
-            exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
-            // dd($dirArr);
+                // Update the system's hosts file
+                $hostsFilePath = 'C:\Windows\System32\drivers\etc\hosts';
+                $hostsEntry = "\n127.0.0.1\t{$subdomain}\n";
+                file_put_contents($hostsFilePath, $hostsEntry, FILE_APPEND);
 
-            // Path to Apache's httpd-vhosts.conf file
-            $vhostsFilePath = $vertualHostPath .'apache/conf/extra/httpd-vhosts.conf'; // 'C:/xampp8.2/apache/conf/extra/httpd-vhosts.conf';
+                // Restart Apache to apply changes
+                exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
+            }else{
+                $cpanelUsername = 'rkinfosolution';
+                $cpanelPassword = 'Tell@5050';
+                $cpanelDomain = $domain;
 
-            // Add the virtual host configuration to httpd-vhosts.conf
-            file_put_contents($vhostsFilePath, $virtualHostConfig, FILE_APPEND);
+                // Subdomain details
+                $subdomainName = 'newsubdomain';
+                $subdomainDocumentRoot = '/public_html/'.$subdomain; // Adjust the path as needed
 
-            // Update the system's hosts file
-            $hostsFilePath = 'C:\Windows\System32\drivers\etc\hosts';
-            $hostsEntry = "\n127.0.0.1\t{$subdomain}\n";
-            file_put_contents($hostsFilePath, $hostsEntry, FILE_APPEND);
+                // Build the API URL
+                $apiUrl = "https://{$cpanelUsername}:{$cpanelPassword}@{$cpanelDomain}:2083/cpsess_randomstring/execute/API2";
 
-            // Restart Apache to apply changes
-            exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
-        }else{
-            // echo  "live";
+                // API request data
+                $data = array(
+                    'cpanel_jsonapi_user' => $cpanelUsername,
+                    'cpanel_jsonapi_apiversion' => 2,
+                    'cpanel_jsonapi_module' => 'SubDomain',
+                    'cpanel_jsonapi_func' => 'addsubdomain',
+                    'subdomain' => $subdomainName,
+                    'dir' => $subdomainDocumentRoot,
+                    'domain' => $cpanelDomain,
+                );
+
+                // Make the API request
+                $ch = curl_init($apiUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                $response = curl_exec($ch);
+                curl_close($ch);
+
+                // Decode the JSON response
+                $responseData = json_decode($response, true);
+
+                // Check if the subdomain was created successfully
+                if ($responseData['cpanelresult']['error'] == null) {
+                    Log::error("Subdomain '{$subdomainName}' created successfully!");
+                } else {
+                    Log::error("Error creating subdomain: {".$responseData['cpanelresult']['error']."}");
+                }
+            }
+        }
+        catch (\Throwable $th) {
+            //throw $th;
+            Log::error("Error creating subdomain: ". $th->getMessage());
         }
        return;
     }

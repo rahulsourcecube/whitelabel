@@ -32,7 +32,7 @@ class EmployeeController extends Controller
         $this->middleware('permission:employee-management-delete', ['only' => ['delete']]);
     }
 
-    
+
     function index(Request $request)
     {
 
@@ -90,7 +90,7 @@ class EmployeeController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'cpassword' => 'required|string|min:8',
             ]);
-            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
+            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['STAFF'])->count();
             $ActivePackageData = Helper::GetActivePackageData();
             if ($userCount >= $ActivePackageData->GetPackageData->no_of_employee ) {
                 return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_employee . ' employees');

@@ -3,7 +3,7 @@
         <a href="{{ route('company.dashboard') }}">
             <img src="@if (
                 !empty($siteSetting) &&
-                    isset($siteSetting->logo) &&
+                    !empty($siteSetting->logo) &&
                     file_exists('uploads/setting/' . $siteSetting->logo)) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
                 alt="Logo">
             <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold.png') }}" alt="Logo">
