@@ -158,8 +158,8 @@ class CampaignController extends Controller
             }
             $CampaignModelCount = CampaignModel::where('company_id', $companyId)->count();
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($CampaignModelCount >= $ActivePackageData->GetPackageData->no_of_campaign) {
-                return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_campaign . ' campaigns');
+            if ($CampaignModelCount >= $ActivePackageData->no_of_campaign) {
+                return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->no_of_campaign . ' campaigns');
             }
             if ($request->hasFile('image')) {
                 $extension = $request->file('image')->getClientOriginalExtension();

@@ -92,8 +92,8 @@ class EmployeeController extends Controller
             ]);
             $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['STAFF'])->count();
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($userCount >= $ActivePackageData->GetPackageData->no_of_employee ) {
-                return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->GetPackageData->no_of_employee . ' employees');
+            if ($userCount >= $ActivePackageData->no_of_employee ) {
+                return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->no_of_employee . ' employees');
             }
             $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
 
