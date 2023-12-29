@@ -167,6 +167,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::prefix('package')->name('package.')->group(function () {
         Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
         Route::post('/buy', [CompanyPackageController::class, 'buy'])->name('buy');
+        Route::post('stripe', [CompanyPackageController::class, 'stripePost'])->name('stripe.post');
     });
     Route::middleware('buy.package')->group(function () {
         Route::get('dashboard', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
