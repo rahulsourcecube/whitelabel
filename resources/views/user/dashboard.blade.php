@@ -5,6 +5,12 @@
     <!-- Content Wrapper START -->
     <input type="hidden" value="{{ json_encode($chartReward) }}" class="chartReward">
     <div class="main-content">
+        @if (\Session::has('error'))
+                <div class="alert alert-danger alert-dismissible fade show error" style="margin-top: 17px;}" role="alert">
+                    <i class="uil uil-times me-2"></i>
+                    {!! \Session::get('error') !!}
+                </div>
+            @endif
         <div class="row">
             <div class="col-md-6 col-lg-3">
                 <div class="card">
@@ -23,6 +29,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-6 col-lg-3">
                 <div class="card">
                     <div class="card-body">

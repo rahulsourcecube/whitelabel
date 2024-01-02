@@ -25,7 +25,6 @@ class UsrController extends Controller
 
     function index()
     {
-
         if (!empty(auth()->user()) && auth()->user()->user_type == env('ADMIN_ROLE')) {
             return redirect()->route('admin.dashboard');
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == env('COMPANY_ROLE')) {
@@ -73,6 +72,10 @@ class UsrController extends Controller
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'status' => '1'))) {
 
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == env('USER_ROLE')) {
+
+                    if(Session('referral_link') != null){
+                        return redirect(Session('referral_link'));
+                    }
 
                     return redirect()->route('user.dashboard');
                 } else {
@@ -294,7 +297,6 @@ class UsrController extends Controller
             }
 
             $filterResults = $filter->get();
-
             return view('user.reward.progressreward', compact('filterResults'));
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
@@ -421,7 +423,7 @@ class UsrController extends Controller
             $userRegister->view_password = $request->password;
             $userRegister->contact_number = $request->contact_number;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
-        
+
             Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
                 $message->to($request->email);
                 $message->subject('Welcome Mail');
@@ -493,7 +495,7 @@ class UsrController extends Controller
             }
 
             $user = User::where('email', $request->email)
-                ->update(['password' => Hash::make($request->password),'view_password' => $request->password]);
+                ->update(['password' => Hash::make($request->password), 'view_password' => $request->password]);
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 

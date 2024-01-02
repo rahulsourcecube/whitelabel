@@ -17,68 +17,69 @@
         <div class="card">
             <div class="card-body">
                 <h4>Progress Reward</h4>
-            <div class="d-flex my-3 align-itmes-end gap-3">
-                <form method="get" action="{{ route('user.progress.reward') }}" id="searchForm"
-                    onsubmit="return validateForm()">
+                <div class="d-flex my-3 align-itmes-end gap-3">
+                    <form method="get" action="{{ route('user.progress.reward') }}" id="searchForm"
+                        onsubmit="return validateForm()">
 
-                    @if (isset(request()->status))
-                        <input type="hidden" name="status" value="{{ request()->status }}">
-                    @elseif(isset(request()->status))
-                        <input type="hidden" name="from_date" value="{{ request()->from_date }}">
-                    @elseif (isset(request()->type))
-                        <input type="hidden" name="type" value="{{ request()->type }}">
-                    @endif
+                        @if (isset(request()->status))
+                            <input type="hidden" name="status" value="{{ request()->status }}">
+                        @elseif(isset(request()->status))
+                            <input type="hidden" name="from_date" value="{{ request()->from_date }}">
+                        @elseif (isset(request()->type))
+                            <input type="hidden" name="type" value="{{ request()->type }}">
+                        @endif
 
-                    <div class="form-row mt-3">
-                        <div class="form-group col-md-2 mb-0">
-                            <label class="font-weight-semibold" for="name">From Date:</label>
-                            <input class="form-control datepicker-input"
-                                value="{{ isset(request()->from_date) ? request()->from_date : '' }}"
-                                placeholder="Select Date" name="from_date">
+                        <div class="form-row mt-3">
+                            <div class="form-group col-md-2 mb-0">
+                                <label class="font-weight-semibold" for="name">From Date:</label>
+                                <input class="form-control datepicker-input"
+                                    value="{{ isset(request()->from_date) ? request()->from_date : '' }}"
+                                    placeholder="Select Date" name="from_date">
+                            </div>
+                            <div class="form-group col-md-2 mb-0">
+                                <label class="font-weight-semibold" for="name">To Date:</label>
+                                <input class="form-control datepicker-input"
+                                    value="{{ isset(request()->two_date) ? request()->two_date : '' }}"
+                                    placeholder="Select Date" name="two_date">
+                            </div>
+                            <div class="form-group col-md-3 mb-0">
+                                <label class="font-weight-semibold" for="name">Type:</label>
+                                <select name="type" class="form-control">
+                                    <option value="">Select Type</option>
+                                    <option value="1"
+                                        {{ isset(request()->type) && request()->type === '1' ? 'selected' : '' }}>Referral
+                                    </option>
+                                    <option value="2"
+                                        {{ isset(request()->type) && request()->type === '2' ? 'selected' : '' }}>Social
+                                    </option>
+                                    <option value="3"
+                                        {{ isset(request()->type) && request()->type === '3' ? 'selected' : '' }}>Custom
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3 mb-0">
+                                <label class="font-weight-semibold" for="name">Status:</label>
+                                <select name="status" class="form-control">
+                                    <option value="">Select Status</option>
+                                    <option value="1"
+                                        {{ isset(request()->status) && request()->status === '1' ? 'selected' : '' }}>Claim
+                                        Reward</option>
+                                    <option value="2"
+                                        {{ isset(request()->status) && request()->status === '2' ? 'selected' : '' }}>Claim
+                                        Pending</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-2 mb-0" style="margin-top: 29px;">
+                                <button type="submit" class="btn btn-success">Search</button>
+                            </div>
                         </div>
-                        <div class="form-group col-md-2 mb-0">
-                            <label class="font-weight-semibold" for="name">To Date:</label>
-                            <input class="form-control datepicker-input"
-                                value="{{ isset(request()->two_date) ? request()->two_date : '' }}"
-                                placeholder="Select Date" name="two_date">
-                        </div>
-                        <div class="form-group col-md-3 mb-0">
-                            <label class="font-weight-semibold" for="name">Type:</label>
-                            <select name="type" class="form-control">
-                                <option value="">Select Type</option>
-                                <option value="1"
-                                    {{ isset(request()->type) && request()->type === '1' ? 'selected' : '' }}>Referral
-                                </option>
-                                <option value="2"
-                                    {{ isset(request()->type) && request()->type === '2' ? 'selected' : '' }}>Social
-                                </option>
-                                <option value="3"
-                                    {{ isset(request()->type) && request()->type === '3' ? 'selected' : '' }}>Custom
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3 mb-0">
-                            <label class="font-weight-semibold" for="name">Status:</label>
-                            <select name="status" class="form-control">
-                                <option value="">Select Status</option>
-                                <option value="1"
-                                    {{ isset(request()->status) && request()->status === '1' ? 'selected' : '' }}>Claim
-                                    Reward</option>
-                                <option value="2"
-                                    {{ isset(request()->status) && request()->status === '2' ? 'selected' : '' }}>Claim
-                                    Pending</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-2 mb-0" style="margin-top: 29px;">
-                            <button type="submit" class="btn btn-success">Search</button>
-                        </div>
+                        <span class="err" style="display: none;color: red;">Please select any one column</span>
+                    </form>
+                    <div class="form-group mb-0 mt-auto" style="height: fit-content">
+                        <a href="{{ route('user.my.reward') }}"><button type="submit"
+                                class="btn btn-success">Refresh</button></a>
                     </div>
-                    <span class="err" style="display: none;color: red;">Please select any one column</span>
-                </form>
-                <div class="form-group mb-0 mt-auto" style="height: fit-content">
-                    <a href="{{ route('user.my.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
                 </div>
-            </div>
                 <div class="m-t-15">
                     <table id="user_tables" class="table">
                         <thead>
@@ -94,11 +95,12 @@
                         </thead>
                         <tbody>
                             @foreach ($filterResults as $data)
-                          <?php $campaign_id= base64_encode($data->campaign_id);?>
+                                <?php $campaign_id = base64_encode($data->campaign_id); ?>
 
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                    <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency().$data->reward) : '' }}</td>
+                                    <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
+                                    </td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
                                             <span class="truncated-description" style="cursor: pointer;"
@@ -131,19 +133,26 @@
                                     <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                     </td>
                                     <td>
-                                            @if (isset($data->status) && $data->status == 1)
+                                        @if (isset($data->status) && $data->status == 1)
+                                            @if ($data->getCampaign->task_expired == 'Expired')
                                                 <form method="post"
                                                     action="{{ route('user.progress.claimReward', $data->id) }}">
                                                     @csrf
-                                                    <button class="btn btn-primary  btn-sm" role="button">Claim reward</button>
+                                                    <button class="btn btn-primary  btn-sm" role="button">Claim
+                                                        reward</button>
                                                 </form>
+                                            @else
+                                                <button class="btn btn-primary  btn-sm" role="button" style="background-color: rgba(0, 123, 255, 0.5);">Claim reward</button>
                                             @endif
-                                            @if (isset($data->status) && $data->status == 2)
-                                                <span class="btn btn-info btn-sm">Claim Pending</span>
-                                            @endif
+                                        @endif
+                                        @if (isset($data->status) && $data->status == 2)
+                                            <span class="btn btn-info btn-sm">Claim Pending</span>
+                                        @endif
                                     </td>
                                     <td>
-                                    <a class="btn btn-success  btn-sm" href="{{ route('user.campaign.view',$campaign_id)  }}" role="button" title="View"><i class="fa fa-eye"></i></a>
+                                        <a class="btn btn-success  btn-sm"
+                                            href="{{ route('user.campaign.view', $campaign_id) }}" role="button"
+                                            title="View"><i class="fa fa-eye"></i></a>
                                     </td>
                                 </tr>
                             @endforeach
