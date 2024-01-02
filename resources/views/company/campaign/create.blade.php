@@ -71,7 +71,7 @@
                         <div class="form-group col-md-6">
                             <label for="file">Image <span class="error">*</span></label>
                             <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg"
-                                onchange="previewImage()">
+                                onchange="previewImage()" required>
                             @error('image')
                             <label id="image-error" class="error" for="image">{{ $message }}</label>
                             @enderror

@@ -66,8 +66,12 @@ input[type=number]::-webkit-outer-spin-button {
 .user-table-scroll thead {
     position: sticky;
     top: 0;
-} 
+}
 
 .user-table-scroll thead{
     background-color: #ffffff;
+}
+a i.anticon {
+    line-height: 0;
+    vertical-align: -0.6em;
 }

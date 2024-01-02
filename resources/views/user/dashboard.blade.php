@@ -172,7 +172,7 @@
 
                                     <div class="text-center mt-4 ml-3">
                                         <p id="referral_code_copy" style="display: none;">
-                                            {{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}
+                                            {{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : 'user/signup') }}
                                         </p>
                                         <button onclick="copyToClipboard('#referral_code_copy')"
                                             class="btn btn-primary btn-tone">
@@ -337,7 +337,8 @@
                     }
                     start_date.setDate(start_date.getDate() + 1);
                 }
-
+                console.log("xArray",xArray);
+                console.log("yArray",yArray);
                 var ctx = document.getElementById('myChart').getContext('2d');
                 var chart = new Chart(ctx, {
                     type: 'line',
