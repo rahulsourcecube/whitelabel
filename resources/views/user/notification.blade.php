@@ -30,7 +30,7 @@
                         @if(isset($notifications) && count($notifications)>0)
                         @foreach ($notifications as $data)
                         <tr>
-                            <td>{{ isset($data->message) ? $data->message : '' }}</td>
+                            <td>{!! isset($data->message) ? $data->message : '' !!}</td>
                             <td>{{ isset($data->created_at) ? date('d-m-Y',strtotime($data->created_at)) : '' }}</td>
 
                         </tr>

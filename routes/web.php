@@ -39,11 +39,11 @@ Route::get('/config', function () {
     return "Done!";
 });
 
-// Route::get('/', function () {
-//     return view('auth.login');
-// });
-// Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/expire', function () {
+    Artisan::call('expire:notification');
+    return "Done!";
+});
+
 Auth::routes();
 Route::get('/', [AdminController::class, 'index'])->name('admin');
 Route::get('user', [LoginController::class, 'form']);
@@ -85,6 +85,10 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
     });
 });
+
+Route::get('/campaign/{referral_link}', [UserCampaignController::class, 'referral'])->name('campaign.referral');
+Route::post('request/referral-user-detail', [UserCampaignController::class, 'GetReferralUserDetail'])->name('GetReferralUserDetail');
+
 Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {
     Route::middleware(['user'])->group(function () {
         Route::get('/', [UserCampaignController::class, 'campaign'])->name('list');
@@ -250,9 +254,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
 });
 Route::get('migrate', function () {
     Artisan::call('migrate');
-    return 'Yupp, migrations run successfully!';
+    return 'Yup, migrations run successfully!';
 });
 Route::get('seeder', function () {
     Artisan::call('db:seed');
-    return 'Yupp, seeder run successfully!';
+    return 'Yup, seeder run successfully!';
 });

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,13 +27,27 @@ class CampaignModel extends Model
         'status',
     ];
 
-    protected $append = ["task_type", "social_task_user_count"];
+    protected $append = ["task_type", "social_task_user_count", "task_expired"];
 
     public function getTaskTypeAttribute()
     {
         $typeConst = array_flip(CampaignModel::TYPE);
         $type = $this->type;
         return ucfirst(strtolower($typeConst[$type]));
+    }
+    public function getTaskExpiredAttribute()
+    {
+        $expiryDate = Carbon::parse($this->expiry_date);
+        $string = 'Active';
+        // Check if the task's expiry_date is in the past (expired)
+        if (Carbon::now()->greaterThanOrEqualTo($expiryDate)) {
+            // Task is expired
+            $string = 'Expired';
+        } else {
+            // Task is not expired
+            $string = 'Active';
+        }
+        return $string;
     }
 
     public function getTaskStatusAttribute()
@@ -61,5 +76,9 @@ class CampaignModel extends Model
     // }  
     public function campaignUSerHistory() {
         return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id','id')->where('status','3');
+    }
+    public function PendingCampaignUSerHistory()
+    {
+        return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id', 'id')->where('status', '1');
     }
 }

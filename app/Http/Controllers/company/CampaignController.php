@@ -7,6 +7,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\Notification;
+use App\Models\Referral;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Exception;
@@ -406,13 +407,15 @@ class CampaignController extends Controller
             $id = base64_decode($request->id);
             $companyId = Helper::getCompanyId();
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
-
+            // dd($id, $camphistory);
+            $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
             $user = User::where('id', $camphistory->user_id)->first();
             if (empty($user)) {
                 return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);
             }
             $html = "";
-            $html .= '<div class="modal-header ">
+            $html .=
+            '<div class="modal-header ">
                         <h5 class="modal-title h4">View</h5>
                         <button type="button" class="close" data-dismiss="modal">
                             <i class="anticon anticon-close"></i>
@@ -420,6 +423,7 @@ class CampaignController extends Controller
                     </div>
 
         <div class="card">
+        
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col-md-12">
@@ -494,7 +498,8 @@ class CampaignController extends Controller
                                             </a>
                                             ';
             }
-            $html .= '
+            $html .=
+            '
                                         </div>
                                     </div>
                                 </div>
@@ -504,10 +509,10 @@ class CampaignController extends Controller
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h2>Bank Detail:</h2>
-                <div class="table-responsive">
+        
+        <div class="card-body tab-content" id="pills-tabContent">
+<h2>Bank Detail:</h2>
+                <div class="table-responsive m-b-20" >
                     <table class="product-info-table m-t-20">
                         <tbody>
                             <tr>
@@ -530,6 +535,45 @@ class CampaignController extends Controller
                                 <td> ' . $user->ac_no ?? $user->ac_no;
             $html .= '</td>
                             </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h4>Referral Users</h4>
+                <div class="m-t-25">
+                    <div class="user-table-scroll">
+                        <table id="user_joind" class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>User</th>
+                                    <th>Reward</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                foreach ($referral_user_detail as $list) {
+                    $i = 1;
+                    $html .= '<tr><td>' . $i . ' </td>
+                            <td>' . (isset($list->getuser->first_name) ? $list->getuser->first_name : '') . '
+                            </td>
+                            <td>' . (isset($list->reward) ? $list->reward : '') . '
+                            </td>
+                            <td>' . (isset($list->created_at) ? date_format($list->created_at, "Y-m-d  h:ia") : '') . '
+                            </td>
+                        </tr>';
+                    $i++;
+                }
+                $html .= ' </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="product-info-table m-t-20">
+                        <tbody>
                             <tr>
                                 <td> <button class="btn btn-success  btn-sm action" data-action="3"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"  >Accept</button>
                                 <button class="btn btn-danger  btn-sm action" data-action="4"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"data-action="Reject" >Reject</button></td>
