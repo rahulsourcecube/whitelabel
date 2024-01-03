@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyModel extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $table = 'company';
 
     /*protected $fillable = [
@@ -21,8 +22,13 @@ class CompanyModel extends Model
         'is_indivisual',
         // Add more fields as needed
     ];*/
+    
     public function user()
     {
         return $this->belongsTo(User::class,'user_id');
+    }
+    public function search()
+    {
+        dd("gfdbvfdjgkbv ");
     }
 }

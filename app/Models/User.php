@@ -4,16 +4,18 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable , HasRoles,SoftDeletes;
     const USER_TYPE = [
-        'ADMIN' => 0,
-        'COMPANY' => 1,
+        'ADMIN' => 1,
+        'COMPANY' => 2,
         'STAFF' => 3,
         'USER' => 4,
     ];
@@ -43,6 +45,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'view_password',
     ];
 
     /**
@@ -61,7 +64,7 @@ class User extends Authenticatable
     public function getUserStatusAttribute() {
         $status = $this->status;
         $string = 'Active';
-        if($status == 1){
+        if($status == 0){
             $string = 'Deactive';
         }
         return $string;

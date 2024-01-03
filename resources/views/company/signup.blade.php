@@ -10,7 +10,7 @@
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
+        href="@if (!empty($siteSetting) && !empty($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -25,13 +25,12 @@
 
 <body>
     <div class="app">
-
         <div class="container-fluid p-h-0 p-v-20 bg full-height d-flex"
             style="background-image: url('{{asset('assets/images/others/login-3.png')}}">
             <div class="d-flex flex-column justify-content-between w-100">
                 <div class="container d-flex h-100">
                     <div class="row align-items-center w-100">
-                        <div class="col-md-7 col-lg-5 m-h-auto">
+                        <div class="col-md-7 col-lg-6 m-h-auto">
                             <div class="card shadow-lg">
                                 <div class="card-body">
                                     @include('admin.includes.message')
@@ -45,45 +44,59 @@
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="fname">First Name:</label>
                                                 <input type="text" class="form-control" name="fname" id="fname"
-                                                    placeholder="First Name">
+                                                    placeholder="First Name" value="{{old('fname')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="lname">Last name</label>
                                                 <input type="text" class="form-control" name="lname" id="lname"
-                                                    placeholder="Last name">
+                                                    placeholder="Last name" value="{{old('lname')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
                                                 <input type="email" class="form-control" name="email" id="email"
-                                                    placeholder="Email">
+                                                    placeholder="Email" value="{{old('email')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="cname">Company Name:</label>
                                                 <input type="text" class="form-control" name="cname" id="cname"
-                                                    placeholder="Company Name">
+                                                    placeholder="Company Name" value="{{old('cname')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
-                                                <label class="font-weight-semibold" for="userName">Domain Name:</label>
-                                                <input type="text" class="form-control" name="dname" id="userName"
-                                                    placeholder="Domain Name">
+                                                <label class="font-weight-semibold" for="ccontact">Contact
+                                                    Number:</label>
+                                                <input type="number" min="0" class="form-control" name="ccontact" id="ccontact"
+                                                    placeholder="Contact Number" maxlength="10" minlength="10"
+                                                    value="{{old('ccontact')}}">
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="font-weight-semibold" for="dname">Domain Name:</label>
+                                                <div class="input-group mb-3">
+                                                    <input type="text" class="form-control" name="dname"
+                                                        placeholder="Domain Name" id="dname" value="{{old('dname')}}" max="50">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text" id="basic-addon2">{{
+                                                            Request::getHost() }}</span>
+                                                    </div>
+                                                </div>
+                                                <label id="dname-error" class="error" for="dname"></label>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
                                                 <input type="password" class="form-control" name="password"
-                                                    id="password" placeholder="Password">
+                                                    id="password" placeholder="Password" value="{{old('password')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
                                                 <input type="password" class="form-control" name="cpassword"
-                                                    id="confirmPassword" placeholder="Confirm Password">
+                                                    id="confirmPassword" placeholder="Confirm Password"
+                                                    value="{{old('cpassword')}}" max="50">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between p-t-15">
                                                 {{-- <div class="checkbox">
                                                     <input id="checkbox" type="checkbox">
-
                                                 </div> --}}
                                                 <button type="submit" class="btn btn-primary">Sign Up</button>
                                             </div>
@@ -97,7 +110,7 @@
                     </div>
                 </div>
                 <div class="d-none d-md-flex p-h-40 justify-content-between">
-                    <span class="">© 2019 ThemeNate</span>
+                    {{-- <span class="">© 2019 ThemeNate</span>
                     <ul class="list-inline">
                         <li class="list-inline-item">
                             <a class="text-dark text-link" href="#">Legal</a>
@@ -105,7 +118,7 @@
                         <li class="list-inline-item">
                             <a class="text-dark text-link" href="#">Privacy</a>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
             </div>
         </div>
@@ -113,6 +126,10 @@
 
 
     <script>
+        $.validator.addMethod("subdomainV", function(value, element) {
+        var regex = new RegExp("^[a-zA-Z]+[a-zA-Z0-9\\-]*$");
+        return regex.test(value);
+        }, "Please provide proper subdomain name");
         $('#signup').validate({
             rules: {
                 fname: {
@@ -124,24 +141,25 @@
                 cname: {
                     required: true
                 },
-                dname: {
+                ccontact: {
                     required: true
+                },
+                dname: {
+                    required: true,
+                    subdomainV: true /*** New Rule Applied */
                 },
                 email: {
                     required: true
                 },
                 password: {
-                minlength: 8,
-                maxlength: 30,
-                required: true,                
-               },
+                    minlength: 8,
+                    maxlength: 50,
+                    required: true,
+                },
                 cpassword: {
-                        required: true,
-                        equalTo: "#password"
-                    },
-               
-
-           
+                    required: true,
+                    equalTo: "#password"
+                },
             },
             messages: {
                 fname: {
@@ -153,14 +171,17 @@
                 cname: {
                     required: "Please enter company name"
                 },
+                ccontact: {
+                    required: "Please enter contact number"
+                },
                 dname: {
                     required: "Please enter domain name"
                 },
                 email: {
-                    required: "Please enter Email"
+                    required: "Please enter email"
                 },
                 password: {
-                required: "Please enter password",                
+                required: "Please enter password",
                 },
                 cpassword: {
                     required: "Please enter confirm password",

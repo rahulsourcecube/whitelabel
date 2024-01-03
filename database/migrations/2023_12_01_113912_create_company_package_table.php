@@ -20,11 +20,11 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->integer('no_of_campaign')->nullable();
-            $table->float('price')->nullable();
+            $table->integer('price')->nullable();
             $table->string('paymnet_method')->nullable();
             $table->string('paymnet_id')->nullable();
             $table->text('paymnet_response')->nullable();
-            $table->enum('status', ['0', '1'])->default('1')->comment('1) Active  2) Inactive');
+            $table->enum('status', ['0', '1'])->default('1')->comment('1) Active  0) Inactive');
             $table->timestamps();
 
             $table->foreign('company_id')->references('id')->on('company');

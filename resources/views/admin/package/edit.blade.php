@@ -27,19 +27,27 @@
                                 <input type="text" class="form-control" id="name" name="title" placeholder="Title"
                                     value="{{ !empty($package->title) ? $package->title : '' }}" maxlength="150">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="campaign"> No Of Campaign <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="campaign" name="campaign"
                                     value="{{ !empty($package->no_of_campaign) ? $package->no_of_campaign : '' }}"
                                     placeholder="No Of Campaign"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
-                            <div class="form-group col-md-12">
-                                <label for="descriptions">Description <span class="error">*</span></label>
-                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> {{ !empty($package->description) ? $package->description : '' }} </textarea>
+                            <div class="form-group col-md-3">
+                                <label for="user"> No Of User <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="user" name="user"
+                                    placeholder="No Of User" value="{{ !empty($package->no_of_user) ? $package->no_of_user : '' }}"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="10">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="employee"> No Of Employee <span class="error">*</span></label>
+                                <input type="text" class="form-control" id="employee" name="employee"
+                                    placeholder="No Of Employee" value="{{ !empty($package->no_of_employee) ? $package->no_of_employee : '' }}"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="10">
                             </div>
 
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="inputype">Type <span class="error">*</span></label>
                                 <select id="inputype" name="type" class="form-control type">
 
@@ -54,20 +62,36 @@
                                     </option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="day" class="day_title">No Of Day <span class="error">*</span></label>
                                 <input type="text" class="form-control day_place" id="day" name="day"
                                     placeholder="No Of Day"
                                     value="{{ !empty($package->duration) ? $package->duration : '' }}"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                             </div>
-                            <div class="form-group col-md-6"  id="price-section">
+
+                            <div class="col-md-3 pl-5">
+                                <label for="expiry_date">Status</label>
+                                <div class="form-group align-items-center">
+                                    <div class="switch m-r-10">
+                                        <input type="checkbox" id="switch-1" name="status" value="1" @if (isset( $package->status) && $package->status == 1 ) checked="" @endif>
+                                        <label for="switch-1"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-3" id="price-section">
                                 <label for="price"> Price <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="price" name="price"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10"
                                     value="{{ !empty($package->price) ? $package->price : '' }}" placeholder="Price">
                             </div>
+
+                            <div class="form-group col-md-12">
+                                <label for="descriptions">Description <span class="error">*</span></label>
+                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> {{ !empty($package->description) ? $package->description : '' }} </textarea>
+                            </div>
                         </div>
+
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="file">Image <span class="error">*</span></label>
@@ -75,15 +99,16 @@
                                     accept=".png, .jpg, .jpeg" onchange="previewImage()">
                             </div>
                         </div>
-
+                        @if($package->image!=null && file_exists('uploads/package/' . $package->image))
                         <div class="form-row">
-                            <div class="form-group col-md-3"  style="max-height: 200px;">
+                            <div class="form-group col-md-3" style="max-height: 200px;">
                                 <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"
                                     alt="Image Preview" style="max-width: 100%; max-height: 80%;">
                                 {{-- <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
                                     style="display: block;" onclick="deleteImage()"><i class="fa fa-trash"></i></button> --}}
                             </div>
                         </div>
+                        @endif
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
@@ -103,6 +128,12 @@
                     required: true
                 },
                 campaign: {
+                    required: true
+                },
+                employee: {
+                    required: true
+                },
+                user: {
                     required: true
                 },
                 description: {
@@ -125,6 +156,12 @@
                 campaign: {
                     required: "Please Enter No Of Campaign"
                 },
+                employee: {
+                    required: "Please Enter No Of Employee"
+                },
+                user: {
+                    required: "Please Enter No Of User"
+                },
                 description: {
                     required: "Please Enter description"
                 },
@@ -141,32 +178,33 @@
         });
 
         isFreePackage();
-        $(document).on("change","#inputype",function() {
+        $(document).on("change", "#inputype", function() {
 
-                type = $(this).val();
-                isFreePackage();
-                if (type == '1') {
-                    $('.day_title').html('No Of Day');
-                    $(".day_place").attr("placeholder", "No Of Day").placeholder();
-                } else if (type == '2') {
-                    $('.day_title').html('No Of Month');
-                    $(".day_place").attr("placeholder", "No Of Month").placeholder();
+            type = $(this).val();
+            isFreePackage();
+            if (type == '1') {
+                $('.day_title').html('No Of Day');
+                $(".day_place").attr("placeholder", "No Of Day").placeholder();
+            } else if (type == '2') {
+                $('.day_title').html('No Of Month');
+                $(".day_place").attr("placeholder", "No Of Month").placeholder();
 
-                } else {
-                    $('.day_title').html('No Of Year');
-                    $(".day_place").attr("placeholder", "No Of Year").placeholder();
-                }
+            } else {
+                $('.day_title').html('No Of Year');
+                $(".day_place").attr("placeholder", "No Of Year").placeholder();
+            }
 
-            });
-            function isFreePackage() {
+        });
 
-        if ($("#inputype option:selected").val() == '1') {
-            $("#price-section").hide();
-            $("#price").val("0");
-        } else {
-            $("#price-section").show();
-            $("#price").val("");
-        }
+        function isFreePackage() {
+
+            if ($("#inputype option:selected").val() == '1') {
+                $("#price-section").hide();
+                $("#price").val("0");
+            } else {
+                $("#price-section").show();
+                // $("#price").val("");
+            }
         }
 
         function previewImage() {

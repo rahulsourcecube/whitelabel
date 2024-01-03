@@ -32,35 +32,35 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="number">Email Address <span class="error">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email"
-                                placeholder="Email Address" value="{{ old('email') }}">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email Address"
+                                value="{{ old('email') }}">
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="Type">Role</label>
                             <select id="Type" class="form-control" name="role">
-                                <option value="" >Select</option>
-                                <option value="1" >Staff</option>
-                                <option value="2" >Manager</option>
-                                <option value="3" >Lead</option>
+                                <option value="">Select</option>
+                                @foreach ($roles as $role)
+                                @if ($role != 'Company')
+                                <option value="{{ $role }}">{{ $role }}</option>
+                                @endif
+                                @endforeach
                             </select>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="password"> Password <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="password" name="password"
+                            <input type="password" class="form-control" id="password" name="password"
                                 placeholder="Password">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="cpassword"> Comfirm Password <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="cpassword" name="cpassword"
+                            <input type="password" class="form-control" id="cpassword" name="cpassword"
                                 placeholder="Comfirm Password">
                         </div>
 
                         <div class="form-group col-md-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
-
-
                 </form>
             </div>
         </div>
@@ -71,5 +71,52 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('assets/js/pages/company-employee.js') }}"></script>
+<script>
+    $('#employeeform').validate({
+       rules: {
+           fname: {
+               required: true
+           },
+           lname: {
+               required: true
+           },
+           email: {
+               required: true
+           },
+           role: {
+               required: true
+           },
+           password: {
+               minlength: 8,
+               maxlength: 50,
+               required: true,                
+           },
+           cpassword: {
+               required: true,
+               equalTo: "#password"
+           },
+       },
+       messages: {
+           fname: {
+               required: "Please enter first name"
+           },
+           lname: {
+               required: "Please enter last name"
+           },
+           role: {
+               required: "Please select role"
+           },
+           email: {
+               required: "Please enter email"
+           },
+           password: {
+               required: "Please enter password",                
+           },
+           cpassword: {
+               required: "Please enter confirm password",
+               equalTo: "The password you entered does not match.",
+           },
+       }
+    });
+</script>
 @endsection

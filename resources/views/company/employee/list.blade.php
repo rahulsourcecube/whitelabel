@@ -17,8 +17,8 @@
     <div class="card">
         <div class="card-body">
             <h4>Employee List</h4>
-            <a class="btn btn-primary float-right" href="{{route('company.employee.create')}}" role="button">Add New</a>
-            <div class="m-t-25">
+           @can("employee-management-create") <a class="btn btn-primary float-right " href="{{route('company.employee.create')}}" role="button">Add New</a>  @endcan
+            <div >
                 <table id="user_tables" class="table">
                     <thead>
                         <tr>
@@ -124,10 +124,10 @@
                     editUrl = editUrl.replace(':package', row[0]);
                     var deleteUrl = '{{ route('company.employee.delete', ':del') }}';
                     deleteUrl = deleteUrl.replace(':del', row[0]);
-                    return '<a class="btn btn-primary btn-sm" href="' +
+                    return '@can("employee-management-edit")<a class="btn btn-primary btn-sm" href="' +
                         editUrl +
-                        '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
-                        deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
+                        '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can("employee-management-delete")<a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                        deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> @endcan';
 
                 },
             }

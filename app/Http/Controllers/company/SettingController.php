@@ -1,6 +1,9 @@
 <?php
 namespace App\Http\Controllers\Company;
+
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\CompanyModel;
 use App\Models\SettingModel;
 use App\Models\User;
 use Exception;
@@ -9,16 +12,36 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 class SettingController extends Controller
 {
+
+
+   /**
+    * Display a listing of the resource.
+    *
+    * @return \Illuminate\Http\Response
+    */
+   function __construct()
+   {
+      // check user permission
+      $this->middleware('permission:general-setting-list', ['only' => ['index']]);
+      $this->middleware('permission:general-setting-create', ['only' => ['store']]);;
+   }
+
+    
    function index()
    {
-      $data['setting'] = SettingModel::where('user_id', Auth::user()->id)->first();
+      $companyId = Helper::getCompanyId();
+
+      $data['setting'] = SettingModel::where('user_id', $companyId)->first();
+      $data['companyname'] = CompanyModel::where('user_id', $companyId)->first();
       return view('company.setting.setting', $data);
    }
    function store(Request $request)
    {
       try {
+         $companyId = Helper::getCompanyId();
+
          //code...
-         $SettingModel = SettingModel::where('user_id', Auth::user()->id)->first();
+         $SettingModel = SettingModel::where('user_id', $companyId)->first();
          if ($SettingModel->user_id) {
             if (empty($SettingModel)) {
                $SettingModel = new SettingModel;

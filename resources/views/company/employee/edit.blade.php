@@ -17,33 +17,36 @@
         <div class="card-body">
             <h4>Add Employee</h4>
             <div class="m-t-50" style="">
-
-                <form id="employeeform" method="POST" action="{{ route('company.employee.update', base64_encode($user->id)) }}">
+                <form id="editemployeeform" method="POST"
+                    action="{{ route('company.employee.update', base64_encode($user->id)) }}">
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="fname">First Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name"
-                                maxlength="150" value="{{isset($user->first_name) ? $user->first_name : '' }}">
+                                maxlength="150" value="{{ isset($user->first_name) ? $user->first_name : '' }}">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="lname">Last Name <span class="error">*</span></label>
                             <input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name"
-                                maxlength="150" value="{{isset($user->last_name) ? $user->last_name : '' }}">
+                                maxlength="150" value="{{ isset($user->last_name) ? $user->last_name : '' }}">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="number">Email Address <span class="error">*</span></label>
-                            <input type="email" class="form-control" id="email" name="email"
-                                placeholder="Email Address" value="{{isset($user->email) ? $user->email : '' }}">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email Address"
+                                value="{{ isset($user->email) ? $user->email : '' }}">
                         </div>
 
                         <div class="form-group col-md-6">
                             <label for="Type">Role</label>
                             <select id="Type" class="form-control" name="role">
-                                <option value="" >Select</option>
-                                <option value="1" >Staff</option>
-                                <option value="2" >Manager</option>
-                                <option value="3" >Lead</option>
+                                <option value="">Select</option>
+                                @foreach ($roles as $role)
+                                @if ($role != 'Company')
+                                <option value="{{ $role }}" @if ($userRole==$role) selected @endif>{{ $role }}
+                                </option>
+                                @endif
+                                @endforeach
                             </select>
                         </div>
                         {{-- <div class="form-group col-md-6">
@@ -56,12 +59,9 @@
                             <input type="text" class="form-control" id="cpassword" name="cpassword"
                                 placeholder="Comfirm Password">
                         </div> --}}
-
                         <div class="form-group col-md-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
-
-
                 </form>
             </div>
         </div>
@@ -72,5 +72,36 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('assets/js/pages/company-employee.js') }}"></script>
+<script>
+    $('#editemployeeform').validate({
+       rules: {
+           fname: {
+               required: true
+           },
+           lname: {
+               required: true
+           },
+           email: {
+               required: true
+           },
+           role: {
+               required: true
+           },
+       },
+       messages: {
+           fname: {
+               required: "Please enter first name"
+           },
+           lname: {
+               required: "Please enter last name"
+           },
+           role: {
+               required: "Please select role"
+           },
+           email: {
+               required: "Please enter email"
+           },
+       }
+    });
+</script>
 @endsection

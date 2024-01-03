@@ -71,9 +71,12 @@
                     'orderable': false,
                     'render': function(data, type, row) {
                         var viewUrl = '{{ route('admin.company.view', ':id') }}';
+                        var editUrl = '{{ route('admin.company.edit', ':package') }}';
+                        editUrl = editUrl.replace(':package', row[0]);
                         viewUrl = viewUrl.replace(':id', row[0]);
                         return '<a class="btn btn-success btn-sm " href="' + viewUrl +
-                            '" role="button"><i class="fa fa-eye"></i></a>';
+                            '" role="button"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +editUrl +
+                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a>';
                     },
                 }],
             });

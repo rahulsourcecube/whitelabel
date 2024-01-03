@@ -7,7 +7,7 @@
     <title>Login</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo/logo.png') }}">
 
     <!-- page css -->
 
@@ -29,24 +29,30 @@
                         <div class="col-md-7 col-lg-5 m-h-auto">
                             <div class="card shadow-lg">
                                 <div class="card-body">
+                                    @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
                                         <img class="img-fluid" alt="" src="{{asset('assets/images/logo/logo.png')}}">
                                         <h2 class="m-b-0">Change Password</h2>
                                     </div>
                                     
-                                    <form  id="changePass" method="POST" action="{{ route('company.change.password',$id) }}">
+                                    <form  id="changePass" method="POST" action="{{ route('company.reset-password') }}">
                                         @csrf
-                                        @method('PUT')
+                                        <input id="email" type="hidden"
+                                                    class="form-control @error('email') is-invalid @enderror"
+                                                    name="email" value="{{ isset($user->email) ? $user->email : '' }}"
+                                                    placeholder="Email" readonly>
+                                                    <input type="hidden" name="token" value="{{ $token }}">
                                         <div class="form-group">
-                                            <label class="font-weight-semibold" for="Password">Password:</label>
+                                            <label class="font-weight-semibold" for="userName">Password</label>
                                             <div class="input-affix">
-                                                <i class="prefix-icon anticon anticon-user"></i>
-                                                <input type="text" class="form-control" name="password" id="password" placeholder="Password:">
+                                                <i class="prefix-icon anticon anticon-lock"></i>
+                                                <input type="password" class="form-control" id="password"
+                                                    placeholder="Password" name="password">
                                             </div>
                                             <label id="password-error" class="error" for="password"></label>
                                         </div>
                                         <div class="form-group">
-                                            <label class="font-weight-semibold" for="cpassword"></label>                                           
+                                            <label class="font-weight-semibold" for="cpassword">Confirm Password</label>                                           
                                             <div class="input-affix m-b-10">
                                                 <i class="prefix-icon anticon anticon-lock"></i>
                                                 <input type="password" class="form-control"  name="cpassword" id="cpassword" placeholder="Confirm Password">
@@ -69,7 +75,7 @@
                     </div>
                 </div>
                 <div class="d-none d-md-flex p-h-40 justify-content-between">
-                    <span class="">© 2019 ThemeNate</span>
+                    {{-- <span class="">© 2019 ThemeNate</span>
                     <ul class="list-inline">
                         <li class="list-inline-item">
                             <a class="text-dark text-link" href="#">Legal</a>
@@ -77,7 +83,7 @@
                         <li class="list-inline-item">
                             <a class="text-dark text-link" href="#">Privacy</a>
                         </li>
-                    </ul>
+                    </ul> --}}
                 </div>
             </div>
         </div>
@@ -90,7 +96,7 @@
                
                 password: {
                 minlength: 8,
-                maxlength: 30,
+                maxlength: 50,
                 required: true,                
                },
                 cpassword: {

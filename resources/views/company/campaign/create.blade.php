@@ -8,14 +8,14 @@
             <nav class="breadcrumb breadcrumb-dash">
                 <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                     <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                <a href="{{ route('admin.package.list') }}" class="breadcrumb-item">Task</a>
+                <a href="{{ route('admin.package.list') }}" class="breadcrumb-item">{{$typeInText}} Task</a>
                 <span class="breadcrumb-item active">Add</span>
             </nav>
         </div>
     </div>
     <div class="card">
         <div class="card-body">
-            <h4>Add Task</h4>
+            <h4>Add {{$typeInText}} Task</h4>
             <div class="m-t-50" style="">
                 <form id="taskadd" method="POST" action="{{ route('company.campaign.store') }}"
                     enctype="multipart/form-data">
@@ -71,7 +71,7 @@
                         <div class="form-group col-md-6">
                             <label for="file">Image <span class="error">*</span></label>
                             <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg"
-                                onchange="previewImage()">
+                                onchange="previewImage()" required>
                             @error('image')
                             <label id="image-error" class="error" for="image">{{ $message }}</label>
                             @enderror

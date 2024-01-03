@@ -1,11 +1,16 @@
 @extends('company.layouts.master')
 @section('title', 'Billing And Payments')
 @section('main-content')
-
+    @php
+        $ActivePackageData = App\Helpers\Helper::GetActivePackageData();
+    @endphp
     <div class="main-content">
         <div class="card">
             <div class="card-body">
                 <h4>Billing And Payments</h4>
+                @can('package-list')
+                <a class="btn btn-primary float-right" href="{{ route('company.package.list', 'Free') }}" role="button" style="margin-top: 18px; ">Buy Package</a>
+                @endcan
                 <div class="m-t-25">
                     <table id="package_tbale" class="table dataTable " role="grid" aria-describedby="data-table_info">
                         <thead>
@@ -14,45 +19,34 @@
                                 <th>Start Date</th>
                                 <th>Expiry Date</th>
                                 <th>Status</th>
-                                <th>Action</th>
+                                {{-- <th>Action</th> --}}
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Premium Plan</td>
-                                <td>16-05-2023</td>
-                                <td>15-12-2023</td>
-                                <td>
-                                    <a class="btn btn-danger btn-sm" href="#" role="button" title="Edit">Deactive</a>
-                                </td>
-
-                                <td>
-                                    <button class="btn btn-success " onclick="showSuccessAlert()">Buy Package</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Standard Plan</td>
-                                <td>15-01-2023</td>
-                                <td>16-05-2023</td>
-                                <td>
-                                    <a class="btn btn-danger btn-sm" href="#" role="button" title="Edit">Deactive</a>
-                                </td>
-
-                                <td>
-                                    <button class="btn btn-success " onclick="showSuccessAlert()">Buy Package</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Basic Plan</td>
-                                <td>01-01-2023</td>
-                                <td>15-01-2023</td>
-                                <td>
-                                    <a class="btn btn-danger btn-sm" href="#" role="button" title="Edit">Deactive</a>
-                                </td>
-                                <td>
-                                    <button class="btn btn-success " onclick="showSuccessAlert()">Buy Package</button>
-                                </td>
-                            </tr>
+                            @if ($bills && $bills->count() != 0)
+                                @foreach ($bills as $item)
+                                    <tr>
+                                        <td>{{ $item->GetPackageData->title ?? '-' }}</td>
+                                        <td>{{ $item->start_date ?? '-' }}</td>
+                                        <td>{{ $item->end_date ?? '-' }}</td>
+                                        @if ($ActivePackageData && $ActivePackageData->id && $ActivePackageData->id != $item->id)
+                                            <td>
+                                                <a class="btn btn-danger btn-sm" href="#" role="button"
+                                                    title="Deactive">Deactive</a>
+                                            </td>
+                                        @else
+                                            <td>
+                                                <a class="btn btn-primary btn-sm" href="#" role="button"
+                                                    title="Active">Active</a>
+                                            </td>
+                                        @endif
+                                        {{-- <td>
+                                            <button class="btn btn-success " onclick="showSuccessAlert()">Buy
+                                                Package</button>
+                                        </td> --}}
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>
@@ -82,18 +76,18 @@
         });
     </script>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script>
-    function showSuccessAlert() {
-        // Trigger a success sweet alert
-        Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Package is activated successful.',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'OK'
-        });
-    }
-</script>>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        function showSuccessAlert() {
+            // Trigger a success sweet alert
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Package is activated successful.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+    </script>>
 @endsection
