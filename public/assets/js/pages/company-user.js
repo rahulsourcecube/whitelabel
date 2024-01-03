@@ -28,7 +28,7 @@ $('#userform').validate({
         },
         password: {
             minlength: 8,
-            maxlength: 30,
+            maxlength: 50,
             required: true,
         },
         password_confirmation: {
@@ -83,7 +83,7 @@ $('#userUpdateform').validate({
         },
         password: {
             minlength: 8,
-            maxlength: 30,
+            maxlength: 50,
             // required: true,
         },
         password_confirmation: {

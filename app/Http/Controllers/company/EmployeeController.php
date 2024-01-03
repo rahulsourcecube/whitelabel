@@ -90,10 +90,10 @@ class EmployeeController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'cpassword' => 'required|string|min:8',
             ]);
-            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['STAFF'])->count();
             $ActivePackageData = Helper::GetActivePackageData();
+            $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['STAFF'])->count();
             if ($userCount >= $ActivePackageData->no_of_employee ) {
-                return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->no_of_employee . ' employees');
+                return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_employee . ' employees');
             }
             $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
 
@@ -112,7 +112,7 @@ class EmployeeController extends Controller
             $user->view_password = $request->password;
             $user->user_type = User::USER_TYPE['STAFF'];
             $user->company_id = $companyId;
-
+            $user->package_id = $ActivePackageData->id;
             $user->save();
             $user->assignRole($request->input('role'));
             return redirect()->route('company.employee.list')->with('success', 'Employee added successfuly.');

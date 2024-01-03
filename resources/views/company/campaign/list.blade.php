@@ -8,18 +8,18 @@
             <nav class="breadcrumb breadcrumb-dash">
                 <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
                         class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                <span class="breadcrumb-item active">Campaign </span>
+                <span class="breadcrumb-item active">{{$taskType}} Tasks</span>
             </nav>
         </div>
     </div>
     <div class="card">
         <div class="card-body">
-            <h4>Task List</h4>
+            <h4>{{$taskType}} Task List</h4>
             @if(isset($totalData) && count($totalData) > 0)
-            <a class="btn btn-primary float-right btn-sm" href="{{route('company.campaign.export',$taskType)}}"
+            <a class="btn btn-primary float-right btn-sm p-10 h-40" href="{{route('company.campaign.export',$taskType)}}"
                 role="button">Export</a>
             @endif
-            <div class="m-t-25">
+            <div >
                 <table id="campaign_tables" class="table">
                     <thead>
                         <tr>

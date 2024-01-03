@@ -27,5 +27,8 @@ class CompanyModel extends Model
     {
         return $this->belongsTo(User::class,'user_id');
     }
-  
+    public function search()
+    {
+        dd("gfdbvfdjgkbv ");
+    }
 }

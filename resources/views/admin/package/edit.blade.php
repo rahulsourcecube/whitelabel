@@ -38,13 +38,13 @@
                                 <label for="user"> No Of User <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="user" name="user"
                                     placeholder="No Of User" value="{{ !empty($package->no_of_user) ? $package->no_of_user : '' }}"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="employee"> No Of Employee <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="employee" name="employee"
                                     placeholder="No Of Employee" value="{{ !empty($package->no_of_employee) ? $package->no_of_employee : '' }}"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="10">
                             </div>
 
                             <div class="form-group col-md-3">
@@ -99,7 +99,7 @@
                                     accept=".png, .jpg, .jpeg" onchange="previewImage()">
                             </div>
                         </div>
-
+                        @if($package->image!=null && file_exists('uploads/package/' . $package->image))
                         <div class="form-row">
                             <div class="form-group col-md-3" style="max-height: 200px;">
                                 <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"
@@ -108,6 +108,7 @@
                                     style="display: block;" onclick="deleteImage()"><i class="fa fa-trash"></i></button> --}}
                             </div>
                         </div>
+                        @endif
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>

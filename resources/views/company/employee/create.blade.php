@@ -88,7 +88,7 @@
            },
            password: {
                minlength: 8,
-               maxlength: 30,
+               maxlength: 50,
                required: true,                
            },
            cpassword: {

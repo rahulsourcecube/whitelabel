@@ -14,14 +14,14 @@
         <div class="row">
             <div class="col-md-6 col-lg-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 1rem;">
                         <div class="media align-items-center">
                             <div class="avatar avatar-icon avatar-lg avatar-blue">
                                 <i class="anticon anticon-dollar"></i>
                             </div>
                             <div class="m-l-15">
                                 <h2 class="m-b-0">
-                                    {{ isset($totalReferralUser) ? $totalReferralUser->count() : 0 }}
+                                    {{  $totalReferralUser->count()}}
                                 </h2>
                                 <p class="m-b-0 text-muted">Total Referral User</p>
                             </div>
@@ -32,7 +32,7 @@
             
             <div class="col-md-6 col-lg-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 1rem;">
                         <div class="media align-items-center">
                             <div class="avatar avatar-icon avatar-lg avatar-cyan">
                                 <i class="anticon anticon-line-chart"></i>
@@ -48,7 +48,7 @@
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 1rem;">
                         <div class="media align-items-center">
                             <div class="avatar avatar-icon avatar-lg avatar-gold">
                                 <i class="anticon anticon-profile"></i>
@@ -65,7 +65,7 @@
             </div>
             <div class="col-md-6 col-lg-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" style="padding: 1rem;">
                         <div class="media align-items-center">
                             <div class="avatar avatar-icon avatar-lg avatar-purple">
                                 <i class="anticon anticon-user"></i>
@@ -295,10 +295,6 @@
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
 
-                showSuccessAlert();
-            }
-
-            function showSuccessAlert() {
                 Swal.fire({
                     icon: 'success',
                     title: 'Copied!',
@@ -313,43 +309,17 @@
     @section('js')
         <script>
             $(document).ready(function() {
-                var chartReward = $(".chartReward").val();
-                chartReward = JSON.parse(chartReward);
-                console.log(chartReward);
-
-                var start = new Date();
-                var start_date = new Date(start);
-                start_date.setDate(start.getDate() - 9);
-
-                var currentDate = new Date();
-                var xArray = [];
-                var yArray = [];
-
-                while (start_date <= currentDate) {
-                    xArray.push((new Date(start_date)).getDate() + "th");
-                    var check_date = (new Date(start_date)).getFullYear() + '-' + (parseInt((new Date(start_date))
-                        .getMonth()) + parseInt(1)) + '-' + (new Date(start_date)).getDate();
-                    let obj = chartReward.find(x => x.day == check_date);
-                    if (obj && obj != '') {
-                        yArray.push(obj.total_day_reward)
-                    } else {
-                        yArray.push(0)
-                    }
-                    start_date.setDate(start_date.getDate() + 1);
-                }
-                console.log("xArray",xArray);
-                console.log("yArray",yArray);
+            var chartdata = {!! json_encode($chartRevenueData) !!};
                 var ctx = document.getElementById('myChart').getContext('2d');
                 var chart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: xArray,
+                        labels: chartdata.day,
                         datasets: [{
-                            label: {
-                                display: false,
-                            },
+                          
+                            label: "Total Revenue",
                             borderColor: '#3f87f5',
-                            data: yArray,
+                            data: chartdata.revenue,
                         }]
                     },
                     options: {

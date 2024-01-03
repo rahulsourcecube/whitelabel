@@ -19,12 +19,12 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            @if (isset($task) && $task->image == '')
-                                <img src="{{ asset('assets/images/others/No_image_available.png') }}"
-                                    class="w-100 img-responsive">
+                            @if (isset($task) && $task->image != ''  && file_exists('uploads/company/campaign/' . $task->image))
+                            <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
+                            class="w-100 img-responsive">
                             @else
-                                <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
-                                    class="w-100 img-responsive">
+                            <img src="{{ asset('assets/images/others/No_image_available.png') }}"
+                                class="w-100 img-responsive">
                             @endif
                         </div>
                         <div class="col-md-8">

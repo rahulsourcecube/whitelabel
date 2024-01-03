@@ -81,9 +81,9 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                     <li @if (request()->segment(2) == 'edit_profile') class='active' @endif>
                         <a href="{{ route('user.edit_profile') }}">Edit Profile</a>
                     </li>
-                    <li @if (request()->segment(2) == 'changePassword') class='active' @endif>
+                    {{-- <li @if (request()->segment(2) == 'changePassword') class='active' @endif>
                         <a href="{{ route('user.changePassword') }}">Change Password</a>
-                    </li>
+                    </li> --}}
 
 
                 </ul>

@@ -96,7 +96,7 @@ class CampaignController extends Controller
             foreach ($userCounts as $item) {
                 $data[] = [
                     "User" =>isset($item->getuser->first_name) ? $item->getuser->first_name : '',
-                    "Reward" => $item->reward ?? '',
+                    "Reward" => Helper::getcurrency() . $item->reward ?? '',
                     "Date" => date_format($item->created_at, "Y-m-d  h:ia") ?? ''
                 ];
             }

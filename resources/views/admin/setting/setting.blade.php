@@ -27,7 +27,7 @@
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label for="title">Title</label>
+                                <label for="title">Title <span class="error">*</span> </label>
                                 <input type="text" class="form-control mb-2" name="title" id="title"
                                     placeholder="Title" value="{{ !empty($setting) ? $setting->title : env('APP_NAME') }}"
                                     required>

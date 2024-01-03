@@ -74,12 +74,12 @@
                 current_password: {
                     required: true,
                     minlength: 8,
-                    maxlength: 30,
+                    maxlength: 50,
                 },
                 new_password: {
                     required: true,
                     minlength: 8,
-                    maxlength: 30,
+                    maxlength: 50,
                 },
                 confirm_password: {
                     required: true,

@@ -141,10 +141,16 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
         Route::get('', [AdminCompanyController::class, 'index'])->name('list');
         Route::post('list', [AdminCompanyController::class, 'dtList'])->name('dtlist');
         Route::get('view/{id}', [AdminCompanyController::class, 'view'])->name('view');
+        Route::get('edit/{id}', [AdminCompanyController::class, 'edit'])->name('edit');
+        Route::post('update_passsword/{id}', [AdminCompanyController::class, 'updatepassword'])->name('update_password');
+        Route::post('update_profile/{id}', [AdminCompanyController::class, 'updateprofile'])->name('update_profile');
+        Route::post('store/{id}', [AdminCompanyController::class, 'store'])->name('store');
     });
     Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
     Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
 });
+Route::get('verifyemail/{id}', [CompanyLoginController::class, 'verifyemail'])->name('user.verifyemail');
+Route::get('verifycontact/{id}', [CompanyLoginController::class, 'verifycontact'])->name('user.verifycontact');
 // {{-- Company Middleware --}}
 Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
     Route::post('logout', [CompanyLoginController::class, 'logout'])->name('logout');
@@ -152,8 +158,6 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
     Route::post('update_profile/{id}', [CompanyLoginController::class, 'updateprofile'])->name('update_profile');
     Route::post('update_passsword', [CompanyLoginController::class, 'updatepassword'])->name('update_password');
     Route::get('profile', [CompanyLoginController::class, 'profile'])->name('profile');
-    Route::get('verifyemail/', [CompanyLoginController::class, 'verifyemail'])->name('verifyemail');
-    Route::get('verifycontact/', [CompanyLoginController::class, 'verifycontact'])->name('verifycontact');
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('', [UserController::class, 'index'])->name('list');

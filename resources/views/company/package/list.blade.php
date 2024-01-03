@@ -178,7 +178,7 @@
                                             class="form-control round-input remove-arrow card-expiry-month"
                                             placeholder="MM" name="card_expiry_month"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            maxlength="5">
+                                            maxlength="2">
                                         <label class="error" id="card_expiry_month-error"></label>
                                     </div>
                                 </div>
@@ -190,7 +190,7 @@
                                             class="form-control round-input remove-arrow card-expiry-year"
                                             placeholder="YYYY" name="card_expiry_year"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            maxlength="5">
+                                            maxlength="4">
                                         <label class="error" id="card_expiry_year-error"></label>
                                     </div>
                                 </div>
