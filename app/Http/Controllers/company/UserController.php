@@ -124,10 +124,10 @@ class UserController extends Controller
             }
 
 
-            $userCount = User::where('company_id', $companyId)->where('user_type',  User::USER_TYPE['USER'])->count();
             $ActivePackageData = Helper::GetActivePackageData();
+            $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
             if($userCount >= $ActivePackageData->no_of_user){
-                return redirect()->back()->with('error', 'you can create only '. $ActivePackageData->no_of_user.' users');
+                return redirect()->back()->with('error', 'You can create only '. $ActivePackageData->no_of_user.' users');
             }
 
             $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
@@ -168,6 +168,7 @@ class UserController extends Controller
             $user->ac_holder = $request->ac_holder;
             $user->ifsc_code = $request->ifsc_code;
             $user->ac_no = $request->ac_no;
+            $user->package_id = $ActivePackageData->id;
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User added successfuly.');
         } catch (\Exception $e) {

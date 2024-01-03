@@ -52,7 +52,11 @@ class CompanyLoginController extends Controller
         })->count();
         $data['new_user'] = User::where('company_id', $companyId)->where('user_type', '4')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
         $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
-        $data['total_campaignReq'] = 0;
+        $data['total_campaignReq'] = $user_campaign_history = DB::table('users as u')
+            ->where('u.company_id', $companyId)
+            ->where('uch.status', '2')
+            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+            ->count();
         $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(10)->get();
         $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(10)->get();
         $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
@@ -330,20 +334,20 @@ class CompanyLoginController extends Controller
             return $this->sendError($e->getMessage());
         }
     }
-    public function verifyemail(Request $request)
+    public function verifyemail(Request $request ,$id)
     {
         $userId = Auth::user()->id;
-        $email_check = User::where('id', '!=', $userId)->where('email', $request->email)->where('user_type', env('COMPANY_ROLE'))->first();
+        $email_check = User::where('id', '!=', $id)->where('email', $request->email)->where('user_type', env('COMPANY_ROLE'))->first();
         if (!empty($email_check)) {
             echo 'false';
         } else {
             echo 'true';
         }
     }
-    public function verifycontact(Request $request)
+    public function verifycontact(Request $request, $id)
     {
         $userId = Auth::user()->id;
-        $contact_check = User::where('id', '!=', $userId)->where('contact_number', $request->contact_number)->where('user_type', env('COMPANY_ROLE'))->first();
+        $contact_check = User::where('id', '!=', $id)->where('contact_number', $request->contact_number)->where('user_type', env('COMPANY_ROLE'))->first();
         if (!empty($contact_check)) {
             echo 'false';
         } else {

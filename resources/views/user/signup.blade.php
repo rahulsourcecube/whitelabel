@@ -9,7 +9,7 @@
     <title>Sign Up</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo/logo.png') }}">
 
     <!-- page css -->
 
@@ -52,18 +52,18 @@
                                                 <label class="font-weight-semibold" for="userName">First Name:</label>
                                                 <input type="text" class="form-control" id="first_name"
                                                     placeholder="First Name" name="first_name"
-                                                    value="{{old('first_name')}}">
+                                                    value="{{old('first_name')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">Last name</label>
                                                 <input type="text" class="form-control" id="last_name"
                                                     placeholder="Last name" name="last_name"
-                                                    value="{{old('last_name')}}">
+                                                    value="{{old('last_name')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
                                                 <input type="email" class="form-control" id="email" placeholder="Email"
-                                                    name="email" value="{{old('email')}}">
+                                                    name="email" value="{{old('email')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="contact">Contact
@@ -76,14 +76,14 @@
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
                                                 <input type="password" class="form-control" id="password"
-                                                    placeholder="Password" name="password" value="{{old('password')}}">
+                                                    placeholder="Password" name="password" value="{{old('password')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
                                                 <input type="password" class="form-control" id="confirmPassword"
                                                     placeholder="Confirm Password" name="password_confirmation"
-                                                    value="{{old('password_confirmation')}}">
+                                                    value="{{old('password_confirmation')}}" max="50">
                                             </div>
                                         </div>
                                         <div class="form-group">

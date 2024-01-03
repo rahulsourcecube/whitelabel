@@ -37,7 +37,7 @@
                                     <div class="col-md-12">
                                         <ul class="list-unstyled m-t-10">
                                             <li class="row">
-                                                <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                <p class=" font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-10 text-primary anticon anticon-mail"></i>
                                                     <span>Email: </span>
                                                 </p>
@@ -45,7 +45,7 @@
                                                     }}</p>
                                             </li>
                                             <li class="row">
-                                                <p class="col-sm-4 col-4 font-weight-semibold text-dark m-b-5">
+                                                <p class=" font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-10 text-primary anticon anticon-phone"></i>
                                                     <span>Phone: </span>
                                                 </p>

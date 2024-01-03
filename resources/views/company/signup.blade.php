@@ -10,7 +10,7 @@
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && !empty($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/favicon.png') }} @endif">
+        href="@if (!empty($siteSetting) && !empty($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -44,22 +44,22 @@
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="fname">First Name:</label>
                                                 <input type="text" class="form-control" name="fname" id="fname"
-                                                    placeholder="First Name" value="{{old('fname')}}">
+                                                    placeholder="First Name" value="{{old('fname')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="lname">Last name</label>
                                                 <input type="text" class="form-control" name="lname" id="lname"
-                                                    placeholder="Last name" value="{{old('lname')}}">
+                                                    placeholder="Last name" value="{{old('lname')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
                                                 <input type="email" class="form-control" name="email" id="email"
-                                                    placeholder="Email" value="{{old('email')}}">
+                                                    placeholder="Email" value="{{old('email')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="cname">Company Name:</label>
                                                 <input type="text" class="form-control" name="cname" id="cname"
-                                                    placeholder="Company Name" value="{{old('cname')}}">
+                                                    placeholder="Company Name" value="{{old('cname')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="ccontact">Contact
@@ -72,7 +72,7 @@
                                                 <label class="font-weight-semibold" for="dname">Domain Name:</label>
                                                 <div class="input-group mb-3">
                                                     <input type="text" class="form-control" name="dname"
-                                                        placeholder="Domain Name" id="dname" value="{{old('dname')}}">
+                                                        placeholder="Domain Name" id="dname" value="{{old('dname')}}" max="50">
                                                     <div class="input-group-append">
                                                         <span class="input-group-text" id="basic-addon2">{{
                                                             Request::getHost() }}</span>
@@ -83,14 +83,14 @@
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
                                                 <input type="password" class="form-control" name="password"
-                                                    id="password" placeholder="Password" value="{{old('password')}}">
+                                                    id="password" placeholder="Password" value="{{old('password')}}" max="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
                                                 <input type="password" class="form-control" name="cpassword"
                                                     id="confirmPassword" placeholder="Confirm Password"
-                                                    value="{{old('cpassword')}}">
+                                                    value="{{old('cpassword')}}" max="50">
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -153,7 +153,7 @@
                 },
                 password: {
                     minlength: 8,
-                    maxlength: 30,
+                    maxlength: 50,
                     required: true,
                 },
                 cpassword: {

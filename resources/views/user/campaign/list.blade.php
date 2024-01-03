@@ -125,7 +125,6 @@
                     if(type=="Social"){
                         window.location.href = view;
                     }else{
-
                         $('#campaign_tables').DataTable().ajax.reload();
                     }
                 });

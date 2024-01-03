@@ -138,8 +138,9 @@ class CampaignController extends Controller
 
     function create($type)
     {
+        $typeInText = $type;
         $type = CampaignModel::TYPE[strtoupper($type)];
-        return view('company.campaign.create', compact('type'));
+        return view('company.campaign.create', compact('type', 'typeInText'));
     }
 
     public function store(Request $request)
@@ -157,10 +158,10 @@ class CampaignController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $CampaignModelCount = CampaignModel::where('company_id', $companyId)->count();
             $ActivePackageData = Helper::GetActivePackageData();
+            $CampaignModelCount = CampaignModel::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->count();
             if ($CampaignModelCount >= $ActivePackageData->no_of_campaign) {
-                return redirect()->back()->with('error', 'you can create only ' . $ActivePackageData->no_of_campaign . ' campaigns');
+                return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_campaign . ' tasks');
             }
             if ($request->hasFile('image')) {
                 $extension = $request->file('image')->getClientOriginalExtension();
@@ -182,6 +183,7 @@ class CampaignController extends Controller
             $Campaign->image = $image;
             $Campaign->company_id = $companyId;
             $Campaign->status = !empty($request->status) ? '1' : "0";
+            $Campaign->package_id = $ActivePackageData->id;
 
             $Campaign->save();
             // CampaignModel::create($request->all());
@@ -415,7 +417,7 @@ class CampaignController extends Controller
             }
             $html = "";
             $html .=
-            '<div class="modal-header ">
+                '<div class="modal-header ">
                         <h5 class="modal-title h4">View</h5>
                         <button type="button" class="close" data-dismiss="modal">
                             <i class="anticon anticon-close"></i>
@@ -499,7 +501,7 @@ class CampaignController extends Controller
                                             ';
             }
             $html .=
-            '
+                '
                                         </div>
                                     </div>
                                 </div>
@@ -537,8 +539,12 @@ class CampaignController extends Controller
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                </div>';
+                if($referral_user_detail->count()!=0){
+              $html .=  '  <div style="display: flex;justify-content: space-between;">
                 <h4>Referral Users</h4>
+                <h4>Total Reward : ' . Helper::getcurrency() . $camphistory->reward . ' </h4>
+                </div>
                 <div class="m-t-25">
                     <div class="user-table-scroll">
                         <table id="user_joind" class="table">
@@ -551,25 +557,26 @@ class CampaignController extends Controller
                                 </tr>
                             </thead>
                             <tbody>';
-                foreach ($referral_user_detail as $list) {
-                    $i = 1;
-                    $html .= '<tr><td>' . $i . ' </td>
-                            <td>' . (isset($list->getuser->first_name) ? $list->getuser->first_name : '') . '
-                            </td>
-                            <td>' . (isset($list->reward) ? $list->reward : '') . '
-                            </td>
-                            <td>' . (isset($list->created_at) ? date_format($list->created_at, "Y-m-d  h:ia") : '') . '
-                            </td>
-                        </tr>';
-                    $i++;
-                }
-                $html .= ' </tbody>
+                            foreach ($referral_user_detail as $list) {
+                                $i = 1;
+                                $html .= '<tr><td>' . $i . ' </td>
+                                            <td>' . (isset($list->getuser->first_name) ? $list->getuser->first_name : '') . '
+                                            </td>
+                                            <td>' . Helper::getcurrency() . (isset($list->reward) ? $list->reward : '') . '
+                                            </td>
+                                            <td>' . (isset($list->created_at) ? date_format($list->created_at, "Y-m-d  h:ia") : '') . '
+                                            </td>
+                                        </tr>';
+                                $i++;
+                            }
+                            $html .= ' </tbody>
                         </table>
                     </div>
                 </div>
 
-            </div>
-        <div class="card">
+            </div>';
+            }
+    $html .= ' <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="product-info-table m-t-20">

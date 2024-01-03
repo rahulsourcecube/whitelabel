@@ -7,7 +7,7 @@
     <title>Login</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo/logo.png') }}">
 
     <style>
         .error{

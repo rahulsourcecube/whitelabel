@@ -48,7 +48,7 @@
                             </div>
                             <div class="m-l-15">
                                 <h2 class="m-b-0">{{ $total_campaign }}</h2>
-                                <p class="m-b-0 text-muted">Campaigns</p>
+                                <p class="m-b-0 text-muted">Tasks</p>
                             </div>
                         </div>
                     </div>
@@ -84,14 +84,18 @@
                                         <label for="company">Company</label>
                                         <select id="company" class="form-control" name="company"
                                             onchange="fetchDataAndRenderChart()">
+                                            @if($company->count() != 0)
                                             @foreach ($company as $item)
                                                 <option value="{{ $item->user_id }}">{{ $item->company_name }}</option>
                                             @endforeach
+                                            @else
+                                                <option value="">non company available</option>
+                                            @endif
                                         </select>
                                     </div>
                                     <input type="text" class="form-control datepicker-input readonly" id="month"
                                         name="month" placeholder="Select month" value="{{ $currentMonth ?? '' }}" readonly
-                                        onchange="fetchDataAndRenderChart()">
+                                        onchange="fetchDataAndRenderChart()" max="50">
 
                                 </div>
                             </div>
@@ -108,9 +112,9 @@
                     <div class="card-body">
                         <h5 class="m-b-0">Company</h5>
                         <div class="m-v-60 text-center" style="height: 280px;">
-                             @if ($total_user != 0)
+                             {{-- @if ($total_user != 0) --}}
                                 <div class="ct-chart" id="donut-chart"></div>
-                            @endif
+                            {{-- @endif --}}
                         </div>
                         <div class="row border-top p-t-25">
                             <div class="col-4">
@@ -129,7 +133,7 @@
                             <div class="col-4">
                                 <div class="d-flex justify-content-center">
                                     <div class="media align-items-center">
-                                        <span class="badge badge-secondary badge-dot m-r-10"></span>
+                                        <span class="badge badge-primary badge-dot m-r-10"></span>
                                         <div class="m-l-5">
                                             <input type="hidden" id="old_user"
                                                 value="{{ isset($old_company) ? $old_company : '0' }}">
@@ -170,8 +174,12 @@
     <script>
         var new_user = $("#new_user").val();
         var old_user = $("#old_user").val();
+
+        // Use a small non-zero default value
+        // var default_value = 0.01;
+
         new Chartist.Pie('#donut-chart', {
-            series: [old_user, new_user]
+            series: [Math.max(old_user, default_value), Math.max(new_user, default_value)]
         }, {
             donut: true,
             donutWidth: 60,
@@ -179,6 +187,7 @@
             startAngle: 270,
             showLabel: true
         });
+
     </script>
     <script>
         $(document).ready(function() {

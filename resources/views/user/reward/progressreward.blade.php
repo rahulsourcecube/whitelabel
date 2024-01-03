@@ -134,7 +134,7 @@
                                     </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 1)
-                                            @if ($data->getCampaign->task_expired == 'Expired')
+                                            @if ($data->getCampaign->type != '1')
                                                 <form method="post"
                                                     action="{{ route('user.progress.claimReward', $data->id) }}">
                                                     @csrf
@@ -142,7 +142,18 @@
                                                         reward</button>
                                                 </form>
                                             @else
-                                                <button class="btn btn-primary  btn-sm" role="button" style="background-color: rgba(0, 123, 255, 0.5);">Claim reward</button>
+                                                @if ($data->getCampaign->task_expired == 'Expired')
+                                                    <form method="post"
+                                                        action="{{ route('user.progress.claimReward', $data->id) }}">
+                                                        @csrf
+                                                        <button class="btn btn-primary  btn-sm" role="button">Claim
+                                                            reward</button>
+                                                    </form>
+                                                @else
+                                                    <button class="btn btn-primary  btn-sm" role="button"
+                                                        style="background-color: rgba(0, 123, 255, 0.5);">Claim
+                                                        reward</button>
+                                                @endif
                                             @endif
                                         @endif
                                         @if (isset($data->status) && $data->status == 2)

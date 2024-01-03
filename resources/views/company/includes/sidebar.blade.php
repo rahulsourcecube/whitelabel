@@ -65,7 +65,7 @@ $notificationCount = Notification::where('company_id', $user->id)
                         request()->segment(3) == 'list' &&
                         request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) class='active' @endif>
                         <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) }}">Social
-                            Share</a>
+                             Tasks</a>
                     </li>
                     <li @if (request()->segment(2) == 'campaign' &&
                         request()->segment(3) == 'list' &&
@@ -94,19 +94,19 @@ $notificationCount = Notification::where('company_id', $user->id)
                         request()->segment(3) == 'create' &&
                         request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL'])) class='active' @endif>
                         <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL'])) }}">Referral
-                            Tasks</a>
+                            Task</a>
                     </li>
                     <li @if (request()->segment(2) == 'campaign' &&
                         request()->segment(3) == 'create' &&
                         request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) class='active' @endif>
                         <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) }}">Social
-                            Tasks</a>
+                            Task</a>
                     </li>
                     <li @if (request()->segment(2) == 'campaign' &&
                         request()->segment(3) == 'create' &&
                         request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) class='active' @endif>
                         <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) }}">Custom
-                            Tasks </a>
+                            Task </a>
                     </li>
                 </ul>
             </li>

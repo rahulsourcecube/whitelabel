@@ -17,8 +17,8 @@
     <div class="card">
         <div class="card-body">
             <h4>Employee List</h4>
-           @can("employee-management-create") <a class="btn btn-primary float-right" href="{{route('company.employee.create')}}" role="button">Add New</a>  @endcan
-            <div class="m-t-25">
+           @can("employee-management-create") <a class="btn btn-primary float-right " href="{{route('company.employee.create')}}" role="button">Add New</a>  @endcan
+            <div >
                 <table id="user_tables" class="table">
                     <thead>
                         <tr>

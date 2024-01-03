@@ -17,10 +17,12 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
+                        @if( file_exists('uploads/package/' . $package->image))
                         <div class="col-md-4">
                             <img class="img-fluid" src="{{ asset('uploads/package/' . $package->image) }}" alt=""
                                 style="width: 100%; max-height: 100%;">
                         </div>
+                        @endif
                         <div class="col-md-8">
                             <h4 class="m-b-10">{{ $package->title }}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">

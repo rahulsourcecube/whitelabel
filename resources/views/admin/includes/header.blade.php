@@ -2,7 +2,7 @@
     <div class="logo logo-dark">
         <a href="{{ route('admin.dashboard') }}">
             <img src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(base_path("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif" alt="Logo">
-            <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold.png') }}" alt="Logo">
+            <img class="logo-fold" src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(base_path("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif" alt="Logo">
         </a>
     </div>
     <div class="logo logo-white">
@@ -13,11 +13,6 @@
     </div>
     <div class="nav-wrap">
         <ul class="nav-left">
-            <li class="desktop-toggle">
-                <a href="javascript:void(0);">
-                    <i class="anticon"></i>
-                </a>
-            </li>
             <li class="mobile-toggle">
                 <a href="javascript:void(0);">
                     <i class="anticon"></i>

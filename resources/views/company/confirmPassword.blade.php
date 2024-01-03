@@ -7,7 +7,7 @@
     <title>Login</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo/logo.png') }}">
 
     <!-- page css -->
 
@@ -96,7 +96,7 @@
                
                 password: {
                 minlength: 8,
-                maxlength: 30,
+                maxlength: 50,
                 required: true,                
                },
                 cpassword: {

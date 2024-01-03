@@ -410,6 +410,7 @@
                     },
                     ac_no: {
                         required: true,
+                        minlength: 8,
                     },
                 },
                 messages: {

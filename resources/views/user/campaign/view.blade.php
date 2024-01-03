@@ -18,14 +18,15 @@
             <div class="row">
                 <div class="col-md-3">
                     <div class="card">
-
                         <div class="card-content">
-                            @if (isset($campagin_detail) && $campagin_detail->image == '')
-                                <img src="{{ asset('assets/images/others/No_image_available.png') }}"
-                                    class="w-100 img-responsive">
-                            @else
+                            @if (isset($campagin_detail) &&
+                                    $campagin_detail->image != '' &&
+                                    file_exists('uploads/company/campaign/' . $campagin_detail->image))
                                 <img class="card-img-top"
                                     src="{{ asset('uploads/company/campaign/' . $campagin_detail->image) }}"
+                                    class="w-100 img-responsive">
+                            @else
+                                <img src="{{ asset('assets/images/others/No_image_available.png') }}"
                                     class="w-100 img-responsive">
                             @endif
                         </div>
@@ -51,25 +52,34 @@
 
                                 @if (!empty($user_plan) && $user_plan->status != '0')
                                     @if (isset($user_plan->status) && $user_plan->status == 1)
-                                        @if ($user_plan->getCampaign->task_expired == 'Expired')
-                                            <form method="post"
-                                                action="{{ route('user.progress.claimReward', $user_plan->id) }}">
-                                                @csrf
-                                                <button class="btn btn-primary  btn-tone" role="button"><span
-                                                        class="m-l-5">Claim
-                                                        reward</span></button>
-                                            </form>
-                                        @else
-                                            <a class="btn btn-primary  btn-sm" role="button"
-                                                style="background-color: rgba(0, 123, 255, 0.5);">Claim reward</a>
-                                        @endif
+                                        @if ($user_plan->getCampaign->type != '1')
+                                                <form method="post"
+                                                    action="{{ route('user.progress.claimReward', $user_plan->id) }}">
+                                                    @csrf
+                                                    <button class="btn btn-primary  btn-sm" role="button">Claim
+                                                        reward</button>
+                                                </form>
+                                            @else
+                                                @if ($user_plan->getCampaign->task_expired == 'Expired')
+                                                    <form method="post"
+                                                        action="{{ route('user.progress.claimReward', $user_plan->id) }}">
+                                                        @csrf
+                                                        <button class="btn btn-primary  btn-sm" role="button">Claim
+                                                            reward</button>
+                                                    </form>
+                                                @else
+                                                    <button class="btn btn-primary  btn-sm" role="button"
+                                                        style="background-color: rgba(0, 123, 255, 0.5);">Claim
+                                                        reward</button>
+                                                @endif
+                                            @endif
                                     @endif
                                     @if (isset($user_plan->status) && $user_plan->status == 2)
                                         <a class="btn btn-primary btn-tone"><span class="m-l-5">Claim Pending</span></a>
                                     @endif
                                 @else
                                     <a onclick="showSuccessAlert()" href="#" data-id=""
-                                        class="btn btn-primary btn-tone">
+                                        class="btn btn-primary btn-tone" id="btnJoined">
                                         <span class="m-l-5">Join</span>
                                     </a>
                                 @endif
@@ -178,6 +188,7 @@
                                             @php
                                                 $i = 1;
                                             @endphp
+                                            @if($user_detail->count() != 0)
                                             @foreach ($user_detail as $user_detail_get)
                                                 <tr>
                                                     <td>{{ isset($i) ? $i : '' }}
@@ -191,6 +202,9 @@
                                                     $i++;
                                                 @endphp
                                             @endforeach
+                                            @else
+                                            <tr><td colspan='3' align='center'>No data available in table</td></tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -217,10 +231,11 @@
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(data) {
+                    $("#btnJoined").hide();
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
-                        text: 'Joined',
+                        text: 'Campaign joined successfully',
                         confirmButtonColor: '#3085D6',
                         confirmButtonText: 'OK'
                     });
@@ -237,11 +252,7 @@
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
-
-            showSuccessAlert();
-        }
-
-        function showSuccessAlert() {
+           
             Swal.fire({
                 icon: 'success',
                 title: 'Copied!',

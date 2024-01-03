@@ -18,7 +18,7 @@
             @can('user-create')
             <a class="btn btn-primary float-right" href="{{ route('company.user.create') }}" role="button">Add New</a>
             @endcan
-            <div class="m-t-25">
+            <div >
                 <table id="user_tables" class="table">
                     <thead>
                         <tr>
@@ -81,7 +81,7 @@
                     },
                 }, {
                     'targets': 4,
-                    'visible': true,
+                    'visible': false,
                     'orderable': false,
                     'render': function(data, type, row) {
                         var imagurl = row[4];

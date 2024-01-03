@@ -19,7 +19,7 @@
                 <h4>Package List</h4>
 
                 <a class="btn btn-primary float-right" href="{{ route('admin.package.create') }}" role="button">Add New</a>
-                <div class="m-t-25">
+                <div >
                     <table id="package_tbales" class="table">
                         <thead>
                             <tr>
@@ -29,7 +29,7 @@
                                 <th>Duration</th>
                                 <th>Price</th>
                                 <th>No Of Campaign</th>
-                                <th>Image</th>
+                                {{-- <th>Image</th> --}}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -79,9 +79,10 @@
                         return '<input type="checkbox" name="chk_row" value="' + row[0] +
                             '" class="chk-row">';
                     },
-                }, {
+                }, 
+                {
                     'targets': 6,
-                    'visible': true,
+                    'visible': false,
                     'orderable': false,
                     'render': function(data, type, row) {
                         var imagurl = '{{ asset('uploads/package') }}/' + row[6];
@@ -90,8 +91,9 @@
                             '" style="height: 100px; width: 100px;">';
 
                     },
-                }, {
-                    'targets': 8,
+                }, 
+                {
+                    'targets': 7,
                     'visible': true,
                     'orderable': false,
                     'render': function(data, type, row) {

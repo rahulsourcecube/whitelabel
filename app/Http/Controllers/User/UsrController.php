@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\Notification;
@@ -47,13 +48,26 @@ class UsrController extends Controller
             $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->sum('reward');
             $chartReward = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->select(DB::raw('DATE(created_at) AS day'), DB::raw('SUM(reward) AS total_day_reward'))->whereDate('created_at', '>=', Carbon::now()->subDays(10)->format("Y-m-d"))->groupBy('day')->get()->toArray();
 
+            $dateandtime = Carbon::now();
+            $start_date = $dateandtime->subDays(7);
+            $start_time = strtotime($start_date);
+            $end_time = strtotime("+1 week", $start_time);
+            
+            for ($i = $start_time; $i < $end_time; $i += 86400) {
+                $chartRevenueData[(int)date('d', $i)] = 0;
+            }
+            foreach ($chartReward as $values) {
+                $chartRevenueData[ (int) date("d", strtotime($values['day']))] = $values['total_day_reward'];
+            }
+            $chartRevenueData = (['day' => array_keys($chartRevenueData), 'revenue' => array_values($chartRevenueData)]);
+
             $userData = User::get();
             $data = [];
             $data['total_comapny'] = 0;
             $data['total_user'] = 0;
             $data['total_campaign'] = 0;
             $data['total_package'] = 0;
-            return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward', 'chartReward', 'totalReferralUser'));
+            return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward', 'chartReward', 'totalReferralUser', 'chartRevenueData'));
         } catch (Exception $exception) {
 
             return redirect()->back()->with('error', "Something Went Wrong!");
@@ -411,18 +425,25 @@ class UsrController extends Controller
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->first();
             }
-            $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
+            $companyId = Helper::getCompanyId();
+
+            $ActivePackageData = Helper::GetActivePackageData();
+            $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
+            if ($userCount >= $ActivePackageData->no_of_user) {
+                return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_user . ' users');
+            }
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;
             $userRegister->last_name = $request->last_name;
             $userRegister->email = $request->email;
             $userRegister->user_type = '4';
-            $userRegister->company_id = $companyId->id;
+            $userRegister->company_id = $companyId;
             $userRegister->referral_code = Str::random(6);
             $userRegister->password = Hash::make($request->password);
             $userRegister->view_password = $request->password;
             $userRegister->contact_number = $request->contact_number;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
+            $userRegister->package_id = $ActivePackageData->id;
 
             Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
                 $message->to($request->email);

@@ -21,7 +21,7 @@
                     <a class="btn btn-primary float-right" href="{{ route('company.role.rolecreate') }}" role="button">Add
                         New</a>
                 @endcan
-                <div class="m-t-25">
+                <div>
                     <table id="user_tables" class="table">
                         <thead>
                             <tr>

@@ -22,7 +22,7 @@
                     @csrf
                     <div class="form-row">
                         <div class="form-group col-md-4">
-                            <label for="cname">Company Name</label>
+                            <label for="cname">Company Name<span class="error">*</span></label>
                             <input type="text" class="form-control mb-2" name="title" id="cname"
                                 placeholder="Company Name"
                                 value="{{ !empty($setting) && $setting->title  ? $setting->title  : $companyname->company_name}}"
@@ -113,7 +113,7 @@
         },
         messages: {
             title: {
-                required: "Please enter site title"
+                required: "Please enter company name"
             }
         }
     });

@@ -6,7 +6,7 @@
                     !empty($siteSetting->logo) &&
                     file_exists('uploads/setting/' . $siteSetting->logo)) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
                 alt="Logo">
-            <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold.png') }}" alt="Logo">
+            <img class="logo-fold" src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(base_path("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif" alt="Logo">
         </a>
     </div>
     <div class="logo logo-white">
@@ -17,7 +17,7 @@
     </div>
     <div class="nav-wrap">
         <ul class="nav-left">
-            <li class="desktop-toggle">
+            {{-- <li class="desktop-toggle">
                 <a href="javascript:void(0);">
                     <i class="anticon"></i>
                 </a>
@@ -31,7 +31,7 @@
                 <a href="javascript:void(0);" data-toggle="modal" data-target="#search-drawer">
                     <i class="anticon anticon-search"></i>
                 </a>
-            </li>
+            </li> --}}
         </ul>
         <ul class="nav-right">
             <li class="dropdown dropdown-animated scale-left">
