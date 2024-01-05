@@ -231,6 +231,8 @@ class UsrController extends Controller
             $bankDetail->bank_name = $request->bank_name;
             $bankDetail->ac_holder = $request->ac_holder;
             $bankDetail->ifsc_code = $request->ifsc_code;
+            $bankDetail->paypal_id = $request->paypal_id;
+            $bankDetail->stripe_id = $request->stripe_id;
             $bankDetail->ac_no = $request->ac_no;
 
             $bankDetail->save();

@@ -142,7 +142,26 @@
                                 @enderror
                             </div>
                         </div>
+                        
                         <div class="col-md-6">
+                            <div class="form-group col-md-6">
+                                    <label class="font-weight-semibold" for="paypal_id">Paypal Id</label>
+                                    <input type="text" class="form-control" id="paypal_id" placeholder="Paypal Id"
+                                        name="paypal_id" value="{{ isset($user) ? $user->paypal_id : '' }}">
+                                    @error('paypal_id')
+                                        <label id="paypal_id-error" class="error"
+                                            for="paypal_id">{{ $message }}</label>
+                                    @enderror
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="font-weight-semibold" for="stripe_id">Stripe Id</label>
+                                    <input type="text" class="form-control" id="stripe_id" placeholder="Stripe Id"
+                                        name="stripe_id" value="{{ isset($user) ? $user->stripe_id : '' }}">
+                                    @error('stripe_id')
+                                        <label id="stripe_id-error" class="error"
+                                            for="stripe_id">{{ $message }}</label>
+                                    @enderror
+                                </div>
                             <div class="form-group col-md-6">
                                 <label for="bank_name">Bank Name</label>
                                 <input type="text" class="form-control" name="bank_name" id="bank_name"

@@ -70,10 +70,16 @@
                 <div class="@if ($referral_user_detail->count() != 0) col-lg-6 @else col-lg-12 @endif">
                     <div class="card">
                         <div class="card-body tab-content" id="pills-tabContent">
-                            <h2>Bank Detail:</h2>
+                            <h2>Payout Detail:</h2>
                             <div class="table-responsive m-b-20">
                                 <table class="product-info-table m-t-20">
                                     <tbody>
+                                        <tr>
+                                            <td><b>Paypal Id : </b> {{ $user->paypal_id ?? $user->paypal_id }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Stripe Id : </b> {{ $user->stripe_id ?? $user->stripe_id }}</td>
+                                        </tr>
                                         <tr>
                                             <td><b>Bank Name : </b> {{ $user->bank_name ?? $user->bank_name }}</td>
                                         </tr>

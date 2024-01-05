@@ -169,12 +169,28 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Bank Details</h4>
+                            <h4 class="card-title">Payout Details</h4>
                         </div>
                         <div class="card-body">
                             <form id="bankDetails" action="{{ route('user.bankDetail') }}" method="POST">
                                 @csrf
                                 <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="paypal_id">Paypal Id:</label>
+                                        <input type="text" class="form-control" id="paypal_id"
+                                            placeholder="Paypal Id"
+                                            value="{{ isset(Auth::user()->paypal_id) ? Auth::user()->paypal_id : '' }}"
+                                            name="paypal_id">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="stripe_id">Stripe Id:</label>
+                                        <input type="text" class="form-control" id="stripe_id"
+                                            placeholder="Stripe Id"
+                                            value="{{ isset(Auth::user()->stripe_id) ? Auth::user()->stripe_id : '' }}"
+                                            name="stripe_id">
+                                    </div>
+
+
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="bank_name">Bank Name:</label>
                                         <input type="text" class="form-control" id="bank_name"
@@ -399,6 +415,12 @@
 
             $("#bankDetails").validate({
                 rules: {
+                    paypal_id: {
+                        required: true,
+                    },
+                    stripe_id: {
+                        required: true,
+                    },
                     bank_name: {
                         required: true,
                     },
@@ -414,6 +436,12 @@
                     },
                 },
                 messages: {
+                     paypal_id: {
+                        required: "Please enter paypal id",
+                    },
+                    stripe_id: {
+                        required: "Please enter stripe id",
+                    },
                     bank_name: {
                         required: "Please enter bank name",
                     },
