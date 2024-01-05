@@ -35,6 +35,8 @@ class User extends Authenticatable
         'user_type',
         'company_id',
         'status',
+        'stripe_id',
+        'paypal_id',
     ];
 
     /**
