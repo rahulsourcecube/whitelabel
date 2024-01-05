@@ -118,7 +118,7 @@
                                                 <form action="{{ route('company.package.buy') }}" method="POST"
                                                     id="package-payment-form">
                                                     @csrf
-                                                    <input type="hidden" name="package_id" value="{{$list->id}}">
+                                                    <input type="hidden" name="package_id" value="{{ $list->id }}">
                                                     <div class="text-center">
                                                         <button type="submit" class="btn btn-success {{ $list->user_bought }}"
                                                             {{ $list->type == '1' && !empty($FreePackagePurchased) && $FreePackagePurchased->id != null ? 'disabled' : '' }}>{{ $list->user_bought == true ? 'Purchased' : 'Buy                                                                                                                                                                                                                                                                                                                                                                                                  Package' }}</button>
@@ -131,7 +131,7 @@
                                                         onclick="openPaymentModal('{{ $list->id }}')">{{ $list->user_bought == true
                                                             ? 'Purchased'
                                                             : 'Buy
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Package' }}</button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Package' }}</button>
                                                 </div>
                                             @endif
                                         @endcan

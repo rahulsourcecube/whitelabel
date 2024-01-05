@@ -63,10 +63,12 @@
                                 <select name="status" class="form-control">
                                     <option value="">Select Status</option>
                                     <option value="3"
-                                        {{ isset(request()->status) && request()->status === '3' ? 'selected' : '' }}>Completed
+                                        {{ isset(request()->status) && request()->status === '3' ? 'selected' : '' }}>
+                                        Completed
                                     </option>
                                     <option value="4"
-                                        {{ isset(request()->status) && request()->status === '4' ? 'selected' : '' }}>Rejected
+                                        {{ isset(request()->status) && request()->status === '4' ? 'selected' : '' }}>
+                                        Rejected
                                     </option>
                                 </select>
                             </div>
@@ -78,7 +80,8 @@
                     </form>
 
                     <div class="form-group mb-0 mt-auto" style="height: fit-content">
-                        <a href="{{ route('user.my.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
+                        <a href="{{ route('user.my.reward') }}"><button type="submit"
+                                class="btn btn-success">Refresh</button></a>
                     </div>
                 </div>
                 <div class="m-t-15">
@@ -97,7 +100,8 @@
                             @foreach ($filterResults as $data)
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                    <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency().$data->reward) : '' }}</td>
+                                    <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
+                                    </td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
                                             <span class="truncated-description" style="cursor: pointer;"
@@ -133,6 +137,11 @@
                                         @if (isset($data->status) && $data->status == 3)
                                             <span class="btn btn-success  btn-sm">Completed</span>
                                         @elseif (isset($data->status) && $data->status == 4)
+                                            {{-- <form method="post"
+                                                action="{{ route('user.progress.reopen', $data->id) }}">
+                                                @csrf
+                                                <button class="btn btn-danger  btn-sm" role="button">Reopen</button>
+                                            </form> --}}
                                             <span class="btn btn-danger  btn-sm">Rejected</span>
                                         @endif
                                     </td>

@@ -6,10 +6,13 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\Referral;
+use App\Models\TaskEvidence;
+use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Request as IpRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
@@ -65,6 +68,7 @@ class CampaignController extends Controller
         $campagin_id = base64_decode($request->id);
         $data = [];
         $data['campagin_detail'] = CampaignModel::where('id', $campagin_id)->first();
+        // DB::enableQueryLog();
         $data['user_detail'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)
             ->whereExists(function ($query) {
                 $query->from('users')
@@ -74,8 +78,13 @@ class CampaignController extends Controller
             })
             ->orderBy('user_id', 'desc')->get();
 
-        $data['user_plan'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+        // dd(DB::getQueryLog());
 
+
+        $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+
+        $data['chats'] = TaskEvidence::where('campaign_id', $data['user_Campaign']->id)->get();
+        $data['user'] = User::where('id', $data['user_Campaign']->user_id)->first();
 
         $data['referral_user_detail'] = Referral::where('campagin_id', $campagin_id)->where('referral_user_id', Auth::user()->id)->get();
         return view('user.campaign.view', $data);
@@ -143,8 +152,10 @@ class CampaignController extends Controller
         $input = new UserCampaignHistoryModel;
         $input->campaign_id = isset($getcampaign->id) ? $getcampaign->id : '';
         $input->user_id = Auth::user()->id;
+        if($getcampaign->type == 1){
         $input->reward = 0;
         $input->referral_link = $token;
+        }
         $input->status = 1;
         $input->verified_by = 0;
         $input->save();

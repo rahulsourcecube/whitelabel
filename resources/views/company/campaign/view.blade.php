@@ -19,12 +19,12 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            @if (isset($task) && $task->image != ''  && file_exists('uploads/company/campaign/' . $task->image))
-                            <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
-                            class="w-100 img-responsive">
+                            @if (isset($task) && $task->image != '' && file_exists('uploads/company/campaign/' . $task->image))
+                                <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
+                                    class="w-100 img-responsive">
                             @else
-                            <img src="{{ asset('assets/images/others/No_image_available.png') }}"
-                                class="w-100 img-responsive">
+                                <img src="{{ asset('assets/images/others/No_image_available.png') }}"
+                                    class="w-100 img-responsive">
                             @endif
                         </div>
                         <div class="col-md-8">
@@ -63,6 +63,10 @@
                                     <a class="nav-link" id="request-tab" data-toggle="pill" href="#request" role="tab"
                                         aria-controls="request" aria-selected="false">Approval Requset</a>
                                 </li>
+                                <li class="nav-item my-table-tab" data-status="5">
+                                    <a class="nav-link" id="reopen-tab" data-toggle="pill" href="#reopen" role="tab"
+                                        aria-controls="reopen" aria-selected="false">Reopen</a>
+                                </li>
                                 <li class="nav-item my-table-tab" data-status="3">
                                     <a class="nav-link" id="accept-tab" data-toggle="pill" href="#accept" role="tab"
                                         aria-controls="accept" aria-selected="false">Accepted</a>
@@ -71,6 +75,7 @@
                                     <a class="nav-link" id="reject-tab" data-toggle="pill" href="#reject" role="tab"
                                         aria-controls="reject" aria-selected="false">Rejected</a>
                                 </li>
+                                
                             </ul>
                         </div>
                     </div>
@@ -163,12 +168,11 @@
                     'visible': false,
                     'orderable': false,
                     'render': function(data, type, row) {
-                        var viewUrl = '{{ route('company.campaign.userDetails') }}';
-                        var id = row[0];
-
-                        return '<button class="btn btn-success  btn-sm" data-action="accept"  data-user_id="' +
-                            id + '" title="View" "  onclick="openViewModal(\'' + viewUrl + '\',\'3\',\'' +
-                            id + '\')"><i class="fa fa-eye"></button>';
+                        var viewUrl = '{{ route('company.campaign.userDetails', [':id']) }}';
+                        viewUrl = viewUrl.replace(':id', row[0]);
+                        return '<a class="btn btn-primary btn-sm" href="' +
+                            viewUrl +
+                            '" role="button"  title="View"><i class="fa fa-eye"></i>';
 
                     },
                 }
@@ -180,7 +184,7 @@
         $(document).on("click", ".my-table-tab", function() {
             $('#status').val($(this).data('status'));
             table1.draw();
-            if ($(this).data('status') == '2') {
+            if ($(this).data('status') == '2' || $(this).data('status') == '5') {
                 table1.column(6).visible(true);
             } else {
                 table1.column(6).visible(false);
@@ -255,5 +259,34 @@
                 }
             });
         });
+    </script>
+    <script>
+        // Get the scroll position of a specific element or class
+        function getScrollPosition() {
+            var element = document.querySelector('.your-class'); // replace 'your-class' with your actual class name
+            return element.scrollTop;
+        }
+
+        // Set the scroll position of a specific element or class
+        function setScrollPosition(position) {
+            var element = document.querySelector('.your-class'); // replace 'your-class' with your actual class name
+            element.scrollTop = position;
+        }
+
+        // Refresh the page while keeping the scroll position
+        function refreshPage() {
+            var scrollPosition = getScrollPosition();
+
+            // Perform the page refresh
+            location.reload(true);
+
+            // Set the scroll position back after the refresh (use a timeout to ensure the DOM is ready)
+            setTimeout(function() {
+                setScrollPosition(scrollPosition);
+            }, 0);
+        }
+
+        // Call the refreshPage function as needed, for example, on a button click
+        document.getElementById('refreshButton').addEventListener('click', refreshPage);
     </script>
 @endsection

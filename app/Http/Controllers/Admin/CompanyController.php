@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\CompanyModel;
 use App\Models\CompanyPackage;
+use App\Models\PackageModel;
+use App\Models\Payment;
 use App\Models\SettingModel;
 use App\Models\User;
 use Carbon\Carbon;
@@ -20,9 +23,128 @@ class CompanyController extends Controller
     //
     function index()
     {
-        return view('admin.company.list');
+        $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
+
+        return view('admin.company.list', compact('packages'));
     }
 
+    function AddPackages(CompanyModel $id)
+    {
+        try {
+
+            $currentDate = Carbon::now();
+            $currentDate = $currentDate->format('Y-m-d');
+            $companyId = $id->user_id;
+
+            // and then you can get query log
+            $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+            $FreePackagePurchased = CompanyPackage::where('company_id', $companyId)->where('price', 0.00)->first();
+            $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
+            $html = "";
+            if (isset($packages) && count($packages) > 0) {
+                foreach ($packages as $list) {
+                    $html .= '  <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between p-b-20 border-bottom">
+                                            <div class="media align-items-center">
+                                                <div class="avatar avatar-blue avatar-icon"
+                                                    style="height: 55px; width: 55px;">
+                                                    <i class="anticon anticon-dollar font-size-25"
+                                                        style="line-height: 55px"></i>
+                                                </div>
+                                                <div class="m-l-15">';
+if ($packageData && $packageData->id && $packageData->id == $list->id){
+                    $html .= '<span class="badge badge-primary"
+                                                            style="margin-left: 180px">Active</span>';}else{
+                        $html .= '<span class="badge badge-primary"
+                                                            style="margin-left: 180px;background-color: white;"> </span>';
+                                                            }
+                                                    $html .= '<h2 class="font-weight-bold font-size-30 m-b-0">';
+                    if ($list->type != "1") {
+                        $html .= '' . Helper::getcurrency() . '';
+                    }
+                    $html .= '' . $list->plan_price . '
+                                                    </h2>
+                                                    <h4 class="m-b-0">' . $list->title . '</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ul class="list-unstyled m-v-30">
+                                            <li class="m-b-20">
+                                                <div class="d-flex justify-content-between"> <span
+                                                        class="text-dark font-weight-semibold">' . $list->duration . '';
+                    if ($list->type == '1') {
+                        $html .= 'Days';
+                    } elseif ($list->type == '2') {
+                        $html .= 'Month';
+                    } elseif ($list->type == '3') {
+                        $html .= 'Year';
+                    }
+                    $html .= 'Plan
+                                                    </span>
+                                                    <div class="text-success font-size-16"> <i
+                                                            class="anticon anticon-check"></i> </div>
+                                                </div>
+                                            </li>
+                                            <li class="m-b-20">
+                                                <div class="d-flex justify-content-between"> <span
+                                                        class="text-dark font-weight-semibold">Total campaign
+                                                        ' . $list->no_of_campaign . '</span>
+                                                    <div class="text-success font-size-16"> <i
+                                                            class="anticon anticon-check"></i> </div>
+                                                </div>
+                                            </li>
+                                            <li class="m-b-20">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="text-dark font-weight-semibold">Total Employee
+                                                        ' . $list->no_of_employee . '</span>
+                                                    <div class="text-success font-size-16"> <i
+                                                            class="anticon anticon-check"></i> </div>
+                                                </div>
+                                            </li>
+                                            <li class="m-b-20">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="text-dark font-weight-semibold">Total User
+                                                        ' . $list->no_of_user . '</span>
+                                                    <div class="text-success font-size-16"> <i
+                                                            class="anticon anticon-check"></i> </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                         '. $list->description .'
+                                        <form action="' . route("admin.company.buy") . '" method="POST"
+                                            id="package-payment-form">
+                                            '.csrf_field().'
+                                            <input type="hidden" name="package_id" value="' . $list->id . '">
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-success ' . $list->user_bought . '"';
+                    if ($list->type == '1' && !empty($FreePackagePurchased) && $FreePackagePurchased->id != null) {
+                        $html .= 'disabled >';
+                    } else {
+                        $html .= ' >';
+                    }
+                    if ($list->user_bought == true) {
+                        $html .= 'Purchased';
+                    } else {
+                        $html .= 'Add Package ';
+                    }
+                    $html .= '</button> </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>';
+                }
+            } else {
+                $html .= '<h4>No packages found</h4>';
+            }
+
+            return response()->json(['success' => 'error', 'html' => $html]);
+        } catch (Exception $e) {
+            Log::error('ation error : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong');
+        }
+    }
     public function dtList(Request $request)
     {
         $columns = ['id', 'company_name']; // Add more columns as needed
@@ -71,16 +193,15 @@ class CompanyController extends Controller
         $data['staffCount'] = User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['STAFF'])->count();
         $data['userCount'] = User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['USER'])->count();
 
-
         return view('admin.company.view', $data);
     }
     function edit(Request $request)
     {
         $data = [];
-        
+
         $data['user_company'] = CompanyModel::where('id', $request->id)->first();
         $data['setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
-        $data['editprofiledetail'] = User::where('id',$data['user_company']->user_id)->first();
+        $data['editprofiledetail'] = User::where('id', $data['user_company']->user_id)->first();
         return view('admin.company.edit', $data);
     }
     public function updatepassword(Request $request, $id)
@@ -99,7 +220,7 @@ class CompanyController extends Controller
             return $this->sendError($e->getMessage());
         }
     }
-    public function updateprofile(Request $request,$id)
+    public function updateprofile(Request $request, $id)
     {
         try {
             $updateprofiledetail = User::where('id', $id)->first();
@@ -122,7 +243,7 @@ class CompanyController extends Controller
             return redirect()->back()->with($e->getMessage());
         }
     }
-    function store(Request $request,$id)
+    function store(Request $request, $id)
     {
         try {
 
@@ -186,6 +307,63 @@ class CompanyController extends Controller
             }
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
+
+    public function buy(Request $request)
+    {
+        try {
+            $package = PackageModel::where('id', $request->package_id)->first();
+            if (empty($package)) {
+                return redirect()->back()->with('error', 'Package not found');
+            }
+
+            $companyId = Helper::getCompanyId();
+
+            $package = PackageModel::where('id', $request->package_id)->first();
+            if (empty($package)) {
+                // return response()->json(['error' => true, 'message' => 'Package not found']);
+                return redirect()->back()->with('error', 'Package not found');
+            }
+
+            // dd($package->start_date, $package, $package->end_date);
+            $addPackage = new CompanyPackage();
+            $addPackage->company_id = $companyId;
+            $addPackage->package_id = $package->id;
+            $addPackage->start_date = $package->start_date;
+            $addPackage->end_date = $package->end_date;
+            $addPackage->no_of_campaign = $package->no_of_campaign;
+            $addPackage->no_of_user = $package->no_of_user;
+            $addPackage->no_of_employee = $package->no_of_employee;
+            $addPackage->price = $package->price;
+            $addPackage->paymnet_method = 'card';
+            $addPackage->status = '1';
+            $addPackage->paymnet_response = null;
+            $addPackage->save();
+            if ($addPackage) {
+                $makePayment = new Payment();
+                $makePayment->user_id = Auth::user()->id;
+                $makePayment->company_package_id = $addPackage->id;
+                $makePayment->amount = $addPackage->price;
+                $makePayment->name_on_card = $request->name_on_card ?? '';
+                $makePayment->card_number = $request->card_number ?? '';
+                $expiryDate = explode('/', $request->expiry_date) ?? '';
+                $makePayment->card_expiry_month = $request->card_expiry_month ?? '';
+                $makePayment->card_expiry_year = $request->card_expiry_year ?? '';
+                $makePayment->card_cvv = $request->card_cvv ?? '';
+                $makePayment->zipcode = $request->zipcode ?? '';
+                $makePayment->save();
+
+                $addPackage->update(['paymnet_id' => $makePayment->id]);
+                return redirect()->back()->with('success', 'Package activated successfully!');
+                // return response()->json(['success' => true, 'message' => 'Package activated successfully!']);
+            } else {
+                // return response()->json(['error' => true, 'message' => 'Something went wrong, please try again later!']);
+                return redirect()->back()->with('error', 'Something went wrong, please try again later!');
+            }
+        } catch (Exception $e) {
+            Log::error('Buy package error : ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong, please try again later!');
         }
     }
 }
