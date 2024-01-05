@@ -286,7 +286,7 @@ class UsrController extends Controller
         try {
             $filter = UserCampaignHistoryModel::where('user_id', Auth::user()->id)
                 ->orderBy('id', 'DESC')
-                ->whereIn('status', [1, 2]);
+                ->whereIn('status', [1, 2 ,5]);
 
             if ($request->filled('from_date')) {
                 $from_date = date("Y-m-d", strtotime($request->from_date));
@@ -317,6 +317,28 @@ class UsrController extends Controller
         }
     }
 
+    public function reopen(UserCampaignHistoryModel $reopen)
+    {
+        try {
+            $user = Auth::user();
+
+            $reopen->status = '5';
+            $reopen->save();
+            if (isset($reopen)) {
+                $Notification = new Notification();
+                $Notification->user_id =  $reopen->user_id;
+                $Notification->company_id =  $reopen->getCampaign->company_id;
+                $Notification->type =  '2';
+                $Notification->title =  "Reopen request";
+                $Notification->message =  $reopen->getCampaign->title . " Reopen request by " . $reopen->getuser->FullName;
+                $Notification->save();
+            }
+
+            return redirect()->back()->with('success', "Reopen requested successfully!");
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', "Something Went Wrong");
+        }
+    }
     public function claimReward($id)
     {
         try {

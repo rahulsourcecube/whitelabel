@@ -75,7 +75,12 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
         Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
         Route::post('/user/progress/search', [UsrController::class, 'searchProgress'])->name('progress.search');
+        Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
+
+        Route::post('/reopen/{reopen}', [UsrController::class, 'reopen'])->name('progress.reopen');
+
         Route::post('/claim-reward/{id}', [UsrController::class, 'claimReward'])->name('progress.claimReward');
+
         Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
         Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
         Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
@@ -145,6 +150,10 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
         Route::post('update_passsword/{id}', [AdminCompanyController::class, 'updatepassword'])->name('update_password');
         Route::post('update_profile/{id}', [AdminCompanyController::class, 'updateprofile'])->name('update_profile');
         Route::post('store/{id}', [AdminCompanyController::class, 'store'])->name('store');
+        Route::post('add/packages/{id}', [AdminCompanyController::class, 'AddPackages'])->name('AddPackages');
+        Route::post('/buy', [AdminCompanyController::class, 'buy'])->name('buy');
+
+
     });
     Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
     Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
@@ -197,7 +206,10 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::post('statuswiselist/user', [CampaignController::class, 'statuswiselist'])->name('statuswiselist');
 
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
-            Route::post('request/user/details', [CampaignController::class, 'userDetails'])->name('userDetails');
+
+            Route::get('request/user/details/{t_id}', [CampaignController::class, 'userDetails'])->name('userDetails');
+            Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
+
             Route::post('company-custom', [CampaignController::class, 'CompanyCustom'])->name('Custom');
             Route::post('request/social-analytics', [CampaignController::class, 'getSocialAnalytics'])->name('getSocialAnalytics');
 
@@ -206,6 +218,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
             Route::post('/store', [CampaignController::class, 'store'])->name('store');
             Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
+            Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
+
+
             Route::get('/edit/{type}/{id}', [CampaignController::class, 'edit'])->name('edit');
             Route::post('/update/{Campaign}', [CampaignController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
