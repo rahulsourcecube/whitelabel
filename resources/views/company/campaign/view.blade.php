@@ -40,8 +40,12 @@
                                             {{ 'Custom' }}
                                         @endif
                                     </span>
+                                    @if ($task->type == '1')
                                     <span class="m-h-5 text-gray">|</span>
-                                    <span class="text-gray">{{ $task->expiry_date ?? '' }}</span>
+                                    <span class="text-gray"> <b>No of referral users: </b>{{ $task->no_of_referral_users ?? '' }}</span>
+                                    @endif
+                                    <span class="m-h-5 text-gray">|</span>
+                                    <span class="text-gray">{{  App\Helpers\Helper::Dateformat($task->expiry_date) ?? '' }}</span>
                                 </div>
                             </div>
                             <p class="m-b-20">{!! $task->description !!}</p>

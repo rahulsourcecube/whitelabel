@@ -77,6 +77,7 @@ class CampaignController extends Controller
                     Helper::getcurrency() . $result->reward ?? "-",
                     Str::limit($result->description, 60) ?? "-",
                     $result->task_type,
+                    $result->no_of_referral_users,
                     $result->task_status,
                     // $imgUrl,
                 ];
@@ -121,8 +122,8 @@ class CampaignController extends Controller
                 $result->getuser->full_name ?? "-",
                 $result->getuser->email ?? "-",
                 $result->getuser->contact_number ?? "-",
-                $result->reward ?? "-",
-                date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $result->created_at)))  ?? "-",
+               '$'.$result->reward ?? "0",
+                Helper::Dateformat($result->created_at)  ?? "-",
                 $result->TaskStatus ?? "-",
                 base64_encode($result->user_id) ?? "-",
 
@@ -180,6 +181,7 @@ class CampaignController extends Controller
             $Campaign = new CampaignModel();
             $Campaign->title = $request->title;
             $Campaign->reward = $request->reward;
+            $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
             $Campaign->expiry_date = $request->expiry_date;
             $Campaign->type = $request->type;
@@ -232,6 +234,7 @@ class CampaignController extends Controller
 
             $Campaign->title = $request->title;
             $Campaign->reward = $request->reward;
+            $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
             $Campaign->expiry_date = $request->expiry_date;
             $Campaign->type = $request->type;
@@ -451,6 +454,10 @@ class CampaignController extends Controller
                         $Notification->message =  $id->getCampaign->title . " approval request by " . $id->getuser->FullName;
                         $Notification->save();
                     }
+                }
+                if($id->status == '4'&& Auth::user()->user_type == 4){
+                    $id->status = '5';
+                    $id->save();
                 }
                 $TaskEvidence = new TaskEvidence();
                 $TaskEvidence->user_id = $id->user_id;

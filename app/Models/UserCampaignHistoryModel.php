@@ -47,6 +47,8 @@ class UserCampaignHistoryModel extends Model
         }
         elseif($status == 4){
             $string='Rejected';
+        } elseif ($status == 5) {
+            $string = 'Reopen';
         }
         return $string;
     }

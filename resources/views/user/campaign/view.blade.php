@@ -4,6 +4,7 @@
     <?php use Illuminate\Support\Facades\URL; ?>
     <!-- Content Wrapper START -->
     <div class="main-content">
+        @include('user.includes.message')
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
@@ -74,10 +75,12 @@
                                             @endif
                                         @endif --}}
                                         <a class="btn btn-primary btn-tone"><span class="m-l-5">Claim reward</span></a>
-
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 2)
                                         <a class="btn btn-primary btn-tone"><span class="m-l-5">Claim Pending</span></a>
+                                    @endif
+                                    @if (isset($user_Campaign->status) && $user_Campaign->status == 5)
+                                        <a class="btn btn-primary btn-tone"><span class="m-l-5">Reopen</span></a>
                                     @endif
                                 @else
                                     <a onclick="showSuccessAlert()" href="#" data-id=""
@@ -103,9 +106,14 @@
                                     <span class="m-h-5 text-gray">|</span>
                                     <span
                                         class="text-gray">{{ isset($campagin_detail->task_type) ? $campagin_detail->task_type : '' }}</span>
+                                    @if ($campagin_detail->type == '1')
+                                        <span class="m-h-5 text-gray">|</span>
+                                        <span class="text-gray"> No of referral users:
+                                            <b>{{ $campagin_detail->no_of_referral_users ?? '' }} </b></span>
+                                    @endif
                                     <span class="m-h-5 text-gray">|</span>
                                     <span class="text-gray">Expire on
-                                        {{ isset($campagin_detail->expiry_date) ? $campagin_detail->expiry_date : '' }}</span>
+                                        {{ isset($campagin_detail->expiry_date) ? App\Helpers\Helper::Dateformat($campagin_detail->expiry_date) : '' }}</span>
                                 </div>
                             </div>
                             <p class="m-b-20">{!! isset($campagin_detail->description) ? $campagin_detail->description : '' !!}
@@ -119,7 +127,10 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5>Recent referral Users</h5>
-                                    @if ($user_Campaign != null && $user_Campaign->referral_link != '')
+                                    @if (
+                                        $user_Campaign != null &&
+                                            $user_Campaign->referral_link != '' &&
+                                            $user_Campaign->getCampaign->task_expired != 'Expired')
                                         <div class="text-center mt-4 ml-3">
                                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ route('campaign.referral', $user_Campaign->referral_link) }}"
                                                 target="_blank">
@@ -171,143 +182,148 @@
                         </div>
                     </div>
                 @endif
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5>Recent Conected Users</h5>
-                            </div>
-                            <div class="m-t-30">
-                                <div class="table-responsive">
-                                    <table class="table table-hover" id="user_tables">
-                                        <thead>
-                                            <tr>
-                                                {{-- <th></th> --}}
-                                                <th>ID</th>
-                                                <th>User</th>
-                                                <th>Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $i = 1;
-                                            @endphp
-                                            @if ($user_detail->count() != 0)
-                                                @foreach ($user_detail as $user_detail_get)
-                                                    <tr>
-                                                        <td>{{ isset($i) ? $i : '' }}
-                                                        </td>
-                                                        <td>{{ isset($user_detail_get->getuser->first_name) ? $user_detail_get->getuser->first_name : '' }}
-                                                        </td>
-                                                        <td>{{ isset($user_detail_get->getuser->created_at) ? $user_detail_get->getuser->created_at : '' }}
-                                                        </td>
-                                                    </tr>
-                                                    @php
-                                                        $i++;
-                                                    @endphp
-                                                @endforeach
-                                            @else
+                @if ($user_Campaign != null)
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5>Recent Conected Users</h5>
+                                </div>
+                                <div class="m-t-30">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="user_tables">
+                                            <thead>
                                                 <tr>
-                                                    <td colspan='3' align='center'>No data available in table</td>
+                                                    {{-- <th></th> --}}
+                                                    <th>ID</th>
+                                                    <th>User</th>
+                                                    <th>Date</th>
                                                 </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $i = 1;
+                                                @endphp
+                                                @if ($user_detail->count() != 0)
+                                                    @foreach ($user_detail as $user_detail_get)
+                                                        <tr>
+                                                            <td>{{ isset($i) ? $i : '' }}
+                                                            </td>
+                                                            <td>{{ isset($user_detail_get->getuser->first_name) ? $user_detail_get->getuser->first_name : '' }}
+                                                            </td>
+                                                            <td>{{ isset($user_detail_get->getuser->created_at) ? App\Helpers\Helper::Dateformat($user_detail_get->getuser->created_at) : '' }}
+                                                            </td>
+                                                        </tr>
+                                                        @php
+                                                            $i++;
+                                                        @endphp
+                                                    @endforeach
+                                                @else
+                                                    <tr>
+                                                        <td colspan='3' align='center'>No data available in table</td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
         <!-- Content Wrapper START -->
-@if ($user_Campaign->getCampaign->task_expired == 'Expired')
-        <div class="container-fluid p-h-0 m-t-20">
-            <div class="chat chat-app row">
-                <div class="chat-content "style="width:100%;">
-                    <div class="conversation">
-                        <div class="conversation-wrapper">
-                            <div class="conversation-body scrollbar" style="overflow-y: auto;" id="style-4">
-                                {{-- <div class="msg justify-content-center">
+        @if ($user_Campaign != null && $user_Campaign->getCampaign->task_expired == 'Expired')
+            <div class="container-fluid p-h-0 m-t-20">
+                <div class="chat chat-app row">
+                    <div class="chat-content "style="width:100%;">
+                        <div class="conversation">
+                            <div class="conversation-wrapper">
+                                <div class="conversation-body scrollbar" style="overflow-y: auto;" id="style-4">
+                                    {{-- <div class="msg justify-content-center">
                                         <div class="font-weight-semibold font-size-12"> 7:57PM </div>
                                     </div> --}}
-                                @if ($chats->count() != 0)
-                                    @foreach ($chats as $item)
-                                        @if ($item->sender_id == $user_Campaign->campaign_id)
-                                            <div class="msg msg-recipient">
-                                                @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
-                                                    <div class="m-r-10">
-                                                        <div class="avatar avatar-image">
-                                                            <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
-                                                                alt="">
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <div class="m-r-10">
-                                                        <div class="avatar avatar-image">
-                                                            <img src="{{ asset('assets/images/profile_image.jpg') }}">
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @elseif($item->sender_id == $user->id)
+                                    @if ($chats->count() != 0)
+                                        @foreach ($chats as $item)
+                                            @if ($item->sender_id == $user->id)
                                                 <div class="msg msg-sent">
-                                        @endif
+                                                @else
+                                                    <div class="msg msg-recipient">
+                                                        @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
+                                                            <div class="m-r-10">
+                                                                <div class="avatar avatar-image">
+                                                                    <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
+                                                                        alt="">
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <div class="m-r-10">
+                                                                <div class="avatar avatar-image">
+                                                                    <img
+                                                                        src="{{ asset('assets/images/profile_image.jpg') }}">
+                                                                </div>
+                                                            </div>
+                                                        @endif
+                                            @endif
 
-                                        @if (isset($item) && !empty($item->document) && file_exists('public/' . $item->document))
-                                            <div class="bubble">
-                                                <div class="bubble-wrapper p-5" style="max-width: 220px;">
-                                                    <img src="{{ asset('public/' . $item->document) }}"
-                                                        alt="{{ asset('public/' . $item->document) }}"
-                                                        style="inline-size: -webkit-fill-available;">
+                                            @if (isset($item) && !empty($item->document) && file_exists('public/' . $item->document))
+                                                <div class="bubble">
+                                                    <div class="bubble-wrapper p-5" style="max-width: 220px;">
+                                                        <img src="{{ asset('public/' . $item->document) }}"
+                                                            alt="{{ asset('public/' . $item->document) }}"
+                                                            style="inline-size: -webkit-fill-available;">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @else
-                                            <div class="bubble">
-                                                <div class="bubble-wrapper">
-                                                    <span>{!! $item->message ?? '' !!}</span>
+                                            @else
+                                                <div class="bubble">
+                                                    <div class="bubble-wrapper">
+                                                        <span>{!! $item->message ?? '' !!}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endif
-                            </div>
-                            @endforeach
-                        @else
-                            <div class="msg justify-content-center">
-                                <div class="font-weight-semibold font-size-12">
-                                    <h3> Please drop message and add
-                                        attachment
-                                        for
-                                        Claim reward <h3>
+                                            @endif
                                 </div>
-                            </div>
-
-                            @endif
-                        </div>
-                        <div class="conversation-footer custom-footer">
-                            <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
-                            <ul class="list-inline d-flex align-items-center m-b-0">
-                                <li class="list-inline-item m-r-15">
-                                    <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);"
-                                        title="Attachment" data-toggle="modal" data-target="#exampleModal">
-                                        <i class="anticon anticon-paper-clip"></i>
-                                    </a>
-                                </li>
-                                <li class="list-inline-item">
-                                    <button class="d-none d-md-block btn btn-primary custom-button"
-                                        onclick="loadDataAndShowModal({{ $user_Campaign->id }})">
-                                        <span class="m-r-10">Send</span>
-                                        <i class="far fa-paper-plane"></i>
-                                    </button>
-                                    <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
-                                        <i class="far fa-paper-plane"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+        @endforeach
+    @else
+        <div class="msg justify-content-center">
+            <div class="font-weight-semibold font-size-12">
+                <h3> Please drop message and add
+                    attachment
+                    for
+                    Claim reward <h3>
             </div>
         </div>
+
         @endif
+    </div>
+  @if (isset($user_Campaign->status) && $user_Campaign->status != 3)
+    <div class="conversation-footer custom-footer">
+        <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
+        <ul class="list-inline d-flex align-items-center m-b-0">
+            <li class="list-inline-item m-r-15">
+                <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);" title="Attachment"
+                    data-toggle="modal" data-target="#exampleModal">
+                    <i class="anticon anticon-paper-clip"></i>
+                </a>
+            </li>
+            <li class="list-inline-item">
+                <button class="d-none d-md-block btn btn-primary custom-button"
+                    @if ($user_Campaign != null) onclick="loadDataAndShowModal({{ $user_Campaign->id }})" @endif>
+                    <span class="m-r-10">Send</span>
+                    <i class="far fa-paper-plane"></i>
+                </button>
+                <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
+                    <i class="far fa-paper-plane"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+@endif
+    </div>
+    </div>
+    </div>
+    </div>
+    @endif
     </div>
     <!-- Modal -->
     <div class="modal fade" id="exampleModal">
@@ -342,7 +358,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default img_file_remove" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary"
-                        onclick="loadDataAndShowModal({{ $user_Campaign->id }})">Save changes</button>
+                        @if ($user_Campaign != null) onclick="loadDataAndShowModal({{ $user_Campaign->id }})" @endif>Save
+                        changes</button>
                 </div>
             </div>
         </div>

@@ -77,6 +77,16 @@ class Helper
 
         return $packageData;
     }
+    // get Active Package Data
+    public static function Dateformat($date)
+    {
+        if(gettype($date)== 'string'){
+            $date = Carbon::parse($date);
+        }
+        $formattedDate = $date->format('Y-M-d');
+
+        return $formattedDate;
+    }
 
     // get Remaining Days
     public static function getRemainingDays()

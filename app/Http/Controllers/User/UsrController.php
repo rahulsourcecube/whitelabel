@@ -86,9 +86,12 @@ class UsrController extends Controller
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'status' => '1'))) {
 
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == env('USER_ROLE')) {
-
                     if(Session('referral_link') != null){
-                        return redirect(Session('referral_link'));
+                        $referral_link = Session('referral_link');
+                        $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
+                        $user_plan = UserCampaignHistoryModel::where('referral_link', $lastSegment->value)->first();
+                        $id = base64_encode($user_plan->campaign_id);
+                        return redirect()->route('user.campaign.view', $id);
                     }
 
                     return redirect()->route('user.dashboard');

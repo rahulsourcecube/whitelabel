@@ -41,6 +41,7 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
             <!-- Page Container START -->
             <div class="page-container user-panel">
                 <div class="container notification">
+                                {{-- @include('user.includes.message') --}}
                 </div>
                 <!-- Content Wrapper START -->
 

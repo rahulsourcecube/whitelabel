@@ -46,7 +46,7 @@ Route::get('/expire', function () {
 
 Auth::routes();
 Route::get('/', [AdminController::class, 'index'])->name('admin');
-Route::get('user', [LoginController::class, 'form']);
+Route::get('user', [LoginController::class, 'form'])->middleware('checkNotLoggedIn');
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
@@ -55,9 +55,9 @@ Route::group(['prefix' => 'admin'], function () {
 
 
 Route::prefix('user')->name('user.')->group(function () {
-    Route::get('/', [UsrController::class, 'index'])->name('login');
-    Route::get('/login', [UsrController::class, 'index'])->name('login');
-    Route::get('/signup/{referral_code?}', [UsrController::class, 'signup'])->name('signup');
+    Route::get('/', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
+    Route::get('/login', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
+    Route::get('/signup/{referral_code?}', [UsrController::class, 'signup'])->name('signup')->middleware('checkNotLoggedIn');
     Route::post('/store', [UsrController::class, 'login'])->name('userLogin');
     Route::post('/signup-store', [UsrController::class, 'store'])->name('store');
     Route::get('/forget', [UsrController::class, 'forget'])->name('forgetpassword');
@@ -105,18 +105,18 @@ Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {
 });
 
 Route::prefix('company')->name('company.')->group(function () {
-    Route::get('/', [CompanyLoginController::class, 'index'])->name('login');
-    Route::get('/login', [CompanyLoginController::class, 'index'])->name('signin');
+    Route::get('/', [CompanyLoginController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
+    Route::get('/login', [CompanyLoginController::class, 'index'])->name('signin')->middleware('checkNotLoggedIn');
     Route::post('/store', [CompanyLoginController::class, 'login'])->name('login');
-    Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup');
+    Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup')->middleware('checkNotLoggedIn');
     Route::post('/signup/store', [CompanyLoginController::class, 'signupStore'])->name('signup.store');
 
-    Route::get('/forget', [CompanyLoginController::class, 'forget'])->name('forgetpassword');
+    Route::get('/forget', [CompanyLoginController::class, 'forget'])->name('forgetpassword')->middleware('checkNotLoggedIn');
     Route::post('/forget-password', [CompanyLoginController::class, 'submitForgetPassword'])->name('forget-password');
-    Route::get('/confirm/password/{token}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::get('/confirm/password/{token}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword')->middleware('checkNotLoggedIn');
     Route::post('/reset-password', [CompanyLoginController::class, 'submitResetPassword'])->name('reset-password');
 
-    Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword')->middleware('checkNotLoggedIn');
     Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
 });
 // Admin Middleware

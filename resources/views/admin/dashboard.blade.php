@@ -95,7 +95,7 @@
                                     </div>
                                     <input type="text" class="form-control datepicker-input readonly" id="month"
                                         name="month" placeholder="Select month" value="{{ $currentMonth ?? '' }}" readonly
-                                        onchange="fetchDataAndRenderChart()" max="50">
+                                        onchange="fetchDataAndRenderChart()" minlength="50">
 
                                 </div>
                             </div>
