@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\company;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Notification as ModelsNotification;
 use Illuminate\Http\Request;
@@ -62,7 +63,7 @@ class Notification extends Controller
 
                 $result->title ?? "-",
                 $result->message ?? "-",
-                date('d-m-Y', strtotime($result->created_at)) ?? "-",
+                Helper::Dateformat($result->created_at) ?? "-",
 
             ];
         }

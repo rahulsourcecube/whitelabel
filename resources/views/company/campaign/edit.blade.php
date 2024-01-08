@@ -47,7 +47,18 @@
                             <label id="description-error" class="error" for="description">{{ $message }}</label>
                             @enderror
                         </div>
-                        <div class="form-group col-md-6">
+                        @if(isset($type) && $type == "1")
+                         <div class="form-group col-md-4">
+                            <label for="no_of_referral_users"> No of referral users <span class="error">*</span></label>
+                            <input type="text" class="form-control" id="no_of_referral_users" name="no_of_referral_users" placeholder="No of referral users"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                value="{{ $task->no_of_referral_users ?? '0'}}">
+                            @error('no_of_referral_users')
+                            <label id="no_of_referral_users-error" class="error" for="reward">{{ $message }}</label>
+                            @enderror
+                        </div>
+                        @endif
+                        <div class="form-group col-md-4">
                             <label for="expiry_date">End date <span class="error">*</span></label>
                             <input type="date" class="form-control" id="expiry_date" name="expiry_date"
                                 placeholder="No Of Task"
@@ -58,7 +69,7 @@
                             @enderror
                         </div>
                         <input type="hidden" name="type" value="{{ $type }}">
-                        <div class="col-md-6 pl-5">
+                        <div class="col-md-4 pl-5">
                             <label for="expiry_date">Status</label>
                             <div class="form-group align-items-center">
                                 <div class="switch m-r-10">
@@ -124,6 +135,9 @@
                 type: {
                     required: true
                 },
+                no_of_referral_users: {
+                    required: true
+                },
                 expiry_date: {
                     required: true
                 },
@@ -138,6 +152,9 @@
                 },
                 reward: {
                     required: "Please enter reward"
+                },
+                no_of_referral_users: {
+                    required: "Please enter no of referral users"
                 },
                 description: {
                     required: "Please enter description"

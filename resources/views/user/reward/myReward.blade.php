@@ -93,11 +93,13 @@
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>Status</th>
+                                <th>Action</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($filterResults as $data)
+                                <?php $campaign_id = base64_encode($data->campaign_id); ?>
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                     <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
@@ -144,6 +146,12 @@
                                             </form> --}}
                                             <span class="btn btn-danger  btn-sm">Rejected</span>
                                         @endif
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-success  btn-sm"
+                                            href="{{ route('user.campaign.view', $campaign_id) }}" role="button"
+                                            title="View"><i class="fa fa-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

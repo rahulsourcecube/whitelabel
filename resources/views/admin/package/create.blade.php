@@ -29,19 +29,19 @@
                                 <label for="campaign"> No Of Campaign <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="campaign" name="campaign"
                                     placeholder="No Of Campaign"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"max="10">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"minlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="user"> No Of User <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="user" name="user"
                                     placeholder="No Of User"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="10">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="employee"> No Of Employee <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="employee" name="employee"
                                     placeholder="No Of Employee"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="10">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="inputype">Type <span class="error">*</span></label>
@@ -57,7 +57,7 @@
                                 <label for="day" class="day_title">No Of Day <span class="error">*</span></label>
                                 <input type="text" class="form-control day_place" id="day" name="day"
                                     placeholder="No Of Day"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" max="10">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="10">
                             </div>
                             <div class="col-md-3 pl-5">
                                 <label for="expiry_date">Status</label>
@@ -73,19 +73,19 @@
                                 <label for="price"> Price <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="price" name="price"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10"
-                                    placeholder="Price" max="10">
+                                    placeholder="Price" minlength="10">
                             </div>
 
                             <div class="form-group col-md-12">
                                 <label for="descriptions">Description</label>
-                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description" max="300"> </textarea>
+                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description" minlength="300"> </textarea>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="file">Image <span class="error">*</span></label>
                                 <input type="file" class="form-control" name="image" id="file"
-                                    accept=".png, .jpg, .jpeg" onchange="previewImage()"max="150">
+                                    accept=".png, .jpg, .jpeg" onchange="previewImage()"minlength="150">
                             </div>
                         </div>
 

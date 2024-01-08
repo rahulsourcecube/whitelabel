@@ -115,9 +115,8 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>{{ isset($data->created_at) ? $data->created_at->format('Y-m-d') : '' }}
+                                                <td>{{ isset($data->created_at) ? App\Helpers\Helper::Dateformat($data->created_at) : '' }}
                                                 </td>
-                                                {{-- <td>{{ isset($data->created_at) ? $data->created_at : '' }}</td> --}}
                                             </tr>
                                             @php
                                                 $i++;

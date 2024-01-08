@@ -123,7 +123,7 @@
                                                         <td>{{ $loop->index + 1 }}</td>
                                                         <td>{{ optional($list->getuser)->first_name }}</td>
                                                         <td>{{ App\Helpers\Helper::getcurrency() . $list->reward }}</td>
-                                                        <td>{{ optional($list->created_at)->format('Y-m-d h:ia') }}</td>
+                                                        <td>{{ App\Helpers\Helper::Dateformat($list->created_at) }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -135,16 +135,18 @@
                     </div>
                 @endif
                 <div class="col-lg-12">
+                    <div style="float: inline-start;">
+                        Current task status :  <B>{{$camphistory->task_status}}</B>
+                    </div>
                     <div style="float: inline-end;">
-                        @if ($camphistory->status == 2)
-                            <button class="btn btn-success btn-sm action" data-action="3"
-                                data-id="{{ base64_encode($id) }}"
-                                data-url="{{ route('company.campaign.action') }}">Accept</button>
+                        {{-- @if ($camphistory->status == 2) --}}
+                        <button class="btn btn-success btn-sm action" data-action="3" data-id="{{ base64_encode($id) }}"
+                            data-url="{{ route('company.campaign.action') }}">Accept</button>
 
-                            <button class="btn btn-danger btn-sm action" data-action="4" data-id="{{ base64_encode($id) }}"
-                                data-url="{{ route('company.campaign.action') }}" data-action="Reject">Reject</button>
-                        @else
-                            @if ($camphistory->status == 3)
+                        <button class="btn btn-danger btn-sm action" data-action="4" data-id="{{ base64_encode($id) }}"
+                            data-url="{{ route('company.campaign.action') }}" data-action="Reject">Reject</button>
+                        {{-- @else --}}
+                        {{-- @if ($camphistory->status == 3)
                                 <button class="btn btn-success btn-sm action" data-action="3"
                                     data-id="{{ base64_encode($id) }}"
                                     data-url="{{ route('company.campaign.action') }}">Accept</button>
@@ -153,8 +155,8 @@
                                 <button class="btn btn-danger btn-sm action" data-action="4"
                                     data-id="{{ base64_encode($id) }}" data-url="{{ route('company.campaign.action') }}"
                                     data-action="Reject">Reject</button>
-                            @endif
-                        @endif
+                            @endif --}}
+                        {{-- @endif --}}
                     </div>
                 </div>
             </div>
@@ -169,26 +171,24 @@
                                         <div class="font-weight-semibold font-size-12"> 7:57PM </div>
                                     </div> --}}
                                     @foreach ($chats as $item)
-                                        @if ($item->sender_id == $user->id)
-                                            <div class="msg msg-recipient">
-                                                @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
-                                                    <div class="m-r-10">
-                                                        <div class="avatar avatar-image">
-                                                            <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
-                                                                alt="">
+                                        @if ($item->sender_id == Auth::user()->id)
+                                            <div class="msg msg-sent">
+                                            @else
+                                                <div class="msg msg-recipient">
+                                                    @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
+                                                        <div class="m-r-10">
+                                                            <div class="avatar avatar-image">
+                                                                <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
+                                                                    alt="">
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                @else
-                                                    <div class="m-r-10">
-                                                        <div class="avatar avatar-image">
-                                                            <img src="{{ asset('assets/images/profile_image.jpg') }}">
+                                                    @else
+                                                        <div class="m-r-10">
+                                                            <div class="avatar avatar-image">
+                                                                <img src="{{ asset('assets/images/profile_image.jpg') }}">
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                @endif
-                                            @elseif($item->sender_id == Auth::user()->id)
-                                                <div class="msg msg-sent">
-                                                @else
-                                                    <div class="msg msg-sent">
+                                                    @endif
                                         @endif
                                         @if (isset($item) && !empty($item->document) && file_exists('public/' . $item->document))
                                             <div class="bubble">

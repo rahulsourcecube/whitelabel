@@ -27,8 +27,8 @@
                                 @foreach ($bills as $item)
                                     <tr>
                                         <td>{{ $item->GetPackageData->title ?? '-' }}</td>
-                                        <td>{{ $item->start_date ?? '-' }}</td>
-                                        <td>{{ $item->end_date ?? '-' }}</td>
+                                        <td>{{  App\Helpers\Helper::Dateformat($item->start_date) ?? '-' }}</td>
+                                        <td>{{ App\Helpers\Helper::Dateformat($item->end_date) ?? '-' }}</td>
                                         @if ($ActivePackageData && $ActivePackageData->id && $ActivePackageData->id != $item->id)
                                             <td>
                                                 <a class="btn btn-danger btn-sm" href="#" role="button"
