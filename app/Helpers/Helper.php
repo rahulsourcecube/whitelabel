@@ -77,7 +77,7 @@ class Helper
 
         return $packageData;
     }
-    // get Active Package Data
+    // Change Date format
     public static function Dateformat($date)
     {
         if(gettype($date)== 'string'){

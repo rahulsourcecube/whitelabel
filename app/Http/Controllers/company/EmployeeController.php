@@ -43,7 +43,7 @@ class EmployeeController extends Controller
     public function elist(Request $request)
     {
         $companyId = Helper::getCompanyId();
-        $columns = ['id', 'title'];
+        $columns = ['id'];
         $totalData = User::where('user_type', User::USER_TYPE['STAFF'])
             ->where('company_id', Auth::user()->id)->count();
         $start = $request->input('start');
@@ -51,12 +51,31 @@ class EmployeeController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $results = User::orderBy($columns[$order], $dir)
+        // $results = User::orderBy($columns[$order], $dir)
+        //     ->where('user_type', User::USER_TYPE['STAFF'])
+        //     ->where('company_id', $companyId)
+        //     ->skip($start)
+        //     ->take($length)
+        //     ->get();
+        $searchColumn = ['first_name', 'last_name','email'];
+        $query = User::orderBy($columns[0], $dir)
             ->where('user_type', User::USER_TYPE['STAFF'])
-            ->where('company_id', $companyId)
-            ->skip($start)
-            ->take($length)
-            ->get();
+            ->where('company_id', $companyId);
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
+        ->take($length)
+        ->get();
+
         foreach ($results as $result) {
 
             $list[] = [

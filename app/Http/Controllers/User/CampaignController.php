@@ -31,7 +31,23 @@ class CampaignController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $results = CampaignModel::orderBy($columns[$order], $dir)
+        // $results = CampaignModel::orderBy($columns[$order], $dir)
+        //     ->where('company_id', Auth::user()->company_id)
+        //     ->where('status', '1')
+        //     ->whereNotExists(function ($query) {
+        //         $query->from('user_campaign_history')
+        //             ->whereRaw('campaign.id = user_campaign_history.campaign_id')
+        //             ->where('user_campaign_history.user_id', Auth::user()->id);
+        //     })
+        //     ->whereDate('expiry_date', '>=', now())
+        //     ->skip($start)
+        //     ->take($length)
+        //     ->select('campaign.*')
+        //     ->get();
+
+        $searchColumn = ['title', 'reward', 'description'];
+
+        $query = CampaignModel::orderBy($columns[$order], $dir)
             ->where('company_id', Auth::user()->company_id)
             ->where('status', '1')
             ->whereNotExists(function ($query) {
@@ -39,11 +55,23 @@ class CampaignController extends Controller
                     ->whereRaw('campaign.id = user_campaign_history.campaign_id')
                     ->where('user_campaign_history.user_id', Auth::user()->id);
             })
-            ->whereDate('expiry_date', '>=', now())
-            ->skip($start)
-            ->take($length)
-            ->select('campaign.*')
-            ->get();
+            ->whereDate('expiry_date', '>=', now());
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
+        ->take($length)
+        ->select('campaign.*')
+        ->get();
+
         foreach ($results as $result) {
             $list[] = [
                 base64_encode($result->id),

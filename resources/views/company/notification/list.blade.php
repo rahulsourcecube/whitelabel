@@ -2,7 +2,17 @@
 @section('title', 'Users List')
 @section('main-content')
     <div class="main-content">
+        <style>
+            .table>tbody>tr>td,
+            .table>tbody>tr>th,
+            .table>tfoot>tr>td,
+            .table>tfoot>tr>th,
+            .table>thead>tr>td,
+            .table>thead>tr>th {
 
+                max-width: 500px;
+            }
+        </style>
         @include('user.includes.message')
         <div class="page-header">
             <div class="header-sub-title">
@@ -20,7 +30,7 @@
                     <table id="notificationList" class="table">
                         <thead>
                             <tr>
-                              
+
                                 <th></th>
                                 <th>Message</th>
                                 <th>Date</th>
@@ -28,7 +38,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                          
+
                         </tbody>
                     </table>
                 </div>
@@ -37,8 +47,8 @@
     </div>
 
     <script>
-          $(document).ready(function() {
-            
+        $(document).ready(function() {
+
             var table = $('#notificationList').DataTable({
                 // Processing indicator
                 "processing": true,
@@ -73,10 +83,9 @@
                         return '<input type="checkbox" name="chk_row" value="' + row[0] +
                             '" class="chk-row">';
                     },
-                } ],
+                }],
             });
         });
-  
     </script>
 
 @endsection
