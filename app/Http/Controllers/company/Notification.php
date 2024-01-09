@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Notification as ModelsNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class Notification extends Controller
 {
@@ -49,12 +50,32 @@ class Notification extends Controller
         $dir = $request->input('order.0.dir');
         $list = [];
 
-        $results = ModelsNotification::orderBy($columns[$order], $dir)
+        // $results = ModelsNotification::orderBy($columns[$order], $dir)
+        //     ->where('company_id', Auth::user()->id)
+        //     ->where('type', '2')
+        //     ->skip($start)
+        //     ->take($length)
+        //     ->get();
+
+        $searchColumn = ['created_at', 'message'];
+
+        $query = ModelsNotification::orderBy($columns[$order], $dir)
             ->where('company_id', Auth::user()->id)
-            ->where('type', '2')
-            ->skip($start)
-            ->take($length)
-            ->get();
+            ->where('type', '2');
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
+        ->take($length)
+        ->get();
 
         foreach ($results as $result) {
 
@@ -62,6 +83,7 @@ class Notification extends Controller
             $list[] = [
 
                 $result->title ?? "-",
+                // Str::limit($result->message, 130) ?? "-",
                 $result->message ?? "-",
                 Helper::Dateformat($result->created_at) ?? "-",
 

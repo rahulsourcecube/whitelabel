@@ -154,10 +154,27 @@ if ($packageData && $packageData->id && $packageData->id == $list->id){
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $results = CompanyModel::orderBy($columns[$order], $dir)
-            ->skip($start)
+
+        $searchColumn = ['company_name', 'company_description', 'users.first_name', 'users.last_name', 'users.email', 'users.contact_number'];
+
+        $query = CompanyModel::leftJoin('users', 'company.user_id', '=', 'users.id') // Assuming 'user_id' is the foreign key in CompanyModel
+            ->orderBy('company.' . $columns[$order], $dir);
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
             ->take($length)
             ->get();
+
+        $list = [];
         foreach ($results as $result) {
             $list[] = [
                 $result->id,
@@ -170,9 +187,10 @@ if ($packageData && $packageData->id && $packageData->id == $list->id){
                 $result['email'],
                 $result['email'],
                 $result['email'],
-                $result['is_indivisual'],
+                $result['is_individual'],
             ];
         }
+
         $totalFiltered = $results->count();
         return response()->json([
             "draw" => intval($request->input('draw')),

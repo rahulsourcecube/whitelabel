@@ -62,10 +62,25 @@ class CampaignController extends Controller
             $order = $request->input('order.0.column');
             $dir = $request->input('order.0.dir');
             $list = [];
-            $results = CampaignModel::where('company_id', $companyId)->where('type', $type)
-                ->skip($start)
-                ->take($length)
-                ->get();
+            
+            $searchColumn = ['title', 'reward', 'description', 'no_of_referral_users'];
+
+            $query = CampaignModel::where('company_id', $companyId)->where('type', $type);
+
+            // Server-side search
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumn) {
+                    foreach ($searchColumn as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+            }
+
+            $results = $query->skip($start)
+            ->take($length)
+            ->get();
+
             foreach ($results as $result) {
                 $imgUrl = "";
                 if (!empty($result->image) && file_exists('uploads/campaign/' . $result->image)) {
@@ -107,14 +122,37 @@ class CampaignController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
+        // $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
+        //     // ->where('company_id', Auth::user()->id)
+        //     ->where('campaign_id', $request->input('id'))
+        //     ->where('status', $request->input('status'))
+        //     ->skip($start)
+        //     ->take($length)
+        //     ->get();
+
+        $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
+
+        $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
+            ->orderBy("user_campaign_history.". $columns[$order], $dir)
             // ->where('company_id', Auth::user()->id)
-            ->where('campaign_id', $request->input('id'))
-            ->where('status', $request->input('status'))
-            ->skip($start)
+            ->where('user_campaign_history.campaign_id', $request->input('id'))
+            ->where('user_campaign_history.status', $request->input('status'));
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
             ->take($length)
             ->get();
 
+        $list = [];
         foreach ($results as $result) {
 
             $list[] = [
@@ -122,13 +160,14 @@ class CampaignController extends Controller
                 $result->getuser->full_name ?? "-",
                 $result->getuser->email ?? "-",
                 $result->getuser->contact_number ?? "-",
-               '$'.$result->reward ?? "0",
+                '$' . $result->reward ?? "0",
                 Helper::Dateformat($result->created_at)  ?? "-",
                 $result->TaskStatus ?? "-",
                 base64_encode($result->user_id) ?? "-",
 
             ];
         }
+
         $totalFiltered = $results->count();
         return response()->json([
             "draw" => intval($request->input('draw')),

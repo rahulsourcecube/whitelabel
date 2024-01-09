@@ -43,7 +43,7 @@ class UserController extends Controller
     public function dtList(Request $request)
     {
         $companyId = Helper::getCompanyId();
-        $columns = ['id', 'title'];
+        $columns = ['id', 'last_name', 'first_name', 'email', 'contact_number'];
         $totalData = User::where('user_type', User::USER_TYPE['USER'])
             ->where('company_id', $companyId)->count();
         $start = $request->input('start');
@@ -51,12 +51,29 @@ class UserController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $results = User::orderBy($columns[$order], $dir)
-            ->where('user_type', User::USER_TYPE['USER'])
-            ->where('company_id', $companyId)
-            ->skip($start)
-            ->take($length)
-            ->get();
+        // $results = User::orderBy($columns[$order], $dir)
+        //     ->where('user_type', User::USER_TYPE['USER'])
+        //     ->where('company_id', $companyId)
+        //     ->skip($start)
+        //     ->take($length)
+        //     ->get();
+        $query = User::orderBy($columns[$order], $dir)
+        ->where('user_type', User::USER_TYPE['USER'])
+        ->where('company_id', $companyId);
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $columns) {
+                foreach ($columns as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
+        ->take($length)
+        ->get();
         foreach ($results as $result) {
             $profileImgUrl = "";
             if (!empty($result->profile_image) && file_exists('uploads/company/user-profile/' . $result->profile_image)) {
