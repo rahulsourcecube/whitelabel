@@ -45,7 +45,6 @@
                                         @foreach ($value->modules as $modelPermission)
                                             <td style="text-align: center;">
                                                 {{ Form::checkbox('permission[]', $modelPermission->id, in_array($modelPermission->id, $rolePermission) ? true : false, ['class' => 'permission', 'disabled' => '']) }}
-                                                {{-- {{ $modelPermission->name }} --}}
                                             </td>
                                         @endforeach
                                     @endif

@@ -49,16 +49,6 @@
                                 @endforeach
                             </select>
                         </div>
-                        {{-- <div class="form-group col-md-6">
-                            <label for="password"> Password <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="password" name="password"
-                                placeholder="Password">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="cpassword"> Comfirm Password <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="cpassword" name="cpassword"
-                                placeholder="Comfirm Password">
-                        </div> --}}
                         <div class="form-group col-md-12">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>

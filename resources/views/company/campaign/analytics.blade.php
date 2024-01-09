@@ -29,15 +29,11 @@
                                         <input type="text" class="form-control attribute" name="date_range_filter"
                                             id="date_filter" placeholder="From Date">
                                     </div>
-                                    {{-- <div class="form-group col-md-12">
-                                    <label class="font-weight-semibold" for="phoneNumber">To Date:</label>
-                                    <input type="date" class="form-control" id="phoneNumber">
-                                </div> --}}
+                                    
                                     <div class="col-md-12">
                                         <button id="filterdata" class="btn btn-primary m-t-30" disabled>Filter <span
                                                 class="spinner"></span></button>
 
-                                        {{-- <button class="btn btn-success m-t-30">Export</button> --}}
                                     </div>
                                 </div>
                                 <div class="col-md-9">
@@ -98,13 +94,11 @@
                         <div class="m-t-25">
                             <div class="row">
                                 <div class="col-md-3">
-                                    {{-- <form> --}}
                                     @php
                                         $start = Carbon\Carbon::now()
                                             ->startOfMonth()
                                             ->format('m/d/Y');
                                         $end = Carbon\Carbon::now()->format('m/d/Y');
-                                        // dd($start,$end)
                                     @endphp
                                     <div class="form-group col-md-12">
                                         <label>From Date:</label>
@@ -126,7 +120,6 @@
                                         <button class="btn btn-primary m-t-30"
                                             onclick="fetchSocialDataAndRenderChart()">Filter</button>
                                     </div>
-                                    {{-- </form> --}}
                                 </div>
                                 <div class="col-md-9">
                                     <table id="campaign_tables" class="table">
@@ -139,7 +132,6 @@
                                         <tbody>
                                         </tbody>
                                     </table>
-                                    {{-- <div class="ct-chart" id="simple-line-social-share"></div> --}}
                                 </div>
                             </div>
                         </div>
@@ -320,10 +312,8 @@
                             datasets: [{
                                 label: 'Completeds',
                                 data: total_completeds,
-                                // fill: true, // Fill the area under the line
                                 backgroundColor: 'transparent', // Area color
                                 borderColor: '#3F87F5', // Line color
-                                // borderWidth: 1
                             }, {
                                 label: 'joineds',
                                 data: total_joineds,

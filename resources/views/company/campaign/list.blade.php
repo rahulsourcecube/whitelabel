@@ -28,9 +28,7 @@
                                 <th>Reward</th>
                                 <th>Description</th>
                                 <th>Type</th>
-                                {{-- @if (isset($typeInText) && $typeInText == 'Referral') --}}
                                 <th>No of referral users</th>
-                                {{-- @endif --}}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -70,7 +68,6 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
                     "data": function(d) {
-                        // d.search_name = $('#search_name').val();
                     }
                 },
                 'columnDefs': [{

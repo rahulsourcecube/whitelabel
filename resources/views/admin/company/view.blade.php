@@ -123,10 +123,7 @@
                                                     </div>
                                                     <div class="m-l-15">
                                                         <h2 class="font-weight-bold font-size-30 m-b-0">
-                                                            @if ($ActivePackageData->GetPackageData->type != '1')
-                                                                {{ App\Helpers\Helper::getcurrency() }}
-                                                            @endif
-                                                            {{ $ActivePackageData->GetPackageData->plan_price }}
+                                                            @if ($ActivePackageData->GetPackageData->type != '1'){{ App\Helpers\Helper::getcurrency() }}@endif{{ $ActivePackageData->GetPackageData->plan_price }}
                                                         </h2>
                                                         <h4 class="m-b-0">
                                                             {{ $ActivePackageData->GetPackageData->title }}

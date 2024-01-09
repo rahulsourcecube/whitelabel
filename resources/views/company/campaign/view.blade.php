@@ -55,8 +55,6 @@
 
                 <div class="card">
                     <div class="card-body">
-                        {{-- <h4>Tabs With Pill</h4>
-                    <p>Tabs also works with pills.</p> --}}
                         <div class="m-t-25">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                 <li class="nav-item my-table-tab" data-status="1">
@@ -208,7 +206,6 @@
                 },
                 success: (response) => {
 
-                    // $('#view-modal').modal('show');
                     $('#view-modal').modal('show');
                     $('.addmodle').html(" ");
                     $('.addmodle').html(response.message);
@@ -238,7 +235,6 @@
                             icon: "error",
                             button: "Ok",
                         }).then(() => {
-                            // $(".nav-link.active").parent(".my-table-tab").trigger("click");
                             $('#view-modal').modal('hide');
                         });
                     } else {
@@ -247,7 +243,6 @@
                             icon: "success",
                             button: "Ok",
                         }).then(() => {
-                            // $(".nav-link.active").parent(".my-table-tab").trigger("click");
                             location.reload(true);
                             $('#view-modal').modal('hide');
                         });

@@ -84,11 +84,6 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-row">
-                                    {{-- <div class="form-group col-md-3">
-                                    <label class="font-weight-semibold" for="oldPassword">Old Password:</label>
-                                    <input type="password" class="form-control" name="oldpassword" id="oldPassword"
-                                        placeholder="Old Password">
-                                </div> --}}
                                     <div class="form-group col-md-3">
                                         <label class="font-weight-semibold" for="newPassword">New Password:</label>
                                         <input type="password" class="form-control" name="newPassword" id="newPassword"

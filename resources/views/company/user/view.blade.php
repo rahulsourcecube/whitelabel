@@ -52,15 +52,6 @@
                                                         {{ isset($user) ? $user->contact_number : '' }}
                                                     </p>
                                                 </li>
-                                                {{-- <li class="row">
-                                                <p class="col-sm-4 col-5 font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-10 text-primary anticon anticon-compass"></i>
-                                                    <span>Location: </span>
-                                                </p>
-                                                <p class="col font-weight-semibold">{{ isset($user) ? $user->location :
-                                                    "" }}
-                                                </p>
-                                            </li> --}}
                                             </ul>
                                             <div class="d-flex font-size-22 m-t-15">
                                                 @if (isset($user->facebook_link) && !empty($user->facebook_link))

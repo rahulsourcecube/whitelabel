@@ -78,7 +78,6 @@
                             <div class="form-group"style="margin-bottom: 0px;">
                                 <label> <b> Total Revenue </b></label>
                                 <br>
-                                {{-- {{dd($company)}} --}}
                                 <div class="d-flex align-items-center">
                                     <div class="form-group col-md-6">
                                         <label for="company">Company</label>
@@ -95,14 +94,13 @@
                                     </div>
                                     <input type="text" class="form-control datepicker-input readonly" id="month"
                                         name="month" placeholder="Select month" value="{{ $currentMonth ?? '' }}" readonly
-                                        onchange="fetchDataAndRenderChart()" minlength="50">
+                                        onchange="fetchDataAndRenderChart()" maxlength="50">
 
                                 </div>
                             </div>
                         </div>
                         <div class="m-t-50">
                             <canvas class="chart" id="myChart"></canvas>
-                            {{-- <canvas class="chart" id="revenue-chart"></canvas> --}}
                         </div>
                     </div>
                 </div>
@@ -112,9 +110,7 @@
                     <div class="card-body">
                         <h5 class="m-b-0">Company</h5>
                         <div class="m-v-60 text-center" style="height: 280px;">
-                             {{-- @if ($total_user != 0) --}}
                                 <div class="ct-chart" id="donut-chart"></div>
-                            {{-- @endif --}}
                         </div>
                         <div class="row border-top p-t-25">
                             <div class="col-4">

@@ -15,7 +15,6 @@
                             </div>
                             <div class="m-l-15">
                                 <h2 class="m-b-0">{{ isset($total_user) ? $total_user : '' }}</h2>
-                                {{-- <p class="m-b-0 text-muted">Total Point's Earned</p> --}}
                                 <p class="m-b-0 text-muted">Total Number Users</p>
                             </div>
                         </div>
@@ -234,7 +233,6 @@
                         <h5 class="m-b-0">Users</h5>
                         <div class="text-center"
                             style="height: 200px;margin-top: 5px !important;margin-bottom: 115px !important;">
-                            {{-- <canvas class="chart" id="customers-chart"></canvas> --}}
                             @if ($total_user != 0)
                                 <div class="ct-chart" id="donut-chart"></div>
                             @endif
@@ -291,7 +289,6 @@
     var currency =  "{{$currency}}";
     var chart_title = "{{$chart_title}}";
 </script>
-{{-- @endsection --}}
     <script>
         var chartdata = {!! json_encode($user_reward_and_days) !!};
         chartdata = JSON.parse(chartdata);

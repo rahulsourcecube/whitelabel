@@ -33,7 +33,7 @@
                             <label for="reward"> Reward <span class="error">*</span></label>
                             <input type="text" class="form-control" id="reward" name="reward" placeholder="Reward"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                value="{{ old('reward') }}">
+                                value="{{ old('reward') }}" min="1">
                             @error('reward')
                             <label id="reward-error" class="error" for="reward">{{ $message }}</label>
                             @enderror
@@ -51,7 +51,7 @@
                             <label for="no_of_referral_users"> No of referral users <span class="error">*</span></label>
                             <input type="text" class="form-control" id="no_of_referral_users" name="no_of_referral_users" placeholder="No of referral users"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                value="{{ old('no_of_referral_users') }}">
+                                value="{{ old('no_of_referral_users') }}" min="1">
                             @error('no_of_referral_users')
                             <label id="no_of_referral_users-error" class="error" for="reward">{{ $message }}</label>
                             @enderror

@@ -28,10 +28,11 @@ class CompanyController extends Controller
         return view('admin.company.list', compact('packages'));
     }
 
-    function AddPackages(CompanyModel $id)
+    function AddPackages($id)
     {
+        
         try {
-
+            $id =   CompanyModel::where('user_id', $id)->first();
             $currentDate = Carbon::now();
             $currentDate = $currentDate->format('Y-m-d');
             $companyId = $id->user_id;
@@ -54,7 +55,7 @@ class CompanyController extends Controller
                                                         style="line-height: 55px"></i>
                                                 </div>
                                                 <div class="m-l-15">';
-if ($packageData && $packageData->id && $packageData->id == $list->id){
+if ($packageData && $packageData->package_id && $packageData->package_id == $list->id){
                     $html .= '<span class="badge badge-primary"
                                                             style="margin-left: 180px">Active</span>';}else{
                         $html .= '<span class="badge badge-primary"
@@ -75,13 +76,13 @@ if ($packageData && $packageData->id && $packageData->id == $list->id){
                                                 <div class="d-flex justify-content-between"> <span
                                                         class="text-dark font-weight-semibold">' . $list->duration . '';
                     if ($list->type == '1') {
-                        $html .= 'Days';
+                        $html .= ' Days';
                     } elseif ($list->type == '2') {
-                        $html .= 'Month';
+                        $html .= ' Month';
                     } elseif ($list->type == '3') {
-                        $html .= 'Year';
+                        $html .= ' Year';
                     }
-                    $html .= 'Plan
+                    $html .= ' Plan
                                                     </span>
                                                     <div class="text-success font-size-16"> <i
                                                             class="anticon anticon-check"></i> </div>
@@ -117,6 +118,7 @@ if ($packageData && $packageData->id && $packageData->id == $list->id){
                                             id="package-payment-form">
                                             '.csrf_field().'
                                             <input type="hidden" name="package_id" value="' . $list->id . '">
+                                            <input type="hidden" name="company_id" value="' . $id->user_id . '">
                                             <div class="text-center">
                                                 <button type="submit" class="btn btn-success ' . $list->user_bought . '"';
                     if ($list->type == '1' && !empty($FreePackagePurchased) && $FreePackagePurchased->id != null) {
@@ -204,7 +206,7 @@ if ($packageData && $packageData->id && $packageData->id == $list->id){
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
         $data = [];
-        $data['user_company'] = CompanyModel::where('id', $request->id)->first();
+        $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
         $data['user_company_setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
         $data['ActivePackageData'] = CompanyPackage::where('company_id', $data['user_company']->user_id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
         $data['CampaignModelCount'] = CampaignModel::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count();
@@ -217,7 +219,7 @@ if ($packageData && $packageData->id && $packageData->id == $list->id){
     {
         $data = [];
 
-        $data['user_company'] = CompanyModel::where('id', $request->id)->first();
+        $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
         $data['setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
         $data['editprofiledetail'] = User::where('id', $data['user_company']->user_id)->first();
         return view('admin.company.edit', $data);
@@ -336,7 +338,7 @@ if ($packageData && $packageData->id && $packageData->id == $list->id){
                 return redirect()->back()->with('error', 'Package not found');
             }
 
-            $companyId = Helper::getCompanyId();
+            $companyId = $request->company_id;
 
             $package = PackageModel::where('id', $request->package_id)->first();
             if (empty($package)) {

@@ -38,13 +38,13 @@
                                 <label for="user"> No Of User <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="user" name="user"
                                     placeholder="No Of User" value="{{ !empty($package->no_of_user) ? $package->no_of_user : '' }}"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="10">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="employee"> No Of Employee <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="employee" name="employee"
                                     placeholder="No Of Employee" value="{{ !empty($package->no_of_employee) ? $package->no_of_employee : '' }}"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" minlength="10">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
 
                             <div class="form-group col-md-3">
@@ -67,7 +67,7 @@
                                 <input type="text" class="form-control day_place" id="day" name="day"
                                     placeholder="No Of Day"
                                     value="{{ !empty($package->duration) ? $package->duration : '' }}"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" min="1">
                             </div>
 
                             <div class="col-md-3 pl-5">
@@ -104,8 +104,6 @@
                             <div class="form-group col-md-3" style="max-height: 200px;">
                                 <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"
                                     alt="Image Preview" style="max-width: 100%; max-height: 80%;">
-                                {{-- <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
-                                    style="display: block;" onclick="deleteImage()"><i class="fa fa-trash"></i></button> --}}
                             </div>
                         </div>
                         @endif
@@ -171,9 +169,6 @@
                 price: {
                     required: "Please Enter Price"
                 },
-                // image: {
-                //     required: "Please Select Image"
-                // },
             }
         });
 
@@ -203,7 +198,6 @@
                 $("#price").val("0");
             } else {
                 $("#price-section").show();
-                // $("#price").val("");
             }
         }
 

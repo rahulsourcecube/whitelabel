@@ -202,7 +202,7 @@
 @endsection
 @section('js')
     <script>
-        var emailCheckUrl = "{{ route('company.user.checkEmail') }}";
+        // var emailCheckUrl = "{{ route('company.user.checkEmail') }}";
         var numberCheckUrl = "{{ route('company.user.checkContactNumber') }}";
         var token = "{{ csrf_token() }}";
     </script>

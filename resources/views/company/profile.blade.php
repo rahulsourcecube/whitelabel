@@ -37,7 +37,6 @@
                                             <li class="row">
                                                 <p class="font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-8 text-primary anticon anticon-mail"></i>
-                                                    {{-- <span>Email: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{isset($profiledetail->email)?$profiledetail->email:'-'}}</p>
@@ -45,7 +44,6 @@
                                             <li class="row">
                                                 <p class="font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-8 text-primary anticon anticon-phone"></i>
-                                                    {{-- <span>Phone: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{isset($profiledetail->contact_number)?$profiledetail->contact_number:'-'}}
@@ -90,7 +88,6 @@
                                             <li class="row">
                                                 <p class="font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-8 text-primary anticon anticon-mail"></i>
-                                                    {{-- <span>Email: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{!empty($companydetail) &&
@@ -99,7 +96,6 @@
                                             <li class="row">
                                                 <p class="font-weight-semibold text-dark m-b-5">
                                                     <i class="m-r-8 text-primary anticon anticon-phone"></i>
-                                                    {{-- <span>Phone: </span> --}}
                                                 </p>
                                                 <p class="col font-weight-semibold">
                                                     {{!empty($companydetail) &&

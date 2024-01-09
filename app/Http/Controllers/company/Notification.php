@@ -50,13 +50,6 @@ class Notification extends Controller
         $dir = $request->input('order.0.dir');
         $list = [];
 
-        // $results = ModelsNotification::orderBy($columns[$order], $dir)
-        //     ->where('company_id', Auth::user()->id)
-        //     ->where('type', '2')
-        //     ->skip($start)
-        //     ->take($length)
-        //     ->get();
-
         $searchColumn = ['created_at', 'message'];
 
         $query = ModelsNotification::orderBy($columns[$order], $dir)
@@ -83,7 +76,6 @@ class Notification extends Controller
             $list[] = [
 
                 $result->title ?? "-",
-                // Str::limit($result->message, 130) ?? "-",
                 $result->message ?? "-",
                 Helper::Dateformat($result->created_at) ?? "-",
 

@@ -132,18 +132,13 @@
                                             </div>
                                         </div>
                                     </td>
-                                    {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
                                     <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                     </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 3)
                                             <span class="btn btn-success  btn-sm">Completed</span>
                                         @elseif (isset($data->status) && $data->status == 4)
-                                            {{-- <form method="post"
-                                                action="{{ route('user.progress.reopen', $data->id) }}">
-                                                @csrf
-                                                <button class="btn btn-danger  btn-sm" role="button">Reopen</button>
-                                            </form> --}}
+                                            
                                             <span class="btn btn-danger  btn-sm">Rejected</span>
                                         @endif
                                     </td>

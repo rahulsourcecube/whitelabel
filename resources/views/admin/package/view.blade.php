@@ -58,7 +58,6 @@
                             </p>
                             <div class="text-right">
                                 <a class="btn btn-hover font-weight-semibold" href="blog-post.html">
-                                    {{-- <span>Read More</span> --}}
                                 </a>
                             </div>
                         </div>

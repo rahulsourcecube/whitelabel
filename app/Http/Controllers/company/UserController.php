@@ -51,12 +51,6 @@ class UserController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        // $results = User::orderBy($columns[$order], $dir)
-        //     ->where('user_type', User::USER_TYPE['USER'])
-        //     ->where('company_id', $companyId)
-        //     ->skip($start)
-        //     ->take($length)
-        //     ->get();
         $query = User::orderBy($columns[$order], $dir)
         ->where('user_type', User::USER_TYPE['USER'])
         ->where('company_id', $companyId);
@@ -130,7 +124,7 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
-                'email' => 'required|email',
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'number' => 'required|numeric|digits:10',
                 'password' => 'required|string|min:8|confirmed',
                 'password_confirmation' => 'required|string|min:8',
@@ -229,8 +223,6 @@ class UserController extends Controller
                 'lname' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'number' => 'required|numeric|digits:10|unique:users,contact_number,' . $user->id,
-                // 'password' => 'required|string|min:8|confirmed',
-                // 'password_confirmation' => 'required|string|min:8',
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
             if ($validator->fails()) {
@@ -269,7 +261,6 @@ class UserController extends Controller
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {
-            // dd($e);
             Log::error('Company user update error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
         }

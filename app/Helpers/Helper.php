@@ -98,7 +98,6 @@ class Helper
             $companyId = Helper::getCompanyId();
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
             if ($packageData != null && new DateTime($packageData->end_date) >= Carbon::now()) {
-                // Assuming $packageData->end_date is a string representing a date
                 $end_date = new DateTime($packageData->end_date);
                 // Add 24 hours to the end date
                 $end_date->add(new DateInterval('PT24H'));
@@ -150,7 +149,6 @@ class Helper
                 $vertualHostPath = $dirArr[0].DIRECTORY_SEPARATOR.$dirArr[1].DIRECTORY_SEPARATOR;//.$dirArr[2].DIRECTORY_SEPARATOR;
 
                 exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
-                // dd($dirArr);
 
                 // Path to Apache's httpd-vhosts.conf file
                 $vhostsFilePath = $vertualHostPath .'apache/conf/extra/httpd-vhosts.conf'; // 'C:/xampp8.2/apache/conf/extra/httpd-vhosts.conf';

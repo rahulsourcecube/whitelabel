@@ -30,29 +30,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- <tr>
-                            <td>John Doe</td>
-                            <td>John@mailinataor.com</td>
-                            <td>Manager</td>
-                            <td>
-                                <a class="btn btn-primary btn-sm" href="{{route('company.employee.create')}}"
-                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
-                                <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Tom Jery</td>
-                            <td>tom@mailinataor.com</td>
-                            <td>Staff</td>
-                            <td>
-                                <a class="btn btn-primary btn-sm" href="{{route('company.employee.create')}}"
-                                    role="button" title="Edit"><i class="fa fa-pencil"></i></a>
-                                    <a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)"
-                                    onclick="sweetAlertAjax()"><i class="fa fa-trash"></i></a>
-                            </td>
-                        </tr> --}}
-
                     </tbody>
                 </table>
             </div>
@@ -64,7 +41,6 @@
 
 
     $(document).ready(function() {
-        // alert('hello');
         var table = $('#user_tables').DataTable({
             // Processing indicator
             "processing": false,
@@ -100,21 +76,6 @@
                         '" class="chk-row">';
                 },
             },
-
-            // {
-            //     'targets': 5,
-            //     'visible': true,
-            //     'orderable': false,
-            //     'render': function(data, type, row) {
-            //         var status = row[5];
-            //         if(status == "Active"){
-            //             return '  <button class="btn btn-success ">'+status+'</button>'
-
-            //         }else{
-            //             return '  <button class="btn btn-danger ">'+status+'</button>'
-            //         }
-            //     },
-            // },
              {
                 'targets': 4,
                 'visible': true,

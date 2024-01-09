@@ -42,9 +42,7 @@
                                         <input type="hidden" name="token" value="{{ $token }}">
 
                                         <div class="form-group">
-                                            {{-- <label class="font-weight-semibold" for="userName">Email:</label> --}}
                                             <div class="input-affix">
-                                                {{-- <i class="prefix-icon anticon anticon-user"></i> --}}
                                                 <input id="email" type="hidden"
                                                     class="form-control @error('email') is-invalid @enderror"
                                                     name="email" value="{{ isset($user->email) ? $user->email : '' }}"
@@ -74,7 +72,6 @@
                                             <div class="d-flex align-items-center justify-content-between">
 
 
-                                                {{-- <a class="btn btn-primary" href="{{ route('user.signup') }}"> Change</a> --}}
                                                 <button type="submit" class="btn btn-primary">Change</button>
                                             </div>
                                         </div>

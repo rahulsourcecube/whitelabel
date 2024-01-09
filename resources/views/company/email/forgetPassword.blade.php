@@ -1,8 +1,3 @@
-{{-- <h1>Forget Password Email</h1>
-   
-You can reset password from bellow link:
-<a href="{{ route('company.confirmPassword', $token) }}">Reset Password</a>
- --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +48,6 @@ You can reset password from bellow link:
     <br><br><br>
     <p>If you did not request to reset your password, please ignore this email. Your password will remain unchanged.</p>
     <p>If you have any questions or need assistance, feel free to contact our support team.</p>
-    {{-- <p class="footer">Best Regards,<br>Match In Christ</p> --}}
   </div>
 </body>
 </html>
