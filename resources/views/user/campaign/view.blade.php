@@ -53,27 +53,6 @@
 
                                 @if (!empty($user_Campaign) && $user_Campaign->status != '0')
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 1)
-                                        {{-- @if ($user_Campaign->getCampaign->type != '1')
-                                            <form method="post"
-                                                action="{{ route('user.progress.claimReward', $user_Campaign->id) }}">
-                                                @csrf
-                                                <button class="btn btn-primary  btn-sm" role="button">Claim
-                                                    reward</button>
-                                            </form>
-                                        @else
-                                            @if ($user_Campaign->getCampaign->task_expired == 'Expired')
-                                                <form method="post"
-                                                    action="{{ route('user.progress.claimReward', $user_Campaign->id) }}">
-                                                    @csrf
-                                                    <button class="btn btn-primary  btn-sm" role="button">Claim
-                                                        reward</button>
-                                                </form>
-                                            @else
-                                                <button class="btn btn-primary  btn-sm" role="button"
-                                                    style="background-color: rgba(0, 123, 255, 0.5);">Claim
-                                                    reward</button>
-                                            @endif
-                                        @endif --}}
                                         <a class="btn btn-primary btn-tone"><span class="m-l-5">Claim reward</span></a>
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 2)
@@ -121,7 +100,7 @@
                         </div>
                     </div>
                 </div>
-                @if ($campagin_detail->type == 1)
+                @if ($campagin_detail->type == 1 && $user_Campaign != null && $user_Campaign->getCampaign->task_expired != 'Expired')
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
@@ -138,10 +117,8 @@
                                                     <i class="anticon anticon-facebook"></i>
                                                 </button>
                                             </a>
-                                            {{-- <a href="http://www.twitter.com/share?url={{ route('campaign.referral', $user_Campaign->referral_link) }}">Tweet</a> --}}
                                             <a
                                                 href="https://www.twitter.com/share?u={{ route('campaign.referral', $user_Campaign->referral_link) }}">
-                                                {{-- <a href="#" onclick="shareOnTwitter()"> --}}
                                                 <button class="m-r-5 btn btn-icon btn-hover btn-rounded">
                                                     <i class="anticon anticon-twitter"></i>
                                                 </button>
@@ -194,7 +171,6 @@
                                         <table class="table table-hover" id="user_tables">
                                             <thead>
                                                 <tr>
-                                                    {{-- <th></th> --}}
                                                     <th>ID</th>
                                                     <th>User</th>
                                                     <th>Date</th>
@@ -241,9 +217,6 @@
                         <div class="conversation">
                             <div class="conversation-wrapper">
                                 <div class="conversation-body scrollbar" style="overflow-y: auto;" id="style-4">
-                                    {{-- <div class="msg justify-content-center">
-                                        <div class="font-weight-semibold font-size-12"> 7:57PM </div>
-                                    </div> --}}
                                     @if ($chats->count() != 0)
                                         @foreach ($chats as $item)
                                             @if ($item->sender_id == $user->id)

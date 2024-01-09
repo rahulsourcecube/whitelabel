@@ -46,7 +46,6 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="font-weight-semibold" for="password">Password:</label>
-                                        {{-- <a class="float-right font-size-13 text-muted" href="#">Forget Password?</a> --}}
                                         <div class="input-affix m-b-10">
                                             <i class="prefix-icon anticon anticon-lock"></i>
                                             <input id="password" type="password"
@@ -62,10 +61,6 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="d-flex align-items-center justify-content-between">
-                                            {{-- <span class="font-size-13 text-muted">
-                                                Don't have an account?
-                                                <a class="small" href="#"> Signup</a>
-                                            </span> --}}
                                             <button class="btn btn-primary">Sign In</button>
                                         </div>
                                     </div>

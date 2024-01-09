@@ -93,7 +93,6 @@
                                                     Don't have an account?
                                                     <a class="small" href="{{ route('user.signup') }}"> Signup</a>
                                                 </span>
-                                                {{-- <a href="{{route('user.dashboard')}}"  class="btn btn-primary">Sign In</a> --}}
                                                 <button class="btn btn-primary">Sign In</button>
                                             </div>
                                         </div>
@@ -107,13 +106,10 @@
                     </div>
                 </div>
                 <div class="d-none d-md-flex  p-h-40 justify-content-between">
-                    {{-- <span class="">© 2019 ThemeNate</span> --}}
                     <ul class="list-inline">
                         <li class="list-inline-item">
-                            {{-- <a class="text-dark text-link" href="#">Legal</a> --}}
                         </li>
                         <li class="list-inline-item">
-                            {{-- <a class="text-dark text-link" href="#">Privacy</a> --}}
                         </li>
                     </ul>
                 </div>

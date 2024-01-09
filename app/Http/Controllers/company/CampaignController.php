@@ -122,19 +122,11 @@ class CampaignController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        // $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-        //     // ->where('company_id', Auth::user()->id)
-        //     ->where('campaign_id', $request->input('id'))
-        //     ->where('status', $request->input('status'))
-        //     ->skip($start)
-        //     ->take($length)
-        //     ->get();
 
         $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
 
         $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
             ->orderBy("user_campaign_history.". $columns[$order], $dir)
-            // ->where('company_id', Auth::user()->id)
             ->where('user_campaign_history.campaign_id', $request->input('id'))
             ->where('user_campaign_history.status', $request->input('status'));
 
@@ -230,7 +222,6 @@ class CampaignController extends Controller
             $Campaign->package_id = $ActivePackageData->id;
 
             $Campaign->save();
-            // CampaignModel::create($request->all());
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task added successfuly.');
         } catch (Exception $e) {
@@ -454,7 +445,6 @@ class CampaignController extends Controller
             $companyId = Helper::getCompanyId();
             $setting = SettingModel::where('user_id', $companyId)->first();
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
-            // dd($id, $camphistory);
             $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
             $user = User::where('id', $camphistory->user_id)->first();
             if (empty($user)) {
@@ -542,7 +532,6 @@ class CampaignController extends Controller
 
     public function getSocialAnalytics(Request $request)
     {
-        // dd($request->all());
         $companyId = Helper::getCompanyId();
         if ($request->ajax()) {
             $columns = ['title'];

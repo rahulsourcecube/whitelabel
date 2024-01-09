@@ -105,7 +105,6 @@
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                             <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
                                             </td>
-                                            {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
                                             <td>
                                                 @if (isset($data->getCampaign->description))
                                                     <span class="truncated-description" style="cursor: pointer;"
@@ -190,10 +189,8 @@
                                         <i class="anticon anticon-facebook"></i>
                                     </button>
                                 </a>
-                                {{-- <a href="http://www.twitter.com/share?url={{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}">Tweet</a> --}}
                                 <a
                                     href="https://www.twitter.com/share?u={{ url(isset(Auth::user()->referral_code) ? 'user/signup/' . Auth::user()->referral_code : '') }}">
-                                    {{-- <a href="#" onclick="shareOnTwitter()"> --}}
                                     <button class="m-r-5 btn btn-icon btn-hover btn-rounded">
                                         <i class="anticon anticon-twitter"></i>
                                     </button>
@@ -216,23 +213,12 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5>Total Revenue</h5>
-                            {{-- <div> --}}
-                            {{-- <div class="btn-group"> --}}
-                            {{-- <button class="btn btn-default active">
-                                        <span>Month</span>
-                                    </button>
-                                    <button class="btn btn-default">
-                                        <span>Year</span>
-                                    </button> --}}
-                            {{-- </div> --}}
-                            {{-- </div> --}}
+                        
                         </div>
                         <div class="">
                             <canvas class="chart" id="myChart"></canvas>
                         </div>
-                        {{-- <div class="m-t-50">
-                            <canvas class="chart" id="revenue-chart"></canvas>
-                        </div> --}}
+                       
                     </div>
                 </div>
             </div>

@@ -1,6 +1,5 @@
 $(document).ready(function () {
     var ctx = document.getElementById('myChart').getContext('2d');
-    // if(document.getElementById('myChart').length){
     new Chart(ctx, {
         // The type of chart we want to create
         type: 'line', // also try bar or other graph types
@@ -43,5 +42,4 @@ $(document).ready(function () {
             }
         }
     });
-// }
 });

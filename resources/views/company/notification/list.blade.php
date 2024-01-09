@@ -72,7 +72,6 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
                     "data": function(d) {
-                        // d.search_name = $('#search_name').val();
                     }
                 },
                 'columnDefs': [{

@@ -133,7 +133,6 @@ class PackageController extends Controller
         try {
             $package = new PackageModel();
             $package =   PackageModel::where('id', $id)->first();
-            // dd($request->all());
             if ($request->hasFile('image')) {
                 $originalFilename = $request->file('image')->getClientOriginalName();
                 $extension = $request->file('image')->getClientOriginalExtension();

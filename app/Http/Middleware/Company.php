@@ -16,7 +16,6 @@ class Company
      */
     public function handle(Request $request, Closure $next)
     {
-        // return $next($request);
          if(auth()->user() && (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('STAFF_ROLE')) ){
             return $next($request);
         }

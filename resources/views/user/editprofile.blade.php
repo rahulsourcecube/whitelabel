@@ -56,7 +56,6 @@
                                     </h5>
                                 </div>
                                 <div>
-                                    {{-- <button class="btn btn-tone btn-primary">Upload</button> --}}
                                 </div>
                             </div>
                             <hr class="m-v-25">

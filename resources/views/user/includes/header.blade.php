@@ -14,21 +14,6 @@
     </div>
     <div class="nav-wrap">
         <ul class="nav-left">
-            {{-- <li class="desktop-toggle">
-                <a href="javascript:void(0);">
-                    <i class="anticon"></i>
-                </a>
-            </li>
-            <li class="mobile-toggle">
-                <a href="javascript:void(0);">
-                    <i class="anticon"></i>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0);" data-toggle="modal" data-target="#search-drawer">
-                    <i class="anticon anticon-search"></i>
-                </a>
-            </li> --}}
         </ul>
         <ul class="nav-right">
             <li class="dropdown dropdown-animated scale-left">
@@ -86,7 +71,6 @@
                             <i class="anticon font-size-10 anticon-right"></i>
                         </div>
                     </a>
-                    {{-- <a href="{{ route('user.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="dropdown-item d-block p-h-15 p-v-10"> --}}
                     <a href="{{ route('user.logout') }}" class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>

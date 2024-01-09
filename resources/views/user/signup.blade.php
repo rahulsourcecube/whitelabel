@@ -52,18 +52,18 @@
                                                 <label class="font-weight-semibold" for="userName">First Name:</label>
                                                 <input type="text" class="form-control" id="first_name"
                                                     placeholder="First Name" name="first_name"
-                                                    value="{{old('first_name')}}" minlength="50">
+                                                    value="{{old('first_name')}}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">Last name</label>
                                                 <input type="text" class="form-control" id="last_name"
                                                     placeholder="Last name" name="last_name"
-                                                    value="{{old('last_name')}}" minlength="50">
+                                                    value="{{old('last_name')}}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
                                                 <input type="email" class="form-control" id="email" placeholder="Email"
-                                                    name="email" value="{{old('email')}}" minlength="50">
+                                                    name="email" value="{{old('email')}}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="contact">Contact
@@ -76,25 +76,22 @@
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
                                                 <input type="password" class="form-control" id="password"
-                                                    placeholder="Password" name="password" value="{{old('password')}}" minlength="50">
+                                                    placeholder="Password" name="password" value="{{old('password')}}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
                                                 <input type="password" class="form-control" id="confirmPassword"
                                                     placeholder="Confirm Password" name="password_confirmation"
-                                                    value="{{old('password_confirmation')}}" minlength="50">
+                                                    value="{{old('password_confirmation')}}" maxlength="50">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between p-t-15">
-                                                {{-- <div class="checkbox">
-                                                    <input id="checkbox" type="checkbox">
-                                                </div> --}}
+                                             
                                                 <label for="checkbox"><span>Already have an account? <a
                                                             href="{{ route('user.login') }}">Login</a></span></label>
-                                                {{-- <a href="{{ route('user.dashboard') }}"
-                                                    class="btn btn-primary">Signup</a> --}}
+                                               
                                                 <button type="submit" class="btn btn-primary">Sign Up</button>
                                             </div>
                                         </div>
@@ -105,13 +102,10 @@
                     </div>
                 </div>
                 <div class="d-none d-md-flex p-h-40 justify-content-between">
-                    {{-- <span class="">© 2019 ThemeNate</span> --}}
                     <ul class="list-inline">
                         <li class="list-inline-item">
-                            {{-- <a class="text-dark text-link" href="#">Legal</a> --}}
                         </li>
                         <li class="list-inline-item">
-                            {{-- <a class="text-dark text-link" href="#">Privacy</a> --}}
                         </li>
                     </ul>
                 </div>

@@ -1,13 +1,3 @@
-{{-- @if ($errors->any())
-    <div class="alert-danger">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li style="    color: red;
-            ">{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif --}}
 @if (\Session::has('success'))
     <div class="alert alert-success alert-dismissible fade show alert-message" role="alert">
         <i class="uil uil-check me-2"></i>

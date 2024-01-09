@@ -31,19 +31,6 @@ class CampaignController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        // $results = CampaignModel::orderBy($columns[$order], $dir)
-        //     ->where('company_id', Auth::user()->company_id)
-        //     ->where('status', '1')
-        //     ->whereNotExists(function ($query) {
-        //         $query->from('user_campaign_history')
-        //             ->whereRaw('campaign.id = user_campaign_history.campaign_id')
-        //             ->where('user_campaign_history.user_id', Auth::user()->id);
-        //     })
-        //     ->whereDate('expiry_date', '>=', now())
-        //     ->skip($start)
-        //     ->take($length)
-        //     ->select('campaign.*')
-        //     ->get();
 
         $searchColumn = ['title', 'reward', 'description'];
 
@@ -98,7 +85,6 @@ class CampaignController extends Controller
         $data['chats'] = null;
         $data['user'] = null;
         $data['campagin_detail'] = CampaignModel::where('id', $campagin_id)->first();
-        // DB::enableQueryLog();
         $data['user_detail'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)
             ->whereExists(function ($query) {
                 $query->from('users')
@@ -107,9 +93,6 @@ class CampaignController extends Controller
                     ->whereNotNull('users.referral_user_id');
             })
             ->orderBy('user_id', 'desc')->get();
-
-        // dd(DB::getQueryLog());
-
 
         $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
         if ($data['user_Campaign'] != null && $data['user_Campaign']->getCampaign->task_expired == 'Expired') {
@@ -196,7 +179,6 @@ class CampaignController extends Controller
                 if (isset($UserCampaign) && $UserCampaign != null) {
                     $campagin_id = base64_encode($UserCampaign->campaign_id);
                     $ReferralUser = Referral::where('campagin_id', $UserCampaign->campaign_id)->where('user_id', Auth::user()->id)->exists();
-                    // $ReferralIp = Referral::where('campagin_id', $UserCampaign->campaign_id)->where('ip', IpRequest::ip())->exists();
                 }
                 if (isset($UserCampaign) && $UserCampaign != null && $ReferralUser == false && Auth::user()->company_id == $UserCampaign->getCampaign->company_id) {
                     $Referral = new Referral;

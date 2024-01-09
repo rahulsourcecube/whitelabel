@@ -44,7 +44,7 @@
                                 <label for="contact">Contact Number</label>
                                 <input type="number" min="0" maxlength="10" minlength="10" class="form-control mb-2"
                                     name="contact_no" id="contact" placeholder="Contact Number"
-                                    value="{{ !empty($setting) ? $setting->contact_number : '' }}">
+                                    value="{{ !empty($setting) ? $setting->contact_number : '' }}" maxlength="10">
 
                             </div>
                             <div class="form-group col-md-4">

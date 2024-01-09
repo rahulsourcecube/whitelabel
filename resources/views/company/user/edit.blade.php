@@ -59,18 +59,11 @@
                             <label for="password"> Password <span class="error">*</span></label>
                             <input type="password" class="form-control" id="password" name="password"
                                 placeholder="Password" value="">
-                            {{-- @error('password')
-                            <label id="password-error" class="error" for="password">{{ $message }}</label>
-                            @enderror --}}
                         </div>
                         <div class="form-group col-md-6">
                             <label for="password_confirmation"> Comfirm Password <span class="error">*</span></label>
                             <input type="password" class="form-control" id="password_confirmation"
                                 name="password_confirmation" placeholder="Comfirm Password" value="">
-                            {{-- @error('password_confirmation')
-                            <label id="password_confirmation-error" class="error" for="password_confirmation">{{
-                                $message }}</label>
-                            @enderror --}}
                         </div>
                         <div class="form-group col-md-6">
                             <label for="file">Image</label>
@@ -96,8 +89,6 @@
                             <img id="imagePreview"
                                 src="{{ asset('uploads/company/user-profile/' . $user->profile_image) }}"
                                 alt="Image Preview" style="max-width: 100%; max-height: 80%;">
-                            {{-- <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
-                                onclick="deleteImage()"><i class="fa fa-trash"></i></button> --}}
                             @else
                             <img id="imagePreview" src="#" alt="Image Preview"
                                 style="max-width: 100%; max-height: 80%; display: none;">

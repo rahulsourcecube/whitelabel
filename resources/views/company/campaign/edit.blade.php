@@ -95,8 +95,6 @@
                                     <img id="imagePreview"
                                         src="{{ asset('uploads/company/campaign/' . $task->image) }}"
                                         alt="Image Preview" style="max-width: 100%; max-height: 80%;">
-                                    {{-- <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2" onclick="deleteImage()"><i
-                                            class="fa fa-trash"></i></button> --}}
                                 @else
                                     <img id="imagePreview" src="#" alt="Image Preview"
                                         style="max-width: 100%; max-height: 80%; display: none;">

@@ -19,7 +19,6 @@
                                 <th>Start Date</th>
                                 <th>Expiry Date</th>
                                 <th>Status</th>
-                                {{-- <th>Action</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -40,10 +39,6 @@
                                                     title="Active">Active</a>
                                             </td>
                                         @endif
-                                        {{-- <td>
-                                            <button class="btn btn-success " onclick="showSuccessAlert()">Buy
-                                                Package</button>
-                                        </td> --}}
                                     </tr>
                                 @endforeach
                             @endif
@@ -65,7 +60,6 @@
                 pageLengtd: 25,
                 // Initial no order.
                 'order': [
-                    // [0, 'desc']
                 ],
                 language: {
                     search: "",

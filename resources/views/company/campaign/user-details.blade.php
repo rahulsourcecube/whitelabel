@@ -41,7 +41,6 @@
                                                     <li class="row">
                                                         <p class="font-weight-semibold text-dark m-b-5">
                                                             <i class="m-r-8 text-primary anticon anticon-mail"></i>
-                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($user->email) ? $user->email : '-' }}</p>
@@ -50,7 +49,6 @@
                                                     <li class="row">
                                                         <p class="font-weight-semibold text-dark m-b-5">
                                                             <i class="m-r-8 text-primary anticon anticon-phone"></i>
-                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($user->contact_number) ? $user->contact_number : '-' }}
@@ -139,24 +137,11 @@
                         Current task status :  <B>{{$camphistory->task_status}}</B>
                     </div>
                     <div style="float: inline-end;">
-                        {{-- @if ($camphistory->status == 2) --}}
                         <button class="btn btn-success btn-sm action" data-action="3" data-id="{{ base64_encode($id) }}"
                             data-url="{{ route('company.campaign.action') }}">Accept</button>
 
                         <button class="btn btn-danger btn-sm action" data-action="4" data-id="{{ base64_encode($id) }}"
                             data-url="{{ route('company.campaign.action') }}" data-action="Reject">Reject</button>
-                        {{-- @else --}}
-                        {{-- @if ($camphistory->status == 3)
-                                <button class="btn btn-success btn-sm action" data-action="3"
-                                    data-id="{{ base64_encode($id) }}"
-                                    data-url="{{ route('company.campaign.action') }}">Accept</button>
-                            @endif
-                            @if ($camphistory->status == 4)
-                                <button class="btn btn-danger btn-sm action" data-action="4"
-                                    data-id="{{ base64_encode($id) }}" data-url="{{ route('company.campaign.action') }}"
-                                    data-action="Reject">Reject</button>
-                            @endif --}}
-                        {{-- @endif --}}
                     </div>
                 </div>
             </div>
@@ -167,9 +152,6 @@
                         <div class="conversation">
                             <div class="conversation-wrapper">
                                 <div class="conversation-body scrollbar" style="overflow-y: auto;" id="style-4">
-                                    {{-- <div class="msg justify-content-center">
-                                        <div class="font-weight-semibold font-size-12"> 7:57PM </div>
-                                    </div> --}}
                                     @foreach ($chats as $item)
                                         @if ($item->sender_id == Auth::user()->id)
                                             <div class="msg msg-sent">
@@ -314,7 +296,6 @@
                             icon: "error",
                             button: "Ok",
                         }).then(() => {
-                            // $(".nav-link.active").parent(".my-table-tab").trigger("click");
                             $('#view-modal').modal('hide');
                         });
                     } else {
@@ -323,7 +304,6 @@
                             icon: "success",
                             button: "Ok",
                         }).then(() => {
-                            // $(".nav-link.active").parent(".my-table-tab").trigger("click");
                             location.reload(true);
                             $('#view-modal').modal('hide');
                         });

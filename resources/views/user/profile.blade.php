@@ -43,7 +43,6 @@
                                                     <li class="row">
                                                         <p class="font-weight-semibold text-dark m-b-5">
                                                             <i class="m-r-8 text-primary anticon anticon-mail"></i>
-                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($userData->email) ? $userData->email : '-' }}</p>
@@ -52,7 +51,6 @@
                                                     <li class="row">
                                                         <p class="font-weight-semibold text-dark m-b-5">
                                                             <i class="m-r-8 text-primary anticon anticon-phone"></i>
-                                                            {{-- <span>:</span> --}}
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($userData->contact_number) ? $userData->contact_number : '-' }}

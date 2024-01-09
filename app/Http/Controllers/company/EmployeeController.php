@@ -51,12 +51,6 @@ class EmployeeController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        // $results = User::orderBy($columns[$order], $dir)
-        //     ->where('user_type', User::USER_TYPE['STAFF'])
-        //     ->where('company_id', $companyId)
-        //     ->skip($start)
-        //     ->take($length)
-        //     ->get();
         $searchColumn = ['first_name', 'last_name','email'];
         $query = User::orderBy($columns[0], $dir)
             ->where('user_type', User::USER_TYPE['STAFF'])
@@ -119,10 +113,6 @@ class EmployeeController extends Controller
             if(!empty($useremail)){
                 return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
             }
-            // if ($validator->fails()) {
-            //    return redirect()->back()->withErrors($validator)->withInput();
-            // }
-            // dd($request->all());
             $user = new User();
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;
