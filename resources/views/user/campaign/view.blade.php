@@ -100,12 +100,12 @@
                         </div>
                     </div>
                 </div>
-                @if ($campagin_detail->type == 1 && $user_Campaign != null && $user_Campaign->getCampaign->task_expired != 'Expired')
+                @if ($campagin_detail->type == 1 && $user_Campaign != null )
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5>Recent referral Users</h5>
+                                    <h5>Recent Referral Users</h5>
                                     @if (
                                         $user_Campaign != null &&
                                             $user_Campaign->referral_link != '' &&
@@ -210,14 +210,23 @@
             </div>
         </div>
         <!-- Content Wrapper START -->
-        @if ($user_Campaign != null && $user_Campaign->getCampaign->task_expired == 'Expired')
+        @php
+        $showConversationBox = false;
+        if ($user_Campaign != null && $user_Campaign->getCampaign->type=='1'){
+            if($user_Campaign->getCampaign->task_expired == 'Expired' )
+                $showConversationBox = true;
+        }else {
+            $showConversationBox = true; 
+        }
+        @endphp
+        @if ($user_Campaign != null && $showConversationBox )
             <div class="container-fluid p-h-0 m-t-20">
                 <div class="chat chat-app row">
                     <div class="chat-content "style="width:100%;">
                         <div class="conversation">
                             <div class="conversation-wrapper">
                                 <div class="conversation-body scrollbar" style="overflow-y: auto;" id="style-4">
-                                    @if ($chats->count() != 0)
+                                    @if (!empty($chats) && $chats->count() != 0)
                                         @foreach ($chats as $item)
                                             @if ($item->sender_id == $user->id)
                                                 <div class="msg msg-sent">
@@ -269,29 +278,29 @@
 
         @endif
     </div>
-  @if (isset($user_Campaign->status) && $user_Campaign->status != 3)
-    <div class="conversation-footer custom-footer">
-        <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
-        <ul class="list-inline d-flex align-items-center m-b-0">
-            <li class="list-inline-item m-r-15">
-                <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);" title="Attachment"
-                    data-toggle="modal" data-target="#exampleModal">
-                    <i class="anticon anticon-paper-clip"></i>
-                </a>
-            </li>
-            <li class="list-inline-item">
-                <button class="d-none d-md-block btn btn-primary custom-button"
-                    @if ($user_Campaign != null) onclick="loadDataAndShowModal({{ $user_Campaign->id }})" @endif>
-                    <span class="m-r-10">Send</span>
-                    <i class="far fa-paper-plane"></i>
-                </button>
-                <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
-                    <i class="far fa-paper-plane"></i>
-                </a>
-            </li>
-        </ul>
-    </div>
-@endif
+    @if (isset($user_Campaign->status) && $user_Campaign->status != 3)
+        <div class="conversation-footer custom-footer">
+            <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
+            <ul class="list-inline d-flex align-items-center m-b-0">
+                <li class="list-inline-item m-r-15">
+                    <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);" title="Attachment"
+                        data-toggle="modal" data-target="#exampleModal">
+                        <i class="anticon anticon-paper-clip"></i>
+                    </a>
+                </li>
+                <li class="list-inline-item">
+                    <button class="d-none d-md-block btn btn-primary custom-button"
+                        @if ($user_Campaign != null) onclick="loadDataAndShowModal({{ $user_Campaign->id }})" @endif>
+                        <span class="m-r-10">Send</span>
+                        <i class="far fa-paper-plane"></i>
+                    </button>
+                    <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
+                        <i class="far fa-paper-plane"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    @endif
     </div>
     </div>
     </div>

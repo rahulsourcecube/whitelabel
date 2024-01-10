@@ -21,8 +21,8 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4>My Referral Activity </h4>
-                        <p>Referral activity over time</p>
+                        <h4>My User Referral  </h4>
+                        <p>My Referral user joined over time</p>
 
                         <div class="m-t-25">
                             <div class="row">

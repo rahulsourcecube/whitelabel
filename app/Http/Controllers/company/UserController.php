@@ -178,6 +178,8 @@ class UserController extends Controller
             $user->bank_name = $request->bank_name;
             $user->ac_holder = $request->ac_holder;
             $user->ifsc_code = $request->ifsc_code;
+            $user->paypal_id = $request->paypal_id;
+            $user->stripe_id = $request->stripe_id;
             $user->ac_no = $request->ac_no;
             $user->package_id = $ActivePackageData->id;
             $user->save();
@@ -257,6 +259,8 @@ class UserController extends Controller
             $user->bank_name = $request->bank_name;
             $user->ac_holder = $request->ac_holder;
             $user->ifsc_code = $request->ifsc_code;
+            $user->paypal_id = $request->paypal_id;
+            $user->stripe_id = $request->stripe_id;
             $user->ac_no = $request->ac_no;
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User updated successfully');
