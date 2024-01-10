@@ -29,7 +29,6 @@
                                 <th>Duration</th>
                                 <th>Price</th>
                                 <th>No Of Campaign</th>
-                                {{-- <th>Image</th> --}}
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -68,7 +67,6 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
                     "data": function(d) {
-                        // d.search_name = $('#search_name').val();
                     }
                 },
                 'columnDefs': [{
@@ -86,7 +84,6 @@
                     'orderable': false,
                     'render': function(data, type, row) {
                         var imagurl = '{{ asset('uploads/package') }}/' + row[6];
-                        // imagurl = imagurl.replace(':row', row[6]);
                         return ' <img id="" class="packageimage" src="' + imagurl +
                             '" style="height: 100px; width: 100px;">';
 
@@ -99,7 +96,6 @@
                     'render': function(data, type, row) {
                         var viewUrl = '{{ route('admin.package.view', ':id') }}';
                         var editUrl = '{{ route('admin.package.edit', ':package') }}';
-                        // var viewUrl = '{{ route('admin.company.view', ':id') }}';
                         viewUrl = viewUrl.replace(':id', row[0]);
                         editUrl = editUrl.replace(':package', row[0]);
 

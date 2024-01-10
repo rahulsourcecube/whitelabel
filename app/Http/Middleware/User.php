@@ -16,7 +16,6 @@ class User
      */
     public function handle(Request $request, Closure $next)
     {
-        // return $next($request);
         if(auth()->user() && auth()->user()->user_type == env('USER_ROLE') ){
             return $next($request);
         }

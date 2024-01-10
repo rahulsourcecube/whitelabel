@@ -84,7 +84,6 @@ $('#userUpdateform').validate({
         password: {
             minlength: 8,
             maxlength: 50,
-            // required: true,
         },
         password_confirmation: {
             equalTo: "#password",

@@ -57,48 +57,46 @@ class AdminSeeder extends Seeder
 
 
 
-        $company = User::create([
-            'first_name' => 'Demo',
-            'last_name' => 'Company',
-            'email' => 'company@mailinator.com',
-            'contact_number' => '1234567890',
-            'password' => Hash::make('Company@2023'),
-            'view_password' => 'Company@2023',
-            'user_type' => '2',
-        ]);
+        // $company = User::create([
+        //     'first_name' => 'Demo',
+        //     'last_name' => 'Company',
+        //     'email' => 'company@mailinator.com',
+        //     'contact_number' => '1234567890',
+        //     'password' => Hash::make('Company@2023'),
+        //     'view_password' => 'Company@2023',
+        //     'user_type' => '2',
+        // ]);
 
-        CompanyModel::create([
-            'company_name' => 'Demo Company',
-            'contact_email' => 'company@mailinator.com',
-            'contact_number' => '1234567890',
-            'subdomain' => 'demo',
-            'user_id' => $company->id,
-        ]);
+        // CompanyModel::create([
+        //     'company_name' => 'Demo Company',
+        //     'contact_email' => 'company@mailinator.com',
+        //     'contact_number' => '1234567890',
+        //     'subdomain' => 'demo',
+        //     'user_id' => $company->id,
+        // ]);
 
-        SettingModel::create([
-            'title' => 'WhiteLabel',
-            'email' => 'company@mailinator.com',
-            'contact_number' => '1235435535',
-            'description' => '<p>WhiteLabel</p>',
-            'facebook_link' => 'https://www.facebook.com',
-            'twitter_link' => 'https://www.tweeter.com',
-            'linkedin_link' => 'https://www.linkedin.com',
-            'user_id' => $company->id,
-        ]);
+        // SettingModel::create([
+        //     'title' => 'WhiteLabel',
+        //     'email' => 'company@mailinator.com',
+        //     'contact_number' => '1235435535',
+        //     'description' => '<p>WhiteLabel</p>',
+        //     'facebook_link' => 'https://www.facebook.com',
+        //     'twitter_link' => 'https://www.tweeter.com',
+        //     'linkedin_link' => 'https://www.linkedin.com',
+        //     'user_id' => $company->id,
+        // ]);
 
-        $user = User::create([
-            'first_name' => 'Demo',
-            'last_name' => 'User',
-            'email' => 'user@mailinator.com',
-            'contact_number' => '1234567890',
-            'user_type' => 'User',
-            'password' => Hash::make('User@2023'),
-            'view_password' => 'User@2023',
-            'user_type' => '4',
-            'company_id' => $company->id,
-        ]);
-
-
+        // $user = User::create([
+        //     'first_name' => 'Demo',
+        //     'last_name' => 'User',
+        //     'email' => 'user@mailinator.com',
+        //     'contact_number' => '1234567890',
+        //     'user_type' => 'User',
+        //     'password' => Hash::make('User@2023'),
+        //     'view_password' => 'User@2023',
+        //     'user_type' => '4',
+        //     'company_id' => $company->id,
+        // ]);
 
         $role = Role::create(['name' => 'Company']);
 

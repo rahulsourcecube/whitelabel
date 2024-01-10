@@ -24,10 +24,24 @@ class PackageController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $results = PackageModel::orderBy($columns[$order], $dir)
-            ->skip($start)
-            ->take($length)
-            ->get();
+
+        $searchColumn = ['title', 'duration', 'price', 'no_of_campaign'];
+
+        $query = PackageModel::orderBy($columns[$order], $dir);
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
+        ->take($length)
+        ->get();
         foreach ($results as $result) {
             if ($result->type == '1') {
                 $type = 'Free';
@@ -119,7 +133,6 @@ class PackageController extends Controller
         try {
             $package = new PackageModel();
             $package =   PackageModel::where('id', $id)->first();
-            // dd($request->all());
             if ($request->hasFile('image')) {
                 $originalFilename = $request->file('image')->getClientOriginalName();
                 $extension = $request->file('image')->getClientOriginalExtension();

@@ -19,7 +19,6 @@
                                 <th>Start Date</th>
                                 <th>Expiry Date</th>
                                 <th>Status</th>
-                                {{-- <th>Action</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -27,8 +26,8 @@
                                 @foreach ($bills as $item)
                                     <tr>
                                         <td>{{ $item->GetPackageData->title ?? '-' }}</td>
-                                        <td>{{ $item->start_date ?? '-' }}</td>
-                                        <td>{{ $item->end_date ?? '-' }}</td>
+                                        <td>{{  App\Helpers\Helper::Dateformat($item->start_date) ?? '-' }}</td>
+                                        <td>{{ App\Helpers\Helper::Dateformat($item->end_date) ?? '-' }}</td>
                                         @if ($ActivePackageData && $ActivePackageData->id && $ActivePackageData->id != $item->id)
                                             <td>
                                                 <a class="btn btn-danger btn-sm" href="#" role="button"
@@ -40,10 +39,6 @@
                                                     title="Active">Active</a>
                                             </td>
                                         @endif
-                                        {{-- <td>
-                                            <button class="btn btn-success " onclick="showSuccessAlert()">Buy
-                                                Package</button>
-                                        </td> --}}
                                     </tr>
                                 @endforeach
                             @endif
@@ -65,7 +60,6 @@
                 pageLengtd: 25,
                 // Initial no order.
                 'order': [
-                    // [0, 'desc']
                 ],
                 language: {
                     search: "",

@@ -47,7 +47,6 @@ class RolesController extends Controller
             Log::error('list role Error: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong please try again');
-            // dd($e);
         }
     }
     // this function yous for role store
@@ -64,8 +63,6 @@ class RolesController extends Controller
                 'name' => 'required|unique:roles,name',
                 'permission' => 'required',
             ]);
-            // $permissions = Permission::pluck('id', 'id')->all();
-            // dd($request->input('permission'), $permissions , array_map('intval', $request->input('permission')));
             $role = Role::create(['name' => $request->input('name')]);
             $role->syncPermissions(array_map('intval', $request->input('permission')));
             return redirect()->route('company.role.rolelist')
@@ -75,7 +72,6 @@ class RolesController extends Controller
             Log::error('store role Error: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong please try again');
-            // dd($e);
         }
     }
     // this function yous for role edit
@@ -94,7 +90,6 @@ class RolesController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            // 'name' => 'required',
             'permission' => 'required',
         ]);
         try {
@@ -105,13 +100,11 @@ class RolesController extends Controller
 
             return redirect()->back()->with('success', 'Role updated successfully');
 
-            // return redirect()->route('company.role.rolelist')->with('success', 'Role updated successfully');
         } catch (Exception $e) {
 
             Log::error('Update role Error: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong please try again');
-            // dd($e);
         }
     }
     // this function yous for role view
@@ -127,14 +120,12 @@ class RolesController extends Controller
             $rolePermissions = Permission::join("role_has_permissions", "role_has_permissions.permission_id", "=", "permissions.id")
                 ->where("role_has_permissions.role_id", $id)
                 ->get();
-            // $permission = Permission::get();
             return view('company.roles.roleview', compact('role', 'rolePermissions', 'ModelPermission', 'rolePermission'));
         } catch (Exception $e) {
 
             Log::error('roleview role Error: ' . $e->getMessage());
 
             return redirect()->back()->with('error', 'Something went wrong please try again');
-            // dd($e);
         }
     }
     // this function yous for role destroy

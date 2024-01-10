@@ -129,26 +129,17 @@
                                             </div>
                                         </div>
                                     </td>
-                                    {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
                                     <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                     </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 1)
                                             @if ($data->getCampaign->type != '1')
-                                                <form method="post"
-                                                    action="{{ route('user.progress.claimReward', $data->id) }}">
-                                                    @csrf
-                                                    <button class="btn btn-primary  btn-sm" role="button">Claim
-                                                        reward</button>
-                                                </form>
+                                                <button class="btn btn-primary  btn-sm" role="button">Claim
+                                                    reward</button>
                                             @else
                                                 @if ($data->getCampaign->task_expired == 'Expired')
-                                                    <form method="post"
-                                                        action="{{ route('user.progress.claimReward', $data->id) }}">
-                                                        @csrf
-                                                        <button class="btn btn-primary  btn-sm" role="button">Claim
-                                                            reward</button>
-                                                    </form>
+                                                    <button class="btn btn-primary  btn-sm" role="button">Claim
+                                                        reward</button>
                                                 @else
                                                     <button class="btn btn-primary  btn-sm" role="button"
                                                         style="background-color: rgba(0, 123, 255, 0.5);">Claim
@@ -158,6 +149,8 @@
                                         @endif
                                         @if (isset($data->status) && $data->status == 2)
                                             <span class="btn btn-info btn-sm">Claim Pending</span>
+                                        @elseif(isset($data->status) && $data->status == 5)
+                                            <span class="btn btn-danger btn-sm">Reopen</span>
                                         @endif
                                     </td>
                                     <td>

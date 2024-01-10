@@ -4,8 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class Company
+class CheckNotLoggedIn
 {
     /**
      * Handle an incoming request.
@@ -16,9 +17,12 @@ class Company
      */
     public function handle(Request $request, Closure $next)
     {
-         if(auth()->user() && (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('STAFF_ROLE')) ){
+        // Check if the user is not logged in
+        if (Auth::check()) {
+            return redirect()->back();
+        } else {
+            // Redirect to the next page or perform any other action
             return $next($request);
         }
-        return redirect('login')->with('error',"You don't have admin access.");
     }
 }

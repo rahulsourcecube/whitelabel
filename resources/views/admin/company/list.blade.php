@@ -28,6 +28,22 @@
             </div>
         </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-xl">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title h4">Add Package</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="anticon anticon-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body d-flex">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         /*This is data table for partership Request */
         $(document).ready(function() {
@@ -75,11 +91,37 @@
                         editUrl = editUrl.replace(':package', row[0]);
                         viewUrl = viewUrl.replace(':id', row[0]);
                         return '<a class="btn btn-success btn-sm " href="' + viewUrl +
-                            '" role="button"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +editUrl +
-                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a>';
+                            '" role="button"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
+                            editUrl +
+                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <button type="button" class="btn btn-primary btn-sm" onclick=loadDataAndShowModal(' +
+                            row[0] +
+                            ');><i class="anticon anticon-shopping-cart"></i></button>';
                     },
                 }],
             });
         });
+    </script>
+    <script>
+        function loadDataAndShowModal(id) {
+            var viewUrl = '{{ route('admin.company.AddPackages', ':id') }}';
+            viewUrl = viewUrl.replace(':id', id);
+            $.ajax({
+                url: viewUrl, // Example URL
+                method: "post",
+                dataType: "json",
+                "headers": {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                success: function(data) {
+                    // Display data in the modal
+                    $(".modal-body").html("<p>" + data.html + "</p>");
+                    // Show the modal
+                    $(".bd-example-modal-xl").modal('show');
+                },
+                error: function() {
+                    alert("Error loading data");
+                }
+            });
+        }
     </script>
 @endsection

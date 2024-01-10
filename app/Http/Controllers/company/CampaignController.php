@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\Notification;
 use App\Models\Referral;
+use App\Models\SettingModel;
+use App\Models\TaskEvidence;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Exception;
@@ -48,6 +50,7 @@ class CampaignController extends Controller
         return view('company.campaign.list', compact('type', 'taskType', 'totalData'));
     }
 
+
     public function tdlist($type, Request $request)
     {
         try {
@@ -59,10 +62,25 @@ class CampaignController extends Controller
             $order = $request->input('order.0.column');
             $dir = $request->input('order.0.dir');
             $list = [];
-            $results = CampaignModel::where('company_id', $companyId)->where('type', $type)
-                ->skip($start)
-                ->take($length)
-                ->get();
+            
+            $searchColumn = ['title', 'reward', 'description', 'no_of_referral_users'];
+
+            $query = CampaignModel::where('company_id', $companyId)->where('type', $type);
+
+            // Server-side search
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumn) {
+                    foreach ($searchColumn as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+            }
+
+            $results = $query->skip($start)
+            ->take($length)
+            ->get();
+
             foreach ($results as $result) {
                 $imgUrl = "";
                 if (!empty($result->image) && file_exists('uploads/campaign/' . $result->image)) {
@@ -74,6 +92,7 @@ class CampaignController extends Controller
                     Helper::getcurrency() . $result->reward ?? "-",
                     Str::limit($result->description, 60) ?? "-",
                     $result->task_type,
+                    $result->no_of_referral_users,
                     $result->task_status,
                     // $imgUrl,
                 ];
@@ -103,14 +122,30 @@ class CampaignController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $results = UserCampaignHistoryModel::orderBy($columns[$order], $dir)
-            // ->where('company_id', Auth::user()->id)
-            ->where('campaign_id', $request->input('id'))
-            ->where('status', $request->input('status'))
-            ->skip($start)
+
+        $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
+
+        $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
+            ->select("user_campaign_history.*")
+            ->orderBy("user_campaign_history." . $columns[$order], $dir)
+            ->where('user_campaign_history.campaign_id', $request->input('id'))
+            ->where('user_campaign_history.status', $request->input('status'));
+
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $results = $query->skip($start)
             ->take($length)
             ->get();
 
+        $list = [];
         foreach ($results as $result) {
 
             $list[] = [
@@ -118,13 +153,14 @@ class CampaignController extends Controller
                 $result->getuser->full_name ?? "-",
                 $result->getuser->email ?? "-",
                 $result->getuser->contact_number ?? "-",
-                $result->reward ?? "-",
-                date('Y-m-d H:i:s', strtotime(str_replace('/', '-', $result->created_at)))  ?? "-",
+                '$' . $result->reward ?? "0",
+                Helper::Dateformat($result->created_at)  ?? "-",
                 $result->TaskStatus ?? "-",
                 base64_encode($result->user_id) ?? "-",
 
             ];
         }
+
         $totalFiltered = $results->count();
         return response()->json([
             "draw" => intval($request->input('draw')),
@@ -177,6 +213,7 @@ class CampaignController extends Controller
             $Campaign = new CampaignModel();
             $Campaign->title = $request->title;
             $Campaign->reward = $request->reward;
+            $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
             $Campaign->expiry_date = $request->expiry_date;
             $Campaign->type = $request->type;
@@ -186,7 +223,6 @@ class CampaignController extends Controller
             $Campaign->package_id = $ActivePackageData->id;
 
             $Campaign->save();
-            // CampaignModel::create($request->all());
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task added successfuly.');
         } catch (Exception $e) {
@@ -229,6 +265,7 @@ class CampaignController extends Controller
 
             $Campaign->title = $request->title;
             $Campaign->reward = $request->reward;
+            $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
             $Campaign->expiry_date = $request->expiry_date;
             $Campaign->type = $request->type;
@@ -389,7 +426,7 @@ class CampaignController extends Controller
 
                     $Notification->save();
                 }
-                return response()->json(['success' => 'success', 'messages' => ' Task Rejectedz successfully']);
+                return response()->json(['success' => 'success', 'messages' => ' Task Rejected successfully']);
             }
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());
@@ -402,199 +439,71 @@ class CampaignController extends Controller
         $tasktype = CampaignModel::TYPE[strtoupper($type)];
         return Excel::download(new Export($tasktype), ($type . '_' . $date . '.xlsx'));
     }
-    public function userDetails(Request $request)
+    public function userDetails(Request $request, $id)
     {
-
         try {
-            $id = base64_decode($request->id);
+            $id = base64_decode($id);
             $companyId = Helper::getCompanyId();
+            $setting = SettingModel::where('user_id', $companyId)->first();
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
-            // dd($id, $camphistory);
             $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
             $user = User::where('id', $camphistory->user_id)->first();
             if (empty($user)) {
-                return response()->json(['success' => 'error', 'message' => 'Task Accept Approval Requset successfully']);
+                return redirect()->back()->with('error', 'Task Accept Approval Requset successfully');
             }
-            $html = "";
-            $html .=
-                '<div class="modal-header ">
-                        <h5 class="modal-title h4">View</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <i class="anticon anticon-close"></i>
-                        </button>
-                    </div>
-
-        <div class="card">
-        
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-12">
-                        <div class="row align-items-center">
-                            <div class="text-center text-sm-left col-md-2">
-                                <div class="avatar avatar-image" style="width: 120px; height:120px">';
-
-            if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image)) {
-                $html .= '<img src="' . asset('uploads/company/user-profile/' . $user->profile_image) . '" alt="">';
-            } else {
-                $html .= '<img src="' . asset('assets/images/default-user.jpg') . '" alt="">';
-            };
-            $html .= ' </div>
-                            </div>
-                            <div class="text-center text-sm-left m-v-15 p-l-40">
-                                <h2 class="m-b-5"></h2>
-                                <div class="row">
-                                    <div class="d-md-block d-none border-left col-1"></div>
-                                    <div class="col-md-12">
-                                        <ul class="list-unstyled m-t-10">
-                                            <li class="row">
-                                                <p class="font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-8 text-primary anticon anticon-mail"></i>
-                                                </p>
-                                                <p class="col font-weight-semibold">' . $user->email ?? $user->email;
-            $html .= '</p>
-                                            </li>
-                                            <li class="row">
-                                                <p class="font-weight-semibold text-dark m-b-5">
-                                                    <i class="m-r-8 text-primary anticon anticon-phone"></i>
-                                                </p>
-                                                <p class="col font-weight-semibold"> ' . $user->contact_number ?? $user->contact_number;
-            $html .= '</p>
-                                            </li>
-
-                                        </ul>
-                                        <div class="d-flex font-size-22 m-t-15">
-                                        ';
-            if (!empty($user->facebook_link)) {
-                $html .= '
-                                            <a href="' . $user->facebook_link ?? $user->facebook_link;
-                $html .= '"
-                                            target="blank" class="text-gray p-r-20">
-                                            <i class="anticon anticon-facebook"></i>
-                                        </a>';
-            };
-            if (!empty($user->instagram_link)) {
-                $html .= '
-
-                                            <a href="' . $user->instagram_link ?? $user->instagram_link;
-                $html .= '"
-                                                target="blank" class="text-gray p-r-20">
-                                                <i class="anticon anticon-instagram"></i>
-                                            </a>
-                                            ';
-            };
-            if (!empty($user->twitter_link)) {
-                $html .= '
-                                            <a href="' . $user->twitter_link ?? $user->twitter_link;
-                $html .= '"
-                                                target="blank" class="text-gray p-r-20">
-                                                <i class="anticon anticon-twitter"></i>
-                                            </a>
-                                            ';
-            };
-            if (!empty($user->youtube_link)) {
-                $html .= '
-                                            <a href="' . $user->youtube_link ?? $user->youtube_link;
-                $html .= '"
-                                                target="blank" class="text-gray p-r-20">
-                                                <i class="anticon anticon-youtube"></i>
-                                            </a>
-                                            ';
-            }
-            $html .=
-                '
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card-body tab-content" id="pills-tabContent">
-<h2>Bank Detail:</h2>
-                <div class="table-responsive m-b-20" >
-                    <table class="product-info-table m-t-20">
-                        <tbody>
-                            <tr>
-                                <td>Bank Name:</td>
-                                <td> ' . $user->bank_name ?? $user->bank_name;
-            $html .= '</td>
-                            </tr>
-                            <tr>
-                                <td>Bank Holder : </td>
-                                <td>' . $user->ac_holder     ?? $user->ac_holder;
-            $html .= '</td>
-                            </tr>
-                            <tr>
-                                <td>IFSC Code :</td>
-                                <td>' . $user->ifsc_code ?? $user->ifsc_code;
-            $html .= '</td>
-                            </tr>
-                            <tr>
-                                <td>Account No :</td>
-                                <td> ' . $user->ac_no ?? $user->ac_no;
-            $html .= '</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>';
-                if($referral_user_detail->count()!=0){
-              $html .=  '  <div style="display: flex;justify-content: space-between;">
-                <h4>Referral Users</h4>
-                <h4>Total Reward : ' . Helper::getcurrency() . $camphistory->reward . ' </h4>
-                </div>
-                <div class="m-t-25">
-                    <div class="user-table-scroll">
-                        <table id="user_joind" class="table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>User</th>
-                                    <th>Reward</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>';
-                            foreach ($referral_user_detail as $list) {
-                                $i = 1;
-                                $html .= '<tr><td>' . $i . ' </td>
-                                            <td>' . (isset($list->getuser->first_name) ? $list->getuser->first_name : '') . '
-                                            </td>
-                                            <td>' . Helper::getcurrency() . (isset($list->reward) ? $list->reward : '') . '
-                                            </td>
-                                            <td>' . (isset($list->created_at) ? date_format($list->created_at, "Y-m-d  h:ia") : '') . '
-                                            </td>
-                                        </tr>';
-                                $i++;
-                            }
-                            $html .= ' </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>';
-            }
-    $html .= ' <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="product-info-table m-t-20">
-                        <tbody>
-                            <tr>
-                                <td> <button class="btn btn-success  btn-sm action" data-action="3"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"  >Accept</button>
-                                <button class="btn btn-danger  btn-sm action" data-action="4"   data-id="' . base64_encode($id) . '" data-url="' . route('company.campaign.action') . '"data-action="Reject" >Reject</button></td>
-
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>  ';
-            return response()->json(['success' => 'error', 'message' => $html]);
+            $chats = TaskEvidence::where('campaign_id', $id)->get();
+            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id'));
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());
             return redirect()->back()->with('error', 'Something went wrong');
+        }
+    }
+
+    public function storeChat(UserCampaignHistoryModel $id, Request $request)
+    {
+        try {
+            if ($request->hasFile('image') || $request->chat_input != null) {
+                if ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $imageName = rand(111111, 999999) . time() . '.' . $image->getClientOriginalExtension();
+                    // Save the image to the public directory
+                    $image->move(public_path('uploads/Chats'), $imageName);
+                    $imageName = 'uploads/Chats/' . $imageName;
+                }
+                $chats = TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
+                if($chats->count() == 0){
+
+                    $id->status = '2';
+                    $id->save();
+                    if (isset($id)) {
+                        $Notification = new Notification();
+                        $Notification->user_id =  $id->user_id;
+                        $Notification->company_id =  $id->getCampaign->company_id;
+                        $Notification->type =  '2';
+                        $Notification->title =  " Campaign approval request";
+                        $Notification->message =  $id->getCampaign->title . " approval request by " . $id->getuser->FullName;
+                        $Notification->save();
+                    }
+                }
+                if($id->status == '4'&& Auth::user()->user_type == 4){
+                    $id->status = '5';
+                    $id->save();
+                }
+                $TaskEvidence = new TaskEvidence();
+                $TaskEvidence->user_id = $id->user_id;
+                $TaskEvidence->company_id = $id->getCampaign->company_id;
+                $TaskEvidence->campaign_id = $id->id;
+                $TaskEvidence->sender_id = Auth::user()->id;
+                $TaskEvidence->message = $request->chat_input;
+                if ($request->hasFile('image')) {
+                    $TaskEvidence->document = $imageName;
+                }
+                $TaskEvidence->save();
+            }
+            return response()->json(['success' => true]);
+        } catch (Exception $e) {
+            Log::error('Task list error : ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Something went wrong please try again.']);
         }
     }
 
@@ -624,7 +533,6 @@ class CampaignController extends Controller
 
     public function getSocialAnalytics(Request $request)
     {
-        // dd($request->all());
         $companyId = Helper::getCompanyId();
         if ($request->ajax()) {
             $columns = ['title'];

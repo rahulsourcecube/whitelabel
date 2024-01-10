@@ -63,10 +63,12 @@
                                 <select name="status" class="form-control">
                                     <option value="">Select Status</option>
                                     <option value="3"
-                                        {{ isset(request()->status) && request()->status === '3' ? 'selected' : '' }}>Completed
+                                        {{ isset(request()->status) && request()->status === '3' ? 'selected' : '' }}>
+                                        Completed
                                     </option>
                                     <option value="4"
-                                        {{ isset(request()->status) && request()->status === '4' ? 'selected' : '' }}>Rejected
+                                        {{ isset(request()->status) && request()->status === '4' ? 'selected' : '' }}>
+                                        Rejected
                                     </option>
                                 </select>
                             </div>
@@ -78,7 +80,8 @@
                     </form>
 
                     <div class="form-group mb-0 mt-auto" style="height: fit-content">
-                        <a href="{{ route('user.my.reward') }}"><button type="submit" class="btn btn-success">Refresh</button></a>
+                        <a href="{{ route('user.my.reward') }}"><button type="submit"
+                                class="btn btn-success">Refresh</button></a>
                     </div>
                 </div>
                 <div class="m-t-15">
@@ -90,14 +93,17 @@
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>Status</th>
+                                <th>Action</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($filterResults as $data)
+                                <?php $campaign_id = base64_encode($data->campaign_id); ?>
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                    <td>{{ isset($data->reward) ? (\App\Helpers\Helper::getcurrency().$data->reward) : '' }}</td>
+                                    <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
+                                    </td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
                                             <span class="truncated-description" style="cursor: pointer;"
@@ -126,15 +132,21 @@
                                             </div>
                                         </div>
                                     </td>
-                                    {{-- <td>{!! isset($data->getCampaign->description) ? $data->getCampaign->description : '' !!}</td> --}}
                                     <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
                                     </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 3)
                                             <span class="btn btn-success  btn-sm">Completed</span>
                                         @elseif (isset($data->status) && $data->status == 4)
+                                            
                                             <span class="btn btn-danger  btn-sm">Rejected</span>
                                         @endif
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-success  btn-sm"
+                                            href="{{ route('user.campaign.view', $campaign_id) }}" role="button"
+                                            title="View"><i class="fa fa-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

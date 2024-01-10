@@ -46,7 +46,7 @@ Route::get('/expire', function () {
 
 Auth::routes();
 Route::get('/', [AdminController::class, 'index'])->name('admin');
-Route::get('user', [LoginController::class, 'form']);
+Route::get('user', [LoginController::class, 'form'])->middleware('checkNotLoggedIn');
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
@@ -55,9 +55,9 @@ Route::group(['prefix' => 'admin'], function () {
 
 
 Route::prefix('user')->name('user.')->group(function () {
-    Route::get('/', [UsrController::class, 'index'])->name('login');
-    Route::get('/login', [UsrController::class, 'index'])->name('login');
-    Route::get('/signup/{referral_code?}', [UsrController::class, 'signup'])->name('signup');
+    Route::get('/', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
+    Route::get('/login', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
+    Route::get('/signup/{referral_code?}', [UsrController::class, 'signup'])->name('signup')->middleware('checkNotLoggedIn');
     Route::post('/store', [UsrController::class, 'login'])->name('userLogin');
     Route::post('/signup-store', [UsrController::class, 'store'])->name('store');
     Route::get('/forget', [UsrController::class, 'forget'])->name('forgetpassword');
@@ -75,7 +75,12 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('my/reward', [UsrController::class, 'myreward'])->name('my.reward');
         Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
         Route::post('/user/progress/search', [UsrController::class, 'searchProgress'])->name('progress.search');
+        Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
+
+        Route::post('/reopen/{reopen}', [UsrController::class, 'reopen'])->name('progress.reopen');
+
         Route::post('/claim-reward/{id}', [UsrController::class, 'claimReward'])->name('progress.claimReward');
+
         Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
         Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
         Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
@@ -100,18 +105,18 @@ Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {
 });
 
 Route::prefix('company')->name('company.')->group(function () {
-    Route::get('/', [CompanyLoginController::class, 'index'])->name('login');
-    Route::get('/login', [CompanyLoginController::class, 'index'])->name('signin');
+    Route::get('/', [CompanyLoginController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
+    Route::get('/login', [CompanyLoginController::class, 'index'])->name('signin')->middleware('checkNotLoggedIn');
     Route::post('/store', [CompanyLoginController::class, 'login'])->name('login');
-    Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup');
+    Route::get('/signup', [CompanyLoginController::class, 'signup'])->name('signup')->middleware('checkNotLoggedIn');
     Route::post('/signup/store', [CompanyLoginController::class, 'signupStore'])->name('signup.store');
 
-    Route::get('/forget', [CompanyLoginController::class, 'forget'])->name('forgetpassword');
+    Route::get('/forget', [CompanyLoginController::class, 'forget'])->name('forgetpassword')->middleware('checkNotLoggedIn');
     Route::post('/forget-password', [CompanyLoginController::class, 'submitForgetPassword'])->name('forget-password');
-    Route::get('/confirm/password/{token}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::get('/confirm/password/{token}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword')->middleware('checkNotLoggedIn');
     Route::post('/reset-password', [CompanyLoginController::class, 'submitResetPassword'])->name('reset-password');
 
-    Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword');
+    Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword')->middleware('checkNotLoggedIn');
     Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
 });
 // Admin Middleware
@@ -145,6 +150,10 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
         Route::post('update_passsword/{id}', [AdminCompanyController::class, 'updatepassword'])->name('update_password');
         Route::post('update_profile/{id}', [AdminCompanyController::class, 'updateprofile'])->name('update_profile');
         Route::post('store/{id}', [AdminCompanyController::class, 'store'])->name('store');
+        Route::post('add/packages/{id}', [AdminCompanyController::class, 'AddPackages'])->name('AddPackages');
+        Route::post('/buy', [AdminCompanyController::class, 'buy'])->name('buy');
+
+
     });
     Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
     Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
@@ -197,7 +206,10 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::post('statuswiselist/user', [CampaignController::class, 'statuswiselist'])->name('statuswiselist');
 
             Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
-            Route::post('request/user/details', [CampaignController::class, 'userDetails'])->name('userDetails');
+
+            Route::get('request/user/details/{t_id}', [CampaignController::class, 'userDetails'])->name('userDetails');
+            Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
+
             Route::post('company-custom', [CampaignController::class, 'CompanyCustom'])->name('Custom');
             Route::post('request/social-analytics', [CampaignController::class, 'getSocialAnalytics'])->name('getSocialAnalytics');
 
@@ -206,6 +218,9 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
             Route::post('/store', [CampaignController::class, 'store'])->name('store');
             Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
+            Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
+
+
             Route::get('/edit/{type}/{id}', [CampaignController::class, 'edit'])->name('edit');
             Route::post('/update/{Campaign}', [CampaignController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');

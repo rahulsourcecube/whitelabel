@@ -70,12 +70,28 @@ class Helper
 
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
-        $companyId = Helper::getCompanyId();
+        if(Auth::user()!=null){
+            $companyId = Helper::getCompanyId();
+            // and then you can get query log
+            $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+        }else{
+            $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
+            // and then you can get query log
+            $packageData = CompanyPackage::where('company_id', $companyId->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+        }
 
-        // and then you can get query log
-        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
 
         return $packageData;
+    }
+    // Change Date format
+    public static function Dateformat($date)
+    {
+        if(gettype($date)== 'string'){
+            $date = Carbon::parse($date);
+        }
+        $formattedDate = $date->format('Y-M-d');
+
+        return $formattedDate;
     }
 
     // get Remaining Days
@@ -88,7 +104,6 @@ class Helper
             $companyId = Helper::getCompanyId();
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('end_date', '<=', $currentDate)->first();
             if ($packageData != null && new DateTime($packageData->end_date) >= Carbon::now()) {
-                // Assuming $packageData->end_date is a string representing a date
                 $end_date = new DateTime($packageData->end_date);
                 // Add 24 hours to the end date
                 $end_date->add(new DateInterval('PT24H'));
@@ -140,7 +155,6 @@ class Helper
                 $vertualHostPath = $dirArr[0].DIRECTORY_SEPARATOR.$dirArr[1].DIRECTORY_SEPARATOR;//.$dirArr[2].DIRECTORY_SEPARATOR;
 
                 exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
-                // dd($dirArr);
 
                 // Path to Apache's httpd-vhosts.conf file
                 $vhostsFilePath = $vertualHostPath .'apache/conf/extra/httpd-vhosts.conf'; // 'C:/xampp8.2/apache/conf/extra/httpd-vhosts.conf';

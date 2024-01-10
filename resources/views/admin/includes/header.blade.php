@@ -39,7 +39,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- {{ route('admin.change_password') }} --}}
                     <a href="{{ route('admin.ChengPassword') }}" class="dropdown-item d-block p-h-15 p-v-10">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>

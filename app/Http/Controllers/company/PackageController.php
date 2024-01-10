@@ -77,11 +77,9 @@ class PackageController extends Controller
 
          $package = PackageModel::where('id', $request->package_id)->first();
          if (empty($package)) {
-            // return response()->json(['error' => true, 'message' => 'Package not found']);
             return redirect()->back()->with('error', 'Package not found');
          }
 
-         // dd($package->start_date, $package, $package->end_date);
          $addPackage = new CompanyPackage();
          $addPackage->company_id = $companyId;
          $addPackage->package_id = $package->id;
@@ -111,9 +109,7 @@ class PackageController extends Controller
 
             $addPackage->update(['paymnet_id' => $makePayment->id]);
             return redirect()->back()->with('success', 'Package activated successfully!');
-            // return response()->json(['success' => true, 'message' => 'Package activated successfully!']);
          } else {
-            // return response()->json(['error' => true, 'message' => 'Something went wrong, please try again later!']);
             return redirect()->back()->with('error', 'Something went wrong, please try again later!');
          }
       } catch (Exception $e) {
@@ -137,7 +133,6 @@ class PackageController extends Controller
             'description' => 'Test payment.',
             'payment_method_types' => ['card'],
          ]);
-         // dd('hi');
          Session::flash('success-message', 'Payment done successfully!');
          return view('cardForm');
       } catch (CardException $e) {
