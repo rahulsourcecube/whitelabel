@@ -126,7 +126,8 @@ class CampaignController extends Controller
         $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
 
         $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
-            ->orderBy("user_campaign_history.". $columns[$order], $dir)
+            ->select("user_campaign_history.*")
+            ->orderBy("user_campaign_history." . $columns[$order], $dir)
             ->where('user_campaign_history.campaign_id', $request->input('id'))
             ->where('user_campaign_history.status', $request->input('status'));
 
@@ -425,7 +426,7 @@ class CampaignController extends Controller
 
                     $Notification->save();
                 }
-                return response()->json(['success' => 'success', 'messages' => ' Task Rejectedz successfully']);
+                return response()->json(['success' => 'success', 'messages' => ' Task Rejected successfully']);
             }
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());

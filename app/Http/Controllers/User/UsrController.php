@@ -45,8 +45,8 @@ class UsrController extends Controller
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
             $totalReferralUser = User::where('referral_user_id', Auth::user()->id)->get();
-            $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->sum('reward');
-            $chartReward = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->select(DB::raw('DATE(created_at) AS day'), DB::raw('SUM(reward) AS total_day_reward'))->whereDate('created_at', '>=', Carbon::now()->subDays(10)->format("Y-m-d"))->groupBy('day')->get()->toArray();
+            $totalReward = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->where('status', '3')->sum('reward');
+            $chartReward = UserCampaignHistoryModel::where('user_id', Auth::user()->id)->select(DB::raw('DATE(created_at) AS day'), DB::raw('SUM(reward) AS total_day_reward'))->whereDate('created_at', '>=', Carbon::now()->subDays(10)->format("Y-m-d"))->where('status', '3')->groupBy('day')->get()->toArray();
 
             $dateandtime = Carbon::now();
             $start_date = $dateandtime->subDays(7);
@@ -452,8 +452,8 @@ class UsrController extends Controller
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->first();
             }
-            $companyId = Helper::getCompanyId();
-
+            $company = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
+            $companyId = $company->id;
             $ActivePackageData = Helper::GetActivePackageData();
             $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
             if ($userCount >= $ActivePackageData->no_of_user) {
@@ -472,10 +472,10 @@ class UsrController extends Controller
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
             $userRegister->package_id = $ActivePackageData->id;
 
-            Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject('Welcome Mail');
-            });
+            // Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
+            //     $message->to($request->email);
+            //     $message->subject('Welcome Mail');
+            // });
 
             $userRegister->save();
 

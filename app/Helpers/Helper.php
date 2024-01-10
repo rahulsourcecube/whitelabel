@@ -70,10 +70,16 @@ class Helper
 
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
-        $companyId = Helper::getCompanyId();
+        if(Auth::user()!=null){
+            $companyId = Helper::getCompanyId();
+            // and then you can get query log
+            $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+        }else{
+            $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
+            // and then you can get query log
+            $packageData = CompanyPackage::where('company_id', $companyId->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+        }
 
-        // and then you can get query log
-        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
 
         return $packageData;
     }

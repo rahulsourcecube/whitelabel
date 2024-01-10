@@ -149,6 +149,7 @@ class CampaignController extends Controller
         } else {
             return redirect()->route('user.campaign.view', $campagin_id)->with('error', 'Referral link is expired.');
         }
+
         return redirect()->route('user.campaign.view', $campagin_id)->with('error', 'Referral link is expired.');
     }
     function getusercampaign(Request $request)
