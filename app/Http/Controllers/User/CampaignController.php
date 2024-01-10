@@ -95,7 +95,7 @@ class CampaignController extends Controller
             ->orderBy('user_id', 'desc')->get();
 
         $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
-        if ($data['user_Campaign'] != null && $data['user_Campaign']->getCampaign->task_expired == 'Expired') {
+        if ($data['user_Campaign'] != null) {
             $data['chats'] = TaskEvidence::where('campaign_id', $data['user_Campaign']->id)->get();
             $data['user'] = User::where('id', $data['user_Campaign']->user_id)->first();
         }

@@ -265,5 +265,13 @@ input[type=number]::-webkit-outer-spin-button {
     .conversation{
         display: block !important;
     }
-}  
+}
 
+.chat.chat-app .chat-content .conversation-body.empty-chat{
+    height: calc(50vh - 70px - 155px - 70px - 30px);
+}
+
+.chat.chat-app .chat-content .conversation-body.empty-chat h3{
+    line-height: 90px;
+
+}

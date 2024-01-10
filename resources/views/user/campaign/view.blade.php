@@ -100,7 +100,7 @@
                         </div>
                     </div>
                 </div>
-                @if ($campagin_detail->type == 1 && $user_Campaign != null )
+                @if ($campagin_detail->type == 1 && $user_Campaign != null)
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
@@ -211,21 +211,22 @@
         </div>
         <!-- Content Wrapper START -->
         @php
-        $showConversationBox = false;
-        if ($user_Campaign != null && $user_Campaign->getCampaign->type=='1'){
-            if($user_Campaign->getCampaign->task_expired == 'Expired' )
+            $showConversationBox = false;
+            if ($user_Campaign != null && $user_Campaign->getCampaign->type == '1') {
+                if ($user_Campaign->getCampaign->task_expired == 'Expired') {
+                    $showConversationBox = true;
+                }
+            } else {
                 $showConversationBox = true;
-        }else {
-            $showConversationBox = true; 
-        }
+            }
         @endphp
-        @if ($user_Campaign != null && $showConversationBox )
+        @if ($user_Campaign != null && $showConversationBox)
             <div class="container-fluid p-h-0 m-t-20">
                 <div class="chat chat-app row">
                     <div class="chat-content "style="width:100%;">
                         <div class="conversation">
                             <div class="conversation-wrapper">
-                                <div class="conversation-body scrollbar" style="overflow-y: auto;" id="style-4">
+                                <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif" style="overflow-y: auto;" id="style-4">
                                     @if (!empty($chats) && $chats->count() != 0)
                                         @foreach ($chats as $item)
                                             @if ($item->sender_id == $user->id)
@@ -269,10 +270,7 @@
     @else
         <div class="msg justify-content-center">
             <div class="font-weight-semibold font-size-12">
-                <h3> Please drop message and add
-                    attachment
-                    for
-                    Claim reward <h3>
+                <h3> Please drop message and add attachment for claim reward. </h3>
             </div>
         </div>
 

@@ -151,7 +151,8 @@
                     <div class="chat-content "style="width:100%;">
                         <div class="conversation">
                             <div class="conversation-wrapper">
-                                <div class="conversation-body scrollbar" style="overflow-y: auto;" id="style-4">
+                                <div class="conversation-body scrollbar  @if (!empty($chats) && $chats->count() == 0) empty-chat @endif" style="overflow-y: auto;" id="style-4">
+                                    @if (!empty($chats) && $chats->count() != 0)
                                     @foreach ($chats as $item)
                                         @if ($item->sender_id == Auth::user()->id)
                                             <div class="msg msg-sent">
@@ -189,6 +190,8 @@
                                         @endif
                                 </div>
                                 @endforeach
+                                @endif
+
                             </div>
                             <div class="conversation-footer custom-footer">
                                 <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
