@@ -145,19 +145,19 @@
                                                 <li class="m-b-20">
                                                     <div class="d-flex justify-content-between"> <span
                                                             class="text-dark font-weight-semibold">Total campaign
-                                                            {{ $ActivePackageData->GetPackageData->no_of_campaign }}/{{ $CampaignModelCount }}</span>
+                                                            {{ $ActivePackageData->no_of_campaign }}/{{ $CampaignModelCount }}</span>
                                                     </div>
                                                 </li>
                                                 <li class="m-b-20">
                                                     <div class="d-flex justify-content-between">
                                                         <span class="text-dark font-weight-semibold">Total Employee
-                                                            {{ $ActivePackageData->GetPackageData->no_of_employee }}/{{ $staffCount }}</span>
+                                                            {{ $ActivePackageData->no_of_employee }}/{{ $staffCount }}</span>
                                                     </div>
                                                 </li>
                                                 <li class="m-b-20">
                                                     <div class="d-flex justify-content-between">
                                                         <span class="text-dark font-weight-semibold">Total User
-                                                            {{ $ActivePackageData->GetPackageData->no_of_user }}/{{ $userCount }}</span>
+                                                            {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
                                                     </div>
                                                 </li>
                                             </ul>
