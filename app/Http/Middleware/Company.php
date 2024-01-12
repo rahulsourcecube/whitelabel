@@ -16,9 +16,11 @@ class Company
      */
     public function handle(Request $request, Closure $next)
     {
-         if(auth()->user() && (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('STAFF_ROLE')) ){
+        // && (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('STAFF_ROLE'))
+         if(auth()->user() ){
             return $next($request);
         }
+        // dd(auth()->user());
         return redirect('login')->with('error',"You don't have admin access.");
     }
 }

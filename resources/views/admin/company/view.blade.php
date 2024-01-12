@@ -113,7 +113,7 @@
                                         <div class="col-md-12">
                                             <hr>
                                             <h5>Active Package Detail</h5>
-
+                                            @if(!empty($ActivePackageData) && !empty($ActivePackageData->GetPackageData))
                                             <div class="d-flex justify-content-between p-b-20 border-bottom">
                                                 <div class="media align-items-center">
                                                     <div class="avatar avatar-blue avatar-icon"
@@ -161,7 +161,11 @@
                                                     </div>
                                                 </li>
                                             </ul>
-
+                                            @else
+                                                <div class="d-flex justify-content-between p-b-20 border-bottom">
+                                                    <div class="media align-items-center">-</div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

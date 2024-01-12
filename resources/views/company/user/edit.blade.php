@@ -20,6 +20,8 @@
                 <form id="userUpdateform" method="POST"
                     action="{{ route('company.user.update', base64_encode($user->id)) }}" enctype="multipart/form-data">
                     @csrf
+
+                    <input type="hidden" id="id" name="id" value="{{ isset($user) ? $user->id : '' }}">
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="fname">First Name <span class="error">*</span></label>
@@ -39,7 +41,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="number">Mobile Number <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="number" name="number"
+                            <input type="number" min="0" class="form-control" id="number" name="number"
                                 placeholder="Mobile Number" maxlength="10" minlength="10"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                 value="{{ isset($user) ? $user->contact_number : '' }}">
@@ -133,7 +135,7 @@
                                 @enderror
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="form-group col-md-6">
                                     <label class="font-weight-semibold" for="paypal_id">Paypal Id</label>
@@ -190,7 +192,7 @@
                         </div>
                     </div>
                     <div class="form-group col-md-12">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="updateUser">Submit</button>
                     </div>
                 </form>
             </div>
@@ -199,5 +201,10 @@
 </div>
 @endsection
 @section('js')
-<script src="{{ asset('assets/js/pages/company-user.js') }}"></script>
+<script>
+    var emailCheckUrl = "{{ route('company.user.checkEmail') }}";
+    var numberCheckUrl = "{{ route('company.user.checkContactNumber') }}";
+    var token = "{{ csrf_token() }}";
+</script>
+<script src="{{ asset('assets/js/pages/company-user.js?v='.time()) }}"></script>
 @endsection

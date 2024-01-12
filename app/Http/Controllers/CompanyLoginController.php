@@ -152,6 +152,9 @@ class CompanyLoginController extends Controller
                 $compnay->subdomain = $input['dname'];
                 $compnay->contact_number = $request->ccontact;
                 $compnay->save();
+                $user->update([
+                    'company_id' => $compnay->id,
+                ]);
             }
             if (isset($user)) {
                 $role = Role::where('name', 'Company')->first();

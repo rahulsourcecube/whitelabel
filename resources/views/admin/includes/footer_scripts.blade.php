@@ -9,5 +9,6 @@
 <!-- Core JS -->
 <script src="{{ asset('assets/js/app.min.js') }}"></script>
 <script src="{{ asset('assets/vendors/jquery-validation/jquery.validate.min.js') }}"></script>
+<script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
 
 @yield('js')

@@ -41,7 +41,7 @@
                 <div class="row align-items-center" id="monthly-view">
                     @if (isset($packages) && count($packages) > 0)
                         @foreach ($packages as $list)
-                            <div class="col-md-4">
+                            <div class="col-md-4  card-package-view">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between p-b-20 border-bottom">
@@ -231,7 +231,7 @@
             </div>
         </div>
 
-        
+
 
     @endsection
     @section('js')
@@ -266,7 +266,7 @@
                 });
             });
 
-            
+
         </script>
 
         <script>

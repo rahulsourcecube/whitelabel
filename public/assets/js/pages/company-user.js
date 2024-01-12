@@ -1,3 +1,4 @@
+$(document).on("click","#addUser",function(){
 $('#userform').validate({
     rules: {
         fname: {
@@ -48,13 +49,12 @@ $('#userform').validate({
             required: "Please enter last name "
         },
         email: {
-            required: "Please enter email address", 
-            remote: "Email already exists. Choose a different one."           
-               
+            required: "Please enter email address",
+            remote: "Email already registered."
         },
         number: {
             required: "Please mobile number address",
-            remote: " Mobile Number already exists." 
+            remote: " Mobile Number already registered."
         },
         password: {
             required: "Please enter password",
@@ -65,8 +65,9 @@ $('#userform').validate({
         },
     }
 });
+});
 
-
+$(document).on("click","#updateUser",function(){
 $('#userUpdateform').validate({
     rules: {
         fname: {
@@ -76,10 +77,26 @@ $('#userUpdateform').validate({
             required: true
         },
         email: {
-            required: true
+            required: true,
+            remote: {
+                url: emailCheckUrl,
+                type: "post",
+                data:{'email':$("#email").val(),'id':$("#id").val()},
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+            }
         },
         number: {
-            required: true
+            required: true,
+            remote: {
+                url: numberCheckUrl,
+                type: "post",
+                data:{'number':$("#number").val(),'id':$("#id").val()},
+                headers: {
+                    "X-CSRF-TOKEN": token
+                },
+            }
         },
         password: {
             minlength: 8,
@@ -93,8 +110,8 @@ $('#userUpdateform').validate({
                 } else {
                     return false;
                 }
-             
-            }    
+
+            }
         },
         image: {
             fileExtension: true,
@@ -109,10 +126,12 @@ $('#userUpdateform').validate({
             required: "Please enter last name "
         },
         email: {
-            required: "Please enter email address"
+            required: "Please enter email address",
+            remote: "Email already registered."
         },
         number: {
-            required: "Please mobile number address"
+            required: "Please mobile number address",
+            remote: "Mobile Number already registered."
         },
         password: {
             required: "Please enter password",
@@ -122,6 +141,7 @@ $('#userUpdateform').validate({
             equalTo: "The password you entered does not match.",
         },
     }
+});
 });
 
 

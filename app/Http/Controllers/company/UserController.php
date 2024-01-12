@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -98,8 +99,12 @@ class UserController extends Controller
     function checkEmail(Request $request)
     {
         $companyId = Helper::getCompanyId();
-        $useremail = User::where('company_id', $companyId)->where('email', $request->email)->first();
-        if (!empty($useremail)) {
+        $useremail = User::where('company_id', $companyId)->where('email', $request->email);
+        if(!empty($request->id)){
+            $useremail->where('id','!=', $request->id);
+        }
+        $exist = $useremail->first();
+        if (!empty($exist)) {
             echo 'false';
         } else {
             echo 'true';
@@ -107,8 +112,14 @@ class UserController extends Controller
     }
     function checkContactNumber(Request $request)
     {
+
         $companyId = Helper::getCompanyId();
-        $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->first();
+
+        if(!empty($request->id)){
+            $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->where('id','!=', $request->id)->first();;
+        }else{
+            $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->first();
+        }
         if (!empty($usernumber)) {
             echo 'false';
         } else {
@@ -118,7 +129,6 @@ class UserController extends Controller
 
     function store(Request $request)
     {
-
         try {
             $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [

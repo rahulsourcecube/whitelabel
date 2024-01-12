@@ -1,4 +1,4 @@
-<script src="{{ asset('assets/vendors/chartist/chartist.min.js') }}"></script>
+{{-- <script src="{{ asset('assets/vendors/chartist/chartist.min.js') }}"></script> --}}
 
 <?php
 $user = Auth::user();

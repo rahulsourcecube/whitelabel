@@ -327,6 +327,9 @@
                     },
                 },
             });
+            window.onload = () => {
+                CKEDITOR.replace("description");
+            };
         });
     </script>
     <script>

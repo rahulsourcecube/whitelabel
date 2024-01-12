@@ -30,7 +30,7 @@ class CompanyController extends Controller
 
     function AddPackages($id)
     {
-        
+
         try {
             $id =   CompanyModel::where('user_id', $id)->first();
             $currentDate = Carbon::now();
@@ -41,7 +41,7 @@ class CompanyController extends Controller
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
             $FreePackagePurchased = CompanyPackage::where('company_id', $companyId)->where('price', 0.00)->first();
             $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
-            $html = "";
+            $html = '<div class="row">';
             if (isset($packages) && count($packages) > 0) {
                 foreach ($packages as $list) {
                     $html .= '  <div class="col-md-4">
@@ -113,7 +113,8 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
                                                 </div>
                                             </li>
                                         </ul>
-                                         '. $list->description .'
+                                        <div class="package-description">
+                                         '. $list->description .'</div>
                                         <form action="' . route("admin.company.buy") . '" method="POST"
                                             id="package-payment-form">
                                             '.csrf_field().'
@@ -140,7 +141,7 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
             } else {
                 $html .= '<h4>No packages found</h4>';
             }
-
+            $html .= '</div>';
             return response()->json(['success' => 'error', 'html' => $html]);
         } catch (Exception $e) {
             Log::error('ation error : ' . $e->getMessage());
@@ -209,9 +210,9 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
         $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
         $data['user_company_setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
         $data['ActivePackageData'] = CompanyPackage::where('company_id', $data['user_company']->user_id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
-        $data['CampaignModelCount'] = CampaignModel::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count();
-        $data['staffCount'] = User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['STAFF'])->count();
-        $data['userCount'] = User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['USER'])->count();
+        $data['CampaignModelCount'] = !empty($data['ActivePackageData'])?CampaignModel::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count():0;
+        $data['staffCount'] =  !empty($data['ActivePackageData'])?User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['STAFF'])->count():0;
+        $data['userCount'] =  !empty($data['ActivePackageData'])?User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['USER'])->count():0;
 
         return view('admin.company.view', $data);
     }

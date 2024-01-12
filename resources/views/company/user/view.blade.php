@@ -13,7 +13,7 @@
                 </nav>
             </div>
         </div>
-        <div class="container">
+        <div class="container1">
             <div class="card">
                 <div class="card-body">
                     <div class="row align-items-center">

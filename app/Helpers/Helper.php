@@ -49,7 +49,7 @@ class Helper
     }
     public static function getCompanyId()
     {
-        if (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('ADMIN_ROLE')) {
+        if (auth()->user()->user_type == '2' || auth()->user()->user_type == env('ADMIN_ROLE')) {
             $companyId = Auth::user()->id;
         } else {
             $companyId = Auth::user()->company_id;
@@ -121,7 +121,7 @@ class Helper
             } else {
                 $remainingDays = null;
             }
-            
+
             return $remainingDays;
         } catch (Exception $e) {
 

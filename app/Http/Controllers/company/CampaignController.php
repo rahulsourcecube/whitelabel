@@ -62,7 +62,7 @@ class CampaignController extends Controller
             $order = $request->input('order.0.column');
             $dir = $request->input('order.0.dir');
             $list = [];
-            
+
             $searchColumn = ['title', 'reward', 'description', 'no_of_referral_users'];
 
             $query = CampaignModel::where('company_id', $companyId)->where('type', $type);
@@ -507,12 +507,12 @@ class CampaignController extends Controller
         }
     }
 
-    function CompanyCustom(Request $request)
+    public function CompanyCustom(Request $request)
     {
-
+        // dd($request->all());
         $results = UserCampaignHistoryModel::selectRaw('MONTH(updated_at) as month')
-            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 3 AND MONTH(updated_at) = month) as total_completed')
-            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 1 AND MONTH(updated_at) = month) as total_joined')
+            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 3 AND MONTH(updated_at) = MONTH(updated_at)) as total_completed')
+            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 1 AND MONTH(updated_at) = MONTH(updated_at)) as total_joined')
             ->whereYear('updated_at', $request->year)
             ->groupBy(DB::raw('MONTH(updated_at)'))
             ->get();
@@ -534,6 +534,7 @@ class CampaignController extends Controller
     public function getSocialAnalytics(Request $request)
     {
         $companyId = Helper::getCompanyId();
+        // dd($companyId);
         if ($request->ajax()) {
             $columns = ['title'];
             $draw = $request->input('draw');
@@ -544,12 +545,13 @@ class CampaignController extends Controller
 
             // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
 
-            $query = CampaignModel::select(['id', 'title'])->where('type', 2)->where('company_id', $companyId)->whereBetween('created_at', [date('Y-m-d 00:00:00', strtotime($request->from_date)), date('Y-m-d 00:00:00', strtotime($request->to_date))]);
+            $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
             $recordsTotal = $query->count();
-
+            // DB::enableQueryLog();
             $query->orderBy($columns[$order], $dir)->skip($start)->take($length);
 
             $userCounts = $query->get();
+            // dd(DB::getQueryLog());
             $data = [];
 
             foreach ($userCounts as $item) {

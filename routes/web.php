@@ -123,7 +123,7 @@ Route::prefix('company')->name('company.')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('company-revenue', [AdminController::class, 'CompanyRevenue'])->name('CompanyRevenue');
-      
+
     // admin side edit admin edit Profile Route
     Route::get('/change/password', [AdminController::class, 'ChengPassword'])->name('ChengPassword');
     Route::post('/update/admin/password', [AdminController::class, 'UpdatePassword'])->name('UpdatePassword');
@@ -209,8 +209,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
 
             Route::get('request/user/details/{t_id}', [CampaignController::class, 'userDetails'])->name('userDetails');
             Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
-
-            Route::post('company-custom', [CampaignController::class, 'CompanyCustom'])->name('Custom');
+            Route::post('company-custom', [CampaignController::class, 'CompanyCustom'])->name('custom');
             Route::post('request/social-analytics', [CampaignController::class, 'getSocialAnalytics'])->name('getSocialAnalytics');
 
 

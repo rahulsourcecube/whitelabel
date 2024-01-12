@@ -283,6 +283,8 @@
     </div>
 @endsection
 @section('js')
+<script src="{{asset('assets/js/pages/dashboard-chart.js?v='.time())}}"></script>
+
 <script>
     var chartdata = {!! json_encode($user_reward_and_days) !!};
     chartdata = JSON.parse(chartdata);

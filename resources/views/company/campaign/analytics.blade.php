@@ -29,7 +29,7 @@
                                         <input type="text" class="form-control attribute" name="date_range_filter"
                                             id="date_filter" placeholder="From Date">
                                     </div>
-                                    
+
                                     <div class="col-md-12">
                                         <button id="filterdata" class="btn btn-primary m-t-30" disabled>Filter <span
                                                 class="spinner"></span></button>
@@ -38,7 +38,7 @@
                                 </div>
                                 <div class="col-md-9">
                                     <div class="ct-chart" id="simple-line-referral"></div>
-                                    <div class="ct-chart" id="simple-line-referral-filter"></div>
+                                    {{-- <div class="ct-chart" id="simple-line-referral-filter"></div> --}}
                                 </div>
                             </div>
                         </div>
@@ -153,12 +153,20 @@
             labels: user_total.day,
             series: [
                 user_total.total_user,
-            ]
+            ],
+            low:0
         }, {
             showArea: true,
             fullWidth: true,
             chartPadding: {
                 right: 50
+            },
+            low:0,
+            axisY: {
+                labelInterpolationFnc: function (value) {
+                    return Math.round(value);
+                },
+                onlyInteger: true
             }
         });
 
@@ -282,15 +290,17 @@
 
             // Make an AJAX request using jQuery
             $.ajax({
-                url: '{{ route('company.campaign.Custom') }}',
+                url: '{{ route('company.campaign.custom') }}',
                 type: 'POST',
                 data: {
                     year,
-                    title
+                    title,
+                    _token: "{{ csrf_token() }}"
                 },
-                "headers": {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
+                dataType:'json',
+                // "headers": {
+                //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                // },
                 success: function(data) {
                     // Extract labels and values
                     var labels = data.map(function(item) {
@@ -310,12 +320,12 @@
                         data: {
                             labels: labels,
                             datasets: [{
-                                label: 'Completeds',
+                                label: 'Completed',
                                 data: total_completeds,
                                 backgroundColor: 'transparent', // Area color
                                 borderColor: '#3F87F5', // Line color
                             }, {
-                                label: 'joineds',
+                                label: 'Joined',
                                 data: total_joineds,
                                 backgroundColor: 'transparent',
                                 borderColor: 'cyan',
@@ -341,7 +351,7 @@
                 },
                 error: function(xhr, status, error) {
 
-                    console.error('Error fetching data:', error);
+                    console.log('Error fetching data:', error);
                 }
             });
         }
@@ -365,10 +375,10 @@
                         to_date: to_date,
                         _token: "{{ csrf_token() }}"
                     }
-                }, 
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
+                // headers: {
+                //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                // },
                 columns: [{
                         data: 'title',
                         name: 'Name'
@@ -380,5 +390,6 @@
                 ]
             });
         };
+
     </script>
 @endsection
