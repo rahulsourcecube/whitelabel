@@ -133,7 +133,7 @@
                     </div>
                 @endif
                 <div class="col-lg-12">
-                    <div style="float: inline-start;">
+                    {{-- <div style="float: inline-start;">
                         Current task status :  <B>{{$camphistory->task_status}}</B>
                     </div>
                     <div style="float: inline-end;">
@@ -142,124 +142,158 @@
 
                         <button class="btn btn-danger btn-sm action" data-action="4" data-id="{{ base64_encode($id) }}"
                             data-url="{{ route('company.campaign.action') }}" data-action="Reject">Reject</button>
+                    </div> --}}
+                    <div style="float: inline-start;">
+                        Current task status : <B>{{ $camphistory->task_status }}</B>
+                    </div>
+                    <div style="float: inline-end;">
+                        {{-- @if ($camphistory->status == 2) --}}
+                        {{-- <button class="btn btn-success btn-sm action" data-action="3"
+                                data-id="{{ base64_encode($id) }}"
+                                data-url="{{ route('company.campaign.action') }}">Accept</button> --}}
+                        @if ($camphistory->status == 2)
+                            <button class="btn btn-success btn-sm action" data-action="3"
+                                data-id="{{ base64_encode($id) }}"
+                                data-url="{{ route('company.campaign.action') }}">Accept</button>
+                            <button class="btn btn-danger btn-sm action" data-action="4" data-id="{{ base64_encode($id) }}"
+                                data-url="{{ route('company.campaign.action') }}" data-action="Reject">Reject</button>
+                        @else
+                            @if ($camphistory->status == 3)
+                                <button class="btn btn-danger btn-sm action" data-action="4"
+                                    data-id="{{ base64_encode($id) }}" data-url="{{ route('company.campaign.action') }}"
+                                    data-action="Reject">Reject</button>
+                            @else
+                                <button class="btn btn-success btn-sm action" data-action="3"
+                                    data-id="{{ base64_encode($id) }}"
+                                    data-url="{{ route('company.campaign.action') }}">Accept</button>
+                            @endif
+                        @endif
+                        {{-- @endif --}}
                     </div>
                 </div>
-            </div>
-            <!-- Content Wrapper START -->
-            <div class="container-fluid p-h-0 m-t-20">
-                <div class="chat chat-app row">
-                    <div class="chat-content "style="width:100%;">
-                        <div class="conversation">
-                            <div class="conversation-wrapper">
-                                <div class="conversation-body scrollbar  @if (!empty($chats) && $chats->count() == 0) empty-chat @endif" style="overflow-y: auto;" id="style-4">
-                                    @if (!empty($chats) && $chats->count() != 0)
-                                    @foreach ($chats as $item)
-                                        @if ($item->sender_id == Auth::user()->id)
-                                            <div class="msg msg-sent">
-                                            @else
-                                                <div class="msg msg-recipient">
-                                                    @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
-                                                        <div class="m-r-10">
-                                                            <div class="avatar avatar-image">
-                                                                <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
-                                                                    alt="">
-                                                            </div>
-                                                        </div>
-                                                    @else
-                                                        <div class="m-r-10">
-                                                            <div class="avatar avatar-image">
-                                                                <img src="{{ asset('assets/images/profile_image.jpg') }}">
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                        @endif
-                                        @if (isset($item) && !empty($item->document) && file_exists('public/' . $item->document))
-                                            <div class="bubble">
-                                                <div class="bubble-wrapper p-5" style="max-width: 220px;">
-                                                    <img src="{{ asset('public/' . $item->document) }}"
-                                                        alt="{{ asset('public/' . $item->document) }}"
-                                                        style="inline-size: -webkit-fill-available;">
-                                                </div>
-                                            </div>
-                                        @else
-                                            <div class="bubble">
-                                                <div class="bubble-wrapper">
-                                                    <span>{!! $item->message ?? '' !!}</span>
-                                                </div>
-                                            </div>
-                                        @endif
-                                </div>
-                                @endforeach
-                                @endif
 
-                            </div>
-                            <div class="conversation-footer custom-footer">
-                                <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
-                                <ul class="list-inline d-flex align-items-center m-b-0">
-                                    <li class="list-inline-item m-r-15">
-                                        <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);"
-                                            title="Attachment" data-toggle="modal" data-target="#exampleModal">
-                                            <i class="anticon anticon-paper-clip"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <button class="d-none d-md-block btn btn-primary custom-button"
-                                            onclick="loadDataAndShowModal({{ $id }})">
-                                            <span class="m-r-10">Send</span>
-                                            <i class="far fa-paper-plane"></i>
-                                        </button>
-                                        <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
-                                            <i class="far fa-paper-plane"></i>
-                                        </a>
-                                    </li>
-                                </ul>
+                <!-- Content Wrapper START -->
+                <div class="container-fluid p-h-0 m-t-20">
+                    <div class="chat chat-app row">
+                        <div class="chat-content "style="width:100%;">
+                            <div class="conversation">
+                                <div class="conversation-wrapper">
+                                    <div class="conversation-body scrollbar  @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
+                                        style="overflow-y: auto;" id="style-4">
+                                        @if (!empty($chats) && $chats->count() != 0)
+                                            @foreach ($chats as $item)
+                                                @if ($item->sender_id == Auth::user()->id)
+                                                    <div class="msg msg-sent">
+                                                    @else
+                                                        <div class="msg msg-recipient">
+                                                            @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
+                                                                <div class="m-r-10">
+                                                                    <div class="avatar avatar-image">
+                                                                        <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
+                                                                            alt="">
+                                                                    </div>
+                                                                </div>
+                                                            @else
+                                                                <div class="m-r-10">
+                                                                    <div class="avatar avatar-image">
+                                                                        <img
+                                                                            src="{{ asset('assets/images/profile_image.jpg') }}">
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                @endif
+                                                @if (isset($item) && !empty($item->document) && file_exists('public/' . $item->document))
+                                                    <div class="bubble">
+                                                        <div class="bubble-wrapper p-5" style="max-width: 220px;">
+                                                            <img src="{{ asset('public/' . $item->document) }}"
+                                                                alt="{{ asset('public/' . $item->document) }}"
+                                                                style="inline-size: -webkit-fill-available;">
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="bubble">
+                                                        <div class="bubble-wrapper">
+                                                            <span>{!! $item->message ?? '' !!} <br>
+                                                                <p
+                                                                    style="font-size: x-small;color: black; margin-bottom:0px;">
+                                                                    {{ $item->created_at->format('Y-m-d H:i A') }} </p>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                    </div>
+                                    @endforeach
+                                    @endif
+
+                                </div>
+                                <div class="conversation-footer custom-footer">
+                                    <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
+                                    <ul class="list-inline d-flex align-items-center m-b-0">
+                                        <li class="list-inline-item m-r-15">
+                                            <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);"
+                                                title="Attachment" data-toggle="modal" data-target="#exampleModal">
+                                                <i class="anticon anticon-paper-clip"></i>
+                                            </a>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <button class="d-none d-md-block btn btn-primary custom-button"
+                                                onclick="loadDataAndShowModal({{ $id }})">
+                                                <span class="m-r-10">Send</span>
+                                                <i class="far fa-paper-plane"></i>
+                                            </button>
+                                            <a href="javascript:void(0);"
+                                                class="text-gray font-size-20 d-md-none d-block">
+                                                <i class="far fa-paper-plane"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Content Wrapper END -->
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Attachment</h5>
-                        <button type="button" class="close img_file_remove" data-dismiss="modal">
-                            <i class="anticon anticon-close"></i>
-                        </button>
-                    </div>
-                    <div class="modal-body custom-modal">
-                        <main class="main_full">
-                            <div class="container">
-                                <div class="panel">
-                                    <div class="button_outer">
-                                        <div class="btn_upload">
-                                            <input type="file" id="upload_file" name="">
-                                            Upload Image
+            <!-- Content Wrapper END -->
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Attachment</h5>
+                            <button type="button" class="close img_file_remove" data-dismiss="modal">
+                                <i class="anticon anticon-close"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body custom-modal">
+                            <main class="main_full">
+                                <div class="container">
+                                    <div class="panel">
+                                        <div class="button_outer">
+                                            <div class="btn_upload">
+                                                <input type="file" id="upload_file" name="">
+                                                Upload Image
+                                            </div>
+                                            <div class="processing_bar"></div>
+                                            <div class="success_box"></div>
                                         </div>
-                                        <div class="processing_bar"></div>
-                                        <div class="success_box"></div>
+                                    </div>
+                                    <div class="error_msg"></div>
+                                    <div class="uploaded_file_view" id="uploaded_view">
+                                        <span class="file_remove img_file_remove">X</span>
                                     </div>
                                 </div>
-                                <div class="error_msg"></div>
-                                <div class="uploaded_file_view" id="uploaded_view">
-                                    <span class="file_remove img_file_remove">X</span>
-                                </div>
-                            </div>
-                        </main>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default img_file_remove"
-                            data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary"
-                            onclick="loadDataAndShowModal({{ $id }})">Save changes</button>
+                            </main>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default img_file_remove"
+                                data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="loadDataAndShowModal({{ $id }})">Save changes</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 @endsection
 @section('js')
@@ -314,7 +348,7 @@
                 },
                 error: (xhr, status, error) => {
                     console.error(xhr.responseText);
-                    swal({
+                    Swal.fire({
                         text: 'An error occurred while processing your request.',
                         icon: "error",
                         button: "Ok",
@@ -374,6 +408,7 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
                     success: function(data) {
+                        $('.chat-input').val('');
                         location.reload();
                     },
                     error: function() {

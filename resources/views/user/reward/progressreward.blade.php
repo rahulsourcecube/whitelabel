@@ -98,8 +98,8 @@
                                 <?php $campaign_id = base64_encode($data->campaign_id); ?>
 
                                 <tr>
-                                    <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                    <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
+                                    <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '-' }}</td>
+                                    <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '-' }}
                                     </td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
@@ -129,28 +129,28 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '' }}
+                                    <td>{{ isset($data->getCampaign->task_type) ? $data->getCampaign->task_type : '-' }}
                                     </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 1)
-                                            @if ($data->getCampaign->type != '1')
-                                                <button class="btn btn-primary  btn-sm" role="button">Claim
-                                                    reward</button>
+                                            @if (isset($data->getCampaign->type) && $data->getCampaign->type != '1')
+                                                <span class="badge badge-primary " role="button">Claim
+                                                    reward</span>
                                             @else
-                                                @if ($data->getCampaign->task_expired == 'Expired')
-                                                    <button class="btn btn-primary  btn-sm" role="button">Claim
-                                                        reward</button>
+                                                @if (isset($data->getCampaign->task_expired) && $data->getCampaign->task_expired == 'Expired')
+                                                    <span class="badge badge-primary " role="button">Claim
+                                                        reward</span>
                                                 @else
-                                                    <button class="btn btn-primary  btn-sm" role="button"
+                                                    <span class="badge badge-primary " role="button"
                                                         style="background-color: rgba(0, 123, 255, 0.5);">Claim
-                                                        reward</button>
+                                                        reward</span>
                                                 @endif
                                             @endif
                                         @endif
                                         @if (isset($data->status) && $data->status == 2)
-                                            <span class="btn btn-info btn-sm">Claim Pending</span>
+                                            <span class="badge badge-info ">Claim Pending</span>
                                         @elseif(isset($data->status) && $data->status == 5)
-                                            <span class="btn btn-danger btn-sm">Reopen</span>
+                                            <span class="badge badge-danger ">Reopen</span>
                                         @endif
                                     </td>
                                     <td>

@@ -209,7 +209,7 @@ class UserController extends Controller
         $user_id = base64_decode($id);
         $user = User::where('id', $user_id)->first();
         if (empty($user)) {
-            return redirect()->back('User not found');
+            return redirect()->back()->with('error','User not found');
         }
         return view('company.user.view', compact('user'));
     }
@@ -219,7 +219,7 @@ class UserController extends Controller
         $user_id = base64_decode($id);
         $user = User::where('id', $user_id)->first();
         if (empty($user)) {
-            return redirect()->back('User not found');
+            return redirect()->back()->with('error','User not found');
         }
         return view('company.user.edit', compact('user'));
     }

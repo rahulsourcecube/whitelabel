@@ -257,7 +257,7 @@ Route::prefix('company')->name('company.')->middleware(['company'])->group(funct
             Route::get('/create', [EmployeeController::class, 'create'])->name('create');
             Route::post('/store', [EmployeeController::class, 'store'])->name('store');
             Route::get('view', [RolesController::class, 'roleview'])->name('roleview');
-            Route::get('/lists', [EmployeeController::class, 'elist'])->name('elist');
+            Route::get('/list', [EmployeeController::class, 'elist'])->name('elist');
             Route::get('edit/{id}', [EmployeeController::class, 'edit'])->name('edit');
             Route::delete('delete/{id}', [EmployeeController::class, 'delete'])->name('delete');
             Route::post('/update/{id}', [EmployeeController::class, 'update'])->name('update');
