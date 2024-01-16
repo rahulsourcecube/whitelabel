@@ -457,7 +457,7 @@ class UsrController extends Controller
             $ActivePackageData = Helper::GetActivePackageData();
             $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
             if ($userCount >= $ActivePackageData->no_of_user) {
-                return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_user . ' users');
+                return redirect()->back()->with('error', 'The user registration limit is over. please contact to administrator.');
             }
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;

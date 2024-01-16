@@ -250,7 +250,7 @@
                 },
                 error: (xhr, status, error) => {
                     console.error(xhr.responseText);
-                    swal({
+                    Swal.fire({
                         text: 'An error occurred while processing your request.',
                         icon: "error",
                         button: "Ok",

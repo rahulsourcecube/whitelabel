@@ -142,7 +142,7 @@ class EmployeeController extends Controller
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->first();
         if (empty($user)) {
-            return redirect()->back('User not found');
+            return redirect()->back()->with('error','User not found');
         }
         return view('company.employee.edit', compact('user', 'roles', 'userRole'));
     }

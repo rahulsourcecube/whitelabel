@@ -136,7 +136,7 @@
                         success: (response) => {
                             if (response.status === 'error') {
                                 // Handle error case
-                                swal({
+                                Swal.fire({
                                     text: response.message,
                                     icon: "error",
                                     button: "Ok",
@@ -146,7 +146,7 @@
                                 });
                             } else {
                                 // Handle success case
-                                swal({
+                                Swal.fire({
                                     text: response.message,
                                     icon: "success",
                                     button: "Ok",
@@ -159,7 +159,7 @@
                         error: (xhr, status, error) => {
                             // Handle AJAX request error
                             console.error(xhr.responseText);
-                            swal({
+                            Swal.fire({
                                 text: 'An error occurred while processing your request.',
                                 icon: "error",
                                 button: "Ok",

@@ -155,6 +155,7 @@
                                     icon: "error",
                                     button: "Ok",
                                 }).then(() => {
+
                                     // Reload the page or take appropriate action
                                     location.reload();
                                 });
@@ -174,11 +175,12 @@
                         error: (xhr, status, error) => {
                             // Handle AJAX request error
                             console.error(xhr.responseText);
-                            swal({
+                            Swal.fire({
                                 text: 'An error occurred while processing your request.',
                                 icon: "error",
                                 button: "Ok",
                             });
+
                         }
                     });
                 }
