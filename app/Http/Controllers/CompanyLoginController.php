@@ -57,9 +57,9 @@ class CompanyLoginController extends Controller
             ->where('uch.status', '2')
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
             ->count();
-        $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(10)->get();
-        $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(10)->get();
-        $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(10)->get();
+        $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(5)->get();
+        $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(5)->get();
+        $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(5)->get();
 
         $start_time = strtotime('first day of this month');
         $end_time = strtotime(date("Y-m-d"));

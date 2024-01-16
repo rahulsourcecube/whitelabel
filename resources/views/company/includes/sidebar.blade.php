@@ -194,7 +194,7 @@ $notificationCount = Notification::where('company_id', $user->id)
             <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('company.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <span class="icon-holder">
-                        <i class="anticon anticon-dashboard"></i>
+                        <i class="anticon opacity-04 font-size-16 anticon-logout"></i>
                     </span>
                     <span class="title">Logout</span>
                 </a>

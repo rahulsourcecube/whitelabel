@@ -32,7 +32,7 @@
                             @endif
                         </div>
                         <div class="card-footer">
-                            <input type="hidden" name="campagin_id" value="{{ $campagin_detail->id }}">
+                            <input type="hidden" name="campagin_id" value="{{ $campagin_detail->id ?? '' }}">
                             @if (!empty($campagin_detail->task_type) && $campagin_detail->task_type == 'Social')
                                 <div class="text-center m-t-15">
                                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}"
@@ -53,13 +53,13 @@
 
                                 @if (!empty($user_Campaign) && $user_Campaign->status != '0')
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 1)
-                                        <a class="btn btn-primary btn-tone"><span class="m-l-5">Claim reward</span></a>
+                                        <a class="badge badge-primary badge-tone"><span class="m-l-5" style="color: white;">Claim reward</span></a>
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 2)
-                                        <a class="btn btn-primary btn-tone"><span class="m-l-5">Claim Pending</span></a>
+                                        <a class="badge badge-primary badge-tone"><span class="m-l-5" style="color: white;">Claim Pending</span></a>
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 5)
-                                        <a class="btn btn-primary btn-tone"><span class="m-l-5">Reopen</span></a>
+                                        <a class="badge badge-primary badge-tone"><span class="m-l-5" style="color: white;">Reopen</span></a>
                                     @endif
                                 @else
                                     <a onclick="showSuccessAlert()" href="#" data-id=""
@@ -85,7 +85,7 @@
                                     <span class="m-h-5 text-gray">|</span>
                                     <span
                                         class="text-gray">{{ isset($campagin_detail->task_type) ? $campagin_detail->task_type : '' }}</span>
-                                    @if ($campagin_detail->type == '1')
+                                    @if (isset($campagin_detail->type) && $campagin_detail->type == '1')
                                         <span class="m-h-5 text-gray">|</span>
                                         <span class="text-gray"> No of referral users:
                                             <b>{{ $campagin_detail->no_of_referral_users ?? '' }} </b></span>
@@ -100,16 +100,15 @@
                         </div>
                     </div>
                 </div>
-                @if ($campagin_detail->type == 1 && $user_Campaign != null)
+                @if (isset($campagin_detail->type) && $campagin_detail->type == 1 && $user_Campaign != null)
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5>Recent Referral Users</h5>
-                                    @if (
-                                        $user_Campaign != null &&
+                                    @if ($user_Campaign != null &&
                                             $user_Campaign->referral_link != '' &&
-                                            $user_Campaign->getCampaign->task_expired != 'Expired')
+                                            $user_Campaign->getCampaign->task_expired != 'Expired'  && $ReferralCount > $user_Campaign->no_of_referral_users)
                                         <div class="text-center mt-4 ml-3">
                                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ route('campaign.referral', $user_Campaign->referral_link) }}"
                                                 target="_blank">
@@ -213,7 +212,7 @@
         @php
             $showConversationBox = false;
             if ($user_Campaign != null && $user_Campaign->getCampaign->type == '1') {
-                if ($user_Campaign->getCampaign->task_expired == 'Expired') {
+                if ($user_Campaign->getCampaign->task_expired == 'Expired' || $ReferralCount < $user_Campaign->no_of_referral_users) {
                     $showConversationBox = true;
                 }
             } else {
@@ -233,10 +232,10 @@
                                                 <div class="msg msg-sent">
                                                 @else
                                                     <div class="msg msg-recipient">
-                                                        @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
+                                                        @if (isset($item->getCompanySetting->logo) && !empty($item->getCompanySetting->logo) && file_exists('uploads/setting/' . $item->getCompanySetting->logo))
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
-                                                                    <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
+                                                                    <img src="{{ asset('uploads/setting/' . $item->getCompanySetting->logo) }}"
                                                                         alt="">
                                                                 </div>
                                                             </div>
@@ -261,7 +260,7 @@
                                             @else
                                                 <div class="bubble">
                                                     <div class="bubble-wrapper">
-                                                        <span>{!! $item->message ?? '' !!}</span>
+                                                        <span>   {!! $item->message ?? '' !!} <br> <p style="font-size: x-small;color: black;  margin-bottom:0px;"> {{ $item->created_at->format('Y-m-d H:i A') }} </p></span>
                                                     </div>
                                                 </div>
                                             @endif
@@ -451,6 +450,7 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
                     success: function(data) {
+                        $('.chat-input').val('');
                         location.reload();
                     },
                     error: function() {
