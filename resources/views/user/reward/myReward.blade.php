@@ -16,7 +16,7 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>my Reward</h4>
+                <h4>My Reward</h4>
 
                 <div class="d-flex my-3 align-itmes-end gap-3">
                     <form method="get" action="{{ route('user.my.reward') }}" id="searchForm"

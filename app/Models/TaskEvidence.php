@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class TaskEvidence extends Model
 {
     use HasFactory;
+
+    function getCompanySetting()
+    {
+        return $this->hasOne(SettingModel::class, 'id', 'company_id');
+    }
 }

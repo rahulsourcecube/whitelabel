@@ -401,7 +401,7 @@
                             if (response.success == true) {
                                 showSuccessAlert();
                             } else {
-                                swal({
+                                Swal.fire({
                                     text: response.message,
                                     icon: "error",
                                     button: "Ok",

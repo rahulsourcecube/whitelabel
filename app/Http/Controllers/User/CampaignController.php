@@ -84,6 +84,7 @@ class CampaignController extends Controller
         $data = [];
         $data['chats'] = null;
         $data['user'] = null;
+        $data['ReferralCount'] = 0;
         $data['campagin_detail'] = CampaignModel::where('id', $campagin_id)->first();
         $data['user_detail'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)
             ->whereExists(function ($query) {
@@ -98,6 +99,8 @@ class CampaignController extends Controller
         if ($data['user_Campaign'] != null) {
             $data['chats'] = TaskEvidence::where('campaign_id', $data['user_Campaign']->id)->get();
             $data['user'] = User::where('id', $data['user_Campaign']->user_id)->first();
+            $query = Referral::where('campagin_id', $data['user_Campaign']->id)->where('referral_user_id', Auth::user()->id);
+            $data['ReferralCount'] = $query->count();
         }
 
         $data['referral_user_detail'] = Referral::where('campagin_id', $campagin_id)->where('referral_user_id', Auth::user()->id)->get();
