@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -158,7 +159,7 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
         $dir = $request->input('order.0.dir');
         $list = [];
 
-        $searchColumn = ['company_name', 'company_description', 'users.first_name', 'users.last_name', 'users.email', 'users.contact_number'];
+        $searchColumn = ['company_name', 'company_description', 'users.first_name', 'full_name', 'company.subdomain', 'users.last_name', 'users.email', 'users.contact_number'];
 
         $query = CompanyModel::leftJoin('users', 'company.user_id', '=', 'users.id') // Assuming 'user_id' is the foreign key in CompanyModel
             ->orderBy('company.' . $columns[$order], $dir);
@@ -168,7 +169,11 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
             $search = $request->input('search.value');
             $query->where(function ($query) use ($search, $searchColumn) {
                 foreach ($searchColumn as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
+                    if ($column == 'full_name') {
+                        $query->orWhere(DB::raw('concat(users.first_name, " ", users.last_name)'), 'like', "%{$search}%");
+                    } else {
+                        $query->orWhere("$column", 'like', "%{$search}%");
+                    }
                 }
             });
         }

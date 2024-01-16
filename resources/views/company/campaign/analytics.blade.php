@@ -243,10 +243,21 @@
                         fullWidth: true,
                         chartPadding: {
                             right: 50
+                        },
+                        low:0,
+                        axisY: {
+                            labelInterpolationFnc: function (value) {
+                                return Math.round(value);
+                            },
+                            onlyInteger: true
                         }
                     });
                 },
                 error: function() {
+                    $('#simple-line-referral').remove();
+                    $(".spinner").html('');
+                    $('#filterdata').prop('disabled', false);
+
                     var user_total = {!! json_encode($user_total) !!};
                     user_total = JSON.parse(user_total);
                     new Chartist.Line('#simple-line-referral', {
@@ -259,6 +270,13 @@
                         fullWidth: true,
                         chartPadding: {
                             right: 50
+                        },
+                        low:0,
+                        axisY: {
+                            labelInterpolationFnc: function (value) {
+                                return Math.round(value);
+                            },
+                            onlyInteger: true
                         }
                     });
                 }

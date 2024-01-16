@@ -174,9 +174,19 @@
 
         isFreePackage();
         $(document).on("change", "#inputype", function() {
-
-            type = $(this).val();
             isFreePackage();
+        });
+
+        function isFreePackage() {
+            if ($("#inputype option:selected").val() == '1') {
+                $("#price-section").hide();
+                $("#price").val("0");
+            } else {
+                $("#price-section").show();
+            }
+
+            type = $("#inputype").val();
+
             if (type == '1') {
                 $('.day_title').html('No Of Day');
                 $(".day_place").attr("placeholder", "No Of Day").placeholder();
@@ -187,17 +197,6 @@
             } else {
                 $('.day_title').html('No Of Year');
                 $(".day_place").attr("placeholder", "No Of Year").placeholder();
-            }
-
-        });
-
-        function isFreePackage() {
-
-            if ($("#inputype option:selected").val() == '1') {
-                $("#price-section").hide();
-                $("#price").val("0");
-            } else {
-                $("#price-section").show();
             }
         }
 

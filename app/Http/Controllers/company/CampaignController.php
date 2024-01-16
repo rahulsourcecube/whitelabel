@@ -302,8 +302,9 @@ class CampaignController extends Controller
         $start_date = $dateandtime->subDays(7);
         $start_time = strtotime($start_date);
         $end_time = strtotime("+1 week", $start_time);
+        $list = [];
         for ($i = $start_time; $i < $end_time; $i += 86400) {
-            $list[date('l', $i)] = 0;
+            $list[date('D', $i)] = 0;
         }
         foreach ($total_join_users as $values) {
             $list[$values->day] = $values->total_user;
@@ -340,12 +341,15 @@ class CampaignController extends Controller
                 $start_date = $from_date;
                 $start_time = strtotime($start_date);
                 $end_time = strtotime($to_date, $start_time);
+                $list = [];
                 for ($i = $start_time; $i < $end_time; $i += 86400) {
-                    $list[date('l', $i)] = 0;
+                    $list[date('D', $i)] = 0;
                 }
                 foreach ($total_join_users as $values) {
                     $list[$values->day] = $values->total_user;
                 }
+
+                $user_total = [];
                 if (isset($list)) {
                     $user_total = ['day' => array_keys($list), 'total_user' => array_values($list)];
                 }

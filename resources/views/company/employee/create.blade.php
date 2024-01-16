@@ -53,9 +53,9 @@
                                 placeholder="Password">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="cpassword"> Comfirm Password <span class="error">*</span></label>
+                            <label for="cpassword"> Confirm Password <span class="error">*</span></label>
                             <input type="password" class="form-control" id="cpassword" name="cpassword"
-                                placeholder="Comfirm Password">
+                                placeholder="Confirm Password">
                         </div>
 
                         <div class="form-group col-md-12">
@@ -89,7 +89,7 @@
            password: {
                minlength: 8,
                maxlength: 50,
-               required: true,                
+               required: true,
            },
            cpassword: {
                required: true,
@@ -110,7 +110,7 @@
                required: "Please enter email"
            },
            password: {
-               required: "Please enter password",                
+               required: "Please enter password",
            },
            cpassword: {
                required: "Please enter confirm password",

@@ -43,7 +43,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
                     </span>
-                    <span class="title">Rewards And Incentives</span>
+                    <span class="title">My Rewards</span>
                     <span class="arrow">
                         <i class="arrow-icon"></i>
                     </span>

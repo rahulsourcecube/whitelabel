@@ -44,7 +44,7 @@ class UserController extends Controller
     public function dtList(Request $request)
     {
         $companyId = Helper::getCompanyId();
-        $columns = ['id', 'last_name', 'first_name', 'email', 'contact_number'];
+        $columns = ['id',  'full_name', 'email', 'contact_number'];
         $totalData = User::where('user_type', User::USER_TYPE['USER'])
             ->where('company_id', $companyId)->count();
         $start = $request->input('start');
@@ -61,7 +61,12 @@ class UserController extends Controller
             $search = $request->input('search.value');
             $query->where(function ($query) use ($search, $columns) {
                 foreach ($columns as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
+                    if ($column == 'full_name') {
+                        $query->orWhere(DB::raw('concat(first_name, " ", last_name)'), 'like', "%{$search}%");
+                    } else {
+                        $query->orWhere("$column", 'like', "%{$search}%");
+                    }
+                    // $query->orWhere("$column", 'like', "%{$search}%");
                 }
             });
         }

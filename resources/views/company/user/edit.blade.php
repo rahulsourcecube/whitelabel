@@ -63,9 +63,9 @@
                                 placeholder="Password" value="">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="password_confirmation"> Comfirm Password <span class="error">*</span></label>
+                            <label for="password_confirmation"> Confirm Password <span class="error">*</span></label>
                             <input type="password" class="form-control" id="password_confirmation"
-                                name="password_confirmation" placeholder="Comfirm Password" value="">
+                                name="password_confirmation" placeholder="Confirm Password" value="">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="file">Image</label>

@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\PackageModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PackageController extends Controller
@@ -17,7 +18,7 @@ class PackageController extends Controller
     }
     public function dtList(Request $request)
     {
-        $columns = ['id', 'title']; // Add more columns as needed
+        $columns = ['id', 'title' , 'type','duration','price','no_of_campaign']; // Add more columns as needed
         $totalData = PackageModel::count();
         $start = $request->input('start');
         $length = $request->input('length');
@@ -25,7 +26,7 @@ class PackageController extends Controller
         $dir = $request->input('order.0.dir');
         $list = [];
 
-        $searchColumn = ['title', 'duration', 'price', 'no_of_campaign'];
+        $searchColumn = ['title', 'duration', 'price', 'type', 'no_of_campaign'];
 
         $query = PackageModel::orderBy($columns[$order], $dir);
 
@@ -34,7 +35,11 @@ class PackageController extends Controller
             $search = $request->input('search.value');
             $query->where(function ($query) use ($search, $searchColumn) {
                 foreach ($searchColumn as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
+                    if ($column == 'type') {
+                        $query->orWhere(DB::raw("(CASE WHEN type = 1 THEN 'Free Trial' WHEN type = 2 THEN 'Monthly' WHEN type = 3 THEN 'Yearly' END)"), 'like', "%{$search}%");
+                    } else {
+                        $query->orWhere("$column", 'like', "%{$search}%");
+                    }
                 }
             });
         }
@@ -43,18 +48,10 @@ class PackageController extends Controller
         ->take($length)
         ->get();
         foreach ($results as $result) {
-            if ($result->type == '1') {
-                $type = 'Free';
-            } elseif ($result->type == '2') {
-                $type = 'Monthly';
-            } elseif ($result->type == '3') {
-                $type = 'Yearly';
-            }
-
             $list[] = [
                 $result->id,
                 $result->title,
-                $type,
+                $result->package_string,
                 $result->duration,
                 Helper::getcurrency() . $result->price,
                 $result->no_of_campaign,

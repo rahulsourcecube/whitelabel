@@ -7,8 +7,8 @@
             <div class="card-body">
                 <h4>Company List</h4>
 
-                <div class="m-t-25">
-                    <table id="package_tbale" class="table dataTable " role="grid" aria-describedby="data-table_info">
+                <div class="m-t-25 table-responsive">
+                    <table id="package_tbale" class="table  dataTable  w-100" role="grid" aria-describedby="data-table_info">
                         <thead>
                             <tr>
                                 <th><input type="checkbox" name="chk_all" value="1" class="chk-all"></th>
@@ -16,7 +16,7 @@
                                 <th>Email</th>
                                 <th>Mobile</th>
                                 <th>Company Name </th>
-                                <th>Domain</th>
+                                <th>Sub Domain</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -39,7 +39,7 @@
                     </button>
                 </div>
                 <div class="modal-body d-flex">
-                    
+
                 </div>
             </div>
         </div>

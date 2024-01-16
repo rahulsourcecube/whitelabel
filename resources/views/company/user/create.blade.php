@@ -64,9 +64,9 @@
                                 @enderror
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="password_confirmation"> Comfirm Password <span class="error">*</span></label>
+                                <label for="password_confirmation"> Confirm Password <span class="error">*</span></label>
                                 <input type="password" class="form-control" id="password_confirmation"
-                                    name="password_confirmation" placeholder="Comfirm Password"
+                                    name="password_confirmation" placeholder="Confirm Password"
                                     value="{{ old('password_confirmation') }}">
                                 @error('password_confirmation')
                                     <label id="password_confirmation-error" class="error"
