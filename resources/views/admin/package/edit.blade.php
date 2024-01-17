@@ -234,7 +234,7 @@
         }
         $(document).ready(function() {
             window.onload = () => {
-                CKEDITOR.replace("description");
+                CKEDITOR.replace("#descriptions");
             };
         });
     </script>

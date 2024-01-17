@@ -142,9 +142,9 @@
                                             name="instagram_link">
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label class="font-weight-semibold" for="Tweeter">Tweeter:</label>
+                                        <label class="font-weight-semibold" for="Twitter">Twitter:</label>
                                         <input type="text" class="form-control" id="twitter_link"
-                                            placeholder="Tweeter"
+                                            placeholder="Twitter"
                                             value="{{ isset(Auth::user()->twitter_link) ? Auth::user()->twitter_link : '' }}"
                                             name="twitter_link">
                                     </div>

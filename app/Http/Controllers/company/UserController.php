@@ -44,7 +44,7 @@ class UserController extends Controller
     public function dtList(Request $request)
     {
         $companyId = Helper::getCompanyId();
-        $columns = ['id',  'full_name', 'email', 'contact_number'];
+        $columns = ['id', 'first_name',  'email', 'contact_number', 'profile_image','status', 'full_name'];
         $totalData = User::where('user_type', User::USER_TYPE['USER'])
             ->where('company_id', $companyId)->count();
         $start = $request->input('start');

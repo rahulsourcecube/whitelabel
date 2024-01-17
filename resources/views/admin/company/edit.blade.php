@@ -83,18 +83,29 @@
                                                             id="last_name" placeholder="Last Name"
                                                             value="{{ isset($editprofiledetail->last_name) ? $editprofiledetail->last_name : '' }}">
                                                     </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-5">
                                                         <label class="font-weight-semibold" for="email">Email:</label>
                                                         <input type="email" class="form-control" name="email"
                                                             id="email" placeholder="email"
                                                             value="{{ isset($editprofiledetail->email) ? $editprofiledetail->email : '' }}">
                                                     </div>
-                                                    <div class="form-group col-md-6">
+                                                    <div class="form-group col-md-5">
                                                         <label class="font-weight-semibold" for="phoneNumber">Phone
                                                             Number:</label>
                                                         <input type="number" class="form-control" name="contact_number"
                                                             id="phoneNumber" placeholder="Phone Number"
                                                             value="{{ isset($editprofiledetail->contact_number) ? $editprofiledetail->contact_number : '' }}">
+                                                    </div>
+                                                    <div class="col-md-2 pl-4">
+                                                        <label for="expiry_date">Status</label>
+                                                        <div class="form-group align-items-center">
+                                                            <div class="switch m-r-10">
+                                                                <input type="checkbox" id="switch-1" name="status"
+                                                                    value="true"
+                                                                    @if (isset($editprofiledetail->status) && $editprofiledetail->status == 1) checked="" @endif>
+                                                                <label for="switch-1"></label>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <button type="submit" class="btn btn-tone btn-primary">Submit</button>
@@ -133,8 +144,7 @@
                                     </form>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="contact-vertical" role="tabpanel"
-                               >
+                            <div class="tab-pane fade" id="contact-vertical" role="tabpanel">
                                 <div class="card">
                                     <div class="card-body">
                                         <h4>Setting</h4>
