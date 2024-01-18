@@ -392,6 +392,7 @@ class UsrController extends Controller
             $query->from('users')
                 ->whereRaw('user_campaign_history.user_id = users.id')
                 ->where('users.referral_user_id', Auth::user()->id)
+                ->where('status', '3')
                 ->whereNotNull('users.referral_user_id');
         })
             ->when($topFromDate, function ($query) use ($topFromDate) {

@@ -67,8 +67,7 @@
                     "headers": {
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
-                    "data": function(d) {
-                    }
+                    "data": function(d) {}
                 },
                 'columnDefs': [{
                         'targets': 0,
@@ -114,12 +113,20 @@
                             editUrl = editUrl.replace(':id', row[0]);
                             var deleteUrl = '{{ route('company.campaign.delete', ':del') }}';
                             deleteUrl = deleteUrl.replace(':del', row[0]);
+                            var deleteButton = '';
+                            if ('{{ Gate::allows('task-delete') }}' && row[7]) {
+                                deleteButton =
+                                    '<a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                                    deleteUrl +
+                                    '\')" title="Delete"><i class="fa fa-trash"></i></a>';
+                            }else{
+                                 deleteButton =
+                                    `<button  type='button' class='btn btn-danger btn-sm ' style='background-color: rgb(222 68 54 / 50%);' role='button' data-toggle='tooltip' data-placement='top'  title="You can't delete his campaign due to users already joined this campaign "><i class='fa fa-trash'></i></button>`;
+                            }
                             return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
                                 '" role="button" title="View"><i class="fa fa-eye"></i></a> @can('task-edit') <a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
-                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can('task-delete') <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
-                                deleteUrl +
-                                '\')"  title="Delete"><i class="fa fa-trash"></i></a>@endcan';
+                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can('task-delete') '+ deleteButton +' @endcan';
 
                         },
                     }

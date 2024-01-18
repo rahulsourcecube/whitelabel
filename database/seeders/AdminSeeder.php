@@ -38,7 +38,7 @@ class AdminSeeder extends Seeder
             'contact_number' => '1235435535',
             'description' => '<p>WhiteLabel</p>',
             'facebook_link' => 'https://www.facebook.com',
-            'twitter_link' => 'https://www.tweeter.com',
+            'twitter_link' => 'https://www.Twitter.com',
             'linkedin_link' => 'https://www.linkedin.com',
             'user_id' => $admin->id,
         ]);
@@ -81,7 +81,7 @@ class AdminSeeder extends Seeder
         //     'contact_number' => '1235435535',
         //     'description' => '<p>WhiteLabel</p>',
         //     'facebook_link' => 'https://www.facebook.com',
-        //     'twitter_link' => 'https://www.tweeter.com',
+        //     'twitter_link' => 'https://www.Twitter.com',
         //     'linkedin_link' => 'https://www.linkedin.com',
         //     'user_id' => $company->id,
         // ]);

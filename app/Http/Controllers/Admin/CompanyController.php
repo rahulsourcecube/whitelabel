@@ -254,6 +254,7 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
             $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
+            $updateprofiledetail['status'] = !empty($request->status) ? '1' : '0';
             if ($request->hasFile('profile_image')) {
                 if ($updateprofiledetail->profile_image && file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
                     unlink('uploads/user-profile/' . $updateprofiledetail->profile_image);

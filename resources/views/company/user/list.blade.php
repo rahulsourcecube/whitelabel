@@ -96,7 +96,7 @@
                 {
                     'targets': 5,
                     'visible': true,
-                    'orderable': false,
+                    'orderable': true,
                     'render': function(data, type, row) {
                         var status = row[5];
                         if(status == "Active"){

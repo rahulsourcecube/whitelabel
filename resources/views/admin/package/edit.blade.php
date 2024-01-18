@@ -37,13 +37,15 @@
                             <div class="form-group col-md-3">
                                 <label for="user"> No Of User <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="user" name="user"
-                                    placeholder="No Of User" value="{{ !empty($package->no_of_user) ? $package->no_of_user : '' }}"
+                                    placeholder="No Of User"
+                                    value="{{ !empty($package->no_of_user) ? $package->no_of_user : '' }}"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="employee"> No Of Employee <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="employee" name="employee"
-                                    placeholder="No Of Employee" value="{{ !empty($package->no_of_employee) ? $package->no_of_employee : '' }}"
+                                    placeholder="No Of Employee"
+                                    value="{{ !empty($package->no_of_employee) ? $package->no_of_employee : '' }}"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
 
@@ -74,7 +76,8 @@
                                 <label for="expiry_date">Status</label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
-                                        <input type="checkbox" id="switch-1" name="status" value="1" @if (isset( $package->status) && $package->status == 1 ) checked="" @endif>
+                                        <input type="checkbox" id="switch-1" name="status" value="1"
+                                            @if (isset($package->status) && $package->status == 1) checked="" @endif>
                                         <label for="switch-1"></label>
                                     </div>
                                 </div>
@@ -99,13 +102,13 @@
                                     accept=".png, .jpg, .jpeg" onchange="previewImage()">
                             </div>
                         </div>
-                        @if($package->image!=null && file_exists('uploads/package/' . $package->image))
-                        <div class="form-row">
-                            <div class="form-group col-md-3" style="max-height: 200px;">
-                                <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"
-                                    alt="Image Preview" style="max-width: 100%; max-height: 80%;">
+                        @if ($package->image != null && file_exists('uploads/package/' . $package->image))
+                            <div class="form-row">
+                                <div class="form-group col-md-3" style="max-height: 200px;">
+                                    <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"
+                                        alt="Image Preview" style="max-width: 100%; max-height: 80%;">
+                                </div>
                             </div>
-                        </div>
                         @endif
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
@@ -113,12 +116,19 @@
             </div>
         </div>
     </div>
-
+@endsection
+@section('js')
 
 
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
+    <script>
+        $(document).ready(function() {
+            window.onload = () => {
+                CKEDITOR.replace("description");
+            };
+        });
+    </script>
     <script>
         $('#package').validate({
             rules: {
@@ -232,11 +242,6 @@
             preview.style.display = 'none';
             deleteButton.style.display = 'none';
         }
-        $(document).ready(function() {
-            window.onload = () => {
-                CKEDITOR.replace("description");
-            };
-        });
     </script>
 
 @endsection

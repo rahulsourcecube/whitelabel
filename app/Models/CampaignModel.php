@@ -70,7 +70,10 @@ class CampaignModel extends Model
     {
         return $this->belongsTo(CampaignModel::class)->where('campaign_id', '!=', 'id');
     }
-    
+    public function campaignUSerHistoryData()
+    {
+        return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id', 'id');
+    }
     public function campaignUSerHistory() {
         return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id','id')->where('status','3');
     }

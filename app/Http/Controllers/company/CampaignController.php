@@ -86,6 +86,7 @@ class CampaignController extends Controller
                 if (!empty($result->image) && file_exists('uploads/campaign/' . $result->image)) {
                     $imgUrl = asset('uploads/campaign/' . $result->image);
                 }
+                // dd();
                 $list[] = [
                     base64_encode($result->id),
                     $result->title ?? "-",
@@ -94,7 +95,9 @@ class CampaignController extends Controller
                     $result->task_type,
                     $result->no_of_referral_users,
                     $result->task_status,
+                    $result->campaignUSerHistoryData->count() == 0
                     // $imgUrl,
+
                 ];
             }
             $totalFiltered = $results->count();

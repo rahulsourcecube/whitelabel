@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +52,7 @@ class EmployeeController extends Controller
         $order = $request->input('order.0.column');
         $dir = $request->input('order.0.dir');
         $list = [];
-        $searchColumn = ['first_name', 'last_name','email'];
+        $searchColumn = ['first_name', 'last_name','email', 'full_name'];
         $query = User::orderBy($columns[0], $dir)
             ->where('user_type', User::USER_TYPE['STAFF'])
             ->where('company_id', $companyId);
@@ -61,7 +62,12 @@ class EmployeeController extends Controller
             $search = $request->input('search.value');
             $query->where(function ($query) use ($search, $searchColumn) {
                 foreach ($searchColumn as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
+                    if ($column == 'full_name') {
+                        $query->orWhere(DB::raw('concat(first_name, " ", last_name)'), 'like', "%{$search}%");
+                    } else {
+                        $query->orWhere("$column", 'like', "%{$search}%");
+                    }
+                    // $query->orWhere($column, 'like', "%{$search}%");
                 }
             });
         }
