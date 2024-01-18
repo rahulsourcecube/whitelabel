@@ -60,22 +60,27 @@ class AdminController extends Controller
 
     function CompanyRevenue(Request $request)
     {
-        $userCounts = User::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('COUNT(*) as count')
-        )
-            ->where('company_id', $request->company)
-            ->where(DB::raw('DATE_FORMAT(created_at, "%m/%Y")'), $request->month)
-            ->groupBy('date')
-            ->get()->toArray();
-        // dd($userCounts);
+
+        $userId = $request->company; // Replace with the actual user ID
+        $month = $request->month; // Replace with the actual month you want to filter
+
+        $results = DB::table('user_campaign_history')
+        ->join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
+        ->select(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%Y-%m-%d") as date'), DB::raw('SUM(user_campaign_history.reward) as total_reward'))
+        ->where('campaign.company_id', $userId)
+        ->where('user_campaign_history.status', 3)
+        ->where(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%m/%Y")'), $month)
+        ->groupBy(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%Y-%m-%d")'))
+        ->get()
+        ->toArray();
+
 
         $data = [];
 
-        foreach ($userCounts as $item) {
+        foreach ($results as $item) {
             $data[] = [
-                "label" => date('d', strtotime($item['date'])), // Format the day of the month
-                "value" => $item['count']
+                "label" => date('d', strtotime($item->date)), // Format the day of the month
+                "value" => $item->total_reward
             ];
         }
 
