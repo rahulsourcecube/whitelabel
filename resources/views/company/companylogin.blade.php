@@ -43,10 +43,7 @@
                                             <label class="font-weight-semibold" for="userName">Username:</label>
                                             <div class="input-affix">
                                                 <i class="prefix-icon anticon anticon-user"></i>
-                                                <input id="email" type="email"
-                                                    class="form-control @error('email') is-invalid @enderror"
-                                                    name="email" value="{{ old('email') }}" autocomplete="email"
-                                                    autofocus placeholder="Email">
+                                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" autocomplete="email" autofocus placeholder="Email">
 
                                                 @error('email')
                                                 <span class="invalid-feedback" role="alert">
@@ -58,14 +55,9 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="font-weight-semibold" for="password">Password:</label>
-                                            <a class="float-right font-size-13 text-muted"
-                                                href="{{route('company.forgetpassword')}}">Forget Password?</a>
                                             <div class="input-affix m-b-10">
                                                 <i class="prefix-icon anticon anticon-lock"></i>
-                                                <input id="password" type="password"
-                                                    class="form-control @error('password') is-invalid @enderror"
-                                                    placeholder="Password" name="password"
-                                                    autocomplete="current-password">
+                                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" name="password" autocomplete="current-password">
                                                 @error('password')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -73,7 +65,9 @@
                                                 @enderror
                                             </div>
                                             <label id="password-error" class="error" for="password"></label>
+                                            <a class="float-right font-size-13 text-muted" href="{{route('company.forgetpassword')}}">Forget Password?</a>
                                         </div>
+                                        </br>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <span class="font-size-13 text-muted">
@@ -106,7 +100,7 @@
                     required: true,
                 },
                 password: {
-                    required: true,                
+                    required: true,
                 },
             },
             messages: {
@@ -114,7 +108,7 @@
                     required: "Please enter email",
                 },
                 password: {
-                    required: "Please enter password",                
+                    required: "Please enter password",
                 },
             }
         });
