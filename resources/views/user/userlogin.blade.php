@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="{{ asset('assets/images/logo/logo.png') }}">
 
     <style>
-        .error{
+        .error {
             color: red;
         }
     </style>
@@ -35,18 +35,16 @@
                             <div class="card">
                                 <div class="card-body">
                                     @if (\Session::has('success'))
-                                        <div class="alert alert-success alert-dismissible fade show error"
-                                            style="margin-top: 17px;}" role="alert">
-                                            <i class="uil uil-times me-2"></i>
-                                            {!! \Session::get('success') !!}
-                                        </div>
+                                    <div class="alert alert-success alert-dismissible fade show error" style="margin-top: 17px;}" role="alert">
+                                        <i class="uil uil-times me-2"></i>
+                                        {!! \Session::get('success') !!}
+                                    </div>
                                     @endif
                                     @if (\Session::has('error'))
-                                        <div class="alert alert-danger alert-dismissible fade show error"
-                                            style="margin-top: 17px;}" role="alert">
-                                            <i class="uil uil-times me-2"></i>
-                                            {!! \Session::get('error') !!}
-                                        </div>
+                                    <div class="alert alert-danger alert-dismissible fade show error" style="margin-top: 17px;}" role="alert">
+                                        <i class="uil uil-times me-2"></i>
+                                        {!! \Session::get('error') !!}
+                                    </div>
                                     @endif
                                     <h2 class="m-t-20">Sign In</h2>
                                     <p class="m-b-30">Enter your credential to get access</p>
@@ -56,44 +54,38 @@
                                             <label class="font-weight-semibold" for="userName">Username:</label>
                                             <div class="input-affix">
                                                 <i class="prefix-icon anticon anticon-user"></i>
-                                                <input id="email" type="email"
-                                                    class="form-control @error('email') is-invalid @enderror"
-                                                    name="email" value="{{ old('email') }}" required
-                                                    autocomplete="email" autofocus placeholder="Email">
+                                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Email">
 
                                                 @error('email')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                             <label id="email-error" class="error" for="email"></label>
                                         </div>
                                         <div class="form-group">
                                             <label class="font-weight-semibold" for="password">Password:</label>
-                                            <a class="float-right font-size-13 text-muted"
-                                                href="{{ route('user.forgetpassword') }}">Forget Password?</a>
                                             <div class="input-affix m-b-10">
                                                 <i class="prefix-icon anticon anticon-lock"></i>
-                                                <input id="password" type="password"
-                                                    class="form-control @error('password') is-invalid @enderror"
-                                                    placeholder="Password" name="password" required
-                                                    autocomplete="current-password">
+                                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" name="password" required autocomplete="current-password">
                                                 @error('password')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
                                                 @enderror
                                             </div>
                                             <label id="password-error" class="error" for="password"></label>
+                                            <a class="float-right font-size-13 text-muted" href="{{ route('user.forgetpassword') }}">Forget Password?</a>
                                         </div>
+                                        </br>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <span class="font-size-13 text-muted">
                                                     Don't have an account?
                                                     <a class="small" href="{{ route('user.signup') }}"> Signup</a>
                                                 </span>
-                                                <button class="btn btn-primary">Sign In</button>
+                                                <button class="btn btn-primary float-right">Sign In</button>
                                             </div>
                                         </div>
                                     </form>
@@ -119,9 +111,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"
-        integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js" integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script>
         jQuery.validator.addMethod("email", function(value, element) {
