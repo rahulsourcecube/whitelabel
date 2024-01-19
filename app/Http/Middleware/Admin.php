@@ -16,7 +16,7 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user() && auth()->user()->user_type == env('ADMIN_ROLE') ){
+        if(auth()->user() && auth()->user()->user_type == 1 ){
             return $next($request);
         }
         return redirect('login')->with('error',"You don't have admin access.");

@@ -29,11 +29,11 @@ class AdminController extends Controller
     public function index()
     {
 
-        if (auth()->user()->user_type == env('ADMIN_ROLE')) {
+        if (auth()->user()->user_type == 1) {
             return redirect()->route('admin.dashboard');
-        } elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
+        } elseif (auth()->user()->user_type == 2) {
             return redirect()->route('company.dashboard');
-        } elseif (auth()->user()->user_type == env('USER_ROLE')) {
+        } elseif (auth()->user()->user_type == 4) {
             return redirect()->route('user.dashboard');
         } else {
 
@@ -45,15 +45,15 @@ class AdminController extends Controller
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
         $data = [];
-        $data['total_comapny'] = User::where('user_type', env('COMPANY_ROLE'))->where('status', '1')->count();
+        $data['total_comapny'] = User::where('user_type', 2)->where('status', '1')->count();
         $data['total_campaign'] = CampaignModel::where('status', '1')->count();
         $data['total_package'] =  PackageModel::where('status', '1')->count();
-        $data['total_user'] = User::where('user_type', env('USER_ROLE'))->where('status', '1')->count();
+        $data['total_user'] = User::where('user_type', 4)->where('status', '1')->count();
 
         $data['company'] = CompanyModel::get(['id', 'company_name', 'user_id']);
 
-        $data['old_company'] = User::where('user_type', env('COMPANY_ROLE'))->where('status', '1')->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
-        $data['new_company'] = User::where('user_type', env('COMPANY_ROLE'))->where('status', '1')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
+        $data['old_company'] = User::where('user_type', 2)->where('status', '1')->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
+        $data['new_company'] = User::where('user_type', 2)->where('status', '1')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
 
         return view('admin.dashboard', $data);
     }

@@ -44,11 +44,11 @@ class LoginController extends Controller
         ]);
 
         if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-            if (auth()->user()->user_type == env('ADMIN_ROLE')) {
+            if (auth()->user()->user_type == '1') {
                 return redirect()->route('admin.dashboard');
-            } elseif (auth()->user()->user_type == env('COMPANY_ROLE')) {
+            } elseif (auth()->user()->user_type == '2') {
                 return redirect()->route('company.dashboard');
-            }elseif (auth()->user()->user_type == env('USER_ROLE')) {
+            }elseif (auth()->user()->user_type == '4') {
                 return redirect()->route('user.dashboard');
             } else {
                 return redirect()->route('/');

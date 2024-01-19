@@ -19,7 +19,7 @@ class BuyPackage
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
-        if ($user->user_type == env('COMPANY_ROLE')) {
+        if ($user->user_type == '2') {
             $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
             if ($checkPackage) {
                 return $next($request);

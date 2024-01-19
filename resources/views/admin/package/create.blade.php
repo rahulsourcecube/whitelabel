@@ -27,19 +27,19 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="campaign"> No Of Campaign <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="campaign" name="campaign"
+                                <input type="number" min="0" class="form-control" id="campaign" name="campaign"
                                     placeholder="No Of Campaign"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57"maxlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="user"> No Of User <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="user" name="user"
+                                <input  type="number" min="0" class="form-control" id="user" name="user"
                                     placeholder="No Of User"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="employee"> No Of Employee <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="employee" name="employee"
+                                <input  type="number" min="0" class="form-control" id="employee" name="employee"
                                     placeholder="No Of Employee"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
@@ -55,7 +55,7 @@
 
                             <div class="form-group col-md-3">
                                 <label for="day" class="day_title">No Of Day <span class="error">*</span></label>
-                                <input type="text" class="form-control day_place" id="day" name="day"
+                                <input  type="number" min="0" class="form-control day_place" id="day" name="day"
                                     placeholder="No Of Day"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10" min="1">
                             </div>

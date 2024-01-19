@@ -27,9 +27,9 @@ class CompanyLoginController extends Controller
 
     public function index()
     {
-        if (!empty(auth()->user()) && auth()->user()->user_type == env('ADMIN_ROLE')) {
+        if (!empty(auth()->user()) && auth()->user()->user_type == '1') {
             return redirect()->route('admin.dashboard');
-        } elseif (!empty(auth()->user()) && auth()->user()->user_type == env('COMPANY_ROLE')) {
+        } elseif (!empty(auth()->user()) && auth()->user()->user_type == '2') {
             return redirect()->route('company.dashboard');
         } else {
             return view('company.companylogin');
@@ -100,7 +100,7 @@ class CompanyLoginController extends Controller
         ]);
 
         if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-            if (!empty(auth()->user()) &&  (auth()->user()->user_type == env('COMPANY_ROLE') || auth()->user()->user_type == env('STAFF_ROLE'))) {
+            if (!empty(auth()->user()) &&  (auth()->user()->user_type == '2' || auth()->user()->user_type == '3')) {
 
                 return redirect()->route('company.dashboard');
             } else {
@@ -122,11 +122,11 @@ class CompanyLoginController extends Controller
             $input = $request->all();
             $input['dname'] = strtolower($input['dname']);
 
-            $useremail = User::where('email', $request->email)->where('user_type', env('COMPANY_ROLE'))->first();
+            $useremail = User::where('email', $request->email)->where('user_type', '2')->first();
             if (!empty($useremail)) {
                 return redirect()->back()->with('error', 'Email is already registered!!')->withInput();
             }
-            $usercontact = User::where('contact_number', $request->ccontact)->where('user_type', env('COMPANY_ROLE'))->first();
+            $usercontact = User::where('contact_number', $request->ccontact)->where('user_type', '2')->first();
             if (!empty($usercontact)) {
                 return redirect()->back()->with('error', 'Contact number is already registered!!')->withInput();
             }
@@ -164,7 +164,7 @@ class CompanyLoginController extends Controller
                 $settingModel->save();
             }
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-                if (!empty(auth()->user()) &&  auth()->user()->user_type == env('COMPANY_ROLE')) {
+                if (!empty(auth()->user()) &&  auth()->user()->user_type == '2') {
                     return redirect()->route('company.dashboard');
                 } else {
                     return redirect()->back()->with('error', 'These credentials do not match our records.');
@@ -340,7 +340,7 @@ class CompanyLoginController extends Controller
     public function verifyemail(Request $request ,$id)
     {
         $userId = Auth::user()->id;
-        $email_check = User::where('id', '!=', $id)->where('email', $request->email)->where('user_type', env('COMPANY_ROLE'))->first();
+        $email_check = User::where('id', '!=', $id)->where('email', $request->email)->where('user_type', '2')->first();
         if (!empty($email_check)) {
             echo 'false';
         } else {
@@ -350,7 +350,7 @@ class CompanyLoginController extends Controller
     public function verifycontact(Request $request, $id)
     {
         $userId = Auth::user()->id;
-        $contact_check = User::where('id', '!=', $id)->where('contact_number', $request->contact_number)->where('user_type', env('COMPANY_ROLE'))->first();
+        $contact_check = User::where('id', '!=', $id)->where('contact_number', $request->contact_number)->where('user_type', '2')->first();
         if (!empty($contact_check)) {
             echo 'false';
         } else {

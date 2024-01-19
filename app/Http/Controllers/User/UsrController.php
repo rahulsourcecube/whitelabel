@@ -26,11 +26,11 @@ class UsrController extends Controller
 
     function index()
     {
-        if (!empty(auth()->user()) && auth()->user()->user_type == env('ADMIN_ROLE')) {
+        if (!empty(auth()->user()) && auth()->user()->user_type == 1) {
             return redirect()->route('admin.dashboard');
-        } elseif (!empty(auth()->user()) && auth()->user()->user_type == env('COMPANY_ROLE')) {
+        } elseif (!empty(auth()->user()) && auth()->user()->user_type == 2) {
             return redirect()->route('company.dashboard');
-        } elseif (!empty(auth()->user()) && auth()->user()->user_type == env('USER_ROLE')) {
+        } elseif (!empty(auth()->user()) && auth()->user()->user_type == 4) {
             return redirect()->route('user.dashboard');
         } else {
             return view('user.userlogin');
@@ -52,7 +52,7 @@ class UsrController extends Controller
             $start_date = $dateandtime->subDays(7);
             $start_time = strtotime($start_date);
             $end_time = strtotime("+1 week", $start_time);
-            
+
             for ($i = $start_time; $i < $end_time; $i += 86400) {
                 $chartRevenueData[(int)date('d', $i)] = 0;
             }
@@ -85,7 +85,7 @@ class UsrController extends Controller
 
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'status' => '1'))) {
 
-                if (!empty(auth()->user()) &&  auth()->user()->user_type == env('USER_ROLE')) {
+                if (!empty(auth()->user()) &&  auth()->user()->user_type == 4) {
                     if(Session('referral_link') != null){
                         $referral_link = Session('referral_link');
                         $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
@@ -442,11 +442,11 @@ class UsrController extends Controller
     public function store(Request $request)
     {
         try {
-            $userEmail = User::where('user_type', env('USER_ROLE'))->where('email', $request->email)->first();
+            $userEmail = User::where('user_type', 4)->where('email', $request->email)->first();
             if (!empty($userEmail)) {
                 return redirect()->back()->with('error', 'This email already exists');
             }
-            $usercontactnumber = User::where('user_type', env('USER_ROLE'))->where('contact_number', $request->contact_number)->first();
+            $usercontactnumber = User::where('user_type', 4)->where('contact_number', $request->contact_number)->first();
             if (!empty($usercontactnumber)) {
                 return redirect()->back()->with('error', 'This contact number already exists');
             }
