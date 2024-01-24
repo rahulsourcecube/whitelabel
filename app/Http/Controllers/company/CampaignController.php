@@ -104,7 +104,7 @@ class CampaignController extends Controller
             return response()->json([
                 "draw" => intval($request->input('draw')),
                 "recordsTotal" => $totalData,
-                "recordsFiltered" => $totalFiltered,
+               "recordsFiltered" => $totalData,
                 "data" => $list
             ]);
         } catch (Exception $e) {
@@ -168,7 +168,7 @@ class CampaignController extends Controller
         return response()->json([
             "draw" => intval($request->input('draw')),
             "recordsTotal" => count($results),
-            "recordsFiltered" => $totalFiltered,
+           "recordsFiltered" => count($results),
             "data" => $list
         ]);
     }

@@ -53,13 +53,16 @@
 
                                 @if (!empty($user_Campaign) && $user_Campaign->status != '0')
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 1)
-                                        <a class="badge badge-primary badge-tone"><span class="m-l-5" style="color: white;">Claim reward</span></a>
+                                        <a class="badge badge-primary badge-tone"><span class="m-l-5"
+                                                style="color: white;">Claim reward</span></a>
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 2)
-                                        <a class="badge badge-primary badge-tone"><span class="m-l-5" style="color: white;">Claim Pending</span></a>
+                                        <a class="badge badge-primary badge-tone"><span class="m-l-5"
+                                                style="color: white;">Claim Pending</span></a>
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 5)
-                                        <a class="badge badge-primary badge-tone"><span class="m-l-5" style="color: white;">Reopen</span></a>
+                                        <a class="badge badge-primary badge-tone"><span class="m-l-5"
+                                                style="color: white;">Reopen</span></a>
                                     @endif
                                 @else
                                     <a onclick="showSuccessAlert()" href="#" data-id=""
@@ -106,9 +109,11 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5>Recent Referral Users</h5>
-                                    @if ($user_Campaign != null &&
+                                    @if (
+                                        $user_Campaign != null &&
                                             $user_Campaign->referral_link != '' &&
-                                            $user_Campaign->getCampaign->task_expired != 'Expired'  && $ReferralCount > $user_Campaign->no_of_referral_users)
+                                            $user_Campaign->getCampaign->task_expired != 'Expired' &&
+                                            $ReferralCount > $user_Campaign->no_of_referral_users)
                                         <div class="text-center mt-4 ml-3">
                                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ route('campaign.referral', $user_Campaign->referral_link) }}"
                                                 target="_blank">
@@ -225,14 +230,17 @@
                     <div class="chat-content "style="width:100%;">
                         <div class="conversation">
                             <div class="conversation-wrapper">
-                                <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif" style="overflow-y: auto;" id="style-4">
+                                <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
+                                    style="overflow-y: auto;" id="style-4">
                                     @if (!empty($chats) && $chats->count() != 0)
                                         @foreach ($chats as $item)
                                             @if ($item->sender_id == $user->id)
                                                 <div class="msg msg-sent">
                                                 @else
                                                     <div class="msg msg-recipient">
-                                                        @if (isset($item->getCompanySetting->logo) && !empty($item->getCompanySetting->logo) && file_exists('uploads/setting/' . $item->getCompanySetting->logo))
+                                                        @if (isset($item->getCompanySetting->logo) &&
+                                                                !empty($item->getCompanySetting->logo) &&
+                                                                file_exists('uploads/setting/' . $item->getCompanySetting->logo))
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
                                                                     <img src="{{ asset('uploads/setting/' . $item->getCompanySetting->logo) }}"
@@ -260,7 +268,11 @@
                                             @else
                                                 <div class="bubble">
                                                     <div class="bubble-wrapper">
-                                                        <span>   {!! $item->message ?? '' !!} <br> <p style="font-size: x-small;color: black;  margin-bottom:0px;"> {{ $item->created_at->format('Y-m-d H:i A') }} </p></span>
+                                                        <span> {!! $item->message ?? '' !!} <br>
+                                                            <p
+                                                                style="font-size: x-small;color: black;  margin-bottom:0px;">
+                                                                {{ $item->created_at->format('Y-m-d H:i A') }} </p>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             @endif
@@ -463,6 +475,7 @@
     <script>
         var btnUpload = $("#upload_file"),
             btnOuter = $(".button_outer");
+
         btnUpload.on("change", function(e) {
             var ext = btnUpload.val().split('.').pop().toLowerCase();
             if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
@@ -470,18 +483,14 @@
             } else {
                 $(".error_msg").text("");
                 btnOuter.addClass("file_uploading");
-                setTimeout(function() {
                     btnOuter.addClass("file_uploaded");
-                }, 3000);
                 var uploadedFile = URL.createObjectURL(e.target.files[0]);
-                setTimeout(function() {
-                    $("#uploaded_view").append('<img src="' + uploadedFile + '" />').addClass("show");
-                }, 3500);
+                $("#uploaded_view").append('<img src="' + uploadedFile + '" />').addClass("show");
             }
         });
         $(".img_file_remove").on("click", function(e) {
-            $("#uploaded_view").removeClass("show");
-            $("#uploaded_view").find("img").remove();
+            $("#uploaded_view").removeClass("show").find("img").remove();
+
             btnOuter.removeClass("file_uploading");
             btnOuter.removeClass("file_uploaded");
             $('#upload_file').val('');

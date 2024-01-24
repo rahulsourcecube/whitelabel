@@ -73,7 +73,7 @@ class CampaignController extends Controller
         return response()->json([
             "draw" => intval($request->input('draw')),
             "recordsTotal" => isset($totalData) ? $totalData : '',
-            "recordsFiltered" => isset($totalFiltered) ? $totalFiltered : '',
+            "recordsFiltered" => isset($totalData) ? $totalData : '',
             "data" => $list
         ]);
     }

@@ -48,13 +48,10 @@
         /*This is data table for partership Request */
         $(document).ready(function() {
             var table = $('#package_tbale').DataTable({
-                // Processing indicator
                 "processing": true,
-                // DataTables server-side processing mode
                 "serverSide": true,
                 responsive: true,
-                pageLength: 25,
-                // Initial no order.
+                pageLength: 10,
                 'order': [
                     [0, 'desc']
                 ],
@@ -62,7 +59,7 @@
                     search: "",
                     searchPlaceholder: "Search Here",
                 },
-                // Load data from an Ajax source
+              // Load data from an Ajax source
                 "ajax": {
                     "url": "{{ route('admin.company.dtlist') }}",
                     "type": "POST",
