@@ -203,7 +203,7 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
         return response()->json([
             "draw" => intval($request->input('draw')),
             "recordsTotal" => $totalData,
-            "recordsFiltered" => $totalFiltered,
+            "recordsFiltered" => $totalData,
             "data" => $list
         ]);
     }

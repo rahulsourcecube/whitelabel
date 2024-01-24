@@ -85,7 +85,7 @@ class Notification extends Controller
         return response()->json([
             "draw" => intval($request->input('draw')),
             "recordsTotal" => $totalData,
-            "recordsFiltered" => $totalFiltered,
+           "recordsFiltered" => $totalData,
             "data" => $list
         ]);
     }

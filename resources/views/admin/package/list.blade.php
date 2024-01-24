@@ -19,7 +19,7 @@
                 <h4>Package List</h4>
 
                 <a class="btn btn-primary float-right" href="{{ route('admin.package.create') }}" role="button">Add New</a>
-                <div >
+                <div>
                     <table id="package_tbales" class="table">
                         <thead>
                             <tr>
@@ -45,13 +45,10 @@
         /*This is data table for partership Request */
         $(document).ready(function() {
             var table = $('#package_tbales').DataTable({
-                // Processing indicator
                 "processing": true,
-                // DataTables server-side processing mode
                 "serverSide": true,
                 responsive: true,
-                pageLength: 25,
-                // Initial no order.
+                pageLength: 10,
                 'order': [
                     [0, 'desc']
                 ],
@@ -66,50 +63,50 @@
                     "headers": {
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
-                    "data": function(d) {
-                    }
+                    "data": function(d) {}
                 },
                 'columnDefs': [{
-                    'targets': 0,
-                    'visible': false,
-                    'orderable': false,
-                    'render': function(data, type, row) {
-                        return '<input type="checkbox" name="chk_row" value="' + row[0] +
-                            '" class="chk-row">';
+                        'targets': 0,
+                        'visible': false,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            return '<input type="checkbox" name="chk_row" value="' + row[0] +
+                                '" class="chk-row">';
+                        },
                     },
-                }, 
-                {
-                    'targets': 6,
-                    'visible': false,
-                    'orderable': false,
-                    'render': function(data, type, row) {
-                        var imagurl = '{{ asset('uploads/package') }}/' + row[6];
-                        return ' <img id="" class="packageimage" src="' + imagurl +
-                            '" style="height: 100px; width: 100px;">';
+                    {
+                        'targets': 6,
+                        'visible': false,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            var imagurl = '{{ asset('uploads/package') }}/' + row[6];
+                            return ' <img id="" class="packageimage" src="' + imagurl +
+                                '" style="height: 100px; width: 100px;">';
 
+                        },
                     },
-                }, 
-                {
-                    'targets': 7,
-                    'visible': true,
-                    'orderable': false,
-                    'render': function(data, type, row) {
-                        var viewUrl = '{{ route('admin.package.view', ':id') }}';
-                        var editUrl = '{{ route('admin.package.edit', ':package') }}';
-                        viewUrl = viewUrl.replace(':id', row[0]);
-                        editUrl = editUrl.replace(':package', row[0]);
+                    {
+                        'targets': 7,
+                        'visible': true,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            var viewUrl = '{{ route('admin.package.view', ':id') }}';
+                            var editUrl = '{{ route('admin.package.edit', ':package') }}';
+                            viewUrl = viewUrl.replace(':id', row[0]);
+                            editUrl = editUrl.replace(':package', row[0]);
 
-                        var deleteUrl = '{{ route('admin.package.delete', ':del') }}';
-                        deleteUrl = deleteUrl.replace(':del', row[0]);
+                            var deleteUrl = '{{ route('admin.package.delete', ':del') }}';
+                            deleteUrl = deleteUrl.replace(':del', row[0]);
 
-                        return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
-                            '" role="button" title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
-                            editUrl +
-                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
-                            deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
+                            return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
+                                '" role="button" title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-primary btn-sm" href="' +
+                                editUrl +
+                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                                deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a>';
 
-                    },
-                }],
+                        },
+                    }
+                ],
             });
         });
     </script>

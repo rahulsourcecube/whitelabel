@@ -234,7 +234,7 @@
                     // DataTables server-side processing mode
                     "serverSide": false,
                     responsive: true,
-                    pageLength: 25,
+                    pageLength: 10,
                     // Initial no order.
                     'order': [
                         [0, 'desc']

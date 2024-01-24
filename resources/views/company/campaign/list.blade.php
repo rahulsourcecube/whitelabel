@@ -53,7 +53,7 @@
                 "processing": false,
                 "serverSide": true,
                 responsive: true,
-                pageLength: 25,
+                pageLength: 10,
                 'order': [
                     [0, 'desc']
                 ],
