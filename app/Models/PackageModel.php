@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class PackageModel extends Model
 {
     use HasFactory, SoftDeletes;
-  
+
     protected $table = "package";
     const STATUS = [
         'ACTIVE' => '1',
@@ -50,7 +50,7 @@ class PackageModel extends Model
 
     public function getEndDateAttribute()
     {
-        $GetActivePackageData = Helper::GetActivePackageData();
+        $GetActivePackageData = Helper::GetLastPackageData();
         $currentDate = '';
         if ($GetActivePackageData == null) {
             $currentDate = Carbon::now();
@@ -71,7 +71,7 @@ class PackageModel extends Model
 
     public function getStartDateAttribute()
     {
-        $GetActivePackageData = Helper::GetActivePackageData();
+        $GetActivePackageData = Helper::GetLastPackageData();
         $currentDate = '';
         if ($GetActivePackageData == null) {
             $currentDate = Carbon::now();

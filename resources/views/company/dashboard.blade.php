@@ -82,7 +82,7 @@
                                                                 href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']),base64_encode($referral_task->id)])}}">{{isset($referral_task->title)
                                                                 ? $referral_task->title : ""}}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">${{isset($referral_task->reward) ?
+                                                        <p class="text-muted m-b-0">{{ App\Helpers\Helper::getcurrency()}}{{isset($referral_task->reward) ?
                                                             $referral_task->reward : ""}}</p>
                                                     </div>
                                                 </div>
@@ -136,7 +136,7 @@
                                                                 ?
                                                                 $social_share_task->title : ""}}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">${{isset($social_share_task->reward) ?
+                                                        <p class="text-muted m-b-0">{{ App\Helpers\Helper::getcurrency()}}{{isset($social_share_task->reward) ?
                                                             $social_share_task->reward : ""}}</p>
                                                     </div>
                                                 </div>
@@ -188,7 +188,7 @@
                                                                 href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']),base64_encode($custom_task->id)])}}">{{isset($custom_task->title)
                                                                 ? $custom_task->title : ""}}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">${{isset($custom_task->reward) ?
+                                                        <p class="text-muted m-b-0">{{ App\Helpers\Helper::getcurrency()}}{{isset($custom_task->reward) ?
                                                             $custom_task->reward : ""}}</p>
                                                     </div>
                                                 </div>

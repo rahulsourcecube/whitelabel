@@ -65,7 +65,8 @@
                                         <select id="Tasks" class="form-control" name="Tasks">
                                             @if (count($customTasks) > 0)
                                                 @foreach ($customTasks as $item)
-                                                    <option value="{{ $item->id }}">{{ Str::limit($item->title,35) }}</option>
+                                                    <option value="{{ $item->id }}">{{ Str::limit($item->title, 35) }}
+                                                    </option>
                                                 @endforeach
                                             @else
                                                 <option value="">Task not found</option>
@@ -105,7 +106,10 @@
                                         <div class="input-affix m-b-10">
                                             <i class="prefix-icon anticon anticon-calendar"></i>
                                             <input type="text" class="form-control datepicker" placeholder="Pick a date"
-                                                id="from_date" value="{{ $start }}">
+                                                id="ref_from_date" value="{{ $start }}">
+                                            <input type="hidden" class="form-control " id="ref_from_date2"
+                                                value="{{ $start }}">
+
                                         </div>
                                     </div>
                                     <div class="form-group col-md-12">
@@ -113,18 +117,21 @@
                                         <div class="input-affix m-b-10">
                                             <i class="prefix-icon anticon anticon-calendar"></i>
                                             <input type="text" class="form-control datepicker" placeholder="Pick a date"
-                                                id="to_date" value="{{ $end }}">
+                                                id="ref_to_date" value="{{ $end }}">
+                                            <input type="hidden" class="form-control" id="ref_to_date2"
+                                                value="{{ $end }}">
                                         </div>
                                     </div>
                                     <div class="col-md-12">
                                         <button class="btn btn-primary m-t-30"
-                                            onclick="fetchSocialDataAndRenderChart()">Filter</button>
+                                            id="fetchSocialDataAndRenderChart">Filter</button>
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <table id="campaign_tables" class="table">
                                         <thead>
                                             <tr>
+                                                <th>id</th>
                                                 <th>Name</th>
                                                 <th>Count</th>
                                             </tr>
@@ -144,6 +151,10 @@
     </div>
 @endsection
 @section('js')
+
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <script>
         $('.datepicker').datepicker();
 
@@ -154,16 +165,16 @@
             series: [
                 user_total.total_user,
             ],
-            low:0
+            low: 0
         }, {
             showArea: true,
             fullWidth: true,
             chartPadding: {
                 right: 50
             },
-            low:0,
+            low: 0,
             axisY: {
-                labelInterpolationFnc: function (value) {
+                labelInterpolationFnc: function(value) {
                     return Math.round(value);
                 },
                 onlyInteger: true
@@ -195,11 +206,7 @@
                 right: 40
             }
         });
-    </script>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
-    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-    <script>
+
         $('.attribute').on('click', function() {
             $('#filterdata').removeAttr("disabled");
         });
@@ -244,9 +251,9 @@
                         chartPadding: {
                             right: 50
                         },
-                        low:0,
+                        low: 0,
                         axisY: {
-                            labelInterpolationFnc: function (value) {
+                            labelInterpolationFnc: function(value) {
                                 return Math.round(value);
                             },
                             onlyInteger: true
@@ -271,9 +278,9 @@
                         chartPadding: {
                             right: 50
                         },
-                        low:0,
+                        low: 0,
                         axisY: {
-                            labelInterpolationFnc: function (value) {
+                            labelInterpolationFnc: function(value) {
                                 return Math.round(value);
                             },
                             onlyInteger: true
@@ -282,23 +289,15 @@
                 }
             });
         });
-    </script>
 
-
-
-
-    <script>
         $('.datepicker-input').datepicker({
             minViewMode: 2,
             format: 'yyyy'
         });
-    </script>
 
-    <script>
         $(document).ready(function() {
             // Call the function to fetch data and render the chart
             fetchDataAndRenderChart();
-            fetchSocialDataAndRenderChart();
         });
 
         // Function to make AJAX request and render the chart
@@ -315,7 +314,7 @@
                     title,
                     _token: "{{ csrf_token() }}"
                 },
-                dataType:'json',
+                dataType: 'json',
                 // "headers": {
                 //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 // },
@@ -373,41 +372,74 @@
                 }
             });
         }
-    </script>
-    <script>
-        function fetchSocialDataAndRenderChart() {
 
-            var from_date = $("#from_date").val();
-            var to_date = $("#to_date").val();
+        var _token = $('input[name="_token"]').val();
 
-            var _token = $('input[name="_token"]').val();
 
-            $('#campaign_tables').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '{{ route('company.campaign.getSocialAnalytics') }}',
-                    type: 'POST',
-                    data: {
-                        from_date: from_date,
-                        to_date: to_date,
-                        _token: "{{ csrf_token() }}"
-                    }
+        var campaign_tables = $('#campaign_tables').DataTable({
+            "processing": false,
+            "serverSide": true,
+            responsive: true,
+            pageLength: 25,
+            // Initial no order.
+            'order': [
+                [0, 'desc']
+            ],
+            // Load data from an Ajax source
+            "ajax": {
+                "url": '{{ route('company.campaign.getSocialAnalytics') }}',
+                "type": "post",
+                "headers": {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
-                // headers: {
-                //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                // },
-                columns: [{
-                        data: 'title',
-                        name: 'Name'
-                    },
-                    {
-                        data: 'social_task_user_count',
-                        name: 'Count'
-                    },
-                ]
-            });
-        };
+                "data": function(d) {
+                    d.from_date = $('#ref_from_date2').val();
+                    d.to_date = $('#ref_to_date2').val();
+                }
+            },
+            'columnDefs': [{
+                'targets': 0,
+                'visible': false,
+                'orderable': false,
+                'render': function(data, type, row) {
+                    return '<input type="checkbox" name="chk_row" value="' + row[0] +
+                        '" class="chk-row">';
+                },
+            },
+             ],
+        });
 
+
+        // var campaign_tables = $('#campaign_tables').DataTable({
+        //     processing: true,
+        //     serverSide: true,
+        //     ajax: {
+        //         url:
+        //         type: 'POST',
+        //         data: {
+        //             _token: "{{ csrf_token() }}"
+        //         }
+        //     },
+        //     "data": function(d) {
+
+        //     },
+        //     // headers: {
+        //     //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        //     // },
+        //     columns: [{
+        //             data: 'title',
+        //             name: 'Name'
+        //         },
+        //         {
+        //             data: 'social_task_user_count',
+        //             name: 'Count'
+        //         },
+        //     ]
+        // });
+        $(document).on("click", "#fetchSocialDataAndRenderChart", function() {
+            $("#ref_to_date2").val($("#ref_to_date2").val());
+            $("#ref_from_date2").val($("#ref_from_date").val());
+            campaign_tables.draw();
+        })
     </script>
 @endsection

@@ -15,9 +15,11 @@
                     <table id="package_tbale" class="table dataTable " role="grid" aria-describedby="data-table_info">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Package</th>
                                 <th>Start Date</th>
                                 <th>Expiry Date</th>
+                                <th>Price</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -25,9 +27,11 @@
                             @if ($bills && $bills->count() != 0)
                                 @foreach ($bills as $item)
                                     <tr>
+                                        <td>{{ $item->id ?? '-' }}</td>
                                         <td>{{ $item->GetPackageData->title ?? '-' }}</td>
-                                        <td>{{  App\Helpers\Helper::Dateformat($item->start_date) ?? '-' }}</td>
-                                        <td>{{ App\Helpers\Helper::Dateformat($item->end_date) ?? '-' }}</td>
+                                        <td>{{ $item->start_date}} <br>{{  App\Helpers\Helper::Dateformat($item->start_date) ?? '-' }}</td>
+                                        <td>{{ $item->end_date}} <br>{{ App\Helpers\Helper::Dateformat($item->end_date) ?? '-' }}</td>
+                                        <td>{{ App\Helpers\Helper::getcurrency()}}{{ $item->GetPackageData->price ?? '-' }}</td>
                                         @if ($ActivePackageData && $ActivePackageData->id && $ActivePackageData->id != $item->id)
                                             <td>
                                                 <a class="btn btn-danger btn-sm" href="#" role="button"

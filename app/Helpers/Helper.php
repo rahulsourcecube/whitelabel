@@ -83,6 +83,23 @@ class Helper
 
         return $packageData;
     }
+    // get Last Package Data
+    public static function GetLastPackageData()
+    {
+        $currentDate = Carbon::now();
+        $currentDate = $currentDate->format('Y-m-d');
+        if(Auth::user()!=null){
+            $companyId = Helper::getCompanyId();
+            // and then you can get query log
+            $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->first();
+        }else{
+            $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
+            // and then you can get query log
+            $packageData = CompanyPackage::where('company_id', $companyId->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->first();
+        }
+
+        return $packageData;
+    }
     // Change Date format
     public static function Dateformat($date)
     {
@@ -132,6 +149,7 @@ class Helper
 
     //Create host in local
     public static function createCompanySubDomain($subdomain) {
+        return;
         try {
             $domain = $_SERVER['SERVER_NAME'];
             $subdomain = $subdomain.'.'.$_SERVER['SERVER_NAME'];

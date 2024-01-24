@@ -45,6 +45,8 @@ class PackageController extends Controller
 
    function billing()
    {
+        // $addPackage = new PackageModel();
+        // dd($addPackage->end_date);
       // get CompanyPackage bills
       $companyId = Helper::getCompanyId();
       $bills = CompanyPackage::where('company_id', $companyId)->get();
@@ -59,19 +61,19 @@ class PackageController extends Controller
          if (empty($package)) {
             return redirect()->back()->with('error','Package not found');
          }
-         if ($package->price != 0.0) {
-            StripeStripe::setApiKey(env('STRIPE_SECRET'));
+        //  if ($package->price != 0.0) {
+        //     StripeStripe::setApiKey(env('STRIPE_SECRET'));
 
 
-            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+        //     $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
 
-            $stripe->paymentIntents->create([
-               'amount' => $package->price * 100,
-               'currency' => 'usd',
-               'description' => 'Test payment.',
-               'payment_method_types' => ['card'],
-            ]);
-         }
+        //     $stripe->paymentIntents->create([
+        //        'amount' => $package->price * 100,
+        //        'currency' => 'usd',
+        //        'description' => 'Test payment.',
+        //        'payment_method_types' => ['card'],
+        //     ]);
+        //  }
 
          $companyId = Helper::getCompanyId();
 
@@ -79,6 +81,8 @@ class PackageController extends Controller
          if (empty($package)) {
             return redirect()->back()->with('error', 'Package not found');
          }
+
+        //  dd($package->start_date );
 
          $addPackage = new CompanyPackage();
          $addPackage->company_id = $companyId;

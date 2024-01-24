@@ -543,7 +543,7 @@ class CampaignController extends Controller
         $companyId = Helper::getCompanyId();
         // dd($companyId);
         if ($request->ajax()) {
-            $columns = ['title'];
+            $columns = ['id','title','social_task_user_count'];
             $draw = $request->input('draw');
             $start = $request->input('start');
             $length = $request->input('length');
@@ -551,8 +551,13 @@ class CampaignController extends Controller
             $dir = $request->input('order.0.dir');
 
             // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
+            // (SELECT count(*) as total FROM campaign where campaign.id=user_campaign_history.campaign_id) as total
 
-            $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
+            // $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
+            $query = UserCampaignHistoryModel::join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
+            ->select('campaign.id', 'campaign.title',
+            DB::raw('(SELECT COUNT(*) FROM campaign WHERE campaign.id = user_campaign_history.campaign_id) as total')
+            )->where('campaign.type', '2')->where('user_campaign_history.status', 3)->where('campaign.company_id', $companyId)->whereDate('user_campaign_history.created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('user_campaign_history.created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
             $recordsTotal = $query->count();
             // DB::enableQueryLog();
             $query->orderBy($columns[$order], $dir)->skip($start)->take($length);
@@ -562,15 +567,14 @@ class CampaignController extends Controller
             $data = [];
 
             foreach ($userCounts as $item) {
-                if ($item->campaignUSerHistory->count() != 0) {
                     $data[] = [
+                        "id" => $item->id, // Format the day of the month
                         "title" => $item->title, // Format the day of the month
-                        "social_task_user_count" => $item->campaignUSerHistory->count()
+                        "social_task_user_count" => $item->total,
                     ];
-                }
             }
             return response()->json([
-                'draw' => $draw,
+                'draw' => (int)$draw,
                 'recordsTotal' => $recordsTotal,
                 'recordsFiltered' => $recordsTotal,
                 'data' => $data,
