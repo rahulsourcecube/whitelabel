@@ -69,7 +69,7 @@
                                                 <label class="font-weight-semibold" for="contact">Contact
                                                     Number:</label>
                                                 <input type="text" class="form-control" id="contact"
-                                                    placeholder="Contact Number" minlength="10" maxlength="10"
+                                                    placeholder="Contact Number" maxlength="10"
                                                     name="contact_number" value="{{old('contact_number')}}"
                                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
@@ -147,6 +147,7 @@
                     },
                     contact_number: {
                         required: true,
+                        minlength:'10'
                     },
                     password: {
                         required: true,
@@ -169,6 +170,7 @@
                     },
                     contact_number: {
                         required: "Please enter contact number",
+                        minlength: "Your phone number must be 10 digits.",
                     },
                     password: {
                         required: "Please enter password",

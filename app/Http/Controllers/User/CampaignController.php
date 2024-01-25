@@ -53,11 +53,12 @@ class CampaignController extends Controller
                 }
             });
         }
-
+        $totalData = $query->count();
         $results = $query->skip($start)
         ->take($length)
         ->select('campaign.*')
         ->get();
+        // dd($results->toSql(), $query->getBindings());
 
         foreach ($results as $result) {
             $list[] = [
@@ -69,7 +70,7 @@ class CampaignController extends Controller
                 $result->status ?? "_",
             ];
         }
-        $totalFiltered = $results->count();
+        // $totalFiltered = $results->count();
         return response()->json([
             "draw" => intval($request->input('draw')),
             "recordsTotal" => isset($totalData) ? $totalData : '',

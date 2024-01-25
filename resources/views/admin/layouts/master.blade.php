@@ -17,7 +17,10 @@
                 base_path(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
+    {{-- <link rel="stylesheet" type="text/css" href="https://coderthemes.com/abstack/layouts/blue/assets/libs/datatables/responsive.bootstrap4.css"> --}}
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    {{-- <link rel="stylesheet" href="https://coderthemes.com/abstack/layouts/blue/assets/libs/datatables/buttons.bootstrap4.css" /> --}}
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Core css -->

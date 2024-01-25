@@ -109,11 +109,11 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5>Recent Referral Users</h5>
-                                    @if (
+                                    {{-- @if (
                                         $user_Campaign != null &&
                                             $user_Campaign->referral_link != '' &&
                                             $user_Campaign->getCampaign->task_expired != 'Expired' &&
-                                            $ReferralCount > $user_Campaign->no_of_referral_users)
+                                            $ReferralCount > $user_Campaign->no_of_referral_users) --}}
                                         <div class="text-center mt-4 ml-3">
                                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ route('campaign.referral', $user_Campaign->referral_link) }}"
                                                 target="_blank">
@@ -141,7 +141,7 @@
                                                 <span class="m-l-5">Copy referral link</span>
                                             </button>
                                         </div>
-                                    @endif
+                                    {{-- @endif --}}
                                 </div>
                                 <div class="m-t-30">
                                     <div class="table-responsive">

@@ -314,6 +314,7 @@ class UsrController extends Controller
                 $status = $request->status;
                 $filter->where('status', '=', $status);
             }
+            // die($filter->toSql());
 
             $filterResults = $filter->get();
             return view('user.reward.progressreward', compact('filterResults'));

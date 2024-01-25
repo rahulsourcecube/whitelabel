@@ -89,6 +89,7 @@
                         'targets': 7,
                         'visible': true,
                         'orderable': false,
+                    'class':'d-flex',
                         'render': function(data, type, row) {
                             var viewUrl = '{{ route('admin.package.view', ':id') }}';
                             var editUrl = '{{ route('admin.package.edit', ':package') }}';
