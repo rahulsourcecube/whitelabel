@@ -36,7 +36,7 @@
                                     @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
                                         <img class="img-fluid" alt="" src="{{asset('assets/images/logo/logo.png')}}">
-                                        <h2 class="m-b-0">Sign Up</h2>
+                                        <h2 class="m-b-0">Company Sign Up</h2>
                                     </div>
                                     <form id="signup" method="POST" action="{{ route('company.signup.store') }}">
                                         @csrf
@@ -64,9 +64,9 @@
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="ccontact">Contact
                                                     Number:</label>
-                                                <input type="number" min="0" class="form-control" name="ccontact" id="ccontact"
-                                                    placeholder="Contact Number" maxlength="10" minlength="10"
-                                                    value="{{old('ccontact')}}">
+                                                <input type="text"   class="form-control" name="ccontact" id="ccontact"
+                                                    placeholder="Contact Number" maxlength="10"  
+                                                    value="{{old('ccontact')}}"   onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
                                             <div class="col-md-12">
                                                 <label class="font-weight-semibold" for="dname">Domain Name:</label>
@@ -130,7 +130,9 @@
                     required: true
                 },
                 ccontact: {
-                    required: true
+                    required: true,
+                    minlength: 10,
+                    digits: true
                 },
                 dname: {
                     required: true,
@@ -160,7 +162,9 @@
                     required: "Please enter company name"
                 },
                 ccontact: {
-                    required: "Please enter contact number"
+                    required: "Please enter contact number",
+                    digits: "Please enter valid contact number",
+                    minlength: "Your phone number must be 10 digits."
                 },
                 dname: {
                     required: "Please enter domain name"

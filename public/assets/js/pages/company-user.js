@@ -19,6 +19,7 @@ $('#userform').validate({
         },
         number: {
             required: true,
+            digits: true,
             remote: {
                 url: numberCheckUrl,
                 type: "post",
@@ -54,6 +55,7 @@ $('#userform').validate({
         },
         number: {
             required: "Please mobile number address",
+            digits: "Please enter valid contact number",
             remote: " Mobile Number already registered."
         },
         password: {

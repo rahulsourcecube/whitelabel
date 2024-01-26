@@ -147,7 +147,8 @@
                     },
                     contact_number: {
                         required: true,
-                        minlength:'10'
+                        minlength:'10',
+                        digits: true
                     },
                     password: {
                         required: true,
@@ -171,6 +172,7 @@
                     contact_number: {
                         required: "Please enter contact number",
                         minlength: "Your phone number must be 10 digits.",
+                        digits: "Please enter valid contact number"
                     },
                     password: {
                         required: "Please enter password",
