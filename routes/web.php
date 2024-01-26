@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::middleware(['domain'])->group(function () {
 
 Route::get('/config', function () {
     Artisan::call('config:cache');
@@ -45,6 +46,7 @@ Route::get('/expire', function () {
 });
 
 Auth::routes();
+
 Route::get('/', [AdminController::class, 'index'])->name('admin');
 Route::get('user', [LoginController::class, 'form'])->middleware('checkNotLoggedIn');
 Route::group(['prefix' => 'admin'], function () {
@@ -278,3 +280,5 @@ Route::get('seeder', function () {
     Artisan::call('db:seed');
     return 'Yup, seeder run successfully!';
 });
+
+}) ;
