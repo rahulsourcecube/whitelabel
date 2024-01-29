@@ -78,8 +78,8 @@ class CampaignController extends Controller
             }
 
             $results = $query->skip($start)
-            ->take($length)
-            ->get();
+                ->take($length)
+                ->get();
 
             foreach ($results as $result) {
                 $imgUrl = "";
@@ -104,7 +104,7 @@ class CampaignController extends Controller
             return response()->json([
                 "draw" => intval($request->input('draw')),
                 "recordsTotal" => $totalData,
-               "recordsFiltered" => $totalData,
+                "recordsFiltered" => $totalData,
                 "data" => $list
             ]);
         } catch (Exception $e) {
@@ -168,7 +168,7 @@ class CampaignController extends Controller
         return response()->json([
             "draw" => intval($request->input('draw')),
             "recordsTotal" => count($results),
-           "recordsFiltered" => count($results),
+            "recordsFiltered" => count($results),
             "data" => $list
         ]);
     }
@@ -337,19 +337,22 @@ class CampaignController extends Controller
                     ->where('c.status', '1')
                     ->where('uch.status', '3')
                     ->where('c.type', '1')
-                    ->whereBetween('uch.created_at', [$from_date, $to_date])
+                    ->whereDate('uch.created_at', '>=', $from_date)
+                    ->whereDate('uch.created_at', '<=', $to_date)
                     ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
                     ->groupBy('day')
                     ->get();
                 $start_date = $from_date;
                 $start_time = strtotime($start_date);
-                $end_time = strtotime($to_date, $start_time);
+                $end_time = strtotime($to_date);
                 $list = [];
-                for ($i = $start_time; $i < $end_time; $i += 86400) {
+                for ($i = $start_time; $i <= $end_time; $i += 86400) {
                     $list[date('D', $i)] = 0;
                 }
+
                 foreach ($total_join_users as $values) {
-                    $list[$values->day] = $values->total_user;
+                    $abbreviatedDay = date('D', strtotime($values->day));
+                    $list[$abbreviatedDay] = $values->total_user;
                 }
 
                 $user_total = [];
@@ -478,7 +481,7 @@ class CampaignController extends Controller
                     $imageName = 'uploads/Chats/' . $imageName;
                 }
                 $chats = TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
-                if($chats->count() == 0){
+                if ($chats->count() == 0) {
 
                     $id->status = '2';
                     $id->save();
@@ -492,7 +495,7 @@ class CampaignController extends Controller
                         $Notification->save();
                     }
                 }
-                if($id->status == '4'&& Auth::user()->user_type == 4){
+                if ($id->status == '4' && Auth::user()->user_type == 4) {
                     $id->status = '5';
                     $id->save();
                 }
@@ -516,34 +519,40 @@ class CampaignController extends Controller
 
     public function CompanyCustom(Request $request)
     {
-        // dd($request->all());
-        $results = UserCampaignHistoryModel::selectRaw('MONTH(updated_at) as month')
-            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 3 AND MONTH(updated_at) = MONTH(updated_at)) as total_completed')
-            ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 1 AND MONTH(updated_at) = MONTH(updated_at)) as total_joined')
-            ->whereYear('updated_at', $request->year)
-            ->groupBy(DB::raw('MONTH(updated_at)'))
-            ->get();
-
-
         $data = [];
+        // dd($request->all());
+        if (empty($request->title)) {
+            $data = [];
+        } else {
+            $results = UserCampaignHistoryModel::selectRaw('MONTH(updated_at) as month')
+                ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 3 AND MONTH(updated_at) = MONTH(updated_at)) as total_completed')
+                ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 1 AND MONTH(updated_at) = MONTH(updated_at)) as total_joined')
+                ->whereYear('updated_at', $request->year)
+                ->groupBy(DB::raw('MONTH(updated_at)'))
+                ->get();
 
-        foreach ($results as $item) {
-            $data[] = [
-                "label" => Carbon::create()->month($item['month'])->format('F'), // Format the day of the month
-                "total_completed" => $item['total_completed'],
-                "total_joined" => $item['total_joined']
 
-            ];
+
+
+            foreach ($results as $item) {
+                $data[] = [
+                    "label" => Carbon::create()->month($item['month'])->format('F'), // Format the day of the month
+                    "total_completed" => $item['total_completed'],
+                    "total_joined" => $item['total_joined']
+
+                ];
+            }
         }
         return response()->json($data);
     }
 
     public function getSocialAnalytics(Request $request)
     {
+
         $companyId = Helper::getCompanyId();
         // dd($companyId);
         if ($request->ajax()) {
-            $columns = ['id','title','social_task_user_count'];
+            $columns = ['id', 'title', 'social_task_user_count'];
             $draw = $request->input('draw');
             $start = $request->input('start');
             $length = $request->input('length');
@@ -555,23 +564,26 @@ class CampaignController extends Controller
 
             // $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
             $query = UserCampaignHistoryModel::join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
-            ->select('campaign.id', 'campaign.title',
-            DB::raw('(SELECT COUNT(*) FROM campaign WHERE campaign.id = user_campaign_history.campaign_id) as total')
-            )->where('campaign.type', '2')->where('user_campaign_history.status', 3)->where('campaign.company_id', $companyId)->whereDate('user_campaign_history.created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('user_campaign_history.created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
+                ->select(
+                    'campaign.id',
+                    'campaign.title',
+                    DB::raw('(SELECT COUNT(*) FROM campaign WHERE campaign.id = user_campaign_history.campaign_id) as total')
+                )->where('campaign.type', '2')->where('user_campaign_history.status', 3)->where('campaign.company_id', $companyId)->whereDate('user_campaign_history.created_at', '>=', date('Y-m-d', strtotime($request->from_date)))->whereDate('user_campaign_history.created_at', '<=', date('Y-m-d', strtotime($request->to_date)));
             $recordsTotal = $query->count();
             // DB::enableQueryLog();
             $query->orderBy($columns[$order], $dir)->skip($start)->take($length);
 
             $userCounts = $query->get();
+
             // dd(DB::getQueryLog());
             $data = [];
 
             foreach ($userCounts as $item) {
-                    $data[] = [
-                        "id" => $item->id, // Format the day of the month
-                        "title" => $item->title, // Format the day of the month
-                        "social_task_user_count" => $item->total,
-                    ];
+                $data[] = [
+                    $item->id, // Format the day of the month
+                    $item->title, // Format the day of the month
+                    $item->total,
+                ];
             }
             return response()->json([
                 'draw' => (int)$draw,

@@ -131,7 +131,7 @@
                                     <table id="campaign_tables" class="table">
                                         <thead>
                                             <tr>
-                                                <th>id</th>
+                                                <th></th>
                                                 <th>Name</th>
                                                 <th>Count</th>
                                             </tr>
@@ -235,16 +235,14 @@
                     $('#filterdata').prop('disabled', true);
                 },
                 success: function(data) {
-                    $('#simple-line-referral').remove();
-                    $(".spinner").html('');
-                    $('#filterdata').prop('disabled', false);
+                     $(".spinner").html('');
                     var user_total = data;
-                    console.log(user_total);
-                    new Chartist.Line('#simple-line-referral-filter', {
+                    new Chartist.Line('#simple-line-referral', {
                         labels: user_total.day,
                         series: [
                             user_total.total_user,
-                        ]
+                        ],
+                        low: 0
                     }, {
                         showArea: true,
                         fullWidth: true,
@@ -259,9 +257,91 @@
                             onlyInteger: true
                         }
                     });
+                    // if (data.total_user == "" ) {
+                    //     alert(null);
+                    // //     $('#filterdata').prop('disabled', true);
+                    // // $(".spinner").html('');
+                    // //     var user_total = {!! json_encode($user_total) !!};
+                    // //     user_total = JSON.parse(user_total);
+                    // //     new Chartist.Line('#simple-line-referral', {
+                    // //         labels: user_total.day,
+                    // //         series: [
+                    // //             user_total.total_user,
+                    // //         ],
+                    // //         low: 0
+                    // //     }, {
+                    // //         showArea: true,
+                    // //         fullWidth: true,
+                    // //         chartPadding: {
+                    // //             right: 50
+                    // //         },
+                    // //         low: 0,
+                    // //         axisY: {
+                    // //             labelInterpolationFnc: function(value) {
+                    // //                 return Math.round(value);
+                    // //             },
+                    // //             onlyInteger: true
+                    // //         }
+                    // //     });
+
+                    // // $('#simple-line-referral').remove();
+                    // $(".spinner").html('');
+                    // $('#filterdata').prop('disabled', true);
+
+                    // var user_total = {!! json_encode($user_total) !!};
+                    // user_total = JSON.parse(user_total);
+                    // new Chartist.Line('#simple-line-referral', {
+                    //     labels: user_total.day,
+                    //     series: [
+                    //         user_total.total_user,
+                    //     ]
+                    // }, {
+                    //     showArea: true,
+                    //     fullWidth: true,
+                    //     chartPadding: {
+                    //         right: 50
+                    //     },
+                    //     low: 0,
+                    //     axisY: {
+                    //         labelInterpolationFnc: function(value) {
+                    //             return Math.round(value);
+                    //         },
+                    //         onlyInteger: true
+                    //     }
+                    // });
+
+                    // } else {
+
+
+
+                    // $('#simple-line-referral').remove();
+                    //     $(".spinner").html('');
+                    //     $('#filterdata').prop('disabled', true);
+                    //     var user_total = data;
+                    //     new Chartist.Line('#simple-line-referral-filter', {
+                    //         labels: user_total.day,
+                    //         series: [
+                    //             user_total.total_user,
+                    //         ]
+                    //     }, {
+                    //         showArea: true,
+                    //         fullWidth: true,
+                    //         chartPadding: {
+                    //             right: 50
+                    //         },
+                    //         low: 0,
+                    //         axisY: {
+                    //             labelInterpolationFnc: function(value) {
+                    //                 return Math.round(value);
+                    //             },
+                    //             onlyInteger: true
+                    //         }
+                    //     });
+                    // // }
                 },
                 error: function() {
-                    $('#simple-line-referral').remove();
+                    alert(123)
+                    // $('#simple-line-referral').remove(); 
                     $(".spinner").html('');
                     $('#filterdata').prop('disabled', false);
 
@@ -319,6 +399,7 @@
                 //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 // },
                 success: function(data) {
+                    console.log(data);
                     // Extract labels and values
                     var labels = data.map(function(item) {
                         return item.label;
@@ -375,13 +456,11 @@
 
         var _token = $('input[name="_token"]').val();
 
-
         var campaign_tables = $('#campaign_tables').DataTable({
-            "processing": false,
+            "processing": true,
             "serverSide": true,
             responsive: true,
             pageLength: 10,
-            // Initial no order.
             'order': [
                 [0, 'desc']
             ],
@@ -405,8 +484,7 @@
                     return '<input type="checkbox" name="chk_row" value="' + row[0] +
                         '" class="chk-row">';
                 },
-            },
-             ],
+            }],
         });
 
 

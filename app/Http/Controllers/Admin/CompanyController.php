@@ -151,7 +151,7 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
     }
     public function dtList(Request $request)
     {
-        $columns = ['id', 'company_name']; // Add more columns as needed
+        $columns = ['id', 'company_name','id','contact_number','company_name','subdomain','id']; // Add more columns as needed
         $totalData = CompanyModel::count();
         $start = $request->input('start');
         $length = $request->input('length');

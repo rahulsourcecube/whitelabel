@@ -29,22 +29,20 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
+
 */
 
-Route::middleware(['domain'])->group(function () {
+Route::get('/clearchache', function () {
+    Artisan::call('config:cache');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
+    return "Done!";
+});
+Route::get('/error', function () {
+    return view('error');
+})->name('error');
 
-    Route::get('/config', function () {
-        Artisan::call('config:cache');
-        Artisan::call('cache:clear');
-        Artisan::call('view:clear');
-        Artisan::call('optimize:clear');
-        return "Done!";
-    });
-
-    Route::get('/expire', function () {
-        Artisan::call('expire:notification');
-        return "Done!";
-    });
 
     Auth::routes();
     Route::get('/', [AdminController::class, 'index'])->name('admin');
@@ -55,7 +53,13 @@ Route::middleware(['domain'])->group(function () {
         Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
     });
 
+Route::middleware(['domain'])->group(function () {
 
+    Route::get('/expire', function () {
+        Artisan::call('expire:notification');
+        return "Done!";
+    });
+    
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
         Route::get('/login', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
@@ -121,43 +125,7 @@ Route::middleware(['domain'])->group(function () {
         Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword')->middleware('checkNotLoggedIn');
         Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
     });
-    // Admin Middleware
-    Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
-        Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('company-revenue', [AdminController::class, 'CompanyRevenue'])->name('CompanyRevenue');
-
-        // admin side edit admin edit Profile Route
-        Route::get('/change/password', [AdminController::class, 'ChengPassword'])->name('ChengPassword');
-        Route::post('/update/admin/password', [AdminController::class, 'UpdatePassword'])->name('UpdatePassword');
-
-        Route::prefix('package')->name('package.')->group(function () {
-            Route::get('', [PackageController::class, 'index'])->name('list');
-            Route::post('list', [PackageController::class, 'dtList'])->name('dtlist');
-            Route::get('create', [PackageController::class, 'create'])->name('create');
-            Route::post('/store', [PackageController::class, 'store'])->name('store');
-            Route::get('view/{package}', [PackageController::class, 'view'])->name('view');
-            Route::delete('delete/{package}', [PackageController::class, 'delete'])->name('delete');
-            Route::get('edit/{package}', [PackageController::class, 'edit'])->name('edit');
-            Route::put('update/{package}', [PackageController::class, 'update'])->name('update');
-        });
-        Route::prefix('setting')->name('setting.')->group(function () {
-            Route::get('', [SettingController::class, 'index'])->name('index');
-            Route::post('store', [SettingController::class, 'store'])->name('store');
-        });
-        Route::prefix('company')->name('company.')->group(function () {
-            Route::get('', [AdminCompanyController::class, 'index'])->name('list');
-            Route::post('list', [AdminCompanyController::class, 'dtList'])->name('dtlist');
-            Route::get('view/{id}', [AdminCompanyController::class, 'view'])->name('view');
-            Route::get('edit/{id}', [AdminCompanyController::class, 'edit'])->name('edit');
-            Route::post('update_passsword/{id}', [AdminCompanyController::class, 'updatepassword'])->name('update_password');
-            Route::post('update_profile/{id}', [AdminCompanyController::class, 'updateprofile'])->name('update_profile');
-            Route::post('store/{id}', [AdminCompanyController::class, 'store'])->name('store');
-            Route::post('add/packages/{id}', [AdminCompanyController::class, 'AddPackages'])->name('AddPackages');
-            Route::post('/buy', [AdminCompanyController::class, 'buy'])->name('buy');
-        });
-        Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
-        Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
-    });
+   
     Route::get('verifyemail/{id}', [CompanyLoginController::class, 'verifyemail'])->name('user.verifyemail');
     Route::get('verifycontact/{id}', [CompanyLoginController::class, 'verifycontact'])->name('user.verifycontact');
     // {{-- Company Middleware --}}
@@ -266,12 +234,50 @@ Route::middleware(['domain'])->group(function () {
             });
         });
     });
-    Route::get('migrate', function () {
-        Artisan::call('migrate');
-        return 'Yup, migrations run successfully!';
+});
+ // Admin Middleware
+ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
+    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('company-revenue', [AdminController::class, 'CompanyRevenue'])->name('CompanyRevenue');
+
+    // admin side edit admin edit Profile Route
+    Route::get('/change/password', [AdminController::class, 'ChengPassword'])->name('ChengPassword');
+    Route::post('/update/admin/password', [AdminController::class, 'UpdatePassword'])->name('UpdatePassword');
+
+    Route::prefix('package')->name('package.')->group(function () {
+        Route::get('', [PackageController::class, 'index'])->name('list');
+        Route::post('list', [PackageController::class, 'dtList'])->name('dtlist');
+        Route::get('create', [PackageController::class, 'create'])->name('create');
+        Route::post('/store', [PackageController::class, 'store'])->name('store');
+        Route::get('view/{package}', [PackageController::class, 'view'])->name('view');
+        Route::delete('delete/{package}', [PackageController::class, 'delete'])->name('delete');
+        Route::get('edit/{package}', [PackageController::class, 'edit'])->name('edit');
+        Route::put('update/{package}', [PackageController::class, 'update'])->name('update');
     });
-    Route::get('seeder', function () {
-        Artisan::call('db:seed');
-        return 'Yup, seeder run successfully!';
+    Route::prefix('setting')->name('setting.')->group(function () {
+        Route::get('', [SettingController::class, 'index'])->name('index');
+        Route::post('store', [SettingController::class, 'store'])->name('store');
     });
+    Route::prefix('company')->name('company.')->group(function () {
+        Route::get('', [AdminCompanyController::class, 'index'])->name('list');
+        Route::post('list', [AdminCompanyController::class, 'dtList'])->name('dtlist');
+        Route::get('view/{id}', [AdminCompanyController::class, 'view'])->name('view');
+        Route::get('edit/{id}', [AdminCompanyController::class, 'edit'])->name('edit');
+        Route::post('update_passsword/{id}', [AdminCompanyController::class, 'updatepassword'])->name('update_password');
+        Route::post('update_profile/{id}', [AdminCompanyController::class, 'updateprofile'])->name('update_profile');
+        Route::post('store/{id}', [AdminCompanyController::class, 'store'])->name('store');
+        Route::post('add/packages/{id}', [AdminCompanyController::class, 'AddPackages'])->name('AddPackages');
+        Route::post('/buy', [AdminCompanyController::class, 'buy'])->name('buy');
+    });
+    Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
+    Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
+});
+
+Route::get('migrate', function () {
+    Artisan::call('migrate');
+    return 'Yup, migrations run successfully!';
+});
+Route::get('seeder', function () {
+    Artisan::call('db:seed');
+    return 'Yup, seeder run successfully!';
 });

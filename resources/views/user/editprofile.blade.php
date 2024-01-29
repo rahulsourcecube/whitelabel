@@ -310,6 +310,7 @@
                     },
                     contact_number: {
                         required: true,
+                        digits: true
                     },
                     profile_image: {
                         required: function(element) {
@@ -333,6 +334,7 @@
                     },
                     contact_number: {
                         required: "Please enter phone number",
+                        digits: "Please enter valid contact number"
                     },
                     profile_image: {
                         required: function(element) {

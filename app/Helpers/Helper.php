@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\CampaignModel;
+use App\Models\CompanyModel;
 use App\Models\CompanyPackage;
 use App\Models\SettingModel;
 use App\Models\User;
@@ -10,16 +11,19 @@ use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use Exception;
-use GuzzleHttp\Psr7\Request;
+// use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
+
 
 class Helper
 {
     public static function getSiteSetting()
     {
+        // dd( Helper::get_domaininfo($_SERVER['ASSET_URL'])); 
 
         try {
             $companyId = Helper::getCompanyId();
@@ -29,6 +33,14 @@ class Helper
             Log::info('site setting error : ' . $exception->getMessage());
             return redirect()->back()->with('message', $exception->getMessage());
         }
+    }
+
+    public static function getdomain()
+    {
+             $host = request()->getHttpHost();
+        $domain = explode('.', $host);
+        $domainName = $domain['0'] ? $domain['0'] : null;
+        return $domainName;
     }
     public static function getcurrency()
     {
@@ -47,14 +59,46 @@ class Helper
         $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->exists();
         return $checkPackage;
     }
+    public static function get_domaininfo($url) {
+        // regex can be replaced with parse_url
+        preg_match("/^(https|http|ftp):\/\/(.*?)\//", "$url/" , $matches);
+       
+        $parts = explode(".", $matches[2]);
+        $tld = array_pop($parts);
+        $host = array_pop($parts);
+        if ( strlen($tld) == 2 && strlen($host) <= 3 ) {
+            $tld = "$host.$tld";
+            $host = array_pop($parts);
+        }
+        dd([
+            'protocol' => $matches[1],
+            'subdomain' => implode(".", $parts),
+            'domain' => "$host.$tld",
+            'host'=>$host,'tld'=>$tld]
+        );
+        return array(
+            'protocol' => $matches[1],
+            'subdomain' => implode(".", $parts),
+            'domain' => "$host.$tld",
+            'host'=>$host,'tld'=>$tld
+        );
+    }
     public static function getCompanyId()
     {
-        if (auth()->user()->user_type == '2' || auth()->user()->user_type == '1') {
-            $companyId = Auth::user()->id;
-        } else {
-            $companyId = Auth::user()->company_id;
-        }
+        $getdomain = Helper::getdomain();
+      
 
+        if (!empty($getdomain) && $getdomain != env('pr_name')) {
+            $CompanyModel = new CompanyModel();
+            $exitDomain = $CompanyModel->checkDmain($getdomain);
+            $companyId = $exitDomain->user_id;
+        } else {
+            if (auth()->user()->user_type == '2' || auth()->user()->user_type == '1') {
+                $companyId = Auth::user()->id;
+            } else {
+                $companyId = Auth::user()->company_id;
+            }
+        }
         return $companyId;
     }
     public static function isInactivePackage()

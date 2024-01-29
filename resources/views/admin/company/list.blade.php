@@ -81,6 +81,7 @@
                 }, {
                     'targets': 7,
                     'visible': true,
+                    'class':'d-flex',
                     'orderable': false,
                     'render': function(data, type, row) {
                         var viewUrl = '{{ route('admin.company.view', ':id') }}';

@@ -27,13 +27,15 @@ class CompanyLoginController extends Controller
 {
 
     public function index()
-    {
+    {    
+      
         if (!empty(auth()->user()) && auth()->user()->user_type == '1') {
             return redirect()->route('admin.dashboard');
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == '2') {
             return redirect()->route('company.dashboard');
         } else {
-            return view('company.companylogin');
+            $siteSetting = Helper::getSiteSetting();  
+            return view('company.companylogin',compact('siteSetting'));
         }
     }
     function dashboard()
@@ -111,11 +113,19 @@ class CompanyLoginController extends Controller
 
     public function signup()
     {
+       
+        $getdomain = Helper::getdomain();
+        if(!empty($getdomain) && $getdomain != env('pr_name')  ){
+            return redirect(env('ASSET_URL').'/company/signup');
+        }
         //Helper::createCompanySubDomain('aa111');
-        return view('company.signup');
+        $siteSetting = Helper::getSiteSetting(); 
+        return view('company.signup',compact('siteSetting'));
     }
     public function signupStore(Request $request)
     {
+        // $domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']); 
+        // dd()
         try {
             $input = $request->all();
             $input['dname'] = strtolower($input['dname']);
@@ -167,6 +177,8 @@ class CompanyLoginController extends Controller
             }
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == '2') {
+                    //$domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']); 
+                    
                     return redirect()->route('company.dashboard');
                 } else {
                     return redirect()->back()->with('error', 'These credentials do not match our records.');
@@ -181,7 +193,8 @@ class CompanyLoginController extends Controller
     }
     public function forget()
     {
-        return view('company.forgetPassword');
+        $siteSetting = Helper::getSiteSetting();   
+        return view('company.forgetPassword',compact('siteSetting'));
     }
 
     public function submitForgetPassword(Request $request)
@@ -237,7 +250,8 @@ class CompanyLoginController extends Controller
     {
         try {
             $user = DB::table('password_resets')->where('token', $token)->first();
-            return view('company.confirmPassword', compact('user'), ['token' => $token]);
+            $siteSetting = Helper::getSiteSetting();   
+            return view('company.confirmPassword', compact('user','siteSetting'), ['token' => $token]);
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }

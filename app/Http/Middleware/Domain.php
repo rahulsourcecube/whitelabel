@@ -17,16 +17,26 @@ class Domain
      */
     public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+
         $host = $request->getHost();
+        $domain = [];
         $domain = explode('.', $host);
 
-        // $CompanyModel = CompanyModel::checkDmain(auth()->user('id'));
-        // dd( $CompanyModel);
+        $CompanyModel = new CompanyModel();
 
-        // if(auth()->user() && auth()->user()->user_type == 1 ){
-        //     return $next($request);
-        // }
-        // return redirect('login')->with('error',"You don't have admin access.");
+        if ($domain['0'] != env('pr_name')) {
+            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+        }
+        if ($domain[0] == env('pr_name') && ($request->url() == env('ASSET_URL') . '/company/signup' || $request->url() == env('ASSET_URL') . '/signup-store' || request()->segment(1) == 'company' || request()->segment(1) == 'admin' || request()->segment(1) == 'login')) {
+            return $next($request);
+        } elseif ($domain['0'] != env('pr_name')    &&  !empty($exitDomain)) {
+            return $next($request);
+        } elseif (!empty(request()->segment(1)) && request()->segment(1) == 'user' && $domain['0'] != env('pr_name')) {
+            return redirect()->route('error');
+        } elseif ((!empty($domain['0'])) || !empty(request()->segment(1)) && (request()->segment(1) == 'company')) {
+            return redirect(env('ASSET_URL') . '/company/signup');
+        } else {
+            return redirect('login')->with('error', "You don't have admin access.");
+        }
     }
 }

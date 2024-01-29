@@ -1,9 +1,13 @@
 <div class="header">
+{{-- @dd(if (!empty($siteSetting) && isset($siteSetting->logo) && file_exists(url('uploads/setting/'.$siteSetting->logo)))); --}}
     <div class="logo logo-dark">
         <a href="{{ route('user.dashboard') }}">
-            <img src="@if (!empty($siteSetting) && isset($siteSetting->logo) && file_exists(asset('uploads/setting/' . $siteSetting->logo))) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
+            <img src="@if (
+                !empty($siteSetting) &&
+                    !empty($siteSetting->logo) &&
+                    file_exists('uploads/setting/' . $siteSetting->logo)) {{url('uploads/setting/' . $siteSetting->logo)}} @else{{url('assets/images/logo/logo.png')}}@endif"
                 alt="Logo">
-            <img class="logo-fold" src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(base_path("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->favicon)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif" alt="Logo">
+            <img class="logo-fold" src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(asset("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif" alt="Logo">
         </a>
     </div>
     <div class="logo logo-white">

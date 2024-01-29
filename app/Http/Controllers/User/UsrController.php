@@ -32,8 +32,9 @@ class UsrController extends Controller
             return redirect()->route('company.dashboard');
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == 4) {
             return redirect()->route('user.dashboard');
-        } else {
-            return view('user.userlogin');
+        } else {           
+            $siteSetting = Helper::getSiteSetting();   
+            return view('user.userlogin',compact('siteSetting'));
         }
     }
 
@@ -315,6 +316,7 @@ class UsrController extends Controller
                 $status = $request->status;
                 $filter->where('status', '=', $status);
             }
+            // die($filter->toSql());
 
             $filterResults = $filter->get();
             return view('user.reward.progressreward', compact('filterResults'));
@@ -437,7 +439,9 @@ class UsrController extends Controller
     }
     public function signup()
     {
-        return view('user.signup');
+        $siteSetting = Helper::getSiteSetting();  
+
+        return view('user.signup',compact('siteSetting'));
     }
 
     public function store(Request $request)
@@ -454,8 +458,12 @@ class UsrController extends Controller
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->first();
             }
-            $company = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
-            $companyId = $company->id;
+           // get domain
+           $host = $request->getHost();
+           $domain = explode('.', $host);
+           $CompanyModel = new CompanyModel();
+           $exitDomain = $CompanyModel->checkDmain($domain['0']);           
+            $companyId = $exitDomain->user_id;           
             $ActivePackageData = Helper::GetActivePackageData();
             $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
             if ($userCount >= $ActivePackageData->no_of_user) {
@@ -489,8 +497,8 @@ class UsrController extends Controller
 
     public function forget(Request $request)
     {
-
-        return view('user.forgetPassword');
+        $siteSetting = Helper::getSiteSetting();   
+        return view('user.forgetPassword',compact('siteSetting'));
     }
 
     public function submitForgetPassword(Request $request)
@@ -524,7 +532,8 @@ class UsrController extends Controller
     {
         try {
             $user = DB::table('password_resets')->where('token', $token)->first();
-            return view('user.confirmPassword', compact('user'), ['token' => $token]);
+            $siteSetting = Helper::getSiteSetting();   
+            return view('user.confirmPassword', compact('user','siteSetting'), ['token' => $token]);
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }

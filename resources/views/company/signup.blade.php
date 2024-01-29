@@ -6,11 +6,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Sign Up
-    </title>
+    
+    <title>Sign Up || {{ !empty($siteSetting) && !empty($siteSetting->title) ? $siteSetting->title : env('APP_NAME') }} </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && !empty($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+    href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(('uploads/setting/' . $siteSetting->favicon))) {{ url('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -35,8 +35,12 @@
                                 <div class="card-body">
                                     @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
-                                        <img class="img-fluid" alt="" src="{{asset('assets/images/logo/logo.png')}}">
-                                        <h2 class="m-b-0">Sign Up</h2>
+                                        <img  style="width: 130px ; hight:50px" src="@if (
+                                            !empty($siteSetting) &&
+                                                !empty($siteSetting->logo) &&
+                                                file_exists('uploads/setting/' . $siteSetting->logo)) {{url('uploads/setting/' . $siteSetting->logo)}} @else {{asset('assets/images/logo/logo.png')}} @endif "
+                                            alt="Logo">
+                                        <h2 class="m-b-0"> Company Sign Up</h2>
                                     </div>
                                     <form id="signup" method="POST" action="{{ route('company.signup.store') }}">
                                         @csrf
@@ -64,9 +68,9 @@
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="ccontact">Contact
                                                     Number:</label>
-                                                <input type="number" min="0" class="form-control" name="ccontact" id="ccontact"
-                                                    placeholder="Contact Number" maxlength="10" minlength="10"
-                                                    value="{{old('ccontact')}}">
+                                                <input type="text"   class="form-control" name="ccontact" id="ccontact"
+                                                    placeholder="Contact Number" maxlength="10"  
+                                                    value="{{old('ccontact')}}"   onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
                                             <div class="col-md-12">
                                                 <label class="font-weight-semibold" for="dname">Domain Name:</label>
@@ -130,7 +134,9 @@
                     required: true
                 },
                 ccontact: {
-                    required: true
+                    required: true,
+                    minlength: 10,
+                    digits: true
                 },
                 dname: {
                     required: true,
@@ -160,7 +166,9 @@
                     required: "Please enter company name"
                 },
                 ccontact: {
-                    required: "Please enter contact number"
+                    required: "Please enter contact number",
+                    digits: "Please enter valid contact number",
+                    minlength: "Your phone number must be 10 digits."
                 },
                 dname: {
                     required: "Please enter domain name"

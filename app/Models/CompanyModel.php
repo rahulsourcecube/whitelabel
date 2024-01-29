@@ -27,9 +27,11 @@ class CompanyModel extends Model
     {
         return $this->belongsTo(User::class,'user_id');
     }
-    public function checkDmain($id)
+    
+    public function checkDmain($subdomain)
     {
-        return 'test';
-    }
+        return   $this->where('subdomain',$subdomain)->first();
+       
+    } 
 
 }

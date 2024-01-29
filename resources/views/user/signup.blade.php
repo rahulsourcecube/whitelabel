@@ -6,10 +6,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Sign Up</title>
+  
+    <title> Sign Up || {{!empty($siteSetting) && !empty($siteSetting->title) ? ucfirst($siteSetting->title).' Sign Up'  : env('APP_NAME') }} </title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/logo.png') }}">
+    <link rel="shortcut icon"
+    href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(('uploads/setting/' . $siteSetting->favicon))) {{ url('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
 
     <!-- page css -->
 
@@ -38,7 +40,11 @@
                                 <div class="card-body">
                                     @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
-                                        <img class="img-fluid" alt="" src="{{ asset('assets/images/logo/logo.png') }}">
+                                        <img  style="width: 130px ; hight:50px" src="@if (
+                                            !empty($siteSetting) &&
+                                                !empty($siteSetting->logo) &&
+                                                file_exists('uploads/setting/' . $siteSetting->logo)) {{url('uploads/setting/' . $siteSetting->logo)}} @else{{asset('assets/images/logo/logo.png')}}@endif"
+                                            alt="Logo">
                                         <h2 class="m-b-0">Signup</h2>
                                     </div>
                                     <form id="fomData" action="{{ route('user.store') }}" method="POST">
@@ -69,7 +75,7 @@
                                                 <label class="font-weight-semibold" for="contact">Contact
                                                     Number:</label>
                                                 <input type="text" class="form-control" id="contact"
-                                                    placeholder="Contact Number" minlength="10" maxlength="10"
+                                                    placeholder="Contact Number" maxlength="10"
                                                     name="contact_number" value="{{old('contact_number')}}"
                                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
@@ -147,6 +153,8 @@
                     },
                     contact_number: {
                         required: true,
+                        minlength:'10',
+                        digits: true
                     },
                     password: {
                         required: true,
@@ -169,6 +177,8 @@
                     },
                     contact_number: {
                         required: "Please enter contact number",
+                        minlength: "Your phone number must be 10 digits.",
+                        digits: "Please enter valid contact number"
                     },
                     password: {
                         required: "Please enter password",

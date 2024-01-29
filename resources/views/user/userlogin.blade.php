@@ -4,10 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Login</title>
+    {{-- <title>Login</title> --}}
+    <title>User Login || {{ !empty($siteSetting) && !empty($siteSetting->title) ? Ucfirst($siteSetting->title) : env('APP_NAME') }} </title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/logo/logo.png') }}">
+    <link rel="shortcut icon"
+        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(('uploads/setting/' . $siteSetting->favicon))) {{ url('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
 
     <style>
         .error {
@@ -27,7 +29,11 @@
         <div class="container-fluid">
             <div class="d-flex full-height p-v-15 flex-column justify-content-between">
                 <div class="d-none d-md-flex p-h-40">
-                    <img src="{{ asset('assets/images/logo/logo.png') }}" alt="">
+                    <img  style="width: 130px ; hight:50px" src="@if (
+                !empty($siteSetting) &&
+                    !empty($siteSetting->logo) &&
+                    file_exists('uploads/setting/' . $siteSetting->logo)) {{url('uploads/setting/' . $siteSetting->logo)}} @else{{asset('assets/images/logo/logo.png')}}@endif"
+                alt="Logo">
                 </div>
                 <div class="container">
                     <div class="row align-items-center">
