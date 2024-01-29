@@ -13,7 +13,7 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(('uploads/setting/' . $siteSetting->favicon))) {{ url('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />

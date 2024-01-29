@@ -28,6 +28,10 @@ class AdminController extends Controller
      */
     public function index()
     {
+        if(!empty($getdomain) && $getdomain != env('pr_name')  ){
+            return redirect()->back();
+        }
+
         if (auth()->user()->user_type == 1) {
             return redirect()->route('admin.dashboard');
         } elseif (auth()->user()->user_type == 2) {

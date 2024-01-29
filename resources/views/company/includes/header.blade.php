@@ -4,15 +4,15 @@
             <img src="@if (
                 !empty($siteSetting) &&
                     !empty($siteSetting->logo) &&
-                    file_exists('uploads/setting/' . $siteSetting->logo)) {{ asset('uploads/setting/' . $siteSetting->logo) }} @else{{ asset('assets/images/logo/logo.png') }} @endif "
+                    file_exists('uploads/setting/' . $siteSetting->logo)) {{url('uploads/setting/' . $siteSetting->logo)}} @else{{asset('assets/images/logo/logo.png')}}@endif"
                 alt="Logo">
-            <img class="logo-fold" src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(base_path("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}  @endif" alt="Logo">
+            <img class="logo-fold" src="@if(!empty($siteSetting) &&  !empty($siteSetting->logo) && file_exists(asset("uploads/setting/".$siteSetting->logo))) {{asset("uploads/setting/".$siteSetting->logo)}} @else{{ asset('assets/images/logo/logo.png') }}@endif" alt="Logo">
         </a>
     </div>
     <div class="logo logo-white">
         <a href="{{ route('company.dashboard') }}">
             <img src="{{ asset('assets/images/logo/logo-white.png') }}" alt="Logo">
-            <img class="logo-fold" src="{{ asset('assets/images/logo/logo-fold-white.png') }}" alt="Logo">
+            <img class="logo-fold" src="{{asset('assets/images/logo/logo-fold-white.png')}}" alt="Logo">
         </a>
     </div>
     <div class="nav-wrap">
