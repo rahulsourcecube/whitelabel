@@ -57,7 +57,7 @@ class UsrController extends Controller
                 $chartRevenueData[(int)date('d', $i)] = 0;
             }
             foreach ($chartReward as $values) {
-                $chartRevenueData[ (int) date("d", strtotime($values['day']))] = $values['total_day_reward'];
+                $chartRevenueData[(int) date("d", strtotime($values['day']))] = $values['total_day_reward'];
             }
             $chartRevenueData = (['day' => array_keys($chartRevenueData), 'revenue' => array_values($chartRevenueData)]);
 
@@ -83,21 +83,22 @@ class UsrController extends Controller
                 'password' => 'required',
             ]);
 
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'status' => '1'))) {
-
-                if (!empty(auth()->user()) &&  auth()->user()->user_type == 4) {
-                    if(Session('referral_link') != null){
-                        $referral_link = Session('referral_link');
-                        $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
-                        $user_plan = UserCampaignHistoryModel::where('referral_link', $lastSegment->value)->first();
-                        $id = base64_encode($user_plan->campaign_id);
-                        return redirect()->route('user.campaign.view', $id);
-                    }
-
-                    return redirect()->route('user.dashboard');
-                } else {
-                    return redirect()->back()->with('error', 'These credentials do not match our records.');
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'status' => '1', 'user_type' => '4'))) {
+                // if (!empty(auth()->user()) &&  (auth()->user()->user_type == '4')) {
+                //     dD(auth()->user());
+                if (Session('referral_link') != null) {
+                    $referral_link = Session('referral_link');
+                    $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
+                    $user_plan = UserCampaignHistoryModel::where('referral_link', $lastSegment->value)->first();
+                    $id = base64_encode($user_plan->campaign_id);
+                    return redirect()->route('user.campaign.view', $id);
                 }
+
+                return redirect()->route('user.dashboard');
+                // } else {
+
+                //     return redirect()->back()->with('error', 'These credentials do not match our records.');
+                // }
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
             }
@@ -291,7 +292,7 @@ class UsrController extends Controller
         try {
             $filter = UserCampaignHistoryModel::where('user_id', Auth::user()->id)
                 ->orderBy('id', 'DESC')
-                ->whereIn('status', [1, 2 ,5]);
+                ->whereIn('status', [1, 2, 5]);
 
             if ($request->filled('from_date')) {
                 $from_date = date("Y-m-d", strtotime($request->from_date));
@@ -556,6 +557,7 @@ class UsrController extends Controller
 
     public function Logout()
     {
+
         Session::flush();
 
         Auth::logout();

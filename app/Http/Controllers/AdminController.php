@@ -28,7 +28,6 @@ class AdminController extends Controller
      */
     public function index()
     {
-
         if (auth()->user()->user_type == 1) {
             return redirect()->route('admin.dashboard');
         } elseif (auth()->user()->user_type == 2) {
@@ -40,6 +39,9 @@ class AdminController extends Controller
             return view('auth.login');
         }
     }
+
+
+
     function dashboard()
     {
         $currentMonth = Carbon::now()->month;
@@ -52,7 +54,9 @@ class AdminController extends Controller
 
         $data['company'] = CompanyModel::get(['id', 'company_name', 'user_id']);
 
-        $data['old_company'] = User::where('user_type', 2)->where('status', '1')->where(function ($query) use ($currentMonth, $currentYear) {$query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);})->count();
+        $data['old_company'] = User::where('user_type', 2)->where('status', '1')->where(function ($query) use ($currentMonth, $currentYear) {
+            $query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);
+        })->count();
         $data['new_company'] = User::where('user_type', 2)->where('status', '1')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
 
         return view('admin.dashboard', $data);
@@ -65,14 +69,14 @@ class AdminController extends Controller
         $month = $request->month; // Replace with the actual month you want to filter
 
         $results = DB::table('user_campaign_history')
-        ->join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
-        ->select(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%Y-%m-%d") as date'), DB::raw('SUM(user_campaign_history.reward) as total_reward'))
-        ->where('campaign.company_id', $userId)
-        ->where('user_campaign_history.status', 3)
-        ->where(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%m/%Y")'), $month)
-        ->groupBy(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%Y-%m-%d")'))
-        ->get()
-        ->toArray();
+            ->join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
+            ->select(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%Y-%m-%d") as date'), DB::raw('SUM(user_campaign_history.reward) as total_reward'))
+            ->where('campaign.company_id', $userId)
+            ->where('user_campaign_history.status', 3)
+            ->where(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%m/%Y")'), $month)
+            ->groupBy(DB::raw('DATE_FORMAT(user_campaign_history.created_at, "%Y-%m-%d")'))
+            ->get()
+            ->toArray();
 
 
         $data = [];
@@ -152,9 +156,12 @@ class AdminController extends Controller
 
         return redirect()->route('admin.change_password')->with('success', __('Change Password successfully updated.'));
     }
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
 
         Auth::logout();
-        return redirect()->route('admin.login');
-      }
+        // return view('auth.login');
+
+        return redirect()->to('login');
+    }
 }
