@@ -25,4 +25,10 @@ class HomeController extends Controller
     {
         echo "Home Page";
     }
+
+    public function loginAdmin(Request $request)
+    {
+
+        return view('auth.login');
+    }
 }

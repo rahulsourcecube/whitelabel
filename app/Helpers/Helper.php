@@ -70,16 +70,15 @@ class Helper
 
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
-        if(Auth::user()!=null){
+        if (Auth::user() != null) {
             $companyId = Helper::getCompanyId();
             // and then you can get query log
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
-        }else{
+        } else {
             $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
             // and then you can get query log
             $packageData = CompanyPackage::where('company_id', $companyId->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
         }
-
 
         return $packageData;
     }
@@ -88,11 +87,11 @@ class Helper
     {
         $currentDate = Carbon::now();
         $currentDate = $currentDate->format('Y-m-d');
-        if(Auth::user()!=null){
+        if (Auth::user() != null) {
             $companyId = Helper::getCompanyId();
             // and then you can get query log
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->first();
-        }else{
+        } else {
             $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
             // and then you can get query log
             $packageData = CompanyPackage::where('company_id', $companyId->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->first();
@@ -103,7 +102,7 @@ class Helper
     // Change Date format
     public static function Dateformat($date)
     {
-        if(gettype($date)== 'string'){
+        if (gettype($date) == 'string') {
             $date = Carbon::parse($date);
         }
         $formattedDate = $date->format('Y-M-d');
@@ -148,18 +147,19 @@ class Helper
     }
 
     //Create host in local
-    public static function createCompanySubDomain($subdomain) {
+    public static function createCompanySubDomain($subdomain)
+    {
         return;
         try {
             $domain = $_SERVER['SERVER_NAME'];
-            $subdomain = $subdomain.'.'.$_SERVER['SERVER_NAME'];
+            $subdomain = $subdomain . '.' . $_SERVER['SERVER_NAME'];
             $whitelist = array(
                 '127.0.0.1',
                 '::1'
             );
-            if(in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+            if (in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
                 $documentRoot = $_SERVER["DOCUMENT_ROOT"];
-                $documentRoot = str_replace('/', '\\', $documentRoot );
+                $documentRoot = str_replace('/', '\\', $documentRoot);
 
                 $virtualHostConfig = <<<EOL
                     \n<VirtualHost *:80>
@@ -169,13 +169,13 @@ class Helper
                             </Directory>
                         </VirtualHost>
                     EOL;
-                $dirArr = explode('\\',$documentRoot);
-                $vertualHostPath = $dirArr[0].DIRECTORY_SEPARATOR.$dirArr[1].DIRECTORY_SEPARATOR;//.$dirArr[2].DIRECTORY_SEPARATOR;
+                $dirArr = explode('\\', $documentRoot);
+                $vertualHostPath = $dirArr[0] . DIRECTORY_SEPARATOR . $dirArr[1] . DIRECTORY_SEPARATOR; //.$dirArr[2].DIRECTORY_SEPARATOR;
 
                 exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
 
                 // Path to Apache's httpd-vhosts.conf file
-                $vhostsFilePath = $vertualHostPath .'apache/conf/extra/httpd-vhosts.conf'; // 'C:/xampp8.2/apache/conf/extra/httpd-vhosts.conf';
+                $vhostsFilePath = $vertualHostPath . 'apache/conf/extra/httpd-vhosts.conf'; // 'C:/xampp8.2/apache/conf/extra/httpd-vhosts.conf';
 
                 // Add the virtual host configuration to httpd-vhosts.conf
                 file_put_contents($vhostsFilePath, $virtualHostConfig, FILE_APPEND);
@@ -187,14 +187,14 @@ class Helper
 
                 // Restart Apache to apply changes
                 exec($vertualHostPath . 'apache/bin/httpd.exe -k restart');
-            }else{
+            } else {
                 $cpanelUsername = 'rkinfosolution';
                 $cpanelPassword = 'Tell@5050';
                 $cpanelDomain = $domain;
 
                 // Subdomain details
                 $subdomainName = 'newsubdomain';
-                $subdomainDocumentRoot = '/public_html/'.$subdomain; // Adjust the path as needed
+                $subdomainDocumentRoot = '/public_html/' . $subdomain; // Adjust the path as needed
 
                 // Build the API URL
                 $apiUrl = "https://{$cpanelUsername}:{$cpanelPassword}@{$cpanelDomain}:2083/cpsess_randomstring/execute/API2";
@@ -227,15 +227,14 @@ class Helper
                 if ($responseData['cpanelresult']['error'] == null) {
                     Log::error("Subdomain '{$subdomainName}' created successfully!");
                 } else {
-                    Log::error("Error creating subdomain: {".$responseData['cpanelresult']['error']."}");
+                    Log::error("Error creating subdomain: {" . $responseData['cpanelresult']['error'] . "}");
                 }
             }
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             //throw $th;
-            Log::error("Error creating subdomain: ". $th->getMessage());
+            Log::error("Error creating subdomain: " . $th->getMessage());
         }
-       return;
+        return;
     }
 
     // get Remaining Days

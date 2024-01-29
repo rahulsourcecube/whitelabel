@@ -6,7 +6,7 @@ use App\Models\CompanyModel;
 use Closure;
 use Illuminate\Http\Request;
 
-class Domain 
+class Domain
 {
     /**
      * Handle an incoming request.
@@ -17,13 +17,13 @@ class Domain
      */
     public function handle(Request $request, Closure $next)
     {
-      
-        $host = $request->getHost();        
-        $domain= explode('.', $host);
-    
-        $CompanyModel = CompanyModel::checkDmain(auth()->user('id'));
-        dd( $CompanyModel);
-        
+        return $next($request);
+        $host = $request->getHost();
+        $domain = explode('.', $host);
+
+        // $CompanyModel = CompanyModel::checkDmain(auth()->user('id'));
+        // dd( $CompanyModel);
+
         // if(auth()->user() && auth()->user()->user_type == 1 ){
         //     return $next($request);
         // }

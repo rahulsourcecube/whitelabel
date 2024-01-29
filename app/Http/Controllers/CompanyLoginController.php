@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
+use App\Mail\company\CompanyWelcomeMail;
 
 class CompanyLoginController extends Controller
 {
@@ -99,13 +100,10 @@ class CompanyLoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-            if (!empty(auth()->user()) &&  (auth()->user()->user_type == '2' || auth()->user()->user_type == '3')) {
-
-                return redirect()->route('company.dashboard');
-            } else {
-                return redirect()->back()->with('error', 'These credentials do not match our records.');
-            }
+        if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '2'))) {
+            return redirect()->route('company.dashboard');
+        } elseif (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '3'))) {
+            return redirect()->route('company.dashboard');
         } else {
             return redirect()->back()->with('error', 'These credentials do not match our records.');
         }
@@ -144,6 +142,10 @@ class CompanyLoginController extends Controller
             $user->contact_number = $request->ccontact;
             $user->user_type = '2';
             $user->save();
+            //
+            $userName  = $request->fname . ' ' . $request->lname;
+            \Mail::to($request->email)->send(new CompanyWelcomeMail('Welcome Mail', $userName));
+
             if (isset($user)) {
                 $compnay = new CompanyModel();
                 $compnay->user_id = $user->id;
@@ -256,7 +258,7 @@ class CompanyLoginController extends Controller
             }
 
             $user = User::where('email', $request->email)
-                ->update(['password' => Hash::make($request->password),'view_password' => $request->password]);
+                ->update(['password' => Hash::make($request->password), 'view_password' => $request->password]);
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 
@@ -337,7 +339,7 @@ class CompanyLoginController extends Controller
             return $this->sendError($e->getMessage());
         }
     }
-    public function verifyemail(Request $request ,$id)
+    public function verifyemail(Request $request, $id)
     {
         $userId = Auth::user()->id;
         $email_check = User::where('id', '!=', $id)->where('email', $request->email)->where('user_type', '2')->first();

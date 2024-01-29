@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 @php
-    $siteSetting = App\Helpers\Helper::getSiteSetting();
+$siteSetting = App\Helpers\Helper::getSiteSetting();
 @endphp
 
 <head>
@@ -10,8 +10,7 @@
     <title>@yield('title') ||
         {{ !empty($siteSetting) && !empty($siteSetting->title) ? $siteSetting->title : env('APP_NAME') }}</title>
     <!-- Favicon -->
-    <link rel="shortcut icon"
-        href=" @if (
+    <link rel="shortcut icon" href=" @if (
             !empty($siteSetting) &&
                 !empty($siteSetting->favicon) &&
                 base_path(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
