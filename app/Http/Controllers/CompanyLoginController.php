@@ -27,19 +27,26 @@ class CompanyLoginController extends Controller
 {
 
     public function index()
-    {    
-      
+    {
+        //  Check domain
+        $getdomain = Helper::getdomain();
+
+        if (!empty($getdomain) && $getdomain == env('pr_name')) {
+            return redirect(env('ASSET_URL') . '/company/signup');
+        }
+        //end     
         if (!empty(auth()->user()) && auth()->user()->user_type == '1') {
             return redirect()->route('admin.dashboard');
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == '2') {
             return redirect()->route('company.dashboard');
         } else {
-            $siteSetting = Helper::getSiteSetting();  
-            return view('company.companylogin',compact('siteSetting'));
+            $siteSetting = Helper::getSiteSetting();
+            return view('company.companylogin', compact('siteSetting'));
         }
     }
     function dashboard()
     {
+
         // Get the current month and year
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
@@ -110,22 +117,36 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', 'These credentials do not match our records.');
         }
     }
-
-    public function signup()
+    public function loginWithToken(Request $request)
     {
-       
+        try {
+            $user = User::where('token', $request->token)->first();
+            if (auth()->attempt(array('email' => $user->email, 'password' => $user->view_password, 'user_type' => '2'))) {
+                $user->update([
+                    'token' =>  ""
+                ]);
+                return redirect()->route('company.dashboard');
+            } else {
+                return redirect()->route('company.login')->with('error', 'These credentials do not match our records.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('company.login');
+        }
+    }
+    public function signup(Request $request)
+    {
+
         $getdomain = Helper::getdomain();
-        if(!empty($getdomain) && $getdomain != env('pr_name')  ){
-            return redirect(env('ASSET_URL').'/company/signup');
+        if (!empty($getdomain) && $getdomain != env('pr_name')) {
+            return redirect(env('ASSET_URL') . '/company/signup');
         }
         //Helper::createCompanySubDomain('aa111');
-        $siteSetting = Helper::getSiteSetting(); 
-        return view('company.signup',compact('siteSetting'));
+        $siteSetting = Helper::getSiteSetting();
+        return view('company.signup', compact('siteSetting'));
     }
     public function signupStore(Request $request)
     {
-        // $domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']); 
-        // dd()
+
         try {
             $input = $request->all();
             $input['dname'] = strtolower($input['dname']);
@@ -164,37 +185,37 @@ class CompanyLoginController extends Controller
                 $compnay->subdomain = $input['dname'];
                 $compnay->contact_number = $request->ccontact;
                 $compnay->save();
+                $token =  Hash::make($user->id);
                 $user->update([
                     'company_id' => $compnay->id,
+                    'token' => $token
                 ]);
-            }
-            if (isset($user)) {
                 $role = Role::where('name', 'Company')->first();
                 $user->assignRole([$role->id]);
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
                 $settingModel->save();
             }
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
+            return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
+            /*if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == '2') {
                     //$domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']); 
-                    
-                    return redirect()->route('company.dashboard');
+                    return redirect($request->getScheme() .'://' . $request->dname .'.'. $request->getHost().'/company/dashboard');
                 } else {
                     return redirect()->back()->with('error', 'These credentials do not match our records.');
                 }
                 Helper::createCompanySubDomain($input['dname']);
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
-            }
+            }*/
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
     public function forget()
     {
-        $siteSetting = Helper::getSiteSetting();   
-        return view('company.forgetPassword',compact('siteSetting'));
+        $siteSetting = Helper::getSiteSetting();
+        return view('company.forgetPassword', compact('siteSetting'));
     }
 
     public function submitForgetPassword(Request $request)
@@ -250,8 +271,8 @@ class CompanyLoginController extends Controller
     {
         try {
             $user = DB::table('password_resets')->where('token', $token)->first();
-            $siteSetting = Helper::getSiteSetting();   
-            return view('company.confirmPassword', compact('user','siteSetting'), ['token' => $token]);
+            $siteSetting = Helper::getSiteSetting();
+            return view('company.confirmPassword', compact('user', 'siteSetting'), ['token' => $token]);
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }

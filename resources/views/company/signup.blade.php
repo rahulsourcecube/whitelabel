@@ -103,8 +103,8 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <label for="checkbox"><span>Already have an account? <a
-                                                href="{{route('company.signin')}}">Login</a></span></label>
+                                    {{-- <label for="checkbox"><span>Already have an account? <a
+                                                href="{{route('company.signin')}}">Login</a></span></label> --}}
                                 </div>
                             </div>
                         </div>

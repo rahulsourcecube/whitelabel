@@ -43,6 +43,7 @@ class SettingController extends Controller
          //code...
          $SettingModel = SettingModel::where('user_id', $companyId)->first();
          if ($SettingModel->user_id) {
+           
             if (empty($SettingModel)) {
                $SettingModel = new SettingModel;
             }
@@ -56,7 +57,7 @@ class SettingController extends Controller
                // Combine the timestamp, random number, an underscore, and the original extension
                $logo = $timestamp . '_' . $randomNumber . '.' . $extension;
                // Move the file to the storage directory with the new filename+
-               $request->file('logo')->move('uploads/setting', $logo);
+               $request->file('logo')->move(base_path('uploads/setting'), $logo);
                if (!empty($SettingModel->logo)) {
                   $oldlogo = 'uploads/setting/' . $SettingModel->logo;
                   // Delete the old favicon if it exists
@@ -84,7 +85,7 @@ class SettingController extends Controller
                // Combine the timestamp, random number, an underscore, and the original extension
                $favicon_img = $timestamp . '_' . $randomNumber . '.' . $extension;
                // Move the file to the storage directory with the new filename+
-               $request->file('favicon')->move('uploads/setting', $favicon_img);
+               $request->file('favicon')->move(base_path('uploads/setting'), $favicon_img);
                // Save the favicon_img path to the database
                $SettingModel->favicon = $favicon_img;
             }

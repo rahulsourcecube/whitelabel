@@ -27,9 +27,13 @@ class Domain
         if ($domain['0'] != env('pr_name')) {
             $exitDomain = $CompanyModel->checkDmain($domain['0']);
         }
-        if ($domain[0] == env('pr_name') && ($request->url() == env('ASSET_URL') . '/company/signup' || $request->url() == env('ASSET_URL') . '/signup-store' || request()->segment(1) == 'company' || request()->segment(1) == 'admin' || request()->segment(1) == 'login')) {
+        if ($domain[0] == env('pr_name') && 
+            (env('ASSET_URL') . '/company/signup' || $request->url() == env('ASSET_URL') . '/signup-store' 
+            || request()->segment(1) == 'company' ||
+            request()->segment(1) == 'admin' || 
+            request()->segment(1) == 'login')) {
             return $next($request);
-        } elseif ($domain['0'] != env('pr_name')    &&  !empty($exitDomain)) {
+        } elseif ($domain['0'] != env('pr_name')  && !empty($exitDomain)) {
             return $next($request);
         } elseif (!empty(request()->segment(1)) && request()->segment(1) == 'user' && $domain['0'] != env('pr_name')) {
             return redirect()->route('error');

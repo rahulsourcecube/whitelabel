@@ -37,6 +37,7 @@ class User extends Authenticatable
         'status',
         'stripe_id',
         'paypal_id',
+        'token',
     ];
 
     /**
