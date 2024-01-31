@@ -25,8 +25,6 @@ use App\Mail\company\CompanyWelcomeMail;
 
 class CompanyLoginController extends Controller
 {
-  
-
     public function index()
     {
         //  Check domain
@@ -47,7 +45,6 @@ class CompanyLoginController extends Controller
     }
     function dashboard()
     {
-
         // Get the current month and year
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
@@ -88,9 +85,7 @@ class CompanyLoginController extends Controller
             ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
             ->select(DB::raw('SUM(uch.reward) as total_reward , DAYOFMONTH(uch.updated_at) as day'))
             ->groupBy('day')
-            ->get();
-
-        // dd(DB::getQueryLog());
+            ->get();     
 
         $list = [];
         for ($i = $start_time; $i <= $end_time; $i += 86400) {
@@ -136,7 +131,6 @@ class CompanyLoginController extends Controller
     }
     public function signup(Request $request)
     {
-
         $getdomain = Helper::getdomain();
         if (!empty($getdomain) && $getdomain != env('pr_name')) {
             return redirect(env('ASSET_URL') . '/company/signup');

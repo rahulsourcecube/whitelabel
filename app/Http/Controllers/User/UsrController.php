@@ -26,10 +26,11 @@ class UsrController extends Controller
 
     function index()
     {
+      
         $getdomain = Helper::getdomain();
 
         if (!empty($getdomain) && $getdomain == env('pr_name')) {
-            return redirect()->route('error');
+            return redirect()->route('login.signup');
         }
         if (!empty(auth()->user()) && auth()->user()->user_type == 1) {
             return redirect()->route('admin.dashboard');

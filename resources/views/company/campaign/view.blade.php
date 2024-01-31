@@ -91,12 +91,12 @@
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Mobile</th>
-                                    <th>Reward</th>
-                                    <th>Join Date</th>
-                                    <th>Action</th>
+                                    <th data-orderable="false">Name</th>
+                                    <th data-orderable="false">Email</th>
+                                    <th data-orderable="false">Mobile</th>
+                                    <th data-orderable="false">Reward</th>
+                                    <th data-orderable="false">Join Date</th>
+                                    <th data-orderable="false">Action</th>
                                 </tr>
                             </thead>
                             <tbody>

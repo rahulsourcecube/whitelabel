@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Company;
-
 use App\Exports\Export;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
@@ -21,11 +20,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpParser\Node\Stmt\TryCatch;
 
 class CampaignController extends Controller
 {
-
-
     /**
      * Display a listing of the resource.
      *
@@ -41,23 +39,25 @@ class CampaignController extends Controller
     }
     function index($type)
     {
-        $taskType = $type;
-        $type = CampaignModel::TYPE[strtoupper($type)];
-        $totalData = CampaignModel::where('company_id', Auth::user()->id)->where('type', $type)->get();
-        return view('company.campaign.list', compact('type', 'taskType', 'totalData'));
+        try {
+            $taskType = $type;
+            $type = CampaignModel::TYPE[strtoupper($type)];
+            $companyId = Helper::getCompanyId();
+            $totalData = CampaignModel::where('company_id', $companyId)->where('type', $type)->get();
+            return view('company.campaign.list', compact('type', 'taskType', 'totalData'));
+        } catch (Exception $e) {
+            Log::error('CampaignController::Index => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
-
 
     public function tdlist($type, Request $request)
     {
         try {
             $companyId = Helper::getCompanyId();
-            $columns = ['id', 'title'];
             $totalData = CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
             $start = $request->input('start');
             $length = $request->input('length');
-            $order = $request->input('order.0.column');
-            $dir = $request->input('order.0.dir');
             $list = [];
 
             $searchColumn = ['title', 'reward', 'description', 'no_of_referral_users'];
@@ -79,11 +79,6 @@ class CampaignController extends Controller
                 ->get();
 
             foreach ($results as $result) {
-                $imgUrl = "";
-                if (!empty($result->image) && file_exists('uploads/campaign/' . $result->image)) {
-                    $imgUrl = asset('uploads/campaign/' . $result->image);
-                }
-                // dd();
                 $list[] = [
                     base64_encode($result->id),
                     $result->title ?? "-",
@@ -93,11 +88,9 @@ class CampaignController extends Controller
                     $result->no_of_referral_users,
                     $result->task_status,
                     $result->campaignUSerHistoryData->count() == 0
-                    // $imgUrl,
-
                 ];
             }
-            $totalFiltered = $results->count();
+
             return response()->json([
                 "draw" => intval($request->input('draw')),
                 "recordsTotal" => $totalData,
@@ -105,7 +98,7 @@ class CampaignController extends Controller
                 "data" => $list
             ]);
         } catch (Exception $e) {
-            Log::error('Task list error : ' . $e->getMessage());
+            Log::error('CampaignController::Tdlist  => ' . $e->getMessage());
             return response()->json([
                 "draw" => 0,
                 "recordsTotal" => 0,
@@ -116,67 +109,82 @@ class CampaignController extends Controller
     }
     public function statuswiselist(Request $request)
     {
-        $columns = ['id', 'title'];
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
+        try {
+            $companyId = Helper::getCompanyId();
+            $columns = ['id', 'title'];
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $order = $request->input('order.0.column');
+            $dir = $request->input('order.0.dir');
+            $list = [];
 
-        $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
+            $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
 
-        $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
-            ->select("user_campaign_history.*")
-            ->orderBy("user_campaign_history." . $columns[$order], $dir)
-            ->where('user_campaign_history.campaign_id', $request->input('id'))
-            ->where('user_campaign_history.status', $request->input('status'));
+            $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
+                ->select("user_campaign_history.*")
+                ->orderBy("user_campaign_history." . $columns[$order], $dir)
+                ->where('user_campaign_history.campaign_id', $request->input('id'))
+                ->where('users.company_id', $companyId)
+                ->where('user_campaign_history.status', $request->input('status'));
 
-        // Server-side search
-        if ($request->has('search') && !empty($request->input('search.value'))) {
-            $search = $request->input('search.value');
-            $query->where(function ($query) use ($search, $searchColumn) {
-                foreach ($searchColumn as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
-                }
-            });
+            // Server-side search
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumn) {
+                    foreach ($searchColumn as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+            }
+
+            $results = $query->skip($start)
+                ->take($length)
+                ->get();
+
+            $list = [];
+            foreach ($results as $result) {
+
+                $list[] = [
+                    base64_encode($result->id),
+                    $result->getuser->full_name ?? "-",
+                    $result->getuser->email ?? "-",
+                    $result->getuser->contact_number ?? "-",
+                    '$' . $result->reward ?? "0",
+                    Helper::Dateformat($result->created_at)  ?? "-",
+                    $result->TaskStatus ?? "-",
+                    base64_encode($result->user_id) ?? "-",
+
+                ];
+            }
+
+            return response()->json([
+                "draw" => intval($request->input('draw')),
+                "recordsTotal" => count($results),
+                "recordsFiltered" => count($results),
+                "data" => $list
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('CampaignController::Statuswiselist  => ' . $e->getMessage());
+            return response()->json([
+                "draw" => 0,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => []
+            ]);
         }
-
-        $results = $query->skip($start)
-            ->take($length)
-            ->get();
-
-        $list = [];
-        foreach ($results as $result) {
-
-            $list[] = [
-                base64_encode($result->id),
-                $result->getuser->full_name ?? "-",
-                $result->getuser->email ?? "-",
-                $result->getuser->contact_number ?? "-",
-                '$' . $result->reward ?? "0",
-                Helper::Dateformat($result->created_at)  ?? "-",
-                $result->TaskStatus ?? "-",
-                base64_encode($result->user_id) ?? "-",
-
-            ];
-        }
-
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => count($results),
-            "recordsFiltered" => count($results),
-            "data" => $list
-        ]);
     }
-
-
 
     function create($type)
     {
-        $typeInText = $type;
-        $type = CampaignModel::TYPE[strtoupper($type)];
-        return view('company.campaign.create', compact('type', 'typeInText'));
+        try {
+            $typeInText = $type;
+            $type = CampaignModel::TYPE[strtoupper($type)];
+            return view('company.campaign.create', compact('type', 'typeInText'));
+        } catch (Exception $e) {
+            Log::error('CampaignController::Create => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function store(Request $request)
@@ -226,8 +234,8 @@ class CampaignController extends Controller
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task added successfuly.');
         } catch (Exception $e) {
-            Log::error('Campaign store error : ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Something went wrong');
+            Log::error('CampaignController::Store => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -253,7 +261,7 @@ class CampaignController extends Controller
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
                 $request->file('image')->move(base_path('uploads/company/campaign/'), $image);
                 if (!empty($Campaign->image)) {
-                    $oldImagePath = base_path().'/uploads/company/campaign/' . $Campaign->image;
+                    $oldImagePath = base_path() . '/uploads/company/campaign/' . $Campaign->image;
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
@@ -276,133 +284,154 @@ class CampaignController extends Controller
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task update successfuly.');
         } catch (Exception $e) {
-            Log::error('Campaign store error : ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Something went wrong');
+            Log::error('CampaignController::Update => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     function analytics(Request $request)
     {
-        $companyId = Helper::getCompanyId();
-        $date = Carbon::today()->subDays(7);
-        $total_join_users  = DB::table('users as u')
-            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-            ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
-            ->where('u.company_id', $companyId)
-            ->where('u.user_type', 4)
-            ->where('u.status', '1')
-            ->where('c.status', '1')
-            ->where('uch.status', '3')
-            ->where('c.type', '1')
-            ->whereDate('uch.created_at', '>=', $date)
-            ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
-            ->groupBy('day')
-            ->get();
-        $dateandtime = Carbon::now();
-        $start_date = $dateandtime->subDays(7);
-        $start_time = strtotime($start_date);
-        $end_time = strtotime("+1 week", $start_time);
-        $list = [];
-        for ($i = $start_time; $i < $end_time; $i += 86400) {
-            $list[date('D', $i)] = 0;
-        }
-        foreach ($total_join_users as $values) {
-            $list[$values->day] = $values->total_user;
-        }
-        $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
+        try {
+            $companyId = Helper::getCompanyId();
+            $date = Carbon::today()->subDays(7);
+            $total_join_users  = DB::table('users as u')
+                ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+                ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
+                ->where('u.company_id', $companyId)
+                ->where('u.user_type', 4)
+                ->where('u.status', '1')
+                ->where('c.status', '1')
+                ->where('uch.status', '3')
+                ->where('c.type', '1')
+                ->whereDate('uch.created_at', '>=', $date)
+                ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
+                ->groupBy('day')
+                ->get();
+            $dateandtime = Carbon::now();
+            $start_date = $dateandtime->subDays(7);
+            $start_time = strtotime($start_date);
+            $end_time = strtotime("+1 week", $start_time);
+            $list = [];
+            for ($i = $start_time; $i < $end_time; $i += 86400) {
+                $list[date('D', $i)] = 0;
+            }
+            foreach ($total_join_users as $values) {
+                $list[$values->day] = $values->total_user;
+            }
+            $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
 
-        $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
+            $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
 
-        return view('company.campaign.analytics', compact('user_total', 'customTasks'));
+            return view('company.campaign.analytics', compact('user_total', 'customTasks'));
+        } catch (Exception $e) {
+            Log::error('CampaignController::Analytics => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
     function fetch_data(Request $request)
     {
-        if ($request->ajax()) {
-            if ($request->date_range_filter != null) {
-                $date = explode('-', $request->date_range_filter);
-                $from_date = date('Y-m-d', strtotime($date[0]));
-                $to_date = date('Y-m-d', strtotime($date[1]));
+        try {
+            if ($request->ajax()) {
+                if ($request->date_range_filter != null) {
+                    $date = explode('-', $request->date_range_filter);
+                    $from_date = date('Y-m-d', strtotime($date[0]));
+                    $to_date = date('Y-m-d', strtotime($date[1]));
+                    $companyId = Auth::user()->id;
+                    $total_join_users = DB::table('users as u')
+                        ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+                        ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
+                        ->where('u.company_id', $companyId)
+                        ->where('u.user_type', 4)
+                        ->where('u.status', '1')
+                        ->where('c.status', '1')
+                        ->where('uch.status', '3')
+                        ->where('c.type', '1')
+                        ->whereDate('uch.created_at', '>=', $from_date)
+                        ->whereDate('uch.created_at', '<=', $to_date)
+                        ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
+                        ->groupBy('day')
+                        ->get();
+                    $start_date = $from_date;
+                    $start_time = strtotime($start_date);
+                    $end_time = strtotime($to_date);
+                    $list = [];
+                    for ($i = $start_time; $i <= $end_time; $i += 86400) {
+                        $list[date('D', $i)] = 0;
+                    }
 
-                // DB::enableQueryLog();
-                $companyId = Auth::user()->id;
-                $total_join_users = DB::table('users as u')
-                    ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-                    ->join('campaign as c', 'c.id', '=', 'uch.campaign_id')
-                    ->where('u.company_id', $companyId)
-                    ->where('u.user_type', 4)
-                    ->where('u.status', '1')
-                    ->where('c.status', '1')
-                    ->where('uch.status', '3')
-                    ->where('c.type', '1')
-                    ->whereDate('uch.created_at', '>=', $from_date)
-                    ->whereDate('uch.created_at', '<=', $to_date)
-                    ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
-                    ->groupBy('day')
-                    ->get();
-                $start_date = $from_date;
-                $start_time = strtotime($start_date);
-                $end_time = strtotime($to_date);
-                $list = [];
-                for ($i = $start_time; $i <= $end_time; $i += 86400) {
-                    $list[date('D', $i)] = 0;
-                }
+                    foreach ($total_join_users as $values) {
+                        $abbreviatedDay = date('D', strtotime($values->day));
+                        $list[$abbreviatedDay] = $values->total_user;
+                    }
 
-                foreach ($total_join_users as $values) {
-                    $abbreviatedDay = date('D', strtotime($values->day));
-                    $list[$abbreviatedDay] = $values->total_user;
+                    $user_total = [];
+                    if (isset($list)) {
+                        $user_total = ['day' => array_keys($list), 'total_user' => array_values($list)];
+                    }
+                    return $user_total;
                 }
-
-                $user_total = [];
-                if (isset($list)) {
-                    $user_total = ['day' => array_keys($list), 'total_user' => array_values($list)];
-                }
-                return $user_total;
             }
+        } catch (Exception $e) {
+            Log::error('CampaignController::Fetchdata => ' . $e->getMessage());
+            return  ['day' => [], 'total_user' => []];
         }
     }
 
     public function view($type, $id)
     {
-        $type = CampaignModel::TYPE[strtoupper($type)];
-        $taskId = base64_decode($id);
-        $task = CampaignModel::where('id', $taskId)->where('type', $type)->first();
-        if (empty($task)) {
-            return back()->with('error', 'Task not found');
+        try {
+            $companyId = Helper::getCompanyId();
+
+            $type = CampaignModel::TYPE[strtoupper($type)];
+            $taskId = base64_decode($id);
+            $task = CampaignModel::where('id', $taskId)->where('company_id', $companyId)->where('type', $type)->first();
+            if (empty($task)) {
+                return back()->with('error', 'Task not found');
+            }
+            return view('company.campaign.view', compact('type', 'taskId', 'task'));
+        } catch (Exception $e) {
+            Log::error('CampaignController::View => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-        return view('company.campaign.view', compact('type', 'taskId', 'task'));
     }
 
     public function edit($type, $id)
     {
-        $type = CampaignModel::TYPE[strtoupper($type)];
-        $taskId = base64_decode($id);
-        $task = CampaignModel::where('id', $taskId)->where('type', $type)->first();
-        if (empty($task)) {
-            return back()->with('error', 'Task not found');
+        try {
+            $companyId = Helper::getCompanyId();
+            $type = CampaignModel::TYPE[strtoupper($type)];
+            $taskId = base64_decode($id);
+            $task = CampaignModel::where('id', $taskId)->where('company_id', $companyId)->where('type', $type)->first();
+            if (empty($task)) {
+                return back()->with('error', 'Task not found');
+            }
+            return view('company.campaign.edit', compact('type', 'taskId', 'task'));
+        } catch (Exception $e) {
+            Log::error('CampaignController::Edit => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-        return view('company.campaign.edit', compact('type', 'taskId', 'task'));
     }
     public function delete($id)
     {
         try {
+            $companyId = Helper::getCompanyId();
             $id = base64_decode($id);
-            $campaignModel = CampaignModel::where('id', $id)->first();
+            $campaignModel = CampaignModel::where('id', $id)->where('company_id', $companyId)->first();
             if (!empty($campaignModel->image)) {
-                $oldImagePath = base_path().'/uploads/company/campaign/' . $campaignModel->image;
+                $oldImagePath = base_path() . '/uploads/company/campaign/' . $campaignModel->image;
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
             }
-            $campaignModel = CampaignModel::where('id', $id)->delete();
-            return response()->json(['success' => 'error', 'message' => 'Task deleted successfully']);
+            $campaignModel = CampaignModel::where('id', $id)->where('company_id', $companyId)->delete();
+            return response()->json(['success' => true, 'message' => 'Task deleted successfully']);
         } catch (Exception $e) {
-            Log::error('Campaign delete error : ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong');
+            Log::error('CampaignController::Delete  => ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error : '. $e->getMessage()]);
         }
     }
     public function action(Request $request)
     {
-
         try {
             $id = base64_decode($request->id);
 
@@ -420,6 +449,7 @@ class CampaignController extends Controller
                     $Notification->type =  "1";
                     $Notification->save();
                 }
+
                 return response()->json(['success' => 'success', 'messages' => ' Task Approved successfully']);
             } else {
                 $action->status = '4';
@@ -436,15 +466,20 @@ class CampaignController extends Controller
                 return response()->json(['success' => 'success', 'messages' => ' Task Rejected successfully']);
             }
         } catch (Exception $e) {
-            Log::error('ation error : ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong');
+            Log::error('CampaignController::Action  => ' . $e->getMessage());
+            return response()->json(['success' => 'error', 'messages' => 'Error : '.$e->getMessage()]);
         }
     }
     public function export($type)
     {
-        $date = Carbon::now()->toDateString();
-        $tasktype = CampaignModel::TYPE[strtoupper($type)];
-        return Excel::download(new Export($tasktype), ($type . '_' . $date . '.xlsx'));
+        try {
+            $date = Carbon::now()->toDateString();
+            $tasktype = CampaignModel::TYPE[strtoupper($type)];
+            return Excel::download(new Export($tasktype), ($type . '_' . $date . '.xlsx'));
+        } catch (Exception $e) {
+            Log::error('CampaignController::Export => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
     public function userDetails(Request $request, $id)
     {
@@ -461,8 +496,8 @@ class CampaignController extends Controller
             $chats = TaskEvidence::where('campaign_id', $id)->get();
             return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id'));
         } catch (Exception $e) {
-            Log::error('ation error : ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong');
+            Log::error('CampaignController::UserDetails => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -509,84 +544,91 @@ class CampaignController extends Controller
             }
             return response()->json(['success' => true]);
         } catch (Exception $e) {
-            Log::error('Task list error : ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Something went wrong please try again.']);
+            Log::error('CampaignController::StoreChat => ' . $e->getMessage());
+            return response()->json(['success' => false,'message'=> 'Error: '. $e->getMessage()]);
         }
     }
 
     public function CompanyCustom(Request $request)
     {
-        $data = [];
-        // dd($request->all());
-        if (empty($request->title)) {
+        try {
             $data = [];
-        } else {
-            $results = UserCampaignHistoryModel::selectRaw('MONTH(updated_at) as month')
-                ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 3 AND MONTH(updated_at) = MONTH(updated_at)) as total_completed')
-                ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 1 AND MONTH(updated_at) = MONTH(updated_at)) as total_joined')
-                ->whereYear('updated_at', $request->year)
-                ->groupBy(DB::raw('MONTH(updated_at)'))
-                ->get();
+            if (empty($request->title)) {
+                $data = [];
+            } else {
+                $results = UserCampaignHistoryModel::selectRaw('MONTH(updated_at) as month')
+                    ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 3 AND MONTH(updated_at) = MONTH(updated_at)) as total_completed')
+                    ->selectRaw('(SELECT COUNT(id) FROM user_campaign_history WHERE campaign_id = ' . $request->title . ' AND status = 1 AND MONTH(updated_at) = MONTH(updated_at)) as total_joined')
+                    ->whereYear('updated_at', $request->year)
+                    ->groupBy(DB::raw('MONTH(updated_at)'))
+                    ->get();
+                foreach ($results as $item) {
+                    $data[] = [
+                        "label" => Carbon::create()->month($item['month'])->format('F'), // Format the day of the month
+                        "total_completed" => $item['total_completed'],
+                        "total_joined" => $item['total_joined']
 
-
-
-
-            foreach ($results as $item) {
-                $data[] = [
-                    "label" => Carbon::create()->month($item['month'])->format('F'), // Format the day of the month
-                    "total_completed" => $item['total_completed'],
-                    "total_joined" => $item['total_joined']
-
-                ];
+                    ];
+                }
             }
+            return response()->json($data);
+        } catch (Exception $e) {
+            Log::error('CampaignController::CompanyCustom => ' . $e->getMessage());
+            return response()->json(['Error : ' . $e->getMessage()]);
         }
-        return response()->json($data);
     }
 
     public function getSocialAnalytics(Request $request)
     {
+        try {
 
-        $companyId = Helper::getCompanyId();
-        // dd($companyId);
-        if ($request->ajax()) {
-            $columns = ['id', 'title', 'social_task_user_count'];
-            $draw = $request->input('draw');
-            $start = $request->input('start');
-            $length = $request->input('length');
-            $order = $request->input('order.0.column');
-            $dir = $request->input('order.0.dir');
+            $companyId = Helper::getCompanyId();
+          
+            if ($request->ajax()) {
+                $columns = ['id', 'title', 'social_task_user_count'];
+                $draw = $request->input('draw');
+                $start = $request->input('start');
+                $length = $request->input('length');
+                $order = $request->input('order.0.column');
+                $dir = $request->input('order.0.dir');
 
-            // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
-            // (SELECT count(*) as total FROM campaign where campaign.id=user_campaign_history.campaign_id) as total
+                // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
+                // (SELECT count(*) as total FROM campaign where campaign.id=user_campaign_history.campaign_id) as total
 
-            // $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
-            $query = UserCampaignHistoryModel::join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
-                ->select(
-                    'campaign.id',
-                    'campaign.title',
-                    DB::raw('(SELECT COUNT(*) FROM campaign WHERE campaign.id = user_campaign_history.campaign_id) as total')
-                )->where('campaign.type', '2')->where('user_campaign_history.status', 3)->where('campaign.company_id', $companyId)->whereDate('user_campaign_history.created_at', '>=', date('Y-m-d', strtotime($request->from_date)))->whereDate('user_campaign_history.created_at', '<=', date('Y-m-d', strtotime($request->to_date)));
-            $recordsTotal = $query->count();
-            // DB::enableQueryLog();
-            $query->orderBy($columns[$order], $dir)->skip($start)->take($length);
+                // $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
+                $query = UserCampaignHistoryModel::join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
+                    ->select(
+                        'campaign.id',
+                        'campaign.title',
+                        DB::raw('(SELECT COUNT(*) FROM campaign WHERE campaign.id = user_campaign_history.campaign_id) as total')
+                    )->where('campaign.type', '2')->where('user_campaign_history.status', 3)->where('campaign.company_id', $companyId)->whereDate('user_campaign_history.created_at', '>=', date('Y-m-d', strtotime($request->from_date)))->whereDate('user_campaign_history.created_at', '<=', date('Y-m-d', strtotime($request->to_date)));
+                $recordsTotal = $query->count();
+              
+                $query->orderBy($columns[$order], $dir)->skip($start)->take($length);
 
-            $userCounts = $query->get();
-
-            // dd(DB::getQueryLog());
-            $data = [];
-
-            foreach ($userCounts as $item) {
-                $data[] = [
-                    $item->id, // Format the day of the month
-                    $item->title, // Format the day of the month
-                    $item->total,
-                ];
+                $userCounts = $query->get();
+                $data = [];
+                foreach ($userCounts as $item) {
+                    $data[] = [
+                        $item->id, // Format the day of the month
+                        $item->title, // Format the day of the month
+                        $item->total,
+                    ];
+                }
+                return response()->json([
+                    'draw' => (int)$draw,
+                    'recordsTotal' => $recordsTotal,
+                    'recordsFiltered' => $recordsTotal,
+                    'data' => $data,
+                ]);
             }
+        } catch (Exception $e) {
+            Log::error('CampaignController::Statuswiselist  => ' . $e->getMessage());
             return response()->json([
-                'draw' => (int)$draw,
-                'recordsTotal' => $recordsTotal,
-                'recordsFiltered' => $recordsTotal,
-                'data' => $data,
+                "draw" => 0,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
             ]);
         }
     }
