@@ -102,7 +102,7 @@
                                     accept=".png, .jpg, .jpeg" onchange="previewImage()">
                             </div>
                         </div>
-                        @if ($package->image != null && file_exists('uploads/package/' . $package->image))
+                        @if ($package->image != null && file_exists(base_path().'/uploads/package/' . $package->image))
                             <div class="form-row">
                                 <div class="form-group col-md-3" style="max-height: 200px;">
                                     <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"

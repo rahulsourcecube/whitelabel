@@ -256,11 +256,11 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
             $updateprofiledetail['status'] = !empty($request->status) ? '1' : '0';
             if ($request->hasFile('profile_image')) {
-                if ($updateprofiledetail->profile_image && file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
-                    unlink('uploads/user-profile/' . $updateprofiledetail->profile_image);
+                if ($updateprofiledetail->profile_image && file_exists(base_path().'/uploads/user-profile/') . $updateprofiledetail->profile_image) {
+                    unlink(base_path().'/uploads/user-profile/' . $updateprofiledetail->profile_image);
                 }
                 $filename = rand(111111, 999999) . '.' . $request->profile_image->extension();
-                $request->file('profile_image')->move('uploads/user-profile/', $filename);
+                $request->file('profile_image')->move(base_path().'/uploads/user-profile/', $filename);
                 $updateprofiledetail['profile_image'] = isset($filename) ? $filename : '';
             }
             $updateprofiledetail->save();

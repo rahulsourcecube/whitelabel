@@ -25,6 +25,7 @@ use App\Mail\company\CompanyWelcomeMail;
 
 class CompanyLoginController extends Controller
 {
+  
 
     public function index()
     {
@@ -194,6 +195,7 @@ class CompanyLoginController extends Controller
                 $user->assignRole([$role->id]);
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
+                $settingModel->title = $request->cname;               
                 $settingModel->save();
             }
             return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
@@ -241,7 +243,7 @@ class CompanyLoginController extends Controller
 
             return back()->with('success', 'We have e-mailed your password reset link!');
         } catch (Exception $exception) {
-            dd($exception);
+            
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
     }
@@ -336,11 +338,11 @@ class CompanyLoginController extends Controller
             $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
             if ($request->hasFile('profile_image')) {
-                if ($updateprofiledetail->profile_image && file_exists('uploads/user-profile/') . $updateprofiledetail->profile_image) {
-                    unlink('uploads/user-profile/' . $updateprofiledetail->profile_image);
+                if ($updateprofiledetail->profile_image && file_exists(base_path().'/uploads/user-profile/') . $updateprofiledetail->profile_image) {
+                    unlink(base_path().'/uploads/user-profile/' . $updateprofiledetail->profile_image);
                 }
                 $filename = rand(111111, 999999) . '.' . $request->profile_image->extension();
-                $request->file('profile_image')->move('uploads/user-profile/', $filename);
+                $request->file('profile_image')->move(base_path().'/uploads/user-profile/', $filename);
                 $updateprofiledetail['profile_image'] = isset($filename) ? $filename : '';
             }
             $updateprofiledetail->save();

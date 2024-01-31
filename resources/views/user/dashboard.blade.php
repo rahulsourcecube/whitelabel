@@ -158,7 +158,7 @@
                                 <div class="avatar avatar-image" style="height: 100px; width: 100px;">
                                     @if (isset(Auth::user()->profile_image) &&
                                             !empty(Auth::user()->profile_image) &&
-                                            file_exists('uploads/user/user-profile/' . Auth::user()->profile_image))
+                                            file_exists(base_path().'/uploads/user/user-profile/' . Auth::user()->profile_image))
                                         <img src="{{ asset('uploads/user/user-profile/' . Auth::user()->profile_image) }}">
                                     @else
                                         <img src="{{ asset('assets/images/profile_image.jpg') }}">

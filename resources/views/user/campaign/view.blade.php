@@ -22,7 +22,7 @@
                         <div class="card-content">
                             @if (isset($campagin_detail) &&
                                     $campagin_detail->image != '' &&
-                                    file_exists('uploads/company/campaign/' . $campagin_detail->image))
+                                    file_exists(base_path().'/uploads/company/campaign/' . $campagin_detail->image))
                                 <img class="card-img-top"
                                     src="{{ asset('uploads/company/campaign/' . $campagin_detail->image) }}"
                                     class="w-100 img-responsive">

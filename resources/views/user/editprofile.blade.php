@@ -43,7 +43,7 @@
                                 <div class="avatar avatar-image  m-h-10 m-r-15" style="height: 80px; width: 80px">
                                     @if (isset($userData) &&
                                             !empty($userData->profile_image) &&
-                                            file_exists('uploads/user/user-profile/' . $userData->profile_image))
+                                            file_exists(base_path().'/uploads/user/user-profile/' . $userData->profile_image))
                                         <img src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}">
                                     @else
                                         <img src="{{ asset('assets/images/profile_image.jpg') }}">
@@ -97,7 +97,7 @@
                                             name="profile_image">
                                         @if (isset($userData) &&
                                                 !empty($userData->profile_image) &&
-                                                file_exists('uploads/user/user-profile/' . $userData->profile_image))
+                                                file_exists(base_path().'/uploads/user/user-profile/' . $userData->profile_image))
                                             <img src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}"
                                                 style="width: 50px; height: auto;" class="mt-2">
                                         @else

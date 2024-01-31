@@ -49,7 +49,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                                     </div>
                                     <div class="m-l-15">
                                         @if ($ActivePackageData && $ActivePackageData->package_id && $ActivePackageData->package_id == $list->id)
-                                        <span class="badge badge-primary" style="margin-left: 180px">Active</span>
+                                        <span class="badge badge-success" style="margin-left: 180px">Actived</span>
                                         @endif
                                         <h2 class="font-weight-bold font-size-30 m-b-0">
                                             @if ($list->type != '1')

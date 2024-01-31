@@ -21,7 +21,7 @@
                             <div class="row align-items-center">
                                 <div class="text-center text-sm-left col-md-2">
                                     <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                        @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/company/user-profile/' . $user->profile_image))
+                                        @if (isset($user) && !empty($user->profile_image) && file_exists(base_path().'/uploads/company/user-profile/' . $user->profile_image))
                                             <img src="{{ asset('uploads/company/user-profile/' . $user->profile_image) }}"
                                                 alt="">
                                         @else

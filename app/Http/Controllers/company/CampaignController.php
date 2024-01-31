@@ -39,9 +39,6 @@ class CampaignController extends Controller
         $this->middleware('permission:task-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:task-delete', ['only' => ['delete']]);
     }
-
-
-
     function index($type)
     {
         $taskType = $type;
@@ -207,7 +204,7 @@ class CampaignController extends Controller
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('image')->move('uploads/company/campaign/', $image);
+                $request->file('image')->move(base_path('uploads/company/campaign/'), $image);
             } else {
                 $image = null;
             }
@@ -254,9 +251,9 @@ class CampaignController extends Controller
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('image')->move('uploads/company/campaign/', $image);
+                $request->file('image')->move(base_path('uploads/company/campaign/'), $image);
                 if (!empty($Campaign->image)) {
-                    $oldImagePath = 'uploads/company/campaign/' . $Campaign->image;
+                    $oldImagePath = base_path().'/uploads/company/campaign/' . $Campaign->image;
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
@@ -391,7 +388,7 @@ class CampaignController extends Controller
             $id = base64_decode($id);
             $campaignModel = CampaignModel::where('id', $id)->first();
             if (!empty($campaignModel->image)) {
-                $oldImagePath = 'uploads/company/campaign/' . $campaignModel->image;
+                $oldImagePath = base_path().'/uploads/company/campaign/' . $campaignModel->image;
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }

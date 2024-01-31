@@ -18,7 +18,7 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        //  $this->middleware('auth');
     }
 
     /**
@@ -28,15 +28,16 @@ class AdminController extends Controller
      */
     public function index()
     {
+      
         // if(!empty($getdomain) && $getdomain != env('pr_name')  ){
         //     return redirect()->back();
-        // }
+        // }    
 
-        if (auth()->user()->user_type == 1) {
+        if (auth()->user() && auth()->user()->user_type == 1) {
             return redirect()->route('admin.dashboard');
-        } elseif (auth()->user()->user_type == 2) {
+        } elseif (auth()->user() && auth()->user()->user_type == 2) {
             return redirect()->route('company.dashboard');
-        } elseif (auth()->user()->user_type == 4) {
+        } elseif (auth()->user() && auth()->user()->user_type == 4) {
             return redirect()->route('user.dashboard');
         } else {
 

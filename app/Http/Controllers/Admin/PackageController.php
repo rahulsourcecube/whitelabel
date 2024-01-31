@@ -94,7 +94,7 @@ class PackageController extends Controller
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
 
                 // Move the file to the storage directory with the new filename
-                $request->file('image')->move('uploads/package', $image);
+                $request->file('image')->move(base_path().'/uploads/package', $image);
 
                 // Save the image path to the database
                 $package->image = $image;
@@ -144,7 +144,7 @@ class PackageController extends Controller
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
 
                 // Move the file to the storage directory with the new filename+
-                $request->file('image')->move('uploads/package', $image);
+                $request->file('image')->move(base_path().'/uploads/package', $image);
 
                 // Save the image path to the database
                 $package->image = $image;

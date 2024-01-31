@@ -51,7 +51,7 @@
                                                             <img src="{{ asset('assets/images/default-company.jpg') }}"
                                                                 class="imagePreviews">
                                                         @else
-                                                            <img src="{{ asset('uploads/user-profile/' . $editprofiledetail->profile_image) }}"
+                                                            <img src="{{base_path().('/uploads/user-profile/' . $editprofiledetail->profile_image) }}"
                                                                 class="imagePreviews">
                                                         @endif
                                                     </div>

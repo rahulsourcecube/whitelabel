@@ -201,15 +201,15 @@ class UsrController extends Controller
 
             if ($request->hasFile('profile_image')) {
 
-                if (\File::exists('uploads/user/user-profile/' . $profileEdit->profile_image)) {
-                    \File::delete('uploads/user/user-profile/' . $profileEdit->profile_image);
+                if (\File::exists(base_path().'/uploads/user/user-profile/' . $profileEdit->profile_image)) {
+                    \File::delete(base_path().'/uploads/user/user-profile/' . $profileEdit->profile_image);
                 }
 
                 $extension = $request->file('profile_image')->getClientOriginalExtension();
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('profile_image')->move('uploads/user/user-profile', $image);
+                $request->file('profile_image')->move(base_path().'/uploads/user/user-profile', $image);
                 $profileEdit->profile_image = $image;
             }
 
@@ -475,11 +475,16 @@ class UsrController extends Controller
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->where('company_id', $companyId)->first();
             }
-            // get domain
+           // get domain
+           $host = $request->getHost();
+           $domain = explode('.', $host);
+           $CompanyModel = new CompanyModel();
+           $exitDomain = $CompanyModel->checkDmain($domain['0']);
+           $companyId = $exitDomain->user_id;
+           $ActivePackageData = Helper::GetActivePackageData($companyId);
 
-            $ActivePackageData = Helper::GetActivePackageData();
-            $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
-            if ($userCount >= $ActivePackageData->no_of_user) {
+           $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
+           if ($userCount >= $ActivePackageData->no_of_user) {
                 return redirect()->back()->with('error', 'The user registration limit is over. please contact to administrator.');
             }
             $userRegister = new User();
