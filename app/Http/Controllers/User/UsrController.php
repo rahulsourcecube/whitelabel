@@ -195,15 +195,15 @@ class UsrController extends Controller
 
             if ($request->hasFile('profile_image')) {
 
-                if (\File::exists('uploads/user/user-profile/' . $profileEdit->profile_image)) {
-                    \File::delete('uploads/user/user-profile/' . $profileEdit->profile_image);
+                if (\File::exists(base_path().'/uploads/user/user-profile/' . $profileEdit->profile_image)) {
+                    \File::delete(base_path().'/uploads/user/user-profile/' . $profileEdit->profile_image);
                 }
 
                 $extension = $request->file('profile_image')->getClientOriginalExtension();
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('profile_image')->move('uploads/user/user-profile', $image);
+                $request->file('profile_image')->move(base_path().'/uploads/user/user-profile', $image);
                 $profileEdit->profile_image = $image;
             }
 
@@ -444,6 +444,7 @@ class UsrController extends Controller
     }
     public function signup()
     {
+       
         $siteSetting = Helper::getSiteSetting();  
 
         return view('user.signup',compact('siteSetting'));
@@ -467,11 +468,12 @@ class UsrController extends Controller
            $host = $request->getHost();
            $domain = explode('.', $host);
            $CompanyModel = new CompanyModel();
-           $exitDomain = $CompanyModel->checkDmain($domain['0']);           
-            $companyId = $exitDomain->user_id;           
-            $ActivePackageData = Helper::GetActivePackageData();
-            $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
-            if ($userCount >= $ActivePackageData->no_of_user) {
+           $exitDomain = $CompanyModel->checkDmain($domain['0']);  
+           $companyId = $exitDomain->user_id;           
+           $ActivePackageData = Helper::GetActivePackageData($companyId);
+          
+           $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
+           if ($userCount >= $ActivePackageData->no_of_user) {
                 return redirect()->back()->with('error', 'The user registration limit is over. please contact to administrator.');
             }
             $userRegister = new User();
@@ -486,7 +488,7 @@ class UsrController extends Controller
             $userRegister->contact_number = $request->contact_number;
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
             $userRegister->package_id = $ActivePackageData->id;
-
+// dd( $userRegister);
             // Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
             //     $message->to($request->email);
             //     $message->subject('Welcome Mail');

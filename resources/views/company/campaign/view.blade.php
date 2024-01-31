@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            @if (isset($task) && $task->image != '' && file_exists('uploads/company/campaign/' . $task->image))
+                            @if (isset($task) && $task->image != '' && file_exists(base_path('uploads/company/campaign/' . $task->image)))
                                 <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
                                     class="w-100 img-responsive">
                             @else

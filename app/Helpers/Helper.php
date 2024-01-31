@@ -119,9 +119,10 @@ class Helper
             // and then you can get query log
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
         } else {
-            $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
+            $companyId = Helper::getCompanyId();
+            // $companyId = User::where('user_type', '2')->where('status', '1')->orderBy('id', 'desc')->first();
             // and then you can get query log
-            $packageData = CompanyPackage::where('company_id', $companyId->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+            $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
         }
 
         return $packageData;

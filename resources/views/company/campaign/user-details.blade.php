@@ -22,7 +22,7 @@
                                 <div class="d-md-flex align-items-center">
                                     <div class="text-center text-sm-left ">
                                         <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                            @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
+                                            @if (isset($user) && !empty($user->profile_image) && file_exists(base_path().'/uploads/user/user-profile/' . $user->profile_image))
                                                 <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}">
                                             @else
                                                 <img src="{{ asset('assets/images/profile_image.jpg') }}">
@@ -186,7 +186,7 @@
                                                     <div class="msg msg-sent">
                                                     @else
                                                         <div class="msg msg-recipient">
-                                                            @if (isset($user) && !empty($user->profile_image) && file_exists('uploads/user/user-profile/' . $user->profile_image))
+                                                            @if (isset($user) && !empty($user->profile_image) && file_exists(base_path().'/uploads/user/user-profile/' . $user->profile_image))
                                                                 <div class="m-r-10">
                                                                     <div class="avatar avatar-image">
                                                                         <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"

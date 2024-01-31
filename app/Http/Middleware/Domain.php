@@ -17,7 +17,7 @@ class Domain
      */
     public function handle(Request $request, Closure $next)
     {
-
+//  dd(request()->segment(1) == 'login');
         $host = $request->getHost();
         $domain = [];
         $domain = explode('.', $host);
@@ -36,11 +36,13 @@ class Domain
         } elseif ($domain['0'] != env('pr_name')  && !empty($exitDomain)) {
             return $next($request);
         } elseif (!empty(request()->segment(1)) && request()->segment(1) == 'user' && $domain['0'] != env('pr_name')) {
-            return redirect()->route('error');
+           return redirect()->route('error');
+        } elseif (!empty(request()->segment(1)) && request()->segment(1) == 'login' && $domain['0'] != env('pr_name')) {
+            return redirect('/'); 
         } elseif ((!empty($domain['0'])) || !empty(request()->segment(1)) && (request()->segment(1) == 'company')) {
             return redirect(env('ASSET_URL') . '/company/signup');
         } else {
-            return redirect('login')->with('error', "You don't have admin access.");
+            return redirect()->back()->with('error', "You don't have admin access.");
         }
     }
 }

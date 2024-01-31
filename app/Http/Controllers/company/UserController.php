@@ -76,8 +76,8 @@ class UserController extends Controller
         ->get();
         foreach ($results as $result) {
             $profileImgUrl = "";
-            if (!empty($result->profile_image) && file_exists('uploads/company/user-profile/' . $result->profile_image)) {
-                $profileImgUrl = asset('uploads/company/user-profile/' . $result->profile_image);
+            if (!empty($result->profile_image) && file_exists(base_path().'/uploads/company/user-profile/' . $result->profile_image)) {
+                $profileImgUrl = asset(base_path().'/uploads/company/user-profile/' . $result->profile_image);
             }
             $list[] = [
                 base64_encode($result->id),
@@ -171,7 +171,7 @@ class UserController extends Controller
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('image')->move('uploads/company/user-profile', $image);
+                $request->file('image')->move(base_path().'/uploads/company/user-profile', $image);
                 $user->profile_image = $image;
             } else {
                 $user->profile_image = null;
@@ -251,10 +251,10 @@ class UserController extends Controller
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('image')->move('uploads/company/user-profile', $image);
+                $request->file('image')->move(base_path().'/uploads/company/user-profile', $image);
                 $user['profile_image'] = $image;
                 if (!empty($oldImage)) {
-                    $oldImagePath = 'uploads/company/user-profile/' . $oldImage;
+                    $oldImagePath = base_path().'/uploads/company/user-profile/' . $oldImage;
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
@@ -291,7 +291,7 @@ class UserController extends Controller
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->first();
             if (!empty($user->profile_image)) {
-                $oldImagePath = 'uploads/company/user-profile/' . $user->profile_image;
+                $oldImagePath = base_path().'/uploads/company/user-profile/' . $user->profile_image;
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }

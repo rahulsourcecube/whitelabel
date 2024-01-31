@@ -26,9 +26,9 @@ class HomeController extends Controller
         echo "Home Page";
     }
 
-    public function loginAdmin(Request $request)
-    {
-
-        return view('auth.login');
-    }
+//     public function loginAdmin(Request $request)
+//     {
+// dd(123);
+//         return view('auth.login');
+//     }
 }

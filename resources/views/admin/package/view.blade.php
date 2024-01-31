@@ -17,7 +17,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        @if( file_exists('uploads/package/' . $package->image))
+                        @if( file_exists(base_path().'/uploads/package/' . $package->image))
                         <div class="col-md-4">
                             <img class="img-fluid" src="{{ asset('uploads/package/' . $package->image) }}" alt=""
                                 style="width: 100%; max-height: 100%;">

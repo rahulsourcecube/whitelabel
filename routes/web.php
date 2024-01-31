@@ -39,22 +39,25 @@ Route::get('/clearchache', function () {
     Artisan::call('optimize:clear');
     return "Done!";
 });
-Route::get('/error', function () {
-    return view('error');
-})->name('error');
 
-Route::get('/login', [AdminController::class, 'index'])->name('admin');
 
+// Route::get('admin/login', [AdminController::class, 'index'])->name('admin');
 // Route::get('/', [AdminController::class, 'index'])->name('admin');
-Route::get('user', [LoginController::class, 'form'])->middleware('checkNotLoggedIn');
+// Route::get('user', [LoginController::class, 'form'])->middleware('checkNotLoggedIn');
+Route::get('/login', [AdminController::class, 'index'])->name('login');
+
 Route::group(['prefix' => 'admin'], function () {
-    Route::get('/login', [AdminController::class, 'index'])->name('admin.login');
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
 Auth::routes();
+Route::get('/errors', function () {   
+    return view('error');
+})->name('error');
+Route::get('/', [UsrController::class, 'index'])->middleware('checkNotLoggedIn');
 
 // Admin Middleware
 Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
+    // Route::get('/login', [AdminController::class, 'index'])->name('login');
     Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('company-revenue', [AdminController::class, 'CompanyRevenue'])->name('CompanyRevenue');
 
@@ -99,6 +102,7 @@ Route::get('seeder', function () {
     Artisan::call('db:seed');
     return 'Yup, seeder run successfully!';
 });
+//domain
 Route::middleware(['domain'])->group(function () {
 
     Route::get('/expire', function () {
@@ -107,7 +111,7 @@ Route::middleware(['domain'])->group(function () {
     });
 
     Route::prefix('user')->name('user.')->group(function () {
-        Route::get('/', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
+        // Route::get('/', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
         Route::get('/login', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
         Route::get('/signup/{referral_code?}', [UsrController::class, 'signup'])->name('signup')->middleware('checkNotLoggedIn');
         Route::post('/store', [UsrController::class, 'login'])->name('userLogin');

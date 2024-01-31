@@ -91,7 +91,7 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3" style="max-height: 200px;">
-                            @if (isset($task) && !empty($task->image) && file_exists('uploads/company/campaign/' . $task->image))
+                            @if (isset($task) && !empty($task->image) && file_exists(base_path('uploads/company/campaign/' . $task->image)))
                                     <img id="imagePreview"
                                         src="{{ asset('uploads/company/campaign/' . $task->image) }}"
                                         alt="Image Preview" style="max-width: 100%; max-height: 80%;">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -32,8 +33,22 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest')->except('logout', 'showLoginForm');
+        //  $this->middleware('auth');
     }
+
+    public function showLoginForm()
+    {
+        $getdomain = Helper::getdomain();
+
+        if (!empty($getdomain) && $getdomain == env('pr_name')) {
+            return view('auth.login');
+        }else{
+
+            return redirect()->route('user.login');
+        }
+    }
+
 
     public function login(Request $request)
     {

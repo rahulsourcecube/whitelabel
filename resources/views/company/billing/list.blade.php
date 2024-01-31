@@ -29,8 +29,8 @@ $ActivePackageData = App\Helpers\Helper::GetActivePackageData();
                         <tr>
                             {{-- <td>{{ $item->id ?? '-' }}</td> --}}
                             <td>{{ $item->GetPackageData->title ?? '-' }}</td>
-                            <td>{{ $item->start_date}} <br>{{ App\Helpers\Helper::Dateformat($item->start_date) ?? '-' }}</td>
-                            <td>{{ $item->end_date}} <br>{{ App\Helpers\Helper::Dateformat($item->end_date) ?? '-' }}</td>
+                            <td>{{ App\Helpers\Helper::Dateformat($item->start_date) ?? '-' }}</td>
+                            <td>{{ App\Helpers\Helper::Dateformat($item->end_date) ?? '-' }}</td>
                             <td>{{ App\Helpers\Helper::getcurrency()}}{{ $item->GetPackageData->price ?? '-' }}</td>
                             @if ($ActivePackageData && $ActivePackageData->id && $ActivePackageData->id != $item->id)
                             <td>
