@@ -23,7 +23,7 @@ class Helper
 {
     public static function getSiteSetting()
     {
-        // dd( Helper::get_domaininfo($_SERVER['ASSET_URL'])); 
+        // dd( Helper::get_domaininfo($_SERVER['ASSET_URL']));
 
         try {
             $companyId = Helper::getCompanyId();
@@ -37,7 +37,7 @@ class Helper
 
     public static function getdomain()
     {
-             $host = request()->getHttpHost();
+       $host = request()->getHttpHost();
         $domain = explode('.', $host);
         $domainName = $domain['0'] ? $domain['0'] : null;
         return $domainName;
@@ -62,7 +62,6 @@ class Helper
     public static function get_domaininfo($url) {
         // regex can be replaced with parse_url
         preg_match("/^(https|http|ftp):\/\/(.*?)\//", "$url/" , $matches);
-       
         $parts = explode(".", $matches[2]);
         $tld = array_pop($parts);
         $host = array_pop($parts);
@@ -86,7 +85,6 @@ class Helper
     public static function getCompanyId()
     {
         $getdomain = Helper::getdomain();
-      
 
         if (!empty($getdomain) && $getdomain != env('pr_name')) {
             $CompanyModel = new CompanyModel();

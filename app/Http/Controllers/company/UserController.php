@@ -156,12 +156,12 @@ class UserController extends Controller
                 return redirect()->back()->with('error', 'You can create only '. $ActivePackageData->no_of_user.' users');
             }
 
-            $useremail =User::where('company_id',$companyId)->where('email',$request->email)->first();
+            $useremail =User::where('company_id',$companyId)->where('email',$request->email)->where('company_id', $companyId)->first();
 
             if(!empty($useremail)){
                 return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
             }
-            $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->first();
+            $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->where('company_id', $companyId)->first();
             if (!empty($usernumber)) {
                 return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
             }

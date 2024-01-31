@@ -37,9 +37,9 @@ class UsrController extends Controller
             return redirect()->route('company.dashboard');
         } elseif (!empty(auth()->user()) && auth()->user()->user_type == 4) {
             return redirect()->route('user.dashboard');
-        } else {           
-            $siteSetting = Helper::getSiteSetting();   
-            return view('user.userlogin',compact('siteSetting'));
+        } else {
+            $siteSetting = Helper::getSiteSetting();
+            return view('user.userlogin', compact('siteSetting'));
         }
     }
 
@@ -83,13 +83,19 @@ class UsrController extends Controller
     public function login(Request $request)
     {
         try {
+            $host = $request->getHost();
+            $domain = explode('.', $host);
+            $CompanyModel = new CompanyModel();
+            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $companyId = $exitDomain->user_id;
+
             $input = $request->all();
             $this->validate($request, [
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
 
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'status' => '1', 'user_type' => '4'))) {
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'company_id' => $companyId, 'status' => '1', 'user_type' => '4'))) {
                 // if (!empty(auth()->user()) &&  (auth()->user()->user_type == '4')) {
                 //     dD(auth()->user());
                 if (Session('referral_link') != null) {
@@ -444,31 +450,33 @@ class UsrController extends Controller
     }
     public function signup()
     {
-        $siteSetting = Helper::getSiteSetting();  
+        $siteSetting = Helper::getSiteSetting();
 
-        return view('user.signup',compact('siteSetting'));
+        return view('user.signup', compact('siteSetting'));
     }
 
     public function store(Request $request)
     {
         try {
-            $userEmail = User::where('user_type', 4)->where('email', $request->email)->first();
+            $host = $request->getHost();
+            $domain = explode('.', $host);
+            $CompanyModel = new CompanyModel();
+            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $companyId = $exitDomain->user_id;
+
+            $userEmail = User::where('user_type', 4)->where('email', $request->email)->where('company_id', $companyId)->first();
             if (!empty($userEmail)) {
                 return redirect()->back()->with('error', 'This email already exists');
             }
-            $usercontactnumber = User::where('user_type', 4)->where('contact_number', $request->contact_number)->first();
+            $usercontactnumber = User::where('user_type', 4)->where('contact_number', $request->contact_number)->where('company_id', $companyId)->first();
             if (!empty($usercontactnumber)) {
                 return redirect()->back()->with('error', 'This contact number already exists');
             }
             if (isset($request->referral_code)) {
-                $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->first();
+                $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->where('company_id', $companyId)->first();
             }
-           // get domain
-           $host = $request->getHost();
-           $domain = explode('.', $host);
-           $CompanyModel = new CompanyModel();
-           $exitDomain = $CompanyModel->checkDmain($domain['0']);           
-            $companyId = $exitDomain->user_id;           
+            // get domain
+
             $ActivePackageData = Helper::GetActivePackageData();
             $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
             if ($userCount >= $ActivePackageData->no_of_user) {
@@ -487,10 +495,10 @@ class UsrController extends Controller
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
             $userRegister->package_id = $ActivePackageData->id;
 
-            // Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
-            //     $message->to($request->email);
-            //     $message->subject('Welcome Mail');
-            // });
+            Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Welcome Mail');
+            });
 
             $userRegister->save();
 
@@ -502,8 +510,8 @@ class UsrController extends Controller
 
     public function forget(Request $request)
     {
-        $siteSetting = Helper::getSiteSetting();   
-        return view('user.forgetPassword',compact('siteSetting'));
+        $siteSetting = Helper::getSiteSetting();
+        return view('user.forgetPassword', compact('siteSetting'));
     }
 
     public function submitForgetPassword(Request $request)
@@ -537,8 +545,8 @@ class UsrController extends Controller
     {
         try {
             $user = DB::table('password_resets')->where('token', $token)->first();
-            $siteSetting = Helper::getSiteSetting();   
-            return view('user.confirmPassword', compact('user','siteSetting'), ['token' => $token]);
+            $siteSetting = Helper::getSiteSetting();
+            return view('user.confirmPassword', compact('user', 'siteSetting'), ['token' => $token]);
         } catch (Exception $exception) {
             return redirect()->back()->with('error', "Something Went Wrong!");
         }
