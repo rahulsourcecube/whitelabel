@@ -21,17 +21,19 @@ use Illuminate\Support\Facades\Log;
 
 class CompanyController extends Controller
 {
-    //
     function index()
     {
-        $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
-
-        return view('admin.company.list', compact('packages'));
+        try {
+            $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
+            return view('admin.company.list', compact('packages'));
+        } catch (Exception $e) {
+            Log::error('CompanyController::Index ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        }
     }
 
     function AddPackages($id)
     {
-
         try {
             $id =   CompanyModel::where('user_id', $id)->first();
             $currentDate = Carbon::now();
@@ -56,13 +58,14 @@ class CompanyController extends Controller
                                                         style="line-height: 55px"></i>
                                                 </div>
                                                 <div class="m-l-15">';
-if ($packageData && $packageData->package_id && $packageData->package_id == $list->id){
-                    $html .= '<span class="badge badge-primary"
-                                                            style="margin-left: 180px">Active</span>';}else{
+                    if ($packageData && $packageData->package_id && $packageData->package_id == $list->id) {
+                        $html .= '<span class="badge badge-primary"
+                                                            style="margin-left: 180px">Active</span>';
+                    } else {
                         $html .= '<span class="badge badge-primary"
                                                             style="margin-left: 180px;background-color: white;"> </span>';
-                                                            }
-                                                    $html .= '<h2 class="font-weight-bold font-size-30 m-b-0">';
+                    }
+                    $html .= '<h2 class="font-weight-bold font-size-30 m-b-0">';
                     if ($list->type != "1") {
                         $html .= '' . Helper::getcurrency() . '';
                     }
@@ -115,10 +118,10 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
                                             </li>
                                         </ul>
                                         <div class="package-description">
-                                         '. $list->description .'</div>
+                                         ' . $list->description . '</div>
                                         <form action="' . route("admin.company.buy") . '" method="POST"
                                             id="package-payment-form">
-                                            '.csrf_field().'
+                                            ' . csrf_field() . '
                                             <input type="hidden" name="package_id" value="' . $list->id . '">
                                             <input type="hidden" name="company_id" value="' . $id->user_id . '">
                                             <div class="text-center">
@@ -143,93 +146,116 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
                 $html .= '<h4>No packages found</h4>';
             }
             $html .= '</div>';
-            return response()->json(['success' => 'error', 'html' => $html]);
+            return response()->json(['success' => true, 'html' => $html]);
         } catch (Exception $e) {
-            Log::error('ation error : ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong');
+            Log::error('CompanyController::AddPackages ' . $e->getMessage());
+            return response()->json(['success' => false, 'html' => $html = '<div class="row"><h4>No packages found</h4></div>']);
         }
     }
+
     public function dtList(Request $request)
     {
-        $columns = ['id', 'company_name','id','contact_number','company_name','subdomain','id']; // Add more columns as needed
-        $totalData = CompanyModel::count();
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
+        try {
+            $columns = ['id', 'company_name', 'id', 'contact_number', 'company_name', 'subdomain', 'id']; // Add more columns as needed
+            $totalData = CompanyModel::count();
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $order = $request->input('order.0.column');
+            $dir = $request->input('order.0.dir');
+            $list = [];
 
-        $searchColumn = ['company_name', 'company_description', 'users.first_name', 'full_name', 'company.subdomain', 'users.last_name', 'users.email', 'users.contact_number'];
+            $searchColumn = ['company_name', 'company_description', 'users.first_name', 'full_name', 'company.subdomain', 'users.last_name', 'users.email', 'users.contact_number'];
 
-        $query = CompanyModel::leftJoin('users', 'company.user_id', '=', 'users.id') // Assuming 'user_id' is the foreign key in CompanyModel
-            ->orderBy('company.' . $columns[$order], $dir);
+            $query = CompanyModel::leftJoin('users', 'company.user_id', '=', 'users.id') // Assuming 'user_id' is the foreign key in CompanyModel
+                ->orderBy('company.' . $columns[$order], $dir);
 
-        // Server-side search
-        if ($request->has('search') && !empty($request->input('search.value'))) {
-            $search = $request->input('search.value');
-            $query->where(function ($query) use ($search, $searchColumn) {
-                foreach ($searchColumn as $column) {
-                    if ($column == 'full_name') {
-                        $query->orWhere(DB::raw('concat(users.first_name, " ", users.last_name)'), 'like', "%{$search}%");
-                    } else {
-                        $query->orWhere("$column", 'like', "%{$search}%");
+            // Server-side search
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumn) {
+                    foreach ($searchColumn as $column) {
+                        if ($column == 'full_name') {
+                            $query->orWhere(DB::raw('concat(users.first_name, " ", users.last_name)'), 'like', "%{$search}%");
+                        } else {
+                            $query->orWhere("$column", 'like', "%{$search}%");
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            $results = $query->skip($start)
+                ->take($length)
+                ->get();
+
+            $list = [];
+            foreach ($results as $result) {
+                $list[] = [
+                    $result->id,
+                    $result->user->first_name  . ' ' . $result->user->last_name,
+                    $result->user->email,
+                    $result->user->contact_number,
+                    $result['company_name'],
+                    $result['subdomain'],
+                    $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
+                    $result['email'],
+                    $result['email'],
+                    $result['email'],
+                    $result['is_individual'],
+                ];
+            }
+
+            return response()->json([
+                "draw" => intval($request->input('draw')),
+                "recordsTotal" => $totalData,
+                "recordsFiltered" => $totalData,
+                "data" => $list
+            ]);
+        } catch (Exception $e) {
+            Log::error('CompanyController::dtList ' . $e->getMessage());
+            return response()->json([
+                "draw" => intval($request->input('draw')),
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => []
+            ]);
         }
-
-        $results = $query->skip($start)
-            ->take($length)
-            ->get();
-
-        $list = [];
-        foreach ($results as $result) {
-            $list[] = [
-                $result->id,
-                $result->user->first_name  . ' ' . $result->user->last_name,
-                $result->user->email,
-                $result->user->contact_number,
-                $result['company_name'],
-                $result['subdomain'],
-                $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
-                $result['email'],
-                $result['email'],
-                $result['email'],
-                $result['is_individual'],
-            ];
-        }
-
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => $totalData,
-            "recordsFiltered" => $totalData,
-            "data" => $list
-        ]);
     }
+
     public function view(Request $request)
     {
-        $currentDate = Carbon::now();
-        $currentDate = $currentDate->format('Y-m-d');
-        $data = [];
-        $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
-        $data['user_company_setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
-        $data['ActivePackageData'] = CompanyPackage::where('company_id', $data['user_company']->user_id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
-        $data['CampaignModelCount'] = !empty($data['ActivePackageData'])?CampaignModel::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count():0;
-        $data['staffCount'] =  !empty($data['ActivePackageData'])?User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['STAFF'])->count():0;
-        $data['userCount'] =  !empty($data['ActivePackageData'])?User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['USER'])->count():0;
+        try {
+            $currentDate = Carbon::now();
+            $currentDate = $currentDate->format('Y-m-d');
+            $data = [];
+            $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
+            $data['user_company_setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
+            $data['ActivePackageData'] = CompanyPackage::where('company_id', $data['user_company']->user_id)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+            $data['CampaignModelCount'] = !empty($data['ActivePackageData']) ? CampaignModel::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count() : 0;
+            $data['staffCount'] =  !empty($data['ActivePackageData']) ? User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['STAFF'])->count() : 0;
+            $data['userCount'] =  !empty($data['ActivePackageData']) ? User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['USER'])->count() : 0;
 
-        return view('admin.company.view', $data);
+            return view('admin.company.view', $data);
+        } catch (Exception $e) {
+            Log::error('CompanyController::view ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        }
     }
+
     function edit(Request $request)
     {
-        $data = [];
+        try {
+            $data = [];
 
-        $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
-        $data['setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
-        $data['editprofiledetail'] = User::where('id', $data['user_company']->user_id)->first();
-        return view('admin.company.edit', $data);
+            $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
+            $data['setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
+            $data['editprofiledetail'] = User::where('id', $data['user_company']->user_id)->first();
+            return view('admin.company.edit', $data);
+        } catch (Exception $e) {
+            Log::error('CompanyController::edit ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        }
     }
+
     public function updatepassword(Request $request, $id)
     {
         try {
@@ -242,10 +268,12 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
             $userCheck->update();
             return redirect()->back()->with('success', 'Password Update Successfully!');
         } catch (Exception $e) {
-            Log::info("change password in profile error" . $e->getMessage());
-            return $this->sendError($e->getMessage());
+            Log::info("CompanyController::updatepassword " . $e->getMessage());
+            // return $this->sendError($e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
+
     public function updateprofile(Request $request, $id)
     {
         try {
@@ -256,25 +284,24 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
             $updateprofiledetail['status'] = !empty($request->status) ? '1' : '0';
             if ($request->hasFile('profile_image')) {
-                if ($updateprofiledetail->profile_image && file_exists(base_path().'/uploads/user-profile/') . $updateprofiledetail->profile_image) {
-                    unlink(base_path().'/uploads/user-profile/' . $updateprofiledetail->profile_image);
+                if ($updateprofiledetail->profile_image && file_exists(base_path() . '/uploads/user-profile/') . $updateprofiledetail->profile_image) {
+                    unlink(base_path() . '/uploads/user-profile/' . $updateprofiledetail->profile_image);
                 }
                 $filename = rand(111111, 999999) . '.' . $request->profile_image->extension();
-                $request->file('profile_image')->move(base_path().'/uploads/user-profile/', $filename);
+                $request->file('profile_image')->move(base_path() . '/uploads/user-profile/', $filename);
                 $updateprofiledetail['profile_image'] = isset($filename) ? $filename : '';
             }
             $updateprofiledetail->save();
             return redirect()->back()->with('success', 'Profile Update Successfully!');
         } catch (Exception $e) {
-            Log::info(['message', 'Update Profile error']);
-            return redirect()->back()->with($e->getMessage());
+            Log::info("CompanyController::updateprofile " . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
+
     function store(Request $request, $id)
     {
         try {
-
-            //code...
             $SettingModel = SettingModel::where('user_id', $id)->first();
             if ($SettingModel->user_id) {
                 if (empty($SettingModel)) {
@@ -332,8 +359,9 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
                 $SettingModel->save();
                 return redirect()->back()->with('success', 'Setting Update successfully');
             }
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('error', $th->getMessage());
+        } catch (\Throwable $e) {
+            Log::info("CompanyController::store " . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
 
@@ -389,8 +417,8 @@ if ($packageData && $packageData->package_id && $packageData->package_id == $lis
                 return redirect()->back()->with('error', 'Something went wrong, please try again later!');
             }
         } catch (Exception $e) {
-            Log::error('Buy package error : ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong, please try again later!');
+            Log::error('CompanyController::buy ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
 }

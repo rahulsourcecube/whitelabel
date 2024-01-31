@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\PackageModel;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,66 +17,84 @@ class PackageController extends Controller
     {
         return view('admin.package.list');
     }
+
     public function dtList(Request $request)
     {
-        $columns = ['id', 'title' , 'type','duration','price','no_of_campaign']; // Add more columns as needed
-        $totalData = PackageModel::count();
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
+        try {
+            $columns = ['id', 'title', 'type', 'duration', 'price', 'no_of_campaign']; // Add more columns as needed
+            $totalData = PackageModel::count();
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $order = $request->input('order.0.column');
+            $dir = $request->input('order.0.dir');
+            $list = [];
 
-        $searchColumn = ['title', 'duration', 'price', 'type', 'no_of_campaign'];
+            $searchColumn = ['title', 'duration', 'price', 'type', 'no_of_campaign'];
 
-        $query = PackageModel::orderBy($columns[$order], $dir);
+            $query = PackageModel::orderBy($columns[$order], $dir);
 
-        // Server-side search
-        if ($request->has('search') && !empty($request->input('search.value'))) {
-            $search = $request->input('search.value');
-            $query->where(function ($query) use ($search, $searchColumn) {
-                foreach ($searchColumn as $column) {
-                    if ($column == 'type') {
-                        $query->orWhere(DB::raw("(CASE WHEN type = 1 THEN 'Free Trial' WHEN type = 2 THEN 'Monthly' WHEN type = 3 THEN 'Yearly' END)"), 'like', "%{$search}%");
-                    } else {
-                        $query->orWhere("$column", 'like', "%{$search}%");
+            // Server-side search
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumn) {
+                    foreach ($searchColumn as $column) {
+                        if ($column == 'type') {
+                            $query->orWhere(DB::raw("(CASE WHEN type = 1 THEN 'Free Trial' WHEN type = 2 THEN 'Monthly' WHEN type = 3 THEN 'Yearly' END)"), 'like', "%{$search}%");
+                        } else {
+                            $query->orWhere("$column", 'like', "%{$search}%");
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        $results = $query->skip($start)
-        ->take($length)
-        ->get();
-        foreach ($results as $result) {
-            $list[] = [
-                $result->id,
-                $result->title,
-                $result->package_string,
-                $result->duration,
-                Helper::getcurrency() . $result->price,
-                $result->no_of_campaign,
-                $result->image,
-                ($result->status == '1') ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
+            $results = $query->skip($start)
+                ->take($length)
+                ->get();
+            foreach ($results as $result) {
+                $list[] = [
+                    $result->id,
+                    $result->title,
+                    $result->package_string,
+                    $result->duration,
+                    Helper::getcurrency() . $result->price,
+                    $result->no_of_campaign,
+                    $result->image,
+                    ($result->status == '1') ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
 
-            ];
+                ];
+            }
+            return response()->json([
+                "draw" => intval($request->input('draw')),
+                "recordsTotal" => $totalData,
+                "recordsFiltered" => $totalData,
+                "data" => $list
+            ]);
+        } catch (Exception $e) {
+            Log::error('PackageController::dtList ' . $e->getMessage());
+            return response()->json([
+                "draw" => intval($request->input('draw')),
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => []
+            ]);
         }
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => $totalData,
-            "recordsFiltered" => $totalData,
-            "data" => $list
-        ]);
     }
+
     function create()
     {
         return view('admin.package.create');
     }
+
     function view(packageModel $package)
     {
-        return view('admin.package.view', compact('package'));
+        try {
+            return view('admin.package.view', compact('package'));
+        } catch (Exception $e) {
+            Log::error('PackageController::view ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        }
     }
+
     function store(Request $request)
     {
         try {
@@ -94,7 +113,7 @@ class PackageController extends Controller
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
 
                 // Move the file to the storage directory with the new filename
-                $request->file('image')->move(base_path().'/uploads/package', $image);
+                $request->file('image')->move(base_path() . '/uploads/package', $image);
 
                 // Save the image path to the database
                 $package->image = $image;
@@ -118,13 +137,21 @@ class PackageController extends Controller
 
             return redirect()->route('admin.package.list')->with('success', 'Package submitted successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            Log::error('PackageController::store ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
+
     function edit(PackageModel $package)
     {
+        try {
         return view('admin.package.edit', compact('package'));
+    } catch (Exception $e) {
+        Log::error('PackageController::edit ' . $e->getMessage());
+        return redirect()->back()->with('error', "Error: " . $e->getMessage());
     }
+    }
+
     function update(Request $request, $id)
     {
         try {
@@ -144,7 +171,7 @@ class PackageController extends Controller
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
 
                 // Move the file to the storage directory with the new filename+
-                $request->file('image')->move(base_path().'/uploads/package', $image);
+                $request->file('image')->move(base_path() . '/uploads/package', $image);
 
                 // Save the image path to the database
                 $package->image = $image;
@@ -166,10 +193,11 @@ class PackageController extends Controller
             $package->save();
             return redirect()->route('admin.package.list')->with('success', 'Package Update successfully');
         } catch (\Exception $e) {
-            Log::error("error while update package: " .  $e->getMessage());
-            return redirect()->back()->with('error',  $e->getMessage());
+            Log::error('PackageController::update ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
+
     public function delete($id)
     {
         try {
@@ -177,8 +205,9 @@ class PackageController extends Controller
             $package->delete();
             return response()->json(["status" => 200, "message" => "Package Deleted"]);
         } catch (\Exception $e) {
+            Log::error('PackageController::delete ' . $e->getMessage());
             // Handle the case where the record with the specified $id does not exist
-            return response()->json(["status" => 400, "message" => "Package not found or could not be deleted"]);
+            return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
         }
     }
 }

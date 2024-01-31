@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SettingModel;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
@@ -13,16 +15,19 @@ class SettingController extends Controller
     //
     function index()
     {
-        $data = [];
-        $data['setting'] = SettingModel::where('user_id', Auth::user()->id)->first();
-        return view('admin.setting.setting', $data);
+        try {
+            $data = [];
+            $data['setting'] = SettingModel::where('user_id', Auth::user()->id)->first();
+            return view('admin.setting.setting', $data);
+        } catch (Exception $e) {
+            Log::error('SettingController::Index ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        }
     }
+
     function store(request $request)
     {
         try {
-            //code...
-            // $SettingModel = SettingModel::first();
-            // $user_id = Auth::user()->id;
             $SettingModel = SettingModel::where('user_id', Auth::user()->id)->first();
             if (empty($SettingModel)) {
                 $SettingModel = new SettingModel;
@@ -112,7 +117,7 @@ class SettingController extends Controller
 
                     // Save the logo path to the database
                     $SettingModel->logo = $logo;
-                } 
+                }
                 if ($request->hasFile('favicon_img')) {
                     if (!empty($SettingModel->favicon)) {
                         $oldFaviconPath = 'uploads/setting/' . $SettingModel->favicon;
@@ -147,8 +152,9 @@ class SettingController extends Controller
                 $SettingModel->save();
             }
             return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');
-        } catch (\Throwable $th) {
-            return redirect()->route('admin.setting.index')->with('error', $th->getMessage());
+        } catch (\Throwable $e) {
+            Log::error('SettingController::store ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
 }
