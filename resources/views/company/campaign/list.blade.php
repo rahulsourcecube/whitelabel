@@ -155,7 +155,7 @@
                         },
                         success: (response) => {
 
-                            if (response.status == 'error') {
+                            if (!response.success) {
                                 // Handle error case
                                 Swal.fire({
                                     text: response.message,

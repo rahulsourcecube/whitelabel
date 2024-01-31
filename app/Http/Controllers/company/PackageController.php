@@ -9,20 +9,17 @@ use App\Models\PackageModel;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\Stripe as StripeStripe;
-
 use Stripe;
-use Session;
 
 class PackageController extends Controller
 {
-
-
     /**
      * Display a listing of the resource.
      *
@@ -34,25 +31,28 @@ class PackageController extends Controller
         $this->middleware('permission:package-list', ['only' => ['index']]);
         $this->middleware('permission:package-create', ['only' => ['buy']]);
     }
-
-
     public function index($type)
     {
-        $type = PackageModel::TYPE[strtoupper($type)];
-        $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->where('type', $type)->get();
-
-        return view('company.package.list', compact('packages', 'type'));
+        try {
+            $type = PackageModel::TYPE[strtoupper($type)];
+            $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->where('type', $type)->get();
+            return view('company.package.list', compact('packages', 'type'));
+        } catch (Exception $e) {
+            Log::error('PackageController::Index => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     function billing()
     {
-        // $addPackage = new PackageModel();
-        // dd($addPackage->end_date);
-        // get CompanyPackage bills
-        $companyId = Helper::getCompanyId();
-        $bills = CompanyPackage::where('company_id', $companyId)->get();
-
-        return view('company.billing.list', compact('bills'));
+        try {
+            $companyId = Helper::getCompanyId();
+            $bills = CompanyPackage::where('company_id', $companyId)->get();
+            return view('company.billing.list', compact('bills'));
+        } catch (Exception $e) {
+            Log::error('PackageController::Billing => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function buy(Request $request)
@@ -62,19 +62,22 @@ class PackageController extends Controller
             if (empty($package)) {
                 return redirect()->back()->with('error', 'Package not found');
             }
-            //  if ($package->price != 0.0) {
-            //     StripeStripe::setApiKey(env('STRIPE_SECRET'));
+            if ($package->price != 0) {
+                try {
+                    StripeStripe::setApiKey(env('STRIPE_SECRET'));
+                    $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
 
-
-            //     $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-
-            //     $stripe->paymentIntents->create([
-            //        'amount' => $package->price * 100,
-            //        'currency' => 'usd',
-            //        'description' => 'Test payment.',
-            //        'payment_method_types' => ['card'],
-            //     ]);
-            //  }
+                    $stripe->paymentIntents->create([
+                        'amount' => $package->price * 100,
+                        'currency' => 'usd',
+                        'description' => $package->title,
+                        'payment_method_types' => ['card'],
+                    ]);
+                } catch (Exception $e) {
+                    Log::error('PackageController::Buy => ' . $e->getMessage());
+                    return redirect()->back()->with('error', "Error : " . $e->getMessage());
+                }
+            }
 
             $companyId = Helper::getCompanyId();
 
@@ -82,8 +85,6 @@ class PackageController extends Controller
             if (empty($package)) {
                 return redirect()->back()->with('error', 'Package not found');
             }
-
-            //  dd($package->start_date );
 
             $addPackage = new CompanyPackage();
             $addPackage->company_id = $companyId;
@@ -118,20 +119,16 @@ class PackageController extends Controller
                 return redirect()->back()->with('error', 'Something went wrong, please try again later!');
             }
         } catch (Exception $e) {
-            Log::error('Buy package error : ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong, please try again later!');
+            Log::error('PackageController::Buy => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     public function stripePost(Request $request)
     {
-
         try {
             StripeStripe::setApiKey(env('STRIPE_SECRET'));
-
-
             $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-
             $stripe->paymentIntents->create([
                 'amount' => 50 * 100,
                 'currency' => 'usd',
@@ -140,10 +137,9 @@ class PackageController extends Controller
             ]);
             Session::flash('success-message', 'Payment done successfully!');
             return view('cardForm');
-        } catch (CardException $e) {
-
-            Session::flash('fail-message', $e->getMessage());
-            return view('cardForm');
+        } catch (Exception $e) {
+            Log::error('PackageController::StripePost => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Domain
 {
-    /**
+       /**
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -19,31 +19,21 @@ class Domain
      */
     public function handle(Request $request, Closure $next)
     {
-//  dd(request()->segment(1) == 'login');
         $host = $request->getHost();
         $domain = [];
         $domain = explode('.', $host);
         $CompanyModel = new CompanyModel();
-
+        
         if ($domain['0'] != env('pr_name')) {
             $exitDomain = $CompanyModel->checkDmain($domain['0']);
         }
-
+      
         if (!empty($exitDomain) && !empty(auth()->user()) && auth()->user()->user_type == 4) {
             $isUserValidLoginOrNot = $CompanyModel->checkUserLogin(auth()->user()->id, $exitDomain->user_id);
             if(!$isUserValidLoginOrNot){
                 Session::flush();
                 Auth::logout();
                 return redirect()->route('user.login');
-            }
-        }
-        if (!empty($exitDomain) && !empty(auth()->user()) && auth()->user()->user_type == 2 || auth()->user()->user_type == 3) {
-
-            $isUserValidLoginOrNot = $CompanyModel->checkUserLogin(auth()->user()->id, $exitDomain->user_id);
-            if(!$isUserValidLoginOrNot){
-                Session::flush();
-                Auth::logout();
-                return redirect()->route('company.login');
             }
         }
         if ($domain[0] == env('pr_name') &&

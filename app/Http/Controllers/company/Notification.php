@@ -1,17 +1,16 @@
 <?php
-
 namespace App\Http\Controllers\company;
-
+use Exception;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Notification as ModelsNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Notification extends Controller
 {
-
     /**
     * Display a listing of the resource.
     *
@@ -25,68 +24,73 @@ class Notification extends Controller
 
     function index(Request $request)
     {
-        $user = Auth::user();
-        $notifications = ModelsNotification::where('company_id', $user->id)->where('type', '2')->where('is_read', '0')->get();
-
-
-        foreach ($notifications as $notification) {
-            $notification->is_read = '1';
-            $notification->save();
+        try {
+            $user = Auth::user();
+            $notifications = ModelsNotification::where('company_id', $user->id)->where('type', '2')->where('is_read', '0')->get();
+            foreach ($notifications as $notification) {
+                $notification->is_read = '1';
+                $notification->save();
+            }
+            return view('company.notification.list');
+        } catch (Exception $e) {
+            Log::error('Notification::Index => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-        return view('company.notification.list');
     }
     public function dtList(Request $request)
     {
+        try {
+            $columns = ['id', 'title'];
+            $user = Auth::user();
+            $totalData = ModelsNotification::where('company_id', $user->id)->where('type', '2')->count();
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $order = $request->input('order.0.column');
+            $dir = $request->input('order.0.dir');
+            $list = [];
 
-        $columns = ['id', 'title'];
-        $user = Auth::user();
+            $searchColumn = ['created_at', 'message'];
 
+            $query = ModelsNotification::orderBy($columns[$order], $dir)
+                ->where('company_id', Auth::user()->id)
+                ->where('type', '2');
 
-        $totalData = ModelsNotification::where('company_id', $user->id)->where('type', '2')->count();
+            // Server-side search
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumn) {
+                    foreach ($searchColumn as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+            }
 
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
+            $results = $query->skip($start)
+                ->take($length)
+                ->get();
 
-        $searchColumn = ['created_at', 'message'];
+            foreach ($results as $result) {
+                $list[] = [
 
-        $query = ModelsNotification::orderBy($columns[$order], $dir)
-            ->where('company_id', Auth::user()->id)
-            ->where('type', '2');
-
-        // Server-side search
-        if ($request->has('search') && !empty($request->input('search.value'))) {
-            $search = $request->input('search.value');
-            $query->where(function ($query) use ($search, $searchColumn) {
-                foreach ($searchColumn as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
-                }
-            });
+                    $result->title ?? "-",
+                    $result->message ?? "-",
+                    Helper::Dateformat($result->created_at) ?? "-",
+                ];
+            }
+            return response()->json([
+                "draw" => intval($request->input('draw')),
+                "recordsTotal" => $totalData,
+                "recordsFiltered" => $totalData,
+                "data" => $list
+            ]);
+        } catch (Exception $e) {
+            Log::error('Notification::DtList  => ' . $e->getMessage());
+            return response()->json([
+                "draw" => 0,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
+            ]);
         }
-
-        $results = $query->skip($start)
-        ->take($length)
-        ->get();
-
-        foreach ($results as $result) {
-
-
-            $list[] = [
-
-                $result->title ?? "-",
-                $result->message ?? "-",
-                Helper::Dateformat($result->created_at) ?? "-",
-
-            ];
-        }
-        $totalFiltered = $results->count();
-        return response()->json([
-            "draw" => intval($request->input('draw')),
-            "recordsTotal" => $totalData,
-           "recordsFiltered" => $totalData,
-            "data" => $list
-        ]);
     }
 }
