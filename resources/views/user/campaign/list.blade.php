@@ -23,11 +23,11 @@
                         <tr>
                             <th></th>
                             <th>Campaign</th>
-                            <th>Reward</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th data-orderable="false" >Reward</th>
+                            <th data-orderable="false">Description</th>
+                            <th data-orderable="false" >Type</th>
+                            <th data-orderable="false" >Status</th>
+                            <th data-orderable="false" >Action</th>
                         </tr>
                     </thead>
                     <tbody>

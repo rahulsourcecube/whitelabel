@@ -27,90 +27,113 @@ class CompanyLoginController extends Controller
 {
     public function index()
     {
-        //  Check domain
-        $getdomain = Helper::getdomain();
+        try {
+            //  Check domain
+            $getdomain = Helper::getdomain();
 
-        if (!empty($getdomain) && $getdomain == env('pr_name')) {
-            return redirect(env('ASSET_URL') . '/company/signup');
-        }
-        //end     
-        if (!empty(auth()->user()) && auth()->user()->user_type == '1') {
-            return redirect()->route('admin.dashboard');
-        } elseif (!empty(auth()->user()) && auth()->user()->user_type == '2') {
-            return redirect()->route('company.dashboard');
-        } else {
-            $siteSetting = Helper::getSiteSetting();
-            return view('company.companylogin', compact('siteSetting'));
+            if (!empty($getdomain) && $getdomain == env('pr_name')) {
+                return redirect(env('ASSET_URL') . '/company/signup');
+            }
+            //end     
+            if (!empty(auth()->user()) && auth()->user()->user_type == '1') {
+                return redirect()->route('admin.dashboard');
+            } elseif (!empty(auth()->user()) && auth()->user()->user_type == '2') {
+                return redirect()->route('company.dashboard');
+            } else {
+                $siteSetting = Helper::getSiteSetting();
+                return view('company.companylogin', compact('siteSetting'));
+            }
+
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Index => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     function dashboard()
     {
-        // Get the current month and year
-        $currentMonth = Carbon::now()->month;
-        $currentYear = Carbon::now()->year;
-        $companyId = Helper::getCompanyId();
-        $data = [];
-        $data['total_campaign'] = 0;
-        $data['total_user'] = 0;
-        $data['new_user'] = 0;
-        $data['old_user'] = 0;
-        $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
-        $data['old_user'] = User::where('company_id', $companyId)->where('user_type', '4')->where(function ($query) use ($currentMonth, $currentYear) {
-            $query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);
-        })->count();
-        $data['new_user'] = User::where('company_id', $companyId)->where('user_type', '4')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
-        $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
-        $data['total_campaignReq'] = $user_campaign_history = DB::table('users as u')
-            ->where('u.company_id', $companyId)
-            ->where('uch.status', '2')
-            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-            ->count();
-        $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(5)->get();
-        $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(5)->get();
-        $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(5)->get();
+        try {
+            // Get the current month and year
+            $currentMonth = Carbon::now()->month;
+            $currentYear = Carbon::now()->year;
 
-        $start_time = strtotime('first day of this month');
-        $end_time = strtotime(date("Y-m-d"));
-        $chart_title = 'Day of the current month';
-        if ($start_time == $end_time) {
-            $start_time = strtotime('first day of last month');
-            $end_time = strtotime('last day of last month');
-            $chart_title = 'Day of the previous month';
-        }
-        // DB::enableQueryLog();
-        $user_campaign_history = DB::table('users as u')
-            ->where('u.company_id', $companyId)
-            ->where('uch.status', '3')
-            ->whereMonth('uch.updated_at', '=', date("m", $start_time))
-            ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
-            ->select(DB::raw('SUM(uch.reward) as total_reward , DAYOFMONTH(uch.updated_at) as day'))
-            ->groupBy('day')
-            ->get();     
+            $companyId = Helper::getCompanyId();
 
-        $list = [];
-        for ($i = $start_time; $i <= $end_time; $i += 86400) {
-            $list[(int)date('d', $i)] = 0;
+            $data = [];
+
+            $data['total_campaign'] = 0;
+            $data['total_user'] = 0;
+            $data['new_user'] = 0;
+            $data['old_user'] = 0;
+            $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
+            $data['old_user'] = User::where('company_id', $companyId)->where('user_type', '4')->where(function ($query) use ($currentMonth, $currentYear) {
+                $query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);
+            })->count();
+
+            $data['new_user'] = User::where('company_id', $companyId)->where('user_type', '4')->whereMonth('created_at', $currentMonth)->whereYear('created_at', $currentYear)->count();
+            $data['total_user'] = User::where('company_id', $companyId)->where('user_type', '4')->count();
+            $data['total_campaignReq'] = $user_campaign_history = DB::table('users as u')
+                ->where('u.company_id', $companyId)
+                ->where('uch.status', '2')
+                ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+                ->count();
+            $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(5)->get();
+            $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(5)->get();
+            $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(5)->get();
+
+            $start_time = strtotime('first day of this month');
+            $end_time = strtotime(date("Y-m-d"));
+            $chart_title = 'Day of the current month';
+
+            if ($start_time == $end_time) {
+                $start_time = strtotime('first day of last month');
+                $end_time = strtotime('last day of last month');
+                $chart_title = 'Day of the previous month';
+            }
+
+            $user_campaign_history = DB::table('users as u')
+                ->where('u.company_id', $companyId)
+                ->where('uch.status', '3')
+                ->whereMonth('uch.updated_at', '=', date("m", $start_time))
+                ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
+                ->select(DB::raw('SUM(uch.reward) as total_reward , DAYOFMONTH(uch.updated_at) as day'))
+                ->groupBy('day')
+                ->get();
+
+            $list = [];
+
+            for ($i = $start_time; $i <= $end_time; $i += 86400) {
+                $list[(int)date('d', $i)] = 0;
+            }
+
+            foreach ($user_campaign_history as $values) {
+                $list[$values->day] = $values->total_reward;
+            }
+
+            $user_reward_and_days = json_encode(['day' => array_keys($list), 'reward' => array_values($list)]);
+            return view('company.dashboard', $data, compact('user_reward_and_days', 'chart_title'));
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Dashboard => ' . $e->getMessage());
         }
-        foreach ($user_campaign_history as $values) {
-            $list[$values->day] = $values->total_reward;
-        }
-        $user_reward_and_days = json_encode(['day' => array_keys($list), 'reward' => array_values($list)]);
-        return view('company.dashboard', $data, compact('user_reward_and_days', 'chart_title'));
     }
     public function login(Request $request)
     {
-        $input = $request->all();
-        $this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        try {
+            $input = $request->all();
+            $this->validate($request, [
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-        if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '2'))) {
-            return redirect()->route('company.dashboard');
-        } elseif (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '3'))) {
-            return redirect()->route('company.dashboard');
-        } else {
-            return redirect()->back()->with('error', 'These credentials do not match our records.');
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '2'))) {
+                return redirect()->route('company.dashboard');
+            } elseif (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '3'))) {
+                return redirect()->route('company.dashboard');
+            } else {
+                return redirect()->back()->with('error', 'These credentials do not match our records.');
+            }
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Login => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function loginWithToken(Request $request)
@@ -125,23 +148,27 @@ class CompanyLoginController extends Controller
             } else {
                 return redirect()->route('company.login')->with('error', 'These credentials do not match our records.');
             }
-        } catch (\Exception $e) {
-            return redirect()->route('company.login');
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::LoginWithToken => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function signup(Request $request)
     {
-        $getdomain = Helper::getdomain();
-        if (!empty($getdomain) && $getdomain != env('pr_name')) {
-            return redirect(env('ASSET_URL') . '/company/signup');
+        try {
+            $getdomain = Helper::getdomain();
+            if (!empty($getdomain) && $getdomain != env('pr_name')) {
+                return redirect(env('ASSET_URL') . '/company/signup');
+            }
+            $siteSetting = Helper::getSiteSetting();
+            return view('company.signup', compact('siteSetting'));
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Signup => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-        //Helper::createCompanySubDomain('aa111');
-        $siteSetting = Helper::getSiteSetting();
-        return view('company.signup', compact('siteSetting'));
     }
     public function signupStore(Request $request)
     {
-
         try {
             $input = $request->all();
             $input['dname'] = strtolower($input['dname']);
@@ -168,9 +195,13 @@ class CompanyLoginController extends Controller
             $user->contact_number = $request->ccontact;
             $user->user_type = '2';
             $user->save();
-            //
-            $userName  = $request->fname . ' ' . $request->lname;
-            \Mail::to($request->email)->send(new CompanyWelcomeMail('Welcome Mail', $userName));
+
+            try {
+                $userName  = $request->fname . ' ' . $request->lname;
+                Mail::to($request->email)->send(new CompanyWelcomeMail('Welcome Mail', $userName));
+            } catch (Exception $e) {
+                Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
+            }
 
             if (isset($user)) {
                 $compnay = new CompanyModel();
@@ -189,7 +220,7 @@ class CompanyLoginController extends Controller
                 $user->assignRole([$role->id]);
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
-                $settingModel->title = $request->cname;               
+                $settingModel->title = $request->cname;
                 $settingModel->save();
             }
             return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
@@ -204,14 +235,20 @@ class CompanyLoginController extends Controller
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
             }*/
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function forget()
     {
-        $siteSetting = Helper::getSiteSetting();
-        return view('company.forgetPassword', compact('siteSetting'));
+        try {
+            $siteSetting = Helper::getSiteSetting();
+            return view('company.forgetPassword', compact('siteSetting'));
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Forget => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function submitForgetPassword(Request $request)
@@ -221,24 +258,26 @@ class CompanyLoginController extends Controller
                 'email' => 'required|email|exists:users',
             ]);
 
-            $token = Str::random(64);
-
+            $token = Str::random(64);            
+            try {
+                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email], function ($message) use ($request) {
+                    $message->to($request->email);
+                    $message->subject('Reset Password');
+                });
+            } catch (Exception $e) {
+                Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
+                 return redirect()->back()->with('error', "Something went wrong");
+            }
             DB::table('password_resets')->insert([
                 'email' => $request->email,
                 'token' => $token,
                 'created_at' => Carbon::now()
             ]);
 
-
-            Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject('Reset Password');
-            });
-
             return back()->with('success', 'We have e-mailed your password reset link!');
-        } catch (Exception $exception) {
-            
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::SubmitForgetPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function forgetPassSendmail(Request $request)
@@ -247,19 +286,15 @@ class CompanyLoginController extends Controller
             $request->validate(['email' => 'required|email']);
             $user = User::where('email', $request->email)->first();
             if (!empty($user)) {
-                $mailData = [
-                    "email" => $request->email,
-                    "_token" => $request->_token
-                ];
                 $details = $user;
                 Mail::to($request->email)->send(new forgetpass($details));
-
                 return redirect()->back()->with('success', 'Mail Send Successfully');
             } else {
                 return redirect()->back()->with('error', 'email not found');
             }
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::ForgetPassSendmail => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -269,8 +304,9 @@ class CompanyLoginController extends Controller
             $user = DB::table('password_resets')->where('token', $token)->first();
             $siteSetting = Helper::getSiteSetting();
             return view('company.confirmPassword', compact('user', 'siteSetting'), ['token' => $token]);
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::ConfirmPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -294,8 +330,9 @@ class CompanyLoginController extends Controller
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 
             return redirect()->route('company.signin')->with('success', 'Your password has been changed!');
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::SubmitResetPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -314,14 +351,19 @@ class CompanyLoginController extends Controller
 
             return redirect()->route('company.signin')->with('error', 'These credentials do not match our records.');
         } catch (Exception $e) {
-            Log::info("change password in profile LogError" . $e->getMessage());
-            return $this->sendError($e->getMessage());
+            Log::error('CompanyLoginController::ChangePassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function editProfile()
     {
-        $editprofiledetail = User::where('id', Auth::user()->id)->first();
-        return view('company.editprofile', compact('editprofiledetail'));
+        try {
+            $editprofiledetail = User::where('id', Auth::user()->id)->first();
+            return view('company.editprofile', compact('editprofiledetail'));
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::EditProfile => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
     public function updateprofile(Request $request)
     {
@@ -332,27 +374,32 @@ class CompanyLoginController extends Controller
             $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
             if ($request->hasFile('profile_image')) {
-                if ($updateprofiledetail->profile_image && file_exists(base_path().'/uploads/user-profile/') . $updateprofiledetail->profile_image) {
-                    unlink(base_path().'/uploads/user-profile/' . $updateprofiledetail->profile_image);
+                if ($updateprofiledetail->profile_image && file_exists(base_path() . '/uploads/user-profile/') . $updateprofiledetail->profile_image) {
+                    unlink(base_path() . '/uploads/user-profile/' . $updateprofiledetail->profile_image);
                 }
                 $filename = rand(111111, 999999) . '.' . $request->profile_image->extension();
-                $request->file('profile_image')->move(base_path().'/uploads/user-profile/', $filename);
+                $request->file('profile_image')->move(base_path() . '/uploads/user-profile/', $filename);
                 $updateprofiledetail['profile_image'] = isset($filename) ? $filename : '';
             }
             $updateprofiledetail->save();
             return redirect()->route('company.edit_profile')->with('success', 'Profile Update Successfully!');
         } catch (Exception $e) {
-            Log::info(['message', 'Update Profile error']);
-            return redirect()->back()->with($e->getMessage());
+            Log::error('CompanyLoginController::Updateprofile => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function Profile()
     {
-        $companyId = Helper::getCompanyId();
-        $profiledetail = User::where('id', Auth::user()->id)->first();
-        $companydetail = SettingModel::where('user_id', $companyId)->first();
-        $companyname = CompanyModel::where('user_id', $companyId)->first();
-        return view('company.profile', compact('profiledetail', 'companydetail', 'companyname'));
+        try {
+            $companyId = Helper::getCompanyId();
+            $profiledetail = User::where('id', Auth::user()->id)->first();
+            $companydetail = SettingModel::where('user_id', $companyId)->first();
+            $companyname = CompanyModel::where('user_id', $companyId)->first();
+            return view('company.profile', compact('profiledetail', 'companydetail', 'companyname'));
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Profile => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
     public function updatepassword(Request $request)
     {
@@ -366,33 +413,41 @@ class CompanyLoginController extends Controller
             $userCheck->update();
             return redirect()->route('company.edit_profile')->with('success', 'Password Update Successfully!');
         } catch (Exception $e) {
-            Log::info("change password in profile error" . $e->getMessage());
-            return $this->sendError($e->getMessage());
+            Log::error('CompanyLoginController::Updatepassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function verifyemail(Request $request, $id)
     {
-        $userId = Auth::user()->id;
-        $email_check = User::where('id', '!=', $id)->where('email', $request->email)->where('user_type', '2')->first();
-        if (!empty($email_check)) {
+        try {
+
+            $email_check = User::where('id', '!=', $id)->where('email', $request->email)->where('user_type', '2')->first();
+            if (!empty($email_check)) {
+                echo 'false';
+            } else {
+                echo 'true';
+            }
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Verifyemail => ' . $e->getMessage());
             echo 'false';
-        } else {
-            echo 'true';
         }
     }
     public function verifycontact(Request $request, $id)
     {
-        $userId = Auth::user()->id;
-        $contact_check = User::where('id', '!=', $id)->where('contact_number', $request->contact_number)->where('user_type', '2')->first();
-        if (!empty($contact_check)) {
+        try {
+            $contact_check = User::where('id', '!=', $id)->where('contact_number', $request->contact_number)->where('user_type', '2')->first();
+            if (!empty($contact_check)) {
+                echo 'false';
+            } else {
+                echo 'true';
+            }
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::Verifycontact => ' . $e->getMessage());
             echo 'false';
-        } else {
-            echo 'true';
         }
     }
     public function logout(Request $request)
     {
-
         Auth::logout();
         return redirect()->route('company.signin');
     }

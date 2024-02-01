@@ -331,6 +331,7 @@ class CampaignController extends Controller
     function fetch_data(Request $request)
     {
         try {
+            
             if ($request->ajax()) {
                 if ($request->date_range_filter != null) {
                     $date = explode('-', $request->date_range_filter);
@@ -379,7 +380,7 @@ class CampaignController extends Controller
 
     public function view($type, $id)
     {
-        try {
+        try {            
             $companyId = Helper::getCompanyId();
 
             $type = CampaignModel::TYPE[strtoupper($type)];
@@ -489,9 +490,10 @@ class CampaignController extends Controller
             $setting = SettingModel::where('user_id', $companyId)->first();
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
             $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
-            $user = User::where('id', $camphistory->user_id)->first();
+            $user = User::where('id', $camphistory->user_id)->where('company_id', $companyId)->first();
+           
             if (empty($user)) {
-                return redirect()->back()->with('error', 'Task Accept Approval Requset successfully');
+                return redirect()->back()->with('error', 'User not found');
             }
             $chats = TaskEvidence::where('campaign_id', $id)->get();
             return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id'));

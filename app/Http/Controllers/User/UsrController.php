@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
+use Illuminate\Support\Facades\Log;
+
 
 class UsrController extends Controller
 {
@@ -26,7 +28,6 @@ class UsrController extends Controller
 
     function index()
     {
-      
         $getdomain = Helper::getdomain();
 
         if (!empty($getdomain) && $getdomain == env('pr_name')) {
@@ -47,7 +48,6 @@ class UsrController extends Controller
     public function dashboard()
     {
         try {
-
             $campaignList = UserCampaignHistoryModel::orderBy('campaign_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
@@ -75,9 +75,8 @@ class UsrController extends Controller
             $data['total_campaign'] = 0;
             $data['total_package'] = 0;
             return view('user.dashboard', compact('userData', 'data', 'campaignList', 'totalJoinedCampaign', 'totalCompletedCampaign', 'totalReward', 'chartReward', 'totalReferralUser', 'chartRevenueData'));
-        } catch (Exception $exception) {
-
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::Dashboard => ' . $e->getMessage());
         }
     }
 
@@ -97,8 +96,6 @@ class UsrController extends Controller
             ]);
 
             if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'company_id' => $companyId, 'status' => '1', 'user_type' => '4'))) {
-                // if (!empty(auth()->user()) &&  (auth()->user()->user_type == '4')) {
-                //     dD(auth()->user());
                 if (Session('referral_link') != null) {
                     $referral_link = Session('referral_link');
                     $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
@@ -106,36 +103,39 @@ class UsrController extends Controller
                     $id = base64_encode($user_plan->campaign_id);
                     return redirect()->route('user.campaign.view', $id);
                 }
-
                 return redirect()->route('user.dashboard');
-                // } else {
-
-                //     return redirect()->back()->with('error', 'These credentials do not match our records.');
-                // }
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
             }
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::login => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     function campaign()
     {
-
-        return view('user.campaign.list');
+        try {
+            return view('user.campaign.list');
+        } catch (Exception $e) {
+            Log::error('UsrController::Campaign => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
     function campaignview()
     {
-
-        return view('user.campaign.view');
+        try {
+            return view('user.campaign.view');
+        } catch (Exception $e) {
+            Log::error('UsrController::campaignview => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function changePasswordStore(Request $request)
     {
 
         try {
-
             $currentPasswordStatus = Hash::check($request->current_password, Auth::user()->password);
             if ($currentPasswordStatus) {
 
@@ -148,8 +148,9 @@ class UsrController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Old Password does not match');
             }
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::ChangePasswordStore => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -158,8 +159,9 @@ class UsrController extends Controller
         try {
             $userData = Auth::user();
             return view('user.editprofile', compact('userData'));
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::EditProfile => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -202,15 +204,15 @@ class UsrController extends Controller
 
             if ($request->hasFile('profile_image')) {
 
-                if (\File::exists(base_path().'/uploads/user/user-profile/' . $profileEdit->profile_image)) {
-                    \File::delete(base_path().'/uploads/user/user-profile/' . $profileEdit->profile_image);
+                if (\File::exists(base_path() . '/uploads/user/user-profile/' . $profileEdit->profile_image)) {
+                    \File::delete(base_path() . '/uploads/user/user-profile/' . $profileEdit->profile_image);
                 }
 
                 $extension = $request->file('profile_image')->getClientOriginalExtension();
                 $randomNumber = rand(1000, 9999);
                 $timestamp = time();
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-                $request->file('profile_image')->move(base_path().'/uploads/user/user-profile', $image);
+                $request->file('profile_image')->move(base_path() . '/uploads/user/user-profile', $image);
                 $profileEdit->profile_image = $image;
             }
 
@@ -218,8 +220,9 @@ class UsrController extends Controller
 
 
             return redirect()->route('user.edit_profile')->with('success', "Profile Updated Successfully!");
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::EditProfileStore => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -235,8 +238,9 @@ class UsrController extends Controller
 
             $socialAccount->save();
             return redirect()->route('user.edit_profile')->with('success', "Social account link updated successfully!");
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::SocialAccount => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -254,16 +258,22 @@ class UsrController extends Controller
 
             $bankDetail->save();
             return redirect()->route('user.edit_profile')->with('success', "Bank detail updated successfully!");
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::BankDetail => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     public function Profile()
     {
-        $userData = Auth::user();
-        $referralUser = User::orderBy('id', 'DESC')->where('referral_user_id', Auth::user()->id)->get();
-        return view('user.profile', compact('userData', 'referralUser'));
+        try {
+            $userData = Auth::user();
+            $referralUser = User::orderBy('id', 'DESC')->where('referral_user_id', Auth::user()->id)->get();
+            return view('user.profile', compact('userData', 'referralUser'));
+        } catch (Exception $e) {
+            Log::error('UsrController::Profile => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
     function myreward(Request $request)
     {
@@ -295,8 +305,9 @@ class UsrController extends Controller
 
             $filterResults = $filter->get();
             return view('user.reward.myReward', compact('filterResults'));
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::Myreward => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
@@ -328,21 +339,21 @@ class UsrController extends Controller
                 $status = $request->status;
                 $filter->where('status', '=', $status);
             }
-            // die($filter->toSql());
 
             $filterResults = $filter->get();
+
             return view('user.reward.progressreward', compact('filterResults'));
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::Progressreward => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     public function reopen(UserCampaignHistoryModel $reopen)
     {
         try {
-            $user = Auth::user();
-
             $reopen->status = '5';
+
             $reopen->save();
             if (isset($reopen)) {
                 $Notification = new Notification();
@@ -355,8 +366,9 @@ class UsrController extends Controller
             }
 
             return redirect()->back()->with('success', "Reopen requested successfully!");
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong");
+        } catch (Exception $e) {
+            Log::error('UsrController::Reopen => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function claimReward($id)
@@ -365,10 +377,10 @@ class UsrController extends Controller
             $claimReward = UserCampaignHistoryModel::where('id', $id)->first();
 
 
-            $user = Auth::user();
-
             $claimReward->status = '2';
+
             $claimReward->save();
+
             if (isset($claimReward)) {
                 $Notification = new Notification();
                 $Notification->user_id =  $claimReward->user_id;
@@ -376,62 +388,69 @@ class UsrController extends Controller
                 $Notification->type =  '2';
                 $Notification->title =  " Campaign approval request";
                 $Notification->message =  $claimReward->getCampaign->title . " approval request by " . $claimReward->getuser->FullName;
+
                 $Notification->save();
             }
 
             return redirect()->back()->with('success', "Claim Reward requested successfully!");
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong");
+        } catch (Exception $e) {
+            Log::error('UsrController::ClaimReward => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     function analytics(Request $request)
     {
-        $fromDate = request('from_date');
-        $toDate = request('to_date');
+        try {
+            $fromDate = request('from_date');
+            $toDate = request('to_date');
 
-        $topFromDate = request('top_from_date');
-        $topToDate = request('top_to_date');
+            $topFromDate = request('top_from_date');
+            $topToDate = request('top_to_date');
 
-        $monthlyReferrals = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('MONTH(created_at) as month'))
-            ->where('referral_user_id', Auth::user()->id)
-            ->when($fromDate, function ($query) use ($fromDate) {
-                return $query->where('created_at', '>=', $fromDate);
-            })
-            ->when($toDate, function ($query) use ($toDate) {
-                return $query->where('created_at', '<=', $toDate);
-            })
-            ->groupBy(DB::raw('MONTH(created_at)'))
-            ->get()->toArray();
+            $monthlyReferrals = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('MONTH(created_at) as month'))
+                ->where('referral_user_id', Auth::user()->id)
+                ->when($fromDate, function ($query) use ($fromDate) {
+                    return $query->where('created_at', '>=', $fromDate);
+                })
+                ->when($toDate, function ($query) use ($toDate) {
+                    return $query->where('created_at', '<=', $toDate);
+                })
+                ->groupBy(DB::raw('MONTH(created_at)'))
+                ->get()->toArray();
 
-        $topUserReferral = UserCampaignHistoryModel::whereExists(function ($query) {
-            $query->from('users')
-                ->whereRaw('user_campaign_history.user_id = users.id')
-                ->where('users.referral_user_id', Auth::user()->id)
-                ->where('status', '3')
-                ->whereNotNull('users.referral_user_id');
-        })
-            ->when($topFromDate, function ($query) use ($topFromDate) {
-                return $query->where('created_at', '>=', $topFromDate);
+            $topUserReferral = UserCampaignHistoryModel::whereExists(function ($query) {
+                $query->from('users')
+                    ->whereRaw('user_campaign_history.user_id = users.id')
+                    ->where('users.referral_user_id', Auth::user()->id)
+                    ->where('status', '3')
+                    ->whereNotNull('users.referral_user_id');
             })
-            ->when($topToDate, function ($query) use ($topToDate) {
-                return $query->where('created_at', '<=', $topToDate);
-            })
-            ->groupBy('user_campaign_history.user_id')
-            ->with(['getuser' => function ($query) {
-                $query->select('id', 'first_name');
-            }])
-            ->selectRaw('user_campaign_history.user_id,Sum(reward) as sum')
-            ->orderBy('sum', 'DESC')->take(5)
-            ->get()->toArray();
-        if ($request->ajax()) {
-            return [
-                "monthlyReferrals" => $monthlyReferrals,
-                "topUserReferral" => $topUserReferral,
-            ];
+                ->when($topFromDate, function ($query) use ($topFromDate) {
+                    return $query->where('created_at', '>=', $topFromDate);
+                })
+                ->when($topToDate, function ($query) use ($topToDate) {
+                    return $query->where('created_at', '<=', $topToDate);
+                })
+                ->groupBy('user_campaign_history.user_id')
+                ->with(['getuser' => function ($query) {
+                    $query->select('id', 'first_name');
+                }])
+                ->selectRaw('user_campaign_history.user_id,Sum(reward) as sum')
+                ->orderBy('sum', 'DESC')->take(5)
+                ->get()->toArray();
+
+            if ($request->ajax()) {
+                return [
+                    "monthlyReferrals" => $monthlyReferrals,
+                    "topUserReferral" => $topUserReferral,
+                ];
+            }
+
+            return view('user.analytics', compact('monthlyReferrals', 'topUserReferral'));
+        } catch (Exception $e) {
+            Log::error('UsrController::Analytics => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-
-
-        return view('user.analytics', compact('monthlyReferrals', 'topUserReferral'));
     }
 
     function notification()
@@ -443,17 +462,23 @@ class UsrController extends Controller
                 $notification->is_read = '1';
                 $notification->save();
             }
-
             return view('user.notification', compact('notifications'));
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::Notification => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function signup()
     {
-        $siteSetting = Helper::getSiteSetting();
+        try {
 
-        return view('user.signup', compact('siteSetting'));
+            $siteSetting = Helper::getSiteSetting();
+
+            return view('user.signup', compact('siteSetting'));
+        } catch (Exception $e) {
+            Log::error('UsrController::Signup => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function store(Request $request)
@@ -476,16 +501,16 @@ class UsrController extends Controller
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->where('company_id', $companyId)->first();
             }
-           // get domain
-           $host = $request->getHost();
-           $domain = explode('.', $host);
-           $CompanyModel = new CompanyModel();
-           $exitDomain = $CompanyModel->checkDmain($domain['0']);
-           $companyId = $exitDomain->user_id;
-           $ActivePackageData = Helper::GetActivePackageData($companyId);
+            // Get domain
+            $host = $request->getHost();
+            $domain = explode('.', $host);
+            $CompanyModel = new CompanyModel();
+            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $companyId = $exitDomain->user_id;
+            $ActivePackageData = Helper::GetActivePackageData($companyId);
 
-           $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
-           if ($userCount >= $ActivePackageData->no_of_user) {
+            $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
+            if ($userCount >= $ActivePackageData->no_of_user) {
                 return redirect()->back()->with('error', 'The user registration limit is over. please contact to administrator.');
             }
             $userRegister = new User();
@@ -501,23 +526,37 @@ class UsrController extends Controller
             $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
             $userRegister->package_id = $ActivePackageData->id;
 
-            Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject('Welcome Mail');
-            });
+            $message = "Registration Successfully!";
+
+            try {
+                Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
+                    $message->to($request->email);
+                    $message->subject('Welcome Mail');
+                });
+            } catch (Exception $e) {
+                Log::error('UsrController::Store => ' . $e->getMessage());
+            }
 
             $userRegister->save();
 
-            return redirect()->route('user.login')->with('success', "Registration Successfully!");
+            return redirect()->route('user.login')->with('success', $message);
         } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            Log::error('UsrController::Store => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     public function forget(Request $request)
     {
-        $siteSetting = Helper::getSiteSetting();
-        return view('user.forgetPassword', compact('siteSetting'));
+        try {
+
+            $siteSetting = Helper::getSiteSetting();
+
+            return view('user.forgetPassword', compact('siteSetting'));
+        } catch (Exception $e) {
+            Log::error('UsrController::Forget => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function submitForgetPassword(Request $request)
@@ -526,8 +565,17 @@ class UsrController extends Controller
             $request->validate([
                 'email' => 'required|email|exists:users',
             ]);
-
             $token = Str::random(64);
+
+            try {
+                Mail::send('user.email.forgetPassword', ['token' => $token], function ($message) use ($request) {
+                    $message->to($request->email);
+                    $message->subject('Reset Password');
+                });
+            } catch (Exception $e) {
+                Log::error('UsrController::Forget => ' . $e->getMessage());
+                return redirect()->back()->with('error', "Something went wrong!");
+            }
 
             DB::table('password_resets')->insert([
                 'email' => $request->email,
@@ -535,32 +583,31 @@ class UsrController extends Controller
                 'created_at' => Carbon::now()
             ]);
 
-
-            Mail::send('user.email.forgetPassword', ['token' => $token], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject('Reset Password');
-            });
-
             return back()->with('message', 'We have e-mailed your password reset link!');
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::SubmitForgetPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     public function confirmPassword($token)
     {
         try {
+
             $user = DB::table('password_resets')->where('token', $token)->first();
             $siteSetting = Helper::getSiteSetting();
+
             return view('user.confirmPassword', compact('user', 'siteSetting'), ['token' => $token]);
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::ConfirmPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     public function submitResetPassword(Request $request)
     {
         try {
+
             $updatePassword = DB::table('password_resets')
                 ->where([
                     'email' => $request->email,
@@ -578,18 +625,23 @@ class UsrController extends Controller
             DB::table('password_resets')->where(['email' => $request->email])->delete();
 
             return redirect()->route('user.login')->with('success', 'Your password has been changed!');
-        } catch (Exception $exception) {
-            return redirect()->back()->with('error', "Something Went Wrong!");
+        } catch (Exception $e) {
+            Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 
     public function Logout()
     {
+        try {
+            Session::flush();
 
-        Session::flush();
+            Auth::logout();
 
-        Auth::logout();
-
-        return redirect()->route('user.login');
+            return redirect()->route('user.login');
+        } catch (Exception $e) {
+            Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 }
