@@ -6,7 +6,7 @@
     $packagebuymessage = App\Helpers\Helper::isInactivePackage();
     $GetActivePackageData = App\Helpers\Helper::GetActivePackageData();
     $remainingDays = App\Helpers\Helper::getRemainingDays();
-@endphp
+    @endphp
 
 <head>
     <meta charset="utf-8">
@@ -43,7 +43,7 @@
                 <div class="container notification">
                     @if ($remainingDays && $remainingDays != null)
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Your package going to be expires in {{ $remainingDays }}</strong>. <a
+                            <strong> {{ $remainingDays }}</strong>. <a
                                 href="{{ route('company.package.list', 'Free') }}">Click</a>
                             here to buy package.
                         </div>

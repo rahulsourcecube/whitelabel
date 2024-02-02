@@ -23,9 +23,7 @@ class Helper
 {
     public static function getSiteSetting()
     {
-        // dd( Helper::get_domaininfo($_SERVER['ASSET_URL']));
-
-        try {
+                try {
             $companyId = Helper::getCompanyId();
             $generalSetting = SettingModel::where('user_id', $companyId)->first();
             return $generalSetting;
@@ -54,6 +52,12 @@ class Helper
     }
 
     public static function isActivePackage()
+    {
+        $companyId = Helper::getCompanyId();
+        $checkPackage = CompanyPackage::where('company_id', $companyId)->orderBy('id', 'desc')->exists();
+        return $checkPackage;
+    }
+    public static function isActivePackageAccess()
     {
         $companyId = Helper::getCompanyId();
         $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->exists();
@@ -155,6 +159,71 @@ class Helper
 
     // get Remaining Days
     public static function getRemainingDays()
+    {
+        $sevenDaysLater = now()->addDays(6)->toDateString();
+        $companyId = Helper::getCompanyId();
+
+        $packageData = CompanyPackage::where('company_id', $companyId)
+            ->where('status', CompanyPackage::STATUS['ACTIVE'])
+            ->where('end_date', '>=', now()->toDateString()) 
+            ->where('end_date', '<=', $sevenDaysLater)
+            ->first();
+
+        $changeStatusStart = CompanyPackage::where('company_id', $companyId)
+            //  ->where('id', '!=',  $packageData->id)      
+            ->where('start_date', '>',  now()->toDateString()) 
+            ->orderBy('start_date', 'asc')
+            ->first();
+
+        $changeStatusEnd = CompanyPackage::where('company_id', $companyId)
+            ->where('status', CompanyPackage::STATUS['ACTIVE'])
+            ->where('end_date', '<',  now()->toDateString()) 
+            ->orderBy('end_date', 'desc')
+            ->first();
+
+        $remainingDays = null;
+        
+        if ($packageData != null) {
+           
+            $end_date = new DateTime($packageData->end_date);
+            // Add 24 hours to the end date
+            $end_date->add(new DateInterval('PT24H'));
+            $timeDifference = $end_date->diff(Carbon::now());
+
+            $days = "";
+            $hours = "";
+
+            if ($timeDifference->format('%a') != 0) {
+                $days = $timeDifference->format('%a') . ' days';
+            }
+            if ($timeDifference->format('%a') == 0) {
+                $hours = $timeDifference->format('%h') . ' hours';
+            }
+          if(empty($changeStatusStart)){
+           
+            $remainingDays = "Your package going to be expires in " . $days . " " . $hours;
+
+            if ($packageData->end_date  ==  now()->toDateString()) {
+                $remainingDays  =   "Today ".$remainingDays;
+            }
+        }
+             
+        } else {
+
+            if (!empty($changeStatusEnd)) {
+                $changeStatusEnd->status = '0';
+                $changeStatusEnd->save();
+            }
+
+            if (!empty($changeStatusStart)) {
+                $changeStatusStart->status = '1';
+                $changeStatusStart->save();
+            }
+        }       
+
+        return $remainingDays;
+    }
+    public static function oldgetRemainingDays()
     {
         try {
             $packageExpiringIN = 7;
@@ -284,8 +353,7 @@ class Helper
     public static function FreePackagePurchased()
     {
         $companyId = Helper::getCompanyId();
-
-        $packageData = CompanyPackage::where('company_id', $companyId)->where('price', 0.00)->first();
+        $packageData = CompanyPackage::where('company_id', $companyId)->first();
         return $packageData;
     }
 }

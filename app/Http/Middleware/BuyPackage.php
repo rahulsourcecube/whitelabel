@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\Helper;
 use App\Models\CompanyPackage;
 use Closure;
 use Illuminate\Http\Request;
@@ -19,9 +20,12 @@ class BuyPackage
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
+       
+        $companyId = Helper::getCompanyId();
         if ($user->user_type == '2') {
-            $checkPackage = CompanyPackage::where('company_id', $user->id)->where('status', CompanyPackage::STATUS['ACTIVE'])->exists();
-            if ($checkPackage) {
+            $checkPackage = CompanyPackage::where('company_id', $companyId)->exists();
+           
+            if (!empty($checkPackage)) {
                 return $next($request);
             }else{
                 return redirect()->route('company.package.list', 'Free')->withErrors('Please buy package to access this page');

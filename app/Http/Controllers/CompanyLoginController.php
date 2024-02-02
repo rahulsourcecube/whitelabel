@@ -138,7 +138,7 @@ class CompanyLoginController extends Controller
     }
     public function loginWithToken(Request $request)
     {
-        try {
+       try {
             $user = User::where('token', $request->token)->first();
             if (auth()->attempt(array('email' => $user->email, 'password' => $user->view_password, 'user_type' => '2'))) {
                 $user->update([
@@ -148,7 +148,7 @@ class CompanyLoginController extends Controller
             } else {
                 return redirect()->route('company.login')->with('error', 'These credentials do not match our records.');
             }
-        } catch (Exception $e) {
+       } catch (Exception $e) {
             Log::error('CompanyLoginController::LoginWithToken => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
@@ -213,7 +213,7 @@ class CompanyLoginController extends Controller
                 $compnay->save();
                 $token =  Hash::make($user->id);
                 $user->update([
-                    'company_id' => $compnay->id,
+                    // 'company_id' => $compnay->id,
                     'token' => $token
                 ]);
                 $role = Role::where('name', 'Company')->first();

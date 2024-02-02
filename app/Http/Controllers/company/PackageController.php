@@ -85,7 +85,7 @@ class PackageController extends Controller
             if (empty($package)) {
                 return redirect()->back()->with('error', 'Package not found');
             }
-
+            $activePackage = CompanyPackage::where('company_id', $companyId) ->where('status', CompanyPackage::STATUS['ACTIVE'])->first();
             $addPackage = new CompanyPackage();
             $addPackage->company_id = $companyId;
             $addPackage->package_id = $package->id;
@@ -96,7 +96,7 @@ class PackageController extends Controller
             $addPackage->no_of_employee = $package->no_of_employee;
             $addPackage->price = $package->price;
             $addPackage->paymnet_method = 'card';
-            $addPackage->status = '1';
+            $addPackage->status = !empty($activePackage) ?'0':'1';
             $addPackage->paymnet_response = null;
             $addPackage->save();
             if ($addPackage) {

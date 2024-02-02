@@ -18,6 +18,7 @@ class CompanyPackage extends Model
         'payment_id',
         'no_of_employee',
         'no_of_user',
+        'status',
     ];
 
     public function GetPackageData()

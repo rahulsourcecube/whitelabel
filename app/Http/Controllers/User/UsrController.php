@@ -31,7 +31,7 @@ class UsrController extends Controller
         $getdomain = Helper::getdomain();
 
         if (!empty($getdomain) && $getdomain == env('pr_name')) {
-            return redirect()->route('login.signup');
+            return redirect()->route('company.signup');
         }
         if (!empty(auth()->user()) && auth()->user()->user_type == 1) {
             return redirect()->route('admin.dashboard');
@@ -471,7 +471,11 @@ class UsrController extends Controller
     public function signup()
     {
         try {
+            $isActivePackageAccess= Helper::isActivePackageAccess();
 
+            if(!$isActivePackageAccess){
+                return redirect()->back()->with('error', 'Please  inform you company administer')->withInput();   
+            }
             $siteSetting = Helper::getSiteSetting();
 
             return view('user.signup', compact('siteSetting'));

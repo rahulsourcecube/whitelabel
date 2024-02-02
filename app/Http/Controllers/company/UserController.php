@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use PHPUnit\TextUI\Help;
 
 class UserController extends Controller
 {
@@ -105,6 +106,13 @@ class UserController extends Controller
 
     function create()
     {
+       //Check  ActivePackageAccess 
+        $isActivePackageAccess= Helper::isActivePackageAccess();
+
+        if(!$isActivePackageAccess){
+            return redirect()->back()->with('error', 'Your package expired. Please buy the package.');  
+        }
+
         return view('company.user.create');
     }
 
@@ -113,7 +121,7 @@ class UserController extends Controller
         try {
             $companyId = Helper::getCompanyId();
 
-            $useremail = User::where('company_id', $companyId)->where('email', $request->email);
+            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type', 4);
             if (!empty($request->id)) {
                 $useremail->where('id', '!=', $request->id);
             }
@@ -157,13 +165,17 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                // 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'number' => 'required|numeric|digits:10',
                 'password' => 'required|string|min:8|confirmed',
                 'password_confirmation' => 'required|string|min:8',
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
             if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type', 4);
+            if (!empty($request->id)) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
@@ -244,6 +256,10 @@ class UserController extends Controller
     function edit($id)
     {
         try {
+            $isActivePackageAccess = Helper::isActivePackageAccess();
+            if (!$isActivePackageAccess) {
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
+            }
             $user_id = base64_decode($id);
             $companyId = Helper::getCompanyId();
 

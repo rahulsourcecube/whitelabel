@@ -178,6 +178,13 @@ class CampaignController extends Controller
     function create($type)
     {
         try {
+              //Check  Active Package Access 
+            $isActivePackageAccess= Helper::isActivePackageAccess();
+
+            if(!$isActivePackageAccess){
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            }
+
             $typeInText = $type;
             $type = CampaignModel::TYPE[strtoupper($type)];
             return view('company.campaign.create', compact('type', 'typeInText'));
@@ -399,6 +406,12 @@ class CampaignController extends Controller
     public function edit($type, $id)
     {
         try {
+            $isActivePackageAccess= Helper::isActivePackageAccess();
+
+            if(!$isActivePackageAccess){
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            }
+            
             $companyId = Helper::getCompanyId();
             $type = CampaignModel::TYPE[strtoupper($type)];
             $taskId = base64_decode($id);

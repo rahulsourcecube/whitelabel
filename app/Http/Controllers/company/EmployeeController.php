@@ -104,6 +104,12 @@ class EmployeeController extends Controller
     function create()
     {
         try {
+            $isActivePackageAccess= Helper::isActivePackageAccess();
+
+            if(!$isActivePackageAccess){
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            }
+
             $roles = Role::pluck('name', 'name')->all();
             return view('company.employee.create', compact('roles'));
         } catch (Exception $e) {
@@ -158,6 +164,12 @@ class EmployeeController extends Controller
     function edit($id)
     {
         try {
+            $isActivePackageAccess= Helper::isActivePackageAccess();
+
+            if(!$isActivePackageAccess){
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            }
+            
             $companyId = Helper::getCompanyId();
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();

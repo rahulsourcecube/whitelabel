@@ -179,7 +179,10 @@ Route::middleware(['domain'])->group(function () {
 
     Route::get('verifyemail/{id}', [CompanyLoginController::class, 'verifyemail'])->name('user.verifyemail');
     Route::get('verifycontact/{id}', [CompanyLoginController::class, 'verifycontact'])->name('user.verifycontact');
+
     // {{-- Company Middleware --}}
+
+     
     Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
         Route::post('logout', [CompanyLoginController::class, 'logout'])->name('logout');
         Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');
