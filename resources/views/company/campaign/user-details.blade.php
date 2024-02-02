@@ -202,7 +202,7 @@
                                                                 </div>
                                                             @endif
                                                 @endif
-                                                @if (isset($item) && !empty($item->document) && file_exists('public/' . $item->document))
+                                                @if (isset($item) && !empty($item->document) && file_exists(base_path('public/' . $item->document)))
                                                     <div class="bubble">
                                                         <div class="bubble-wrapper p-5" style="max-width: 220px;">
                                                             <img src="{{ asset('public/' . $item->document) }}"

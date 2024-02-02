@@ -76,7 +76,7 @@
                         <span class="err" style="display: none;color: red;">Please select any one column</span>
                     </form>
                     <div class="form-group mb-0 mt-auto" style="height: fit-content">
-                        <a href="{{ route('user.my.reward') }}"><button type="submit"
+                        <a href="{{ route('user.progress.reward') }}"><button type="submit"
                                 class="btn btn-success">Refresh</button></a>
                     </div>
                 </div>

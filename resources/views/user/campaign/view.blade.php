@@ -233,21 +233,23 @@
                                 <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
                                     style="overflow-y: auto;" id="style-4">
                                     @if (!empty($chats) && $chats->count() != 0)
-                                        @foreach ($chats as $item)
+                                        @foreach ($chats as $item)                                       
                                             @if ($item->sender_id == $user->id)
                                                 <div class="msg msg-sent">
                                                 @else
                                                     <div class="msg msg-recipient">
                                                         @if (isset($item->getCompanySetting->logo) &&
                                                                 !empty($item->getCompanySetting->logo) &&
-                                                                file_exists('uploads/setting/' . $item->getCompanySetting->logo))
+                                                                file_exists(base_path().'/uploads/setting/' . $item->getCompanySetting->logo))
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
-                                                                    <img src="{{ asset('uploads/setting/' . $item->getCompanySetting->logo) }}"
-                                                                        alt="">
+                                                                    <img src="{{ base_path().'/uploads/setting/' . $item->getCompanySetting->logo }}"
+                                                                    alt="">
                                                                 </div>
                                                             </div>
+                                                         
                                                         @else
+
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
                                                                     <img
@@ -257,7 +259,7 @@
                                                         @endif
                                             @endif
 
-                                            @if (isset($item) && !empty($item->document) && file_exists('public/' . $item->document))
+                                            @if (isset($item) && !empty($item->document) && file_exists(base_path('public/' . $item->document)))
                                                 <div class="bubble">
                                                     <div class="bubble-wrapper p-5" style="max-width: 220px;">
                                                         <img src="{{ asset('public/' . $item->document) }}"
@@ -449,6 +451,7 @@
             // Check if either chat_input or upload_file is not null
             if (chat_input !== '' || upload_file !== undefined) {
                 var formData = new FormData();
+                
                 formData.append('image', upload_file);
                 formData.append('chat_input', chat_input);
 

@@ -85,7 +85,7 @@
 
                 <div class="card-body tab-content" id="pills-tabContent">
 
-                    <h4>Recently User Joined List</h4>
+                    <h4 class="addtitle">Recently User Joined List</h4>
                     <div class="m-t-25">
                         <table id="user_joind" class="table">
                             <thead>
@@ -184,6 +184,21 @@
 
         table1.column(6).visible(false);
         $(document).on("click", ".my-table-tab", function() {
+            title="Recently User Joined List";
+            if($(this).data('status') == '1'){
+                  title = 'Recently User Joined List';
+            }else if($(this).data('status') == '2'){
+                title = 'Approval Requset List';
+            }
+            else if($(this).data('status') == '5'){
+                title = 'Reopen List';
+            }else if($(this).data('status') == '3'){
+                title = 'Accepted List';
+            }else if($(this).data('status') == '4'){
+                title = 'Accepted List';
+            }            
+            $('.addtitle').html(title);
+            
             $('#status').val($(this).data('status'));
             table1.draw();
             if ($(this).data('status') == '2' || $(this).data('status') == '5') {

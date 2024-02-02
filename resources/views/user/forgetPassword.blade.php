@@ -77,7 +77,7 @@
                                                     Don't have an account?
                                                     <a class="small" href="{{ route('user.signup') }}"> Signup</a>
                                                 </span>
-                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                                <button type="submit" class="btn btn-primary submitform">Submit</button>
                                             </div>
                                         </div>
                                     </form>
@@ -118,7 +118,7 @@
             }), "Please enter a valid email id"
         });
         jQuery(document).ready(function($) {
-
+            $('#button-spinner').hide();
             $("#fromData").validate({
                 rules: {
                     email: {
@@ -131,6 +131,12 @@
                         required: "Please enter email",
                     },
                 },
+                submitHandler: function(form) {                    
+                 // Show the spinner                 
+                $('.submitform').html('Submit <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>').attr('disabled', true);
+                $('#button-spinner').show();
+                form.submit();
+                }
             });
         });
     </script>

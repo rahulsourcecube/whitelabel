@@ -504,7 +504,7 @@ class UsrController extends Controller
             }
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->where('company_id', $companyId)->first();
-            }
+            }          
             // Get domain
             $host = $request->getHost();
             $domain = explode('.', $host);
@@ -566,9 +566,13 @@ class UsrController extends Controller
     public function submitForgetPassword(Request $request)
     {
         try {
-            $request->validate([
-                'email' => 'required|email|exists:users',
-            ]);
+            $companyId = Helper::getCompanyId();
+
+            $userEmail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type','4')->first();
+
+            if (empty($userEmail)) {
+                return redirect()->back()->with('error', 'Something went wrong.')->withInput();
+            }
             $token = Str::random(64);
 
             try {

@@ -99,7 +99,7 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between p-t-15">
-                                                <button type="submit" class="btn btn-primary">Sign Up</button>
+                                                <button type="submit" class="btn btn-primary submitform">Sign Up</button>
                                             </div>
                                         </div>
                                     </form>
@@ -183,7 +183,13 @@
                     required: "Please enter confirm password",
                     equalTo: "The password you entered does not match.",
                 },
-            }
+            },
+            submitHandler: function(form) {                    
+                 // Show the spinner                 
+                $('.submitform').html('Sign Up <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>').attr('disabled', true);
+                $('#button-spinner').show();
+                form.submit();
+                }
         });
         $(document).ready(function() {
     // Show the alert

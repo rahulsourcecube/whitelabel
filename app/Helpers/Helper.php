@@ -23,7 +23,7 @@ class Helper
 {
     public static function getSiteSetting()
     {
-                try {
+      try {
             $companyId = Helper::getCompanyId();
             $generalSetting = SettingModel::where('user_id', $companyId)->first();
             return $generalSetting;
@@ -35,7 +35,7 @@ class Helper
 
     public static function getdomain()
     {
-       $host = request()->getHttpHost();
+               $host = request()->getHttpHost();
         $domain = explode('.', $host);
         $domainName = $domain['0'] ? $domain['0'] : null;
         return $domainName;

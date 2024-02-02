@@ -97,7 +97,7 @@
                                                 <label for="checkbox"><span>Already have an account? <a
                                                             href="{{ route('user.login') }}">Login</a></span></label>
                                                
-                                                <button type="submit" class="btn btn-primary">Sign Up</button>
+                                                <button type="submit" class="btn btn-primary submitform">Sign Up</button>
                                             </div>
                                         </div>
                                     </form>
@@ -139,6 +139,9 @@
         });
 
         jQuery(document).ready(function($) {
+            $('#button-spinner').hide();
+          
+            
             $("#fomData").validate({
                 rules: {
                     first_name: {
@@ -187,6 +190,12 @@
                         equalTo: "Password and confirm password dose not match",
                     },
                 },
+                submitHandler: function(form) {                    
+                 // Show the spinner                 
+                $('.submitform').html('Sign Up <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>').attr('disabled', true);
+                $('#button-spinner').show();
+                form.submit();
+                }
             });
         });
     </script>

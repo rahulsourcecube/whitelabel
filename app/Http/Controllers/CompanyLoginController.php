@@ -254,9 +254,16 @@ class CompanyLoginController extends Controller
     public function submitForgetPassword(Request $request)
     {
         try {
-            $request->validate([
-                'email' => 'required|email|exists:users',
-            ]);
+            $companyId = Helper::getCompanyId();
+            
+            $userEmail = User::where('company_id', $companyId)
+            ->where('email', $request->email)
+            ->whereIn('user_type', ['2', '3'])
+            ->first();
+
+            if (empty($userEmail)) {
+                return redirect()->back()->with('error', 'Something went wrong.')->withInput();
+            }
 
             $token = Str::random(64);            
             try {
