@@ -51,7 +51,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="email">Email Address <span class="error">*</span></label>
-                            <input type="text" class="form-control" id="email" name="email" placeholder="Email Address"
+                            <input type="text" class="form-control" id="email"  readonly placeholder="Email Address"
                                 maxlength="150" value="{{ isset($user) ? $user->email : '' }}">
                             @error('email')
                             <label id="email-error" class="error" for="email">{{ $message }}</label>

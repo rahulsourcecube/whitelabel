@@ -280,24 +280,24 @@ class UserController extends Controller
             $companyId = Helper::getCompanyId();
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
-
+            
             if (empty($user)) {
-
+                
                 return redirect()->back()->with('error', 'Something went wrong');
             }
+           
 
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
-                'lname' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id . ',' . $companyId,
-                'number' => 'required|numeric|digits:10|unique:users,contact_number,' . $user->id . ',' . $companyId,
+                'lname' => 'required|string|max:255',               
+                'number' => 'required|numeric|digits:10|unique:users,contact_number,' . $user->id,
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
+          
             if ($request->hasFile('image')) {
                 $oldImage = $user->profile_image;
                 $extension = $request->file('image')->getClientOriginalExtension();
@@ -316,7 +316,7 @@ class UserController extends Controller
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;
             $user->contact_number = $request->number;
-            $user->email = $request->email;
+            // $user->email = $request->email;
             $user->password = !empty($request->password) ? hash::make($request->password) : hash::make($user->view_password);
             $user->view_password = !empty($request->password) ? $request->password : $user->view_password;
             $user->status = !empty($request->status) ? '1' : '0';
@@ -330,6 +330,7 @@ class UserController extends Controller
             $user->paypal_id = $request->paypal_id;
             $user->stripe_id = $request->stripe_id;
             $user->ac_no = $request->ac_no;
+           
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {

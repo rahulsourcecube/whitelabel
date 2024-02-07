@@ -118,9 +118,9 @@
                         var deleteUrl = '{{ route('company.user.delete', ':del') }}';
                         deleteUrl = deleteUrl.replace(':del', row[0]);
                         return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
-                            '" role="button" title="View"><i class="fa fa-eye"></i></a> @can("user-edit") <a class="btn btn-primary btn-sm d-none " href="' +
+                            '" role="button" title="View"><i class="fa fa-eye"></i></a> @can("user-edit") <a class="btn btn-primary btn-sm  " href="' +
                             editUrl +
-                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can("user-delete")<a class="btn btn-danger btn-sm d-none " role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                            '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can("user-delete")<a class="btn btn-danger btn-sm  " role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
                             deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> @endcan';
                     },
                 }],
