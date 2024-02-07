@@ -168,7 +168,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5>Recent Conected Users</h5>
+                                    <h5>Recent Connected Users</h5>
                                 </div>
                                 <div class="m-t-30">
                                     <div class="table-responsive">
@@ -214,6 +214,8 @@
             </div>
         </div>
         <!-- Content Wrapper START -->
+      
+           
         @php
             $showConversationBox = false;
             if ($user_Campaign != null && $user_Campaign->getCampaign->type == '1') {
@@ -224,12 +226,16 @@
                 $showConversationBox = true;
             }
         @endphp
-        @if ($user_Campaign != null && $showConversationBox)
+      @if ($user_Campaign != null && $showConversationBox)
+         <div class="alert alert-info alert-dismissible alert-live show">
+         Contact with support to verify your task.
+        </div>
             <div class="container-fluid p-h-0 m-t-20">
                 <div class="chat chat-app row">
                     <div class="chat-content "style="width:100%;">
                         <div class="conversation">
                             <div class="conversation-wrapper">
+                               
                                 <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
                                     style="overflow-y: auto;" id="style-4">
                                     @if (!empty($chats) && $chats->count() != 0)
@@ -289,7 +295,7 @@
 
         @endif
     </div>
-    @if (isset($user_Campaign->status) && $user_Campaign->status != 3)
+    @if (isset($user_Campaign->status) )
         <div class="conversation-footer custom-footer">
             <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
             <ul class="list-inline d-flex align-items-center m-b-0">

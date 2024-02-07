@@ -172,7 +172,7 @@
         var old_user = $("#old_user").val();
 
         // Use a small non-zero default value
-        // var default_value = 0.01;
+        var default_value = 0;
 
         new Chartist.Pie('#donut-chart', {
             series: [Math.max(old_user, default_value), Math.max(new_user, default_value)]

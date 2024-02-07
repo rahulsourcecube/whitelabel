@@ -37,12 +37,12 @@
 @endif
 <script>
     $(document).ready(function() {
- // Show the alert
+ // Show the alert 1
          $("alert").fadeIn();
 
          // Hide the alert after 3 seconds
          setTimeout(function() {
-         $(".alert").fadeOut();
+         //$(".alert").fadeOut();
          }, 4000);
  });
 </script>

@@ -46,7 +46,9 @@ class AdminController extends Controller
             $data['total_package'] =  PackageModel::where('status', '1')->count();
             $data['total_user'] = User::where('user_type', 4)->where('status', '1')->count();
 
-            $data['company'] = CompanyModel::get(['id', 'company_name', 'user_id']);
+            $data['company'] = CompanyModel::leftJoin('users', 'company.user_id', '=', 'users.id')->where('users.status', '1')->get();
+            // $query = CompanyModel:: // Assuming 'user_id' is the foreign key in CompanyModel
+               
 
             $data['old_company'] = User::where('user_type', 2)->where('status', '1')->where(function ($query) use ($currentMonth, $currentYear) {
                 $query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);
@@ -78,7 +80,7 @@ class AdminController extends Controller
             $data = [];
             foreach ($results as $item) {
                 $data[] = [
-                    "label" => date('d', strtotime($item->date)), // Format the day of the month
+                    "label" => date('Y-m-d', strtotime($item->date)), // Format the day of the month
                     "value" => $item->total_reward
                 ];
             }
