@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Module;
 use Exception;
@@ -32,7 +33,9 @@ class RolesController extends Controller
     function rolelist()
     {
         try {
-            $roles = Role::where('name', '!=', 'Company')->orderBy('id', 'DESC')->get();
+            $companyId = Helper::getCompanyId();
+
+            $roles = Role::where('name', '!=', 'Company')->where('company_id', $companyId)->orderBy('id', 'DESC')->get();
             return view('company.roles.rolelist', compact('roles'));
         } catch (Exception $e) {
             Log::error('RolesController::Rolelist => ' . $e->getMessage());
@@ -55,12 +58,18 @@ class RolesController extends Controller
    
     public function store(Request $request)
     {
-        try {
+        try {            
             $this->validate($request, [
-                'name' => 'required|unique:roles,name',
+                 'name' => 'required',
                 'permission' => 'required',
             ]);
-            $role = Role::create(['name' => $request->input('name')]);
+            $companyId = Helper::getCompanyId();
+            $role = Role::where('name',$request->input('name'))->where('company_id',$companyId)->first();
+            if (!empty($role)) {
+                return redirect()->back()->with('error',$request->input('name').' Role already Exit!!')->withInput();
+            }
+            $role = Role::create(['role_name' => $request->input('name') ,'name' => $request->input('name').$companyId,'company_id' => $companyId]);
+            
             $role->syncPermissions(array_map('intval', $request->input('permission')));
             return redirect()->route('company.role.rolelist')
                 ->with('success', 'Role created successfully');
@@ -74,7 +83,11 @@ class RolesController extends Controller
     public function edit($id)
     {
         try {
-            $role = Role::find($id);
+            $companyId = Helper::getCompanyId();
+            $role = Role::where('id',$id)->where('company_id',$companyId)->first();
+            if(empty($role)) {
+              return redirect()->back()->with('error', 'Role not found!');
+            }
             $permission = Permission::get();
             $ModelPermission = Module::all();
             $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
@@ -92,10 +105,15 @@ class RolesController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            $companyId = Helper::getCompanyId();
             $this->validate($request, [
                 'permission' => 'required',
             ]);
-            $role = Role::find($id);
+            $role = Role::where('id',$id)->where('company_id',$companyId)->first();
+            $roles = Role::where('name',$request->input('name'))->where('company_id',$companyId)->first();
+            if (!empty($roles)) {
+                return redirect()->back()->with('error',$request->input('name').' Rloe already Exit!!')->withInput();
+            }
             $role->syncPermissions(array_map('intval', $request->input('permission')));
             return redirect()->back()->with('success', 'Role updated successfully');
         } catch (Exception $e) {
@@ -108,7 +126,12 @@ class RolesController extends Controller
     function roleview($id)
     {
         try {
-            $role = Role::find($id);
+            $companyId = Helper::getCompanyId();
+            $role = Role::where('id',$id)->where('company_id',$companyId)->first();
+            $companyId = Helper::getCompanyId();
+            if(empty($role)) {
+                return redirect()->back()->with('error', 'Role not found!');
+              }
             $ModelPermission = Module::all();
             $rolePermission = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
                 ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')

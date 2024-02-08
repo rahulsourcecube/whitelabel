@@ -20,7 +20,7 @@
                 @csrf
                 <div class="card-body">
                     <div style="display: flex;justify-content: space-between;">
-                        <h4>Edit {{ $role->name ?? '' }} Role<span class="error">*</span></h4>
+                        <h4>Edit {{ $role->role_name ?? '' }} Role<span class="error">*</span></h4>
                         <button type="submit" class="btn btn-primary">Update</button>
                     </div>
 

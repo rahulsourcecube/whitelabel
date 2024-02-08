@@ -23,10 +23,21 @@ class Export implements FromCollection, WithHeadings, WithStyles
     public function collection()
     {
         $companyId = Helper::getCompanyId();
-        $export = CampaignModel::where('company_id', $companyId)
+        $exports = CampaignModel::where('company_id', $companyId)
             ->select('title', 'description', 'reward', 'expiry_date')
             ->where('type', $this->type)
             ->get();
+    
+        $export = $exports->map(function ($export) {
+            return [
+                "title" => $export->title,
+                "description" => html_entity_decode(strip_tags($export->description)),
+                "reward" => $export->reward,
+                "expiry_date" => $export->expiry_date,
+            ];
+        });
+       
+    
         return $export;
     }
     public function headings(): array

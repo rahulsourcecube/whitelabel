@@ -81,7 +81,7 @@ class EmployeeController extends Controller
                     base64_encode($result->id),
                     $result->full_name ?? "-",
                     $result->email ?? "-",
-                    $result->roles->pluck('name', 'name')->first() ?? "-",
+                    $result->roles->pluck('role_name', 'role_name')->first() ?? "-",
                 ];
             }
             return response()->json([
@@ -109,8 +109,10 @@ class EmployeeController extends Controller
             if(!$isActivePackageAccess){
                 return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
             }
+            $companyId = Helper::getCompanyId();
 
-            $roles = Role::pluck('name', 'name')->all();
+            $roles = Role::where('company_id', $companyId)->get();
+
             return view('company.employee.create', compact('roles'));
         } catch (Exception $e) {
             Log::error('EmployeeController::Create => ' . $e->getMessage());
@@ -124,7 +126,7 @@ class EmployeeController extends Controller
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
-                'email' => 'required|email|unique:users',
+                // 'email' => 'required|email|unique:users',
                 'password' => 'required|string|min:8|confirmed',
                 'cpassword' => 'required|string|min:8',
             ]);
@@ -133,11 +135,13 @@ class EmployeeController extends Controller
             if ($userCount >= $ActivePackageData->no_of_employee) {
                 return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_employee . ' employees');
             }
-            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->first();
+            $useremails = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type' , '3')->first();           
+            $useremail = User::where('id', $companyId)->where('email', $request->email)->where('user_type' , '2')->first();           
 
-            if (!empty($useremail)) {
-                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
+            if (!empty($useremail) || !empty($useremails) ) {
+                return redirect()->back()->with('error', 'Employee email id already exit.')->withInput();
             }
+            dd(123);
             $user = new User();
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;
@@ -172,9 +176,10 @@ class EmployeeController extends Controller
             
             $companyId = Helper::getCompanyId();
             $user_id = base64_decode($id);
-            $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
-            $roles = Role::pluck('name', 'name')->all();
+            $user = User::where('id', $user_id)->where('company_id', $companyId)->first();         
+            $roles = Role::where('company_id', $companyId)->get();
             $userRole = $user->roles->pluck('name', 'name')->first();
+          
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
@@ -199,11 +204,19 @@ class EmployeeController extends Controller
             $validator = Validator::make($request->all(), [
                 'fname' => 'required|string|max:255',
                 'lname' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
+                // 'email' => 'required|email|unique:users,email,' . $user->id,
             ]);
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+            $useremails = User::where('company_id', $companyId)->where('id', '!=', $user_id)->where('email', $request->email)->where('user_type' , '3')->first();           
+            $useremail = User::where('id', $companyId)->where('email', $request->email)->where('user_type' , '2')->first();           
+
+            if (!empty($useremail) || !empty($useremails) ) {
+                return redirect()->back()->with('error', 'Employee email id already exit.')->withInput();
+            }
+
+            
             $userDetails = [
                 'first_name' => $request->fname,
                 'last_name' => $request->lname,

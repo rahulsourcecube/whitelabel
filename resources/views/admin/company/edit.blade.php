@@ -85,9 +85,9 @@
                                                     </div>
                                                     <div class="form-group col-md-5">
                                                         <label class="font-weight-semibold" for="email">Email:</label>
-                                                        <input type="email" class="form-control" name="email"
+                                                        <input type="email" class="form-control" name=""
                                                             id="email" placeholder="email"
-                                                            value="{{ isset($editprofiledetail->email) ? $editprofiledetail->email : '' }}">
+                                                            value="{{ isset($editprofiledetail->email) ? $editprofiledetail->email : '' }}" readonly>
                                                     </div>
                                                     <div class="form-group col-md-5">
                                                         <label class="font-weight-semibold" for="phoneNumber">Phone

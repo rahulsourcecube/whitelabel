@@ -28,11 +28,14 @@
                                 value="{{ !empty($setting) && $setting->title  ? $setting->title  : $companyname->company_name}}"
                                 required>
                         </div>
+                        
                         <div class="form-group col-md-4">
                             <label for="cdomainname">Company Domain</label>
-                            <input type="text" class="form-control mb-2" name="" id=""
-                                value="{{!empty($companyname->subdomain)?$companyname->subdomain:'my.whitelabel.com'}}"
-                                readonly>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name=""
+                                    placeholder="Domain Name" id=""  value="{{!empty($companyname->subdomain)? Request::getHost():""}}" readonly>
+                                
+                            </div>
                         </div>
                         <div class="form-group col-md-4">
                             <label for="cemail">Contact Email</label>

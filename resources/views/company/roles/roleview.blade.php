@@ -21,7 +21,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <input type="text" id="myTextbox" class="form-control @error('name') is-invalid @enderror"
-                            placeholder="Role Name" name="name" value="{{ $role->name }}" maxlength="150" readonly>
+                            placeholder="Role Name" name="name" value="{{ $role->role_name }}" maxlength="150" readonly>
                     </div>
                 </div>
 

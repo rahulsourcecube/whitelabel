@@ -33,7 +33,7 @@
                         <tbody>
                             @foreach ($roles as $key => $role)
                                 <tr>
-                                    <td>{{ $role->name ?? '' }}</td>
+                                    <td>{{ $role->role_name ?? '' }}</td>
 
                                     <td>
                                         <a class="btn btn-success  btn-sm"
