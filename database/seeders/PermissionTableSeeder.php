@@ -111,20 +111,20 @@ class PermissionTableSeeder extends Seeder
             Permission::create(['name' => $permission, 'modules_id' => $Module->id]);
         }
 
-        $role = Role::create(['name' => 'Staff']);
+        // $role = Role::create(['name' => 'Staff']);
 
-        $permissions = Permission::pluck('id', 'id')->all();
+        // $permissions = Permission::pluck('id', 'id')->all();
 
-        $rolePermissions = [
-            'role-list',
-            'role-create',
-            'role-edit',
-            'role-delete',
-        ];
+        // $rolePermissions = [
+        //     'role-list',
+        //     'role-create',
+        //     'role-edit',
+        //     'role-delete',
+        // ];
 
-        $role->revokePermissionTo($rolePermissions);
+        // $role->revokePermissionTo($rolePermissions);
 
-        $role->syncPermissions($permissions);
+        // $role->syncPermissions($permissions);
 
     }
 }

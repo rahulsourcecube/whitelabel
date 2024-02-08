@@ -195,7 +195,7 @@ class CompanyController extends Controller
                     $result->user->email,
                     $result->user->contact_number,
                     $result['company_name'],
-                    $result['subdomain'],
+                    $result['subdomain'].'.'.$request->getHost(),   
                     $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
                     $result['email'],
                     $result['email'],
@@ -280,7 +280,7 @@ class CompanyController extends Controller
             $updateprofiledetail = User::where('id', $id)->first();
             $updateprofiledetail['first_name'] = isset($request->first_name) ? $request->first_name : '';
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
-            $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
+            // $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
             $updateprofiledetail['status'] = !empty($request->status) ? '1' : '0';
             if ($request->hasFile('profile_image')) {

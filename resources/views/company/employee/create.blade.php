@@ -41,8 +41,8 @@
                             <select id="Type" class="form-control" name="role">
                                 <option value="">Select</option>
                                 @foreach ($roles as $role)
-                                @if ($role != 'Company')
-                                <option value="{{ $role }}">{{ $role }}</option>
+                                @if ($role->name != 'Company')
+                                <option value="{{ $role->name }}">{{ $role->role_name }}</option>
                                 @endif
                                 @endforeach
                             </select>
