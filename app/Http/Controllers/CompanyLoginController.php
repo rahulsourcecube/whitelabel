@@ -123,10 +123,15 @@ class CompanyLoginController extends Controller
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
+            $companyId = Helper::getCompanyId();
+            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status','1')->first();         
+            if (empty($companyActive)) {
+                return redirect()->back()->with('error', 'Please contact to administrator.'); 
+            }
 
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '2'))) {
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '2', 'id' => $companyId , 'status'=>'1'))) {
                 return redirect()->route('company.dashboard');
-            } elseif (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '3'))) {
+            } elseif (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '3','company_id' =>  $companyId))) {
                 return redirect()->route('company.dashboard');
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
@@ -170,6 +175,10 @@ class CompanyLoginController extends Controller
     public function signupStore(Request $request)
     {
         try {
+            $request->validate([
+                'email' => 'required|email',
+                // Other validation rules...
+            ]);
             $input = $request->all();
             $input['dname'] = strtolower($input['dname']);
 

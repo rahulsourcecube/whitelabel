@@ -88,6 +88,14 @@ class UsrController extends Controller
             $CompanyModel = new CompanyModel();
             $exitDomain = $CompanyModel->checkDmain($domain['0']);
             $companyId = $exitDomain->user_id;
+            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status','1')->first();         
+            if (empty($companyActive)) {
+                return redirect()->back()->with('error', 'Please contact to Company administrator.'); 
+            }
+            $userActive = User::where('email', $request->email)->where('user_type', '4')->where('status','1')->first();         
+            if (empty($userActive)) {
+                return redirect()->back()->with('error', 'Please contact to Company administrator.'); 
+            }
 
             $input = $request->all();
             $this->validate($request, [
@@ -124,7 +132,8 @@ class UsrController extends Controller
     }
     function campaignview()
     {
-        try {
+        try {     
+         
             return view('user.campaign.view');
         } catch (Exception $e) {
             Log::error('UsrController::campaignview => ' . $e->getMessage());
@@ -421,10 +430,12 @@ class UsrController extends Controller
             $topUserReferral = UserCampaignHistoryModel::whereExists(function ($query) {
                 $query->from('users')
                     ->whereRaw('user_campaign_history.user_id = users.id')
-                    ->where('users.referral_user_id', Auth::user()->id)
-                    ->where('status', '3')
+                     ->where('users.referral_user_id', Auth::user()->id)
+                    ->where('user_campaign_history.status', '3')
                     ->whereNotNull('users.referral_user_id');
             })
+            
+         
                 ->when($topFromDate, function ($query) use ($topFromDate) {
                     return $query->where('created_at', '>=', $topFromDate);
                 })
@@ -438,6 +449,7 @@ class UsrController extends Controller
                 ->selectRaw('user_campaign_history.user_id,Sum(reward) as sum')
                 ->orderBy('sum', 'DESC')->take(5)
                 ->get()->toArray();
+               
 
             if ($request->ajax()) {
                 return [
@@ -445,7 +457,7 @@ class UsrController extends Controller
                     "topUserReferral" => $topUserReferral,
                 ];
             }
-
+           
             return view('user.analytics', compact('monthlyReferrals', 'topUserReferral'));
         } catch (Exception $e) {
             Log::error('UsrController::Analytics => ' . $e->getMessage());
@@ -471,6 +483,13 @@ class UsrController extends Controller
     public function signup()
     {
         try {
+            $companyId = Helper::getCompanyId();
+
+            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status','1')->first();  
+                   
+            if (empty($companyActive)) {
+                return redirect()->back()->with('error', 'Please contact to Company administrator.'); 
+            }
             $isActivePackageAccess= Helper::isActivePackageAccess();
 
             if(!$isActivePackageAccess){

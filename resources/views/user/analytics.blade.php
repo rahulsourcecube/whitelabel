@@ -21,7 +21,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h4>My User Referral  </h4>
+                        <h4>My User Referral </h4>
                         <p>My Referral user joined over time</p>
 
                         <div class="m-t-25">
@@ -110,9 +110,11 @@
 @endsection
 
 @section('js')
-<script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <script>
-        function chartAjax() {
+        function chartAjax() {        
+
+
             var monthlyReferrals = $('.monthlyReferrals').val();
             monthlyReferrals = JSON.parse(monthlyReferrals);
             var countArray = [];
@@ -125,7 +127,7 @@
                     countArray.push(0);
                 }
             }
-            var monthRefChart = new Chartist.Bar('#horizontal-bar', {
+            var monthRefChart = new Chartist.Line('#horizontal-bar', {
                 labels: ['January', 'February', 'March', 'April', 'May', 'Jun', 'July', 'August', 'September',
                     'October', 'November', 'December'
                 ],
@@ -137,7 +139,8 @@
                 reverseData: true,
                 horizontalBars: true,
                 axisY: {
-                    offset: 70
+                    onlyInteger: true,
+                    // offset: 1
                 }
             });
 

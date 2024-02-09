@@ -109,6 +109,9 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5>Recent Referral Users</h5>
+                                    <div class="alert alert-warning alert-dismissible alert-live show">
+                                        <b>List of users who connected with the link shared.</b>
+                                    </div>
                                     {{-- @if (
                                         $user_Campaign != null &&
                                             $user_Campaign->referral_link != '' &&
@@ -168,11 +171,14 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5>Recent Connected Users</h5>
+                                    <h5>MY Referral Conected Users</h5>
+                                </div>
+                                <div class="alert alert-warning alert-dismissible alert-live show">
+                                    <b>List of users who connected with the my refferel code.</b>
                                 </div>
                                 <div class="m-t-30">
                                     <div class="table-responsive">
-                                        <table class="table table-hover" id="user_tables">
+                                        <table class="table table-hover" id="">
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
@@ -228,7 +234,7 @@
         @endphp
       @if ($user_Campaign != null && $showConversationBox)
          <div class="alert alert-info alert-dismissible alert-live show">
-         Contact with support to verify your task.
+         <b>Contact with support to verify your task.</b>
         </div>
             <div class="container-fluid p-h-0 m-t-20">
                 <div class="chat chat-app row">

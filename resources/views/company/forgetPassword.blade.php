@@ -88,7 +88,7 @@
         $('#forgetPassSendmail').validate({
             rules: {
                 email: {
-                    required: true
+                    required: true,                   
                 }
             },
             messages: {

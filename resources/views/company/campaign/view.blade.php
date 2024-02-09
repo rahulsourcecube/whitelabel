@@ -195,7 +195,7 @@
             }else if($(this).data('status') == '3'){
                 title = 'Accepted List';
             }else if($(this).data('status') == '4'){
-                title = 'Accepted List';
+                title = 'Rejected List';
             }            
             $('.addtitle').html(title);
             

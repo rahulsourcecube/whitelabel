@@ -145,7 +145,7 @@ class UserController extends Controller
             if (!empty($request->id)) {
                 $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->where('id', '!=', $request->id)->first();;
             } else {
-                $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->first();
+                $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->where('user_type', 4)->first();
             }
             if (!empty($usernumber)) {
                 echo 'false';
@@ -174,7 +174,7 @@ class UserController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type', 4);
+            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type', 4)->first();
             if (!empty($request->id)) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
@@ -185,12 +185,8 @@ class UserController extends Controller
                 return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_user . ' users');
             }
 
-            $useremail = User::where('company_id', $companyId)->where('email', $request->email)->where('company_id', $companyId)->first();
-
-            if (!empty($useremail)) {
-                return redirect()->back()->withErrors($validator)->with('error', 'User email id already exit.')->withInput();
-            }
-            $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->where('company_id', $companyId)->first();
+           
+            $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->where('user_type', 4)->first();
             if (!empty($usernumber)) {
                 return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
             }
@@ -288,14 +284,22 @@ class UserController extends Controller
            
 
             $validator = Validator::make($request->all(), [
-                'fname' => 'required|string|max:255',
+                'fname' => 'required|string|max:255',   
                 'lname' => 'required|string|max:255',               
-                'number' => 'required|numeric|digits:10|unique:users,contact_number,' . $user->id,
+                'number' => 'required|numeric|digits:10',
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
+            }
+            $usernumber = User::where('id', '!=', $user->id)
+            ->where('company_id', $companyId)
+            ->where('contact_number', $request->number)
+            ->where('user_type', 4)
+            ->first();
+            if (!empty($usernumber)) {
+                return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
             }
           
             if ($request->hasFile('image')) {

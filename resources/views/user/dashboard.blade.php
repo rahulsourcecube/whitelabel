@@ -321,7 +321,7 @@
                         scales: {
                             yAxes: [{
                                 ticks: {
-                                    stepSize: 1
+                                    stepSize: 10
                                 }
                             }],
                             xAxes: [{

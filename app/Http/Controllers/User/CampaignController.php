@@ -93,6 +93,7 @@ class CampaignController extends Controller
     function campaignview(Request $request)
     {
         try {
+          
             $campagin_id = base64_decode($request->id);
             $companyId = Helper::getCompanyId();
             $data = [];
@@ -113,6 +114,7 @@ class CampaignController extends Controller
                         ->whereNotNull('users.referral_user_id');
                 })
                 ->orderBy('user_id', 'desc')->get();
+              
 
             $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
             if ($data['user_Campaign'] != null) {

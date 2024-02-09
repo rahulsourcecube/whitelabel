@@ -66,8 +66,8 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="day" class="day_title">No Of Day <span class="error">*</span></label>
-                                <input type="number" min="0" class="form-control day_place" id="day" name="day"
-                                    placeholder="No Of Day"
+                                <input type="number" min="0" class="form-control day_place" id="day"
+                                    name="day" placeholder="No Of Day"
                                     value="{{ !empty($package->duration) ? $package->duration : '' }}"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" min="1">
                             </div>
@@ -102,7 +102,7 @@
                                     accept=".png, .jpg, .jpeg" onchange="previewImage()">
                             </div>
                         </div>
-                        @if ($package->image != null && file_exists(base_path().'/uploads/package/' . $package->image))
+                        @if ($package->image != null && file_exists(base_path() . '/uploads/package/' . $package->image))
                             <div class="form-row">
                                 <div class="form-group col-md-3" style="max-height: 200px;">
                                     <img id="imagePreview" src="{{ asset('uploads/package/' . $package->image) }}"
@@ -130,6 +130,11 @@
         });
     </script>
     <script>
+           $.validator.addMethod("email", function(value, element) {
+            return this.optional(element) ||
+                /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i
+                .test(value);
+        }, "Please enter a valid email id");
         $('#package').validate({
             rules: {
                 title: {
@@ -182,31 +187,36 @@
             }
         });
 
-        isFreePackage();
-        $(document).on("change", "#inputype", function() {
+        $(document).ready(function() {
+            // Call isFreePackage function initially to set the initial state
             isFreePackage();
+
+            // Add change event listener to #inputype
+            $(document).on("change", "#inputype", function() {
+                // Call isFreePackage when the value changes
+                isFreePackage();
+            });
         });
 
         function isFreePackage() {
-            if ($("#inputype option:selected").val() == '1') {
+            if ($("#inputype").val() == '1') {
                 $("#price-section").hide();
                 $("#price").val("0");
             } else {
                 $("#price-section").show();
             }
 
-            type = $("#inputype").val();
+            var type = $("#inputype").val(); // Corrected missing 'var' keyword
 
             if (type == '1') {
                 $('.day_title').html('No Of Day');
-                $(".day_place").attr("placeholder", "No Of Day").placeholder();
+                $(".day_place").attr("placeholder", "No Of Day");
             } else if (type == '2') {
                 $('.day_title').html('No Of Month');
-                $(".day_place").attr("placeholder", "No Of Month").placeholder();
-
+                $(".day_place").attr("placeholder", "No Of Month");
             } else {
                 $('.day_title').html('No Of Year');
-                $(".day_place").attr("placeholder", "No Of Year").placeholder();
+                $(".day_place").attr("placeholder", "No Of Year");
             }
         }
 
