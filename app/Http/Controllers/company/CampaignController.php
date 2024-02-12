@@ -508,7 +508,7 @@ class CampaignController extends Controller
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
-            $chats = TaskEvidence::where('campaign_id', $id)->get();
+            $chats = TaskEvidence::where('campaign_id', $id)->where('company_id', $companyId )->get();     
             return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id'));
         } catch (Exception $e) {
             Log::error('CampaignController::UserDetails => ' . $e->getMessage());

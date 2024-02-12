@@ -245,8 +245,10 @@
                                 <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
                                     style="overflow-y: auto;" id="style-4">
                                     @if (!empty($chats) && $chats->count() != 0)
-                                        @foreach ($chats as $item)                                       
-                                            @if ($item->sender_id == $user->id)
+                                    
+                                        @foreach ($chats as $item)  
+                                                                        
+                                            @if ($item->sender_id == $user->id    )
                                                 <div class="msg msg-sent">
                                                 @else
                                                     <div class="msg msg-recipient">
@@ -255,12 +257,14 @@
                                                                 file_exists(base_path().'/uploads/setting/' . $item->getCompanySetting->logo))
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
-                                                                    <img src="{{ base_path().'/uploads/setting/' . $item->getCompanySetting->logo }}"
+                                                                    <img src="{{ asset('/uploads/setting') .'/'. $item->getCompanySetting->logo }}"
                                                                     alt="">
                                                                 </div>
                                                             </div>
+                                                            
                                                          
                                                         @else
+                                                       
 
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
