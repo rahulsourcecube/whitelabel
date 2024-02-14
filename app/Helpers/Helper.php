@@ -90,7 +90,7 @@ class Helper
     {
         $getdomain = Helper::getdomain();
 
-        if (!empty($getdomain) && $getdomain != env('pr_name')) {
+        if (!empty($getdomain) && $getdomain != config('app.pr_name')) {
             $CompanyModel = new CompanyModel();
             $exitDomain = $CompanyModel->checkDmain($getdomain);
             $companyId = $exitDomain->user_id;

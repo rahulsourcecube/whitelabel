@@ -70,7 +70,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5>MY Referral Conected</h5>
+                            <h5>MY Referral Connected</h5>
                         </div>
                         <div class="m-t-30">
                             <div class="table-responsive">

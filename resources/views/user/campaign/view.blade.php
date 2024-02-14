@@ -171,7 +171,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5>MY Referral Conected Users</h5>
+                                    <h5>MY Referral connected Users</h5>
                                 </div>
                                 <div class="alert alert-warning alert-dismissible alert-live show">
                                     <b>List of users who connected with the my refferel code.</b>

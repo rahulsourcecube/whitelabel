@@ -201,7 +201,7 @@
             
             $('#status').val($(this).data('status'));
             table1.draw();
-            if ($(this).data('status') == '2' || $(this).data('status') == '5') {
+            if ($(this).data('status') != '1' ) {
                 table1.column(6).visible(true);
             } else {
                 table1.column(6).visible(false);

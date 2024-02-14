@@ -340,7 +340,7 @@
                     // // }
                 },
                 error: function() {
-                    alert(123)
+                
                     // $('#simple-line-referral').remove(); 
                     $(".spinner").html('');
                     $('#filterdata').prop('disabled', false);
@@ -459,7 +459,8 @@
         var campaign_tables = $('#campaign_tables').DataTable({
             "processing": true,
             "serverSide": true,
-            responsive: true,
+            "searchable": true,
+            "responsive": true,
             pageLength: 10,
             'order': [
                 [0, 'desc']

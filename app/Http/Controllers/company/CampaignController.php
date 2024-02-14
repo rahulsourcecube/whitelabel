@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Company;
+
 use App\Exports\Export;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
@@ -163,7 +164,6 @@ class CampaignController extends Controller
                 "recordsFiltered" => count($results),
                 "data" => $list
             ]);
-
         } catch (Exception $e) {
             Log::error('CampaignController::Statuswiselist  => ' . $e->getMessage());
             return response()->json([
@@ -178,11 +178,11 @@ class CampaignController extends Controller
     function create($type)
     {
         try {
-              //Check  Active Package Access 
-            $isActivePackageAccess= Helper::isActivePackageAccess();
+            //Check  Active Package Access 
+            $isActivePackageAccess = Helper::isActivePackageAccess();
 
-            if(!$isActivePackageAccess){
-                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            if (!$isActivePackageAccess) {
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
 
             $typeInText = $type;
@@ -326,7 +326,8 @@ class CampaignController extends Controller
                 $list[$values->day] = $values->total_user;
             }
             $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
-
+           
+dd($user_total);
             $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
 
             return view('company.campaign.analytics', compact('user_total', 'customTasks'));
@@ -338,7 +339,7 @@ class CampaignController extends Controller
     function fetch_data(Request $request)
     {
         try {
-            
+
             if ($request->ajax()) {
                 if ($request->date_range_filter != null) {
                     $date = explode('-', $request->date_range_filter);
@@ -387,7 +388,7 @@ class CampaignController extends Controller
 
     public function view($type, $id)
     {
-        try {            
+        try {
             $companyId = Helper::getCompanyId();
 
             $type = CampaignModel::TYPE[strtoupper($type)];
@@ -406,12 +407,12 @@ class CampaignController extends Controller
     public function edit($type, $id)
     {
         try {
-            $isActivePackageAccess= Helper::isActivePackageAccess();
+            $isActivePackageAccess = Helper::isActivePackageAccess();
 
-            if(!$isActivePackageAccess){
-                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            if (!$isActivePackageAccess) {
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
-            
+
             $companyId = Helper::getCompanyId();
             $type = CampaignModel::TYPE[strtoupper($type)];
             $taskId = base64_decode($id);
@@ -441,7 +442,7 @@ class CampaignController extends Controller
             return response()->json(['success' => true, 'message' => 'Task deleted successfully']);
         } catch (Exception $e) {
             Log::error('CampaignController::Delete  => ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Error : '. $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error : ' . $e->getMessage()]);
         }
     }
     public function action(Request $request)
@@ -481,7 +482,7 @@ class CampaignController extends Controller
             }
         } catch (Exception $e) {
             Log::error('CampaignController::Action  => ' . $e->getMessage());
-            return response()->json(['success' => 'error', 'messages' => 'Error : '.$e->getMessage()]);
+            return response()->json(['success' => 'error', 'messages' => 'Error : ' . $e->getMessage()]);
         }
     }
     public function export($type)
@@ -504,11 +505,11 @@ class CampaignController extends Controller
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
             $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
             $user = User::where('id', $camphistory->user_id)->where('company_id', $companyId)->first();
-           
+
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
-            $chats = TaskEvidence::where('campaign_id', $id)->where('company_id', $companyId )->get();     
+            $chats = TaskEvidence::where('campaign_id', $id)->where('company_id', $companyId)->get();
             return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id'));
         } catch (Exception $e) {
             Log::error('CampaignController::UserDetails => ' . $e->getMessage());
@@ -560,7 +561,7 @@ class CampaignController extends Controller
             return response()->json(['success' => true]);
         } catch (Exception $e) {
             Log::error('CampaignController::StoreChat => ' . $e->getMessage());
-            return response()->json(['success' => false,'message'=> 'Error: '. $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }
 
@@ -598,7 +599,7 @@ class CampaignController extends Controller
         try {
 
             $companyId = Helper::getCompanyId();
-          
+
             if ($request->ajax()) {
                 $columns = ['id', 'title', 'social_task_user_count'];
                 $draw = $request->input('draw');
@@ -606,6 +607,7 @@ class CampaignController extends Controller
                 $length = $request->input('length');
                 $order = $request->input('order.0.column');
                 $dir = $request->input('order.0.dir');
+                $searchValue = $request->input('search.value');
 
                 // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
                 // (SELECT count(*) as total FROM campaign where campaign.id=user_campaign_history.campaign_id) as total
@@ -617,8 +619,16 @@ class CampaignController extends Controller
                         'campaign.title',
                         DB::raw('(SELECT COUNT(*) FROM campaign WHERE campaign.id = user_campaign_history.campaign_id) as total')
                     )->where('campaign.type', '2')->where('user_campaign_history.status', 3)->where('campaign.company_id', $companyId)->whereDate('user_campaign_history.created_at', '>=', date('Y-m-d', strtotime($request->from_date)))->whereDate('user_campaign_history.created_at', '<=', date('Y-m-d', strtotime($request->to_date)));
+
+
+                if (!empty($searchValue)) {
+                    $query->where(function ($query) use ($searchValue) {
+                        $query->where('campaign.id', 'like', '%' . $searchValue . '%')
+                            ->orWhere('campaign.title', 'like', '%' . $searchValue . '%');
+                    });
+                }
                 $recordsTotal = $query->count();
-              
+
                 $query->orderBy($columns[$order], $dir)->skip($start)->take($length);
 
                 $userCounts = $query->get();

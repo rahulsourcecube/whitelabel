@@ -41,7 +41,7 @@ class LoginController extends Controller
     {
         $getdomain = Helper::getdomain();
 
-        if (!empty($getdomain) && $getdomain == env('pr_name')) {
+        if (!empty($getdomain) && $getdomain == config('app.pr_name')) {
             return view('auth.login');
         }else{
 
