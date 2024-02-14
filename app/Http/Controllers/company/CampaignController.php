@@ -325,9 +325,8 @@ class CampaignController extends Controller
             foreach ($total_join_users as $values) {
                 $list[$values->day] = $values->total_user;
             }
-            $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
-           
-dd($user_total);
+            $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);           
+
             $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
 
             return view('company.campaign.analytics', compact('user_total', 'customTasks'));
