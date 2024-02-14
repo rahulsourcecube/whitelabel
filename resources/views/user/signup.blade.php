@@ -152,6 +152,7 @@
                     },
                     email: {
                         required: true,
+                        email: true
                     },
                     contact_number: {
                         required: true,
@@ -176,6 +177,7 @@
                     },
                     email: {
                         required: "Please enter email",
+                        email: "Please enter valid email address.",
                     },
                     contact_number: {
                         required: "Please enter contact number",

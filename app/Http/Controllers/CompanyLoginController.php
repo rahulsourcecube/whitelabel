@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Mail as FacadesMail;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use App\Mail\company\CompanyWelcomeMail;
+use App\Jobs\SendEmailJob;
 
 class CompanyLoginController extends Controller
 {
@@ -31,7 +32,7 @@ class CompanyLoginController extends Controller
             //  Check domain
             $getdomain = Helper::getdomain();
 
-            if (!empty($getdomain) && $getdomain == env('pr_name')) {
+            if (!empty($getdomain) && $getdomain == config('app.pr_name')) {
                 return redirect(env('ASSET_URL') . '/company/signup');
             }
             //end     
@@ -43,7 +44,6 @@ class CompanyLoginController extends Controller
                 $siteSetting = Helper::getSiteSetting();
                 return view('company.companylogin', compact('siteSetting'));
             }
-
         } catch (Exception $e) {
             Log::error('CompanyLoginController::Index => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -123,10 +123,15 @@ class CompanyLoginController extends Controller
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
+            $companyId = Helper::getCompanyId();
+            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status', '1')->first();
+            if (empty($companyActive)) {
+                return redirect()->back()->with('error', 'Please contact to administrator.');
+            }
 
-            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '2'))) {
+            if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '2', 'id' => $companyId, 'status' => '1'))) {
                 return redirect()->route('company.dashboard');
-            } elseif (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '3'))) {
+            } elseif (auth()->attempt(array('email' => $input['email'], 'password' => $input['password'], 'user_type' => '3', 'company_id' =>  $companyId))) {
                 return redirect()->route('company.dashboard');
             } else {
                 return redirect()->back()->with('error', 'These credentials do not match our records.');
@@ -138,7 +143,7 @@ class CompanyLoginController extends Controller
     }
     public function loginWithToken(Request $request)
     {
-       try {
+        try {
             $user = User::where('token', $request->token)->first();
             if (auth()->attempt(array('email' => $user->email, 'password' => $user->view_password, 'user_type' => '2'))) {
                 $user->update([
@@ -148,7 +153,7 @@ class CompanyLoginController extends Controller
             } else {
                 return redirect()->route('company.login')->with('error', 'These credentials do not match our records.');
             }
-       } catch (Exception $e) {
+        } catch (Exception $e) {
             Log::error('CompanyLoginController::LoginWithToken => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
@@ -157,7 +162,7 @@ class CompanyLoginController extends Controller
     {
         try {
             $getdomain = Helper::getdomain();
-            if (!empty($getdomain) && $getdomain != env('pr_name')) {
+            if (!empty($getdomain) && $getdomain != config('app.pr_name')) {
                 return redirect(env('ASSET_URL') . '/company/signup');
             }
             $siteSetting = Helper::getSiteSetting();
@@ -170,6 +175,10 @@ class CompanyLoginController extends Controller
     public function signupStore(Request $request)
     {
         try {
+            $request->validate([
+                'email' => 'required|email',
+                // Other validation rules...
+            ]);
             $input = $request->all();
             $input['dname'] = strtolower($input['dname']);
 
@@ -198,7 +207,12 @@ class CompanyLoginController extends Controller
 
             try {
                 $userName  = $request->fname . ' ' . $request->lname;
-                Mail::to($request->email)->send(new CompanyWelcomeMail('Welcome Mail', $userName));
+                $to = $request->email;
+                $subject = 'Welcome Mail';
+                $message = '';
+                if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
+                    SendEmailJob::dispatch($to, $subject, $message, $userName);
+                }
             } catch (Exception $e) {
                 Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
             }
@@ -255,17 +269,17 @@ class CompanyLoginController extends Controller
     {
         try {
             $companyId = Helper::getCompanyId();
-            
+
             $userEmail = User::where('company_id', $companyId)
-            ->where('email', $request->email)
-            ->whereIn('user_type', ['2', '3'])
-            ->first();
+                ->where('email', $request->email)
+                ->whereIn('user_type', ['2', '3'])
+                ->first();
 
             if (empty($userEmail)) {
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
             }
 
-            $token = Str::random(64);            
+            $token = Str::random(64);
             try {
                 Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email], function ($message) use ($request) {
                     $message->to($request->email);
@@ -273,7 +287,7 @@ class CompanyLoginController extends Controller
                 });
             } catch (Exception $e) {
                 Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
-                 return redirect()->back()->with('error', "Something went wrong");
+                return redirect()->back()->with('error', "Something went wrong");
             }
             DB::table('password_resets')->insert([
                 'email' => $request->email,

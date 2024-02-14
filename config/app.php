@@ -16,6 +16,8 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -29,6 +31,7 @@ return [
     */
 
     'env' => env('APP_ENV', 'production'),
+  
 
     /*
     |--------------------------------------------------------------------------
@@ -55,8 +58,13 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    
+    'pr_name' =>  'whitelabel',
 
-    'asset_url' => env('ASSET_URL'),
+    'asset_url' => env('ASSET_URL'),    
+
+    'sendmail' => 'true', // Use true or false 
+    'mailSystem'=> 'server', // Use local or server 
 
     /*
     |--------------------------------------------------------------------------
@@ -214,5 +222,6 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
+    
 
 ];

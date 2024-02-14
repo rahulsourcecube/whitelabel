@@ -16,9 +16,12 @@ use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
+use App\Jobs\SendEmailJob;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\log;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -32,13 +35,30 @@ use Illuminate\Support\Facades\Route;
 
 */
 
-Route::get('/clearchache', function () {
+Route::get('/clears', function () {
     Artisan::call('config:cache');
     Artisan::call('cache:clear');
     Artisan::call('view:clear');
     Artisan::call('optimize:clear');
     Artisan::call('route:clear');
     return "Done!";
+});
+
+
+Route::get('send-email-queue', function () {
+    // Your code inside the try block
+    $userName  = 'testing data';
+    $to = 'news@mailinator.com';
+    $subject = 'Welcome Mail'; // Set your subject here
+    $message = 'thank you'; // Set your message here
+
+    if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
+        SendEmailJob::dispatch($to, $subject, $message, $userName);
+        return response()->json(['message' => 'Mail Send Successfully!!']);
+    } else {
+
+        return response()->json(['message' => 'Mail not Successfully!!']);
+    }
 });
 
 
@@ -51,7 +71,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
 Auth::routes();
-Route::get('/errors', function () {   
+Route::get('/errors', function () {
     return view('error');
 })->name('error');
 Route::get('/', [UsrController::class, 'index'])->middleware('checkNotLoggedIn');
@@ -183,7 +203,7 @@ Route::middleware(['domain'])->group(function () {
 
     // {{-- Company Middleware --}}
 
-     
+
     Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
         Route::post('logout', [CompanyLoginController::class, 'logout'])->name('logout');
         Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');

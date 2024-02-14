@@ -140,8 +140,7 @@ class EmployeeController extends Controller
 
             if (!empty($useremail) || !empty($useremails) ) {
                 return redirect()->back()->with('error', 'Employee email id already exit.')->withInput();
-            }
-            dd(123);
+            }           
             $user = new User();
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;

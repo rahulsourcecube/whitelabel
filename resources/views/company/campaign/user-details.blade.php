@@ -180,9 +180,11 @@
                                 <div class="conversation-wrapper">
                                     <div class="conversation-body scrollbar  @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
                                         style="overflow-y: auto;" id="style-4">
+                                      
                                         @if (!empty($chats) && $chats->count() != 0)
                                             @foreach ($chats as $item)
-                                                @if ($item->sender_id == Auth::user()->id)
+                                           
+                                                @if ($item->sender_id == Auth::user()->id  ||  (  $item->getuser->user_type == '3' || $item->getuser->user_type == '2' ))
                                                     <div class="msg msg-sent">
                                                     @else
                                                         <div class="msg msg-recipient">
@@ -204,7 +206,7 @@
                                                 @endif
                                                 @if (isset($item) && !empty($item->document) && file_exists(base_path('public/' . $item->document)))
                                                     <div class="bubble">
-                                                        <div class="bubble-wrapper p-5" style="max-width: 220px;">
+                                                        <div class="bubble-wrapper p-5" @if($item->sender_id == Auth::user()->id) style="max-width: 220px; border: 2px solid rgb(11, 192, 224);" @else style="max-width: 220px;" @endif>
                                                             <img src="{{ asset('public/' . $item->document) }}"
                                                                 alt="{{ asset('public/' . $item->document) }}"
                                                                 style="inline-size: -webkit-fill-available;">
@@ -212,7 +214,7 @@
                                                     </div>
                                                 @else
                                                     <div class="bubble">
-                                                        <div class="bubble-wrapper">
+                                                        <div class="bubble-wrapper" @if($item->sender_id == Auth::user()->id) style=" border: 2px solid rgb(11, 192, 224);" @endif>
                                                             <span>{!! $item->message ?? '' !!} <br>
                                                                 <p
                                                                     style="font-size: x-small;color: black; margin-bottom:0px;">

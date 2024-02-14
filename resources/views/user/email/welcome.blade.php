@@ -44,7 +44,7 @@
                                     <tr>
                                         <td style="text-align: center">
                                             <div class="d-none d-md-flex p-h-40">
-                                                @if (isset($mail) && !empty($mail->logo) && file_exists('uploads/setting/' . $mail->logo))
+                                                @if (isset($mail) && !empty($mail->logo) && file_exists(base_path().'/uploads/setting/' . $mail->logo))
                                                     <img src="{{ asset('uploads/setting/' . $mail->logo) }}"
                                                         style="height: 55px;width: 125px;">
                                                 @else
