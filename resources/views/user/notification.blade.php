@@ -58,9 +58,7 @@
                 responsive: true,
                 pageLength: 10,
                 // Initial no order.
-                'order': [
-                    [0, 'desc']
-                ],
+                'order': [],
                 language: {
                     search: "",
                     searchPlaceholder: "Search Here",

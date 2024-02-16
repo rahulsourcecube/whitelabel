@@ -134,23 +134,22 @@
                                     <td>
                                         @if (isset($data->status) && $data->status == 1)
                                             @if (isset($data->getCampaign->type) && $data->getCampaign->type != '1')
-                                                <span class="badge badge-primary " role="button">Claim
+                                                <span class=" text-primary " role="button">Claim
                                                     reward</span>
                                             @else
                                                 @if (isset($data->getCampaign->task_expired) && $data->getCampaign->task_expired == 'Expired')
-                                                    <span class="badge badge-primary " role="button">Claim
+                                                    <span class=" text-primary " role="button">Claim
                                                         reward</span>
                                                 @else
-                                                    <span class="badge badge-primary " role="button"
-                                                        style="background-color: rgba(0, 123, 255, 0.5);">Claim
+                                                    <span class=" text-primary " role="button">Claim
                                                         reward</span>
                                                 @endif
                                             @endif
                                         @endif
                                         @if (isset($data->status) && $data->status == 2)
-                                            <span class="badge badge-info ">Claim Pending</span>
+                                            <span class="text-info ">Claim Pending</span>
                                         @elseif(isset($data->status) && $data->status == 5)
-                                            <span class="badge badge-danger ">Reopen</span>
+                                            <span class="text-danger ">Reopen</span>
                                         @endif
                                     </td>
                                     <td>

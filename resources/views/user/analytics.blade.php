@@ -113,7 +113,7 @@
     <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <script>
         function chartAjax() {        
-
+            var customLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
             var monthlyReferrals = $('.monthlyReferrals').val();
             monthlyReferrals = JSON.parse(monthlyReferrals);
@@ -128,9 +128,7 @@
                 }
             }
             var monthRefChart = new Chartist.Line('#horizontal-bar', {
-                labels: ['January', 'February', 'March', 'April', 'May', 'Jun', 'July', 'August', 'September',
-                    'October', 'November', 'December'
-                ],
+                labels: customLabels,
                 series: [
                     countArray
                 ]

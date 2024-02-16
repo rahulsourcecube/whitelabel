@@ -74,7 +74,7 @@
                         </div>
                         <div class="m-t-30">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="user_tables">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -106,9 +106,9 @@
                                                                 @endif
                                                             </div>
                                                             <h6 class="m-l-10 m-b-0">
-                                                                {{ isset($data->first_name) ? $data->first_name : '' }}
-                                                                &nbsp;
-                                                                {{ isset($data->last_name) ? $data->last_name : '' }}
+                                                                {{ isset($data->first_name) ? $data->first_name.' '.$data->last_name : '' }}
+                                                                {{-- &nbsp; --}}
+                                                                {{-- {{ isset($data->last_name) ? $data->last_name : '' }} --}}
                                                             </h6>
                                                         </div>
                                                     </div>
@@ -129,4 +129,22 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+                var table = $('#user_tables').DataTable({
+                    // Processing indicator
+                    "processing": false,
+                    // DataTables server-side processing mode
+                    "serverSide": false,
+                    responsive: true,
+                    pageLength: 10,
+                    // Initial no order.
+                    'order': [],
+                    language: {
+                        search: "",
+                        searchPlaceholder: "Search Here",
+                    },
+                });
+            });
+    </script>
 @endsection

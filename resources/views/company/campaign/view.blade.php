@@ -182,7 +182,7 @@
             ],
         });
 
-        table1.column(6).visible(false);
+        table1.column(6).visible(true);
         $(document).on("click", ".my-table-tab", function() {
             title="Recently User Joined List";
             if($(this).data('status') == '1'){
@@ -201,10 +201,10 @@
             
             $('#status').val($(this).data('status'));
             table1.draw();
-            if ($(this).data('status') != '1' ) {
+            if ($(this).data('status') != '3' ) {
                 table1.column(6).visible(true);
             } else {
-                table1.column(6).visible(false);
+                table1.column(6).visible(true);
             }
         });
 

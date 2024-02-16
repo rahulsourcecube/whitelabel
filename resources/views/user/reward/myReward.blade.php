@@ -136,10 +136,10 @@
                                     </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 3)
-                                            <span class="btn btn-success  btn-sm">Completed</span>
+                                            <span class=" text-success  btn-sm">Completed</span>
                                         @elseif (isset($data->status) && $data->status == 4)
                                             
-                                            <span class="btn btn-danger  btn-sm">Rejected</span>
+                                            <span class=" text-danger  btn-sm">Rejected</span>
                                         @endif
                                     </td>
                                     <td>

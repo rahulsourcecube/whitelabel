@@ -118,7 +118,7 @@ class CampaignController extends Controller
             $order = $request->input('order.0.column');
             $dir = $request->input('order.0.dir');
             $list = [];
-
+            
             $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
 
             $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
@@ -518,6 +518,8 @@ class CampaignController extends Controller
 
     public function storeChat(UserCampaignHistoryModel $id, Request $request)
     {
+       
+       
         try {
             if ($request->hasFile('image') || $request->chat_input != null) {
                 if ($request->hasFile('image')) {
@@ -528,24 +530,41 @@ class CampaignController extends Controller
                     $imageName = 'uploads/Chats/' . $imageName;
                 }
                 $chats = TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
-                if ($chats->count() == 0) {
+                // if ($chats->count() == 0) {
 
-                    $id->status = '2';
-                    $id->save();
-                    if (isset($id)) {
-                        $Notification = new Notification();
+                    // $id->status = '2';
+                    // $id->save();
+                    if ($request->hasFile('image')) {
+                        $sentMessage = ' sent file...';
+                    }else{
+                        $sentMessage = ' sent a message '.' '.  Str::limit($request->chat_input, 10) ?? "-";
+                    }
+                   
+                    $Notification = new Notification();
+                    if(auth()->user()->user_type == '4'){
                         $Notification->user_id =  $id->user_id;
                         $Notification->company_id =  $id->getCampaign->company_id;
                         $Notification->type =  '2';
-                        $Notification->title =  " Campaign approval request";
-                        $Notification->message =  $id->getCampaign->title . " approval request by " . $id->getuser->FullName;
+                        $Notification->title =  "User send message";
+                        $Notification->message =  $id->getuser->FullName .' '. $sentMessage;
+                        $Notification->save();
+
+                    }else{
+                        $Notification->user_id =  $id->user_id;
+                        $Notification->company_id =  $id->campaign_id;
+                        $Notification->title =  "Company send message";
+                        $Notification->message = "New message for the task ". $id->getCampaign->title ?? "-"; ;
+                        $Notification->type =  "1";    
                         $Notification->save();
                     }
-                }
-                if ($id->status == '4' && Auth::user()->user_type == 4) {
-                    $id->status = '5';
-                    $id->save();
-                }
+                       
+                        // dd($Notification);
+                    
+                // }
+                // if ($id->status == '4' && Auth::user()->user_type == 4) {
+                //     $id->status = '5';
+                //     $id->save();
+                // }
                 $TaskEvidence = new TaskEvidence();
                 $TaskEvidence->user_id = $id->user_id;
                 $TaskEvidence->company_id = $id->getCampaign->company_id;
@@ -632,6 +651,7 @@ class CampaignController extends Controller
 
                 $userCounts = $query->get();
                 $data = [];
+                
                 foreach ($userCounts as $item) {
                     $data[] = [
                         $item->id, // Format the day of the month

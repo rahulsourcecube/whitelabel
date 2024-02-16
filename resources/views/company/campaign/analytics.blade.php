@@ -159,9 +159,9 @@
         $('.datepicker').datepicker();
 
         var user_total = {!! json_encode($user_total) !!};
-        user_total = JSON.parse(user_total);
+        user_total = JSON.parse(user_total);      
         new Chartist.Line('#simple-line-referral', {
-            labels: user_total.day,
+            labels: user_total.day
             series: [
                 user_total.total_user,
             ],
@@ -398,8 +398,7 @@
                 // "headers": {
                 //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 // },
-                success: function(data) {
-                    console.log(data);
+                success: function(data) {                    
                     // Extract labels and values
                     var labels = data.map(function(item) {
                         return item.label;

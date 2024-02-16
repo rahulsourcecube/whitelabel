@@ -10,7 +10,8 @@ $user = Auth::user();
 $isActivePackage = App\Helpers\Helper::isActivePackage();
 use App\Models\Notification;
 
-$notificationCount = Notification::where('company_id', $user->id)
+$companyId = App\Helpers\Helper::getCompanyId();   
+$notificationCount = Notification::where('company_id', $companyId)
 ->where('is_read', '0')
 ->where('type', '2')
 ->get();

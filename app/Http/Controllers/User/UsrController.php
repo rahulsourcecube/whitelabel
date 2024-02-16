@@ -484,6 +484,7 @@ class UsrController extends Controller
     }
     public function signup()
     {
+        
         try {
             $companyId = Helper::getCompanyId();
 
@@ -508,7 +509,9 @@ class UsrController extends Controller
 
     public function store(Request $request)
     {
+       
         try {
+          
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
@@ -538,6 +541,17 @@ class UsrController extends Controller
             if ($userCount >= $ActivePackageData->no_of_user) {
                 return redirect()->back()->with('error', 'The user registration limit is over. please contact to administrator.');
             }
+            $user_id = null;
+            if (Session('referral_link') != null) {
+                $referral_link = Session('referral_link');
+                $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
+                $user = UserCampaignHistoryModel::where('referral_link', $lastSegment->value)->first();
+                $user_id=  $user->user_id;    
+              
+            }else{
+                !empty($referrer_user) ? $user_id = $referrer_user->id : null;
+            }
+           
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;
             $userRegister->last_name = $request->last_name;
@@ -548,7 +562,7 @@ class UsrController extends Controller
             $userRegister->password = Hash::make($request->password);
             $userRegister->view_password = $request->password;
             $userRegister->contact_number = $request->contact_number;
-            $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
+            $userRegister->referral_user_id = !empty($user_id) ? $user_id : null;
             $userRegister->package_id = $ActivePackageData->id;
 
             // try {

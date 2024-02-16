@@ -186,63 +186,73 @@
 
     </script>
     <script>
-        $(document).ready(function() {
-            // Call the function to fetch data and render the chart
-            fetchDataAndRenderChart();
-        });
+   $(document).ready(function() {
+    // Call the function to fetch data and render the chart
+    fetchDataAndRenderChart();
+});
 
-        // Function to make AJAX request and render the chart
-        function fetchDataAndRenderChart() {
-            var month = $("#month").val();
-            var company = $("#company").val();
-            console.log(month, company);
-            // Make an AJAX request using jQuery
-            $.ajax({
-                url: '{{ route('admin.CompanyRevenue') }}',
-                type: 'GET',
-                data: {
-                    month,
-                    company
-                },
-                success: function(data) {
-                    // Extract labels and values
-                    var labels = data.map(function(item) {
-                        return item.label;
-                    });
+// Function to make AJAX request and render the chart
+function fetchDataAndRenderChart() {
+    var month = $("#month").val();
+    var company = $("#company").val();
 
-                    var values = data.map(function(item) {
-                        return item.value;
-                    });
-                    // Create a line chart with an area
-                    var ctx = document.getElementById('myChart').getContext('2d');
-                    var myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Company Revenue',
-                                data: values,
-                                // fill: true, // Fill the area under the line
-                                backgroundColor: 'transparent', // Area color
-                                borderColor: '#3F87F5', // Line color
-                                // borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                 yAxes: [{
-                                    ticks: {
-                                        stepSize: 10
-                                    }
-                                }],
-                            }
-                        }
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching data:', error);
-                }
+    // Make an AJAX request using jQuery
+    $.ajax({
+        url: '{{ route('admin.CompanyRevenue') }}',
+        type: 'GET',
+        data: {
+            month,
+            company
+        },
+        success: function(data) {
+            // Create arrays for labels and values
+            var labels = [];
+            var values = [];
+
+            // Parse response data and populate arrays
+            data.forEach(function(item) {
+                labels.push(item.label);
+                values.push(item.value);
             });
+
+            // Pass the arrays to the function to render the chart
+            renderChart(labels, values);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching data:', error);
         }
+    });
+}
+
+// Function to render the chart using the labels and values arrays
+function renderChart(labels, values) {
+    // Create a line chart with an area
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Company Revenue',
+                data: values,
+                backgroundColor: 'transparent',
+                borderColor: '#3F87F5',
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        // Format the y-axis labels as percentages
+                        callback: function(value, index, values) {
+                            return value ;
+                        }
+                    }
+                }],
+                
+            }
+        }
+    });
+}
     </script>
 @endsection
