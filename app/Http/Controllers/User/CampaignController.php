@@ -68,8 +68,8 @@ class CampaignController extends Controller
                 $list[] = [
                     base64_encode($result->id),
                     $result->title ?? "-",
-                    Helper::getcurrency() . $result->reward ?? "-",
-                    Str::limit($result->description, 60) ?? "-",
+                    $result->text_reward ? Str::limit($result->text_reward, 15) : Helper::getcurrency() . ($result->reward ?? "0"),
+                    Str::limit($result->description, 40) ?? "-",
                     $result->task_type ?? "_",
                     $result->status ?? "_",
                 ];
@@ -154,7 +154,7 @@ class CampaignController extends Controller
                 foreach ($userCounts as $item) {
                     $data[] = [
                         "User" => isset($item->getuser->first_name) ? $item->getuser->first_name : '',
-                        "Reward" => Helper::getcurrency() . $item->reward ?? '',
+                        "Reward" => Str::limit($item->text_reward, 15) ? $item->text_reward : Helper::getcurrency() . ($item->reward ?? '0'),
                         "Date" => Helper::Dateformat($item->created_at) ?? ''
                     ];
                 }
@@ -212,10 +212,12 @@ class CampaignController extends Controller
             $input = new UserCampaignHistoryModel;
             $input->campaign_id = isset($getcampaign->id) ? $getcampaign->id : '';
             $input->user_id = Auth::user()->id;
-            $input->reward = $getcampaign->reward;
+            $input->reward = ($getcampaign->reward?:0);
+            $input->text_reward = $getcampaign->text_reward;
 
             if ($getcampaign->type == 1) {
                 $input->reward = 0;
+                $input->text_reward = '';
                 $input->referral_link = $token;
                 $input->no_of_referral_users = $getcampaign->no_of_referral_users;
             }
@@ -240,6 +242,7 @@ class CampaignController extends Controller
                         $Referral->user_id = Auth::user()->id;
                         $Referral->campagin_id = $UserCampaign->campaign_id;
                         $Referral->reward = isset($UserCampaign->getCampaign->reward) ? $UserCampaign->getCampaign->reward : '0';
+                        $Referral->text_reward = isset($UserCampaign->getCampaign->text_reward) ? $UserCampaign->getCampaign->text_reward : '';
                         $Referral->ip = IpRequest::ip();
                         $Referral->save();
                         // $UserCampaign->reward = $UserCampaign->reward + $UserCampaign->getCampaign->reward;
@@ -257,32 +260,29 @@ class CampaignController extends Controller
     }
     function requestSend(Request $request)
     {
-       
-          
+        try {
             $companyId = Helper::getCompanyId();           
             $id = base64_decode($request->id);
-        
-         
             
             $input = new UserCampaignHistoryModel;
             $input = UserCampaignHistoryModel::where('id', $id)->first();
         
             $CampaignModel = CampaignModel::where('id', $input['campaign_id'])->where('company_id', $companyId)->first();
-            
         
             $input->status = 2;
             $input->verified_by = 0;
-            $input->reward=$CampaignModel->reward;
+            $input->reward=$CampaignModel->reward??0;
+            $input->text_reward=$CampaignModel->text_reward;
            
-                    if (isset($input)) {
-                        $Notification = new Notification();
-                        $Notification->user_id =  $CampaignModel->user_id;
-                        $Notification->company_id =  $companyId;
-                        $Notification->type =  '2';
-                        $Notification->title =  " Campaign approval request";
-                        $Notification->message =  $CampaignModel->title . " approval request by " . $input->getuser->FullName;
-                        $Notification->save();
-						//store in chat
+            if (isset($input)) {
+                $Notification = new Notification();
+                $Notification->user_id =  $CampaignModel->user_id;
+                $Notification->company_id =  $companyId;
+                $Notification->type =  '2';
+                $Notification->title =  " Campaign approval request";
+                $Notification->message =  $CampaignModel->title . " approval request by " . $input->getuser->FullName;
+                $Notification->save();
+                //store in chat
                 $TaskEvidence = new TaskEvidence();
                 $TaskEvidence->user_id = Auth::user()->id;
                 $TaskEvidence->company_id =  $companyId;
@@ -290,14 +290,17 @@ class CampaignController extends Controller
                 $TaskEvidence->sender_id = Auth::user()->id;
                 $TaskEvidence->message = "Task completed";
                 $TaskEvidence->save();
-                    }
+            }
                 
-                     // $UserCampaign->reward = $UserCampaign->reward + $UserCampaign->getCampaign->reward;
-                        // $UserCampaign->save();
+            // $UserCampaign->reward = $UserCampaign->reward + $UserCampaign->getCampaign->reward;
+            // $UserCampaign->save();
             $input->save();
            
             return $input;
-       
+        } catch (Exception $e) {
+            Log::error('CampaignController::requestSend => ' . $e->getMessage());
+            return $input = "";
+        }
     }
     function reopenSend(Request $request)
     {
@@ -316,7 +319,8 @@ class CampaignController extends Controller
         
             $input->status = 5;
             $input->verified_by = 0;
-            $input->reward=$CampaignModel->reward;
+            $input->reward= $CampaignModel->reward??0;
+            $input->text_reward=$CampaignModel->text_reward;
            
                     if (isset($input)) {
                         $Notification = new Notification();

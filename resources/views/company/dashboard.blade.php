@@ -82,8 +82,8 @@
                                                                 href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']),base64_encode($referral_task->id)])}}">{{isset($referral_task->title)
                                                                 ? $referral_task->title : ""}}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">{{ App\Helpers\Helper::getcurrency()}}{{isset($referral_task->reward) ?
-                                                            $referral_task->reward : ""}}</p>
+                                                        <p class="text-muted m-b-0">{{ $referral_task->text_reward ? Str::limit($referral_task->text_reward, 15) : App\Helpers\Helper::getcurrency() . (isset($referral_task->reward) ?
+                                                            $referral_task->reward : "0") }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -136,8 +136,8 @@
                                                                 ?
                                                                 $social_share_task->title : ""}}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">{{ App\Helpers\Helper::getcurrency()}}{{isset($social_share_task->reward) ?
-                                                            $social_share_task->reward : ""}}</p>
+                                                        <p class="text-muted m-b-0">{{ $social_share_task->text_reward ? Str::limit($social_share_task->text_reward, 15) : App\Helpers\Helper::getcurrency() . (isset($social_share_task->reward) ?
+                                                            $social_share_task->reward : "") }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -188,8 +188,8 @@
                                                                 href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']),base64_encode($custom_task->id)])}}">{{isset($custom_task->title)
                                                                 ? $custom_task->title : ""}}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">{{ App\Helpers\Helper::getcurrency()}}{{isset($custom_task->reward) ?
-                                                            $custom_task->reward : ""}}</p>
+                                                        <p class="text-muted m-b-0">{{ $custom_task->text_reward ? Str::limit($custom_task->text_reward, 15) : App\Helpers\Helper::getcurrency() . (isset($custom_task->reward) ?
+                                                            $custom_task->reward : "0") }}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -291,11 +291,6 @@
     var currency =  "{{$currency}}";
     var chart_title = "{{$chart_title}}";
 </script>
-    <script>
-        var chartdata = {!! json_encode($user_reward_and_days) !!};
-        chartdata = JSON.parse(chartdata);
-        var currency = "{{ $currency }}";
-    </script>
     <script>
         var new_user = $("#new_user").val();
         var old_user = $("#old_user").val();

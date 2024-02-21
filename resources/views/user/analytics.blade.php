@@ -27,24 +27,9 @@
                         <div class="m-t-25">
                             <div class="row">
                                 <div class="col-md-3">
-                                    @if (isset(request()->from_date))
-                                        <input type="hidden" name="from_date" value="{{ request()->from_date }}">
-                                    @elseif(isset(request()->to_date))
-                                        <input type="hidden" name="to_date" value="{{ request()->to_date }}">
-                                    @endif
-
-                                    <div class="form-group col-md-12">
-                                        <label class="font-weight-semibold" for="from_date">From Date:</label>
-                                        <input type="date" class="form-control" id="from_date" placeholder="From Date"
-                                            name="from_date"
-                                            value="{{ isset(request()->from_date) ? request()->from_date : '' }}">
-                                    </div>
-                                    <div class="form-group col-md-12">
-                                        <label class="font-weight-semibold" for="to_date">To Date:</label>
-                                        <input type="date" class="form-control" id="to_date" placeholder="To Date"
-                                            name="to_date"
-                                            value="{{ isset(request()->to_date) ? request()->to_date : '' }}">
-                                    </div>
+                                    <input type="text" class="form-control datepicker-input-year" id="year"
+                                    name="year" placeholder="Select Year" value="{{ date('Y') }}"
+                                    readonly>
                                     <div class="col-md-12">
                                         <button class="btn btn-primary m-t-30 filter" type="button"
                                             id="referralActivityButtone">Filter</button>
@@ -111,30 +96,28 @@
 
 @section('js')
     <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+    
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <script>
+        
+        $('.datepicker-input-year').datepicker({
+            minViewMode: 2,
+            format: 'yyyy'
+        });
         function chartAjax() {        
-            var customLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
             var monthlyReferrals = $('.monthlyReferrals').val();
             monthlyReferrals = JSON.parse(monthlyReferrals);
             var countArray = [];
-
-            for (let i = 1; i <= 12; i++) {
-                let obj = monthlyReferrals.find(x => x.month == i);
-                if (obj && obj != '') {
-                    countArray.push(obj.user_count);
-                } else {
-                    countArray.push(0);
-                }
-            }
+           
             var monthRefChart = new Chartist.Line('#horizontal-bar', {
-                labels: customLabels,
-                series: [
-                    countArray
-                ]
+                labels: monthlyReferrals.months,
+                series: [monthlyReferrals.data]
             }, {
                 seriesBarDistance: 10,
-                reverseData: true,
+                reverseData: false,
                 horizontalBars: true,
                 axisY: {
                     onlyInteger: true,
@@ -186,8 +169,8 @@
                 url: '{{ route('user.analytics') }}',
                 type: 'GET',
                 data: {
-                    from_date: $("#from_date").val(),
-                    to_date: $("#to_date").val(),
+                    year: $("#year").val(),
+                    // to_date: $("#to_date").val(),
                     top_from_date: $("#top_from_date").val(),
                     top_to_date: $("#top_to_date").val(),
                 },

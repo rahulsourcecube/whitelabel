@@ -50,7 +50,7 @@ class UsrController extends Controller
     public function dashboard()
     {
         try {
-            $campaignList = UserCampaignHistoryModel::orderBy('campaign_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
+            $campaignList = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
             $totalReferralUser = User::where('referral_user_id', Auth::user()->id)->get();
@@ -412,23 +412,23 @@ class UsrController extends Controller
     function analytics(Request $request)
     {
         try {
-            $fromDate = request('from_date');
-            $toDate = request('to_date');
+            $year = request('year') ?:date("Y");
 
             $topFromDate = request('top_from_date');
             $topToDate = request('top_to_date');
 
-            $monthlyReferrals = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('MONTH(created_at) as month'))
+            $monthlyReferralsData = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('DATE_FORMAT(created_at, "%b") as month'))
                 ->where('referral_user_id', Auth::user()->id)
-                ->when($fromDate, function ($query) use ($fromDate) {
-                    return $query->where('created_at', '>=', $fromDate);
-                })
-                ->when($toDate, function ($query) use ($toDate) {
-                    return $query->where('created_at', '<=', $toDate);
-                })
-                ->groupBy(DB::raw('MONTH(created_at)'))
-                ->get()->toArray();
-
+                ->whereYear('created_at', '=', $year)
+                ->groupBy(DB::raw('DATE_FORMAT(created_at, "%b")'))
+                ->get()
+                ->toArray();
+            $monthlyReferrals  = ['Jan' => 0, 'Feb' => 0, 'Mar' => 0, 'Apr' => 0, 'May' => 0, 'Jun' => 0, 'Jul' => 0, 'Aug' => 0, 'Sep' => 0, 'Oct' => 0, 'Nov' => 0, 'Dec' => 0]; 
+           
+           foreach($monthlyReferralsData as $result){
+                $monthlyReferrals[$result['month']] = $result['user_count'];
+           }
+           $monthlyReferrals = ['months'=>array_keys($monthlyReferrals), 'data' => array_values($monthlyReferrals)];
             $topUserReferral = UserCampaignHistoryModel::whereExists(function ($query) {
                 $query->from('users')
                     ->whereRaw('user_campaign_history.user_id = users.id')
@@ -451,7 +451,6 @@ class UsrController extends Controller
                 ->selectRaw('user_campaign_history.user_id,Sum(reward) as sum')
                 ->orderBy('sum', 'DESC')->take(5)
                 ->get()->toArray();
-               
 
             if ($request->ajax()) {
                 return [

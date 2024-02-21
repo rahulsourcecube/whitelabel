@@ -20,6 +20,7 @@ class CampaignModel extends Model
         'company_id',
         'title',
         'reward',
+        'text_reward',
         'description',
         'expiry_date',
         'type',

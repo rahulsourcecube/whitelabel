@@ -29,7 +29,7 @@
                             <label id="title-error" class="error" for="title">{{ $message }}</label>
                             @enderror
                         </div>
-                        <div class="form-group col-md-6">
+                        {{-- <div class="form-group col-md-6">
                             <label for="reward"> Reward <span class="error">*</span></label>
                             <input type="text" class="form-control" id="reward" name="reward" placeholder="Reward"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
@@ -37,6 +37,37 @@
                             @error('reward')
                             <label id="reward-error" class="error" for="reward">{{ $message }}</label>
                             @enderror
+                        </div> --}}
+                        <div class="col-md-6">
+                            <div class="int-reward w-80">
+                                <label for="reward"> Reward <span class="error">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="basic-addon2">{{ App\Helpers\Helper::getcurrency() }}</span>
+                                    </div>
+                                    <input type="number" class="form-control" id="reward" name="reward" placeholder="Reward"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                    value="{{ old('reward') }}" min="1">
+                                </div>
+                                @error('reward')
+                                    <label id="reward-error" class="error" for="reward">{{ $message }}</label>
+                                @else
+                                    <label id="reward-error" class="error" for="reward"></label>
+                                @enderror
+                            </div>
+                            <div class="custom-reward-text w-80" style="display: none;">
+                                <label for="text_reward"> Custom Reward Title <span class="error">*</span></label>
+                                <input type="text" name="text_reward" class="form-control" id="text_reward" maxlength="250" required>
+                                @error('text_reward')
+                                    <label id="text_reward-error" class="error" for="text_reward">{{ $message }}</label>
+                                @else
+                                    <label id="text_reward-error" class="error" for="text_reward"></label>
+                                @enderror
+                            </div>
+                            <div class="custom-reward-chk w-20  mt-2">
+                                <label for="custom_reward_chk"> Custom Reward</label>
+                                <input type="checkbox" name="custom_reward_chk" id="custom_reward_chk" value="1">
+                            </div>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="description">Description</label>
@@ -158,5 +189,9 @@
                 },
             }
         });
+        $("#custom_reward_chk").on("click", function ()  {
+            $(".custom-reward-text, .int-reward").toggle();
+            $("#text_reward, #reward").val("");
+        })
 </script>
 @endsection

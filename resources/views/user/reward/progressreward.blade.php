@@ -99,7 +99,7 @@
 
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '-' }}</td>
-                                    <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '-' }}
+                                    <td>{{ $data->text_reward? Str::limit($data->text_reward, 15)  : ( isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '0') }}
                                     </td>
                                     <td>
                                         @if (isset($data->getCampaign->description))

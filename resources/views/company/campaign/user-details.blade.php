@@ -122,7 +122,7 @@
                                                     <tr>
                                                         <td>{{ $loop->index + 1 }}</td>
                                                         <td>{{ optional($list->getuser)->first_name }}</td>
-                                                        <td>{{ App\Helpers\Helper::getcurrency() . $list->reward }}</td>
+                                                        <td>{{ $list->text_reward? Str::limit($list->text_reward, 15) :App\Helpers\Helper::getcurrency() . $list->reward }}</td>
                                                         <td>{{ App\Helpers\Helper::Dateformat($list->created_at) }}</td>
                                                     </tr>
                                                 @endforeach
@@ -249,7 +249,7 @@
                                     @endif
 
                                 </div>
-                                @if ($camphistory->status != 3)
+                                {{-- @if ($camphistory->status != 3) --}}
                                     <div class="conversation-footer custom-footer">
                                         <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
                                         <ul class="list-inline d-flex align-items-center m-b-0">
@@ -273,7 +273,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                @endif
+                                {{-- @endif --}}
                             </div>
                         </div>
                     </div>

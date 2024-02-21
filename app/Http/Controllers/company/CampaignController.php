@@ -83,8 +83,8 @@ class CampaignController extends Controller
                 $list[] = [
                     base64_encode($result->id),
                     $result->title ?? "-",
-                    Helper::getcurrency() . $result->reward ?? "-",
-                    Str::limit($result->description, 60) ?? "-",
+                    $result->text_reward ? Str::limit($result->text_reward, 15) : Helper::getcurrency() . ($result->reward ?? "0"),
+                    Str::limit($result->description, 40) ?? "-",
                     $result->task_type,
                     $result->no_of_referral_users,
                     $result->task_status,
@@ -150,7 +150,7 @@ class CampaignController extends Controller
                     $result->getuser->full_name ?? "-",
                     $result->getuser->email ?? "-",
                     $result->getuser->contact_number ?? "-",
-                    '$' . $result->reward ?? "0",
+                    $result->text_reward ? Str::limit($result->text_reward,15) : Helper::getcurrency() . ($result->reward ?? "0"),
                     Helper::Dateformat($result->created_at)  ?? "-",
                     $result->TaskStatus ?? "-",
                     base64_encode($result->user_id) ?? "-",
@@ -200,7 +200,8 @@ class CampaignController extends Controller
             $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'reward' => 'required|numeric',
+                'reward' => 'required_without:text_reward',
+                'text_reward' => 'required_without:reward',
                 'description' => 'required',
                 'expiry_date' => 'required|date',
                 'type' => 'required',
@@ -227,7 +228,8 @@ class CampaignController extends Controller
 
             $Campaign = new CampaignModel();
             $Campaign->title = $request->title;
-            $Campaign->reward = $request->reward;
+            $Campaign->reward = $request->reward??0;
+            $Campaign->text_reward = $request->text_reward;
             $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
             $Campaign->expiry_date = $request->expiry_date;
@@ -252,7 +254,8 @@ class CampaignController extends Controller
             $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|max:255',
-                'reward' => 'required|numeric',
+                'reward' => 'required_without:text_reward',
+                'text_reward' => 'required_without:reward',
                 'description' => 'required',
                 'expiry_date' => 'required|date',
                 'type' => 'required',
@@ -279,7 +282,8 @@ class CampaignController extends Controller
             $request->merge(['image' => $image, 'company_id' => $companyId]);
 
             $Campaign->title = $request->title;
-            $Campaign->reward = $request->reward;
+            $Campaign->reward = $request->reward??0;
+            $Campaign->text_reward = $request->text_reward;
             $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
             $Campaign->expiry_date = $request->expiry_date;
@@ -311,22 +315,20 @@ class CampaignController extends Controller
                 ->where('uch.status', '3')
                 ->where('c.type', '1')
                 ->whereDate('uch.created_at', '>=', $date)
-                ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
+                ->select(DB::raw('COUNT(uch.user_id) as total_user , DATE_FORMAT(uch.created_at, "%a") as day'))
                 ->groupBy('day')
                 ->get();
-            $dateandtime = Carbon::now();
-            $start_date = $dateandtime->subDays(7);
-            $start_time = strtotime($start_date);
-            $end_time = strtotime("+1 week", $start_time);
+            $start_time = strtotime(date("Y-m-d",strtotime("-6 day")));
+            $end_time = strtotime(date("Y-m-d"));
             $list = [];
-            for ($i = $start_time; $i < $end_time; $i += 86400) {
+            for ($i = $start_time; $i <= $end_time; $i += 86400) {
                 $list[date('D', $i)] = 0;
             }
+
             foreach ($total_join_users as $values) {
                 $list[$values->day] = $values->total_user;
             }
             $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);           
-
             $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
 
             return view('company.campaign.analytics', compact('user_total', 'customTasks'));
@@ -344,6 +346,8 @@ class CampaignController extends Controller
                     $date = explode('-', $request->date_range_filter);
                     $from_date = date('Y-m-d', strtotime($date[0]));
                     $to_date = date('Y-m-d', strtotime($date[1]));
+
+                    // dd($from_date, $to_date);
                     $companyId = Auth::user()->id;
                     $total_join_users = DB::table('users as u')
                         ->join('user_campaign_history as uch', 'u.id', '=', 'uch.user_id')
@@ -356,7 +360,7 @@ class CampaignController extends Controller
                         ->where('c.type', '1')
                         ->whereDate('uch.created_at', '>=', $from_date)
                         ->whereDate('uch.created_at', '<=', $to_date)
-                        ->select(DB::raw('COUNT(uch.user_id) as total_user , DAYNAME(uch.created_at) as day'))
+                        ->select(DB::raw('COUNT(uch.user_id) as total_user , DATE_FORMAT(uch.created_at, "%a") as day'))
                         ->groupBy('day')
                         ->get();
                     $start_date = $from_date;
@@ -459,12 +463,12 @@ class CampaignController extends Controller
                     $Notification->user_id =  $action->user_id;
                     $Notification->company_id =  $action->campaign_id;
                     $Notification->title =  " Campaign approved ";
-                    $Notification->message =  $action->getCampaign->title . " Approved.";
+                    $Notification->message =  $action->getCampaign->title . " approved.";
                     $Notification->type =  "1";
                     $Notification->save();
                 }
 
-                return response()->json(['success' => 'success', 'messages' => ' Task Approved successfully']);
+                return response()->json(['success' => 'success', 'messages' => ' Task approved successfully']);
             } else {
                 $action->status = '4';
                 $action->save();
@@ -472,12 +476,12 @@ class CampaignController extends Controller
                     $Notification->user_id =  $action->user_id;
                     $Notification->company_id =  $action->campaign_id;
                     $Notification->title =  " Campaign rejected";
-                    $Notification->message =  $action->getCampaign->title . " Rejected.";
+                    $Notification->message =  $action->getCampaign->title . " rejected.";
                     $Notification->type =  "1";
 
                     $Notification->save();
                 }
-                return response()->json(['success' => 'success', 'messages' => ' Task Rejected successfully']);
+                return response()->json(['success' => 'success', 'messages' => ' Task rejected successfully']);
             }
         } catch (Exception $e) {
             Log::error('CampaignController::Action  => ' . $e->getMessage());
@@ -635,7 +639,7 @@ class CampaignController extends Controller
                     ->select(
                         'campaign.id',
                         'campaign.title',
-                        DB::raw('(SELECT COUNT(*) FROM campaign WHERE campaign.id = user_campaign_history.campaign_id) as total')
+                        DB::raw('COUNT(user_campaign_history.id) as total')
                     )->where('campaign.type', '2')->where('user_campaign_history.status', 3)->where('campaign.company_id', $companyId)->whereDate('user_campaign_history.created_at', '>=', date('Y-m-d', strtotime($request->from_date)))->whereDate('user_campaign_history.created_at', '<=', date('Y-m-d', strtotime($request->to_date)));
 
 
@@ -645,6 +649,7 @@ class CampaignController extends Controller
                             ->orWhere('campaign.title', 'like', '%' . $searchValue . '%');
                     });
                 }
+                $query->groupBy('campaign.id', 'campaign.title');
                 $recordsTotal = $query->count();
 
                 $query->orderBy($columns[$order], $dir)->skip($start)->take($length);

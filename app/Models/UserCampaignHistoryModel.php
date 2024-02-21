@@ -20,6 +20,7 @@ class UserCampaignHistoryModel extends Model
         'id',
         'campaign_id',
         'reward',
+        'text_reward',
         'user_id',
         'password',        
         'status',

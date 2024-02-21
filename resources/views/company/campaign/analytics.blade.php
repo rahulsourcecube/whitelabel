@@ -161,7 +161,7 @@
         var user_total = {!! json_encode($user_total) !!};
         user_total = JSON.parse(user_total);      
         new Chartist.Line('#simple-line-referral', {
-            labels: user_total.day
+            labels: user_total.day,
             series: [
                 user_total.total_user,
             ],
@@ -211,6 +211,8 @@
             $('#filterdata').removeAttr("disabled");
         });
         $('#date_filter').daterangepicker({
+            startDate: moment().subtract(6, 'days'), // Start date is 6 days ago
+            endDate: moment(), // End date is today
             dateLimit: {
                 days: 7
             },

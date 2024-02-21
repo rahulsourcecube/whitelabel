@@ -93,10 +93,7 @@ Status: <strong
                         <div class="card-body">
                             <h4 class="m-b-10">{{ isset($campagin_detail->title) ? $campagin_detail->title : '' }}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">
-                                <div class="m-l-1">
-                                    <span class="text-gray font-weight-semibold">Reward:
-                                        <b>{{ isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '' }}</b></span>
-                                    <span class="m-h-5 text-gray">|</span>
+                                <div class="m-l-0">
                                     <span
                                         class="text-gray">{{ isset($campagin_detail->task_type) ? $campagin_detail->task_type : '' }}</span>
                                     @if (isset($campagin_detail->type) && $campagin_detail->type == '1')
@@ -107,6 +104,9 @@ Status: <strong
                                     <span class="m-h-5 text-gray">|</span>
                                     <span class="text-gray">Expire on
                                         {{ isset($campagin_detail->expiry_date) ? App\Helpers\Helper::Dateformat($campagin_detail->expiry_date) : '' }}</span>
+                                    <p class="text-gray font-weight-semibold">Reward:
+                                            <b>{{ $campagin_detail->text_reward ? $campagin_detail->text_reward : (isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '0') }}</b></p>
+                                        
                                 </div>
                             </div>
                             <p class="m-b-20">{!! isset($campagin_detail->description) ? $campagin_detail->description : '' !!}
@@ -329,7 +329,7 @@ Status: <strong
         @endif
     </div>
 
-    @if (isset($user_Campaign->status) && $user_Campaign->status != '3')
+    {{-- @if (isset($user_Campaign->status) && $user_Campaign->status != '3') --}}
         <div class="conversation-footer custom-footer">
             <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
             <ul class="list-inline d-flex align-items-center m-b-0">
@@ -381,7 +381,7 @@ Status: <strong
             </ul>
         </div>
         
-    @endif
+    {{-- @endif --}}
     
     </div>
     </div>

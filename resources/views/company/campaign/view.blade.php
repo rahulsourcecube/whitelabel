@@ -30,7 +30,7 @@
                         <div class="col-md-8">
                             <h4 class="m-b-10">{{ $task->title ?? '' }}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">
-                                <div class="m-l-10">
+                                <div class="m-l-0">
                                     <span class="text-gray font-weight-semibold">
                                         @if ($task->type == '1')
                                             {{ 'Referral' }}
@@ -46,6 +46,9 @@
                                     @endif
                                     <span class="m-h-5 text-gray">|</span>
                                     <span class="text-gray">{{  App\Helpers\Helper::Dateformat($task->expiry_date) ?? '' }}</span>
+                                    <p class="text-gray font-weight-semibold">Reward:
+                                        <b>{{ $task->text_reward ? $task->text_reward : (isset($task->reward) ? \App\Helpers\Helper::getcurrency() . $task->reward : '0') }}</b></p>
+                            
                                 </div>
                             </div>
                             <p class="m-b-20">{!! $task->description !!}</p>
@@ -301,6 +304,6 @@
         }
 
         // Call the refreshPage function as needed, for example, on a button click
-        document.getElementById('refreshButton').addEventListener('click', refreshPage);
+        // document.getElementById('refreshButton').addEventListener('click', refreshPage);
     </script>
 @endsection

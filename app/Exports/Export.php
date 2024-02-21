@@ -32,7 +32,7 @@ class Export implements FromCollection, WithHeadings, WithStyles
             return [
                 "title" => $export->title,
                 "description" => html_entity_decode(strip_tags($export->description)),
-                "reward" => $export->reward,
+                "reward" => $export->text_reward ? $export->text_reward : ($export->reward?:0),
                 "expiry_date" => $export->expiry_date,
             ];
         });
