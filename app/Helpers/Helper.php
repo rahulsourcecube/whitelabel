@@ -356,4 +356,12 @@ class Helper
         $packageData = CompanyPackage::where('company_id', $companyId)->first();
         return $packageData;
     }
+    public static function stripeKey()
+    {
+        $admin = User::where('user_type', '1')->first();; // Fetching the first mail configuration
+        $mailConfig = SettingModel::where('user_id', $admin->id)
+        ->select('stripe_key', 'stripe_secret')
+        ->first();       
+        return $mailConfig;
+    }
 }

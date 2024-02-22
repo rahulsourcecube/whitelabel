@@ -257,6 +257,11 @@ class CompanyLoginController extends Controller
     public function forget()
     {
         try {
+            $getdomain = Helper::getdomain();
+
+            if (!empty($getdomain) && $getdomain == config('app.pr_name')) {
+                return redirect(env('ASSET_URL') . '/company/signup');
+            }
             $siteSetting = Helper::getSiteSetting();
             return view('company.forgetPassword', compact('siteSetting'));
         } catch (Exception $e) {
@@ -269,12 +274,14 @@ class CompanyLoginController extends Controller
     {
         try {
             $companyId = Helper::getCompanyId();
-
-            $userEmail = User::where('company_id', $companyId)
+            $userEmail = User::where('id', $companyId)->where('email', $request->email)->where('user_type', '2')->first();
+            if(empty($userEmail)){
+                $userEmail = User::where('company_id', $companyId)
                 ->where('email', $request->email)
-                ->whereIn('user_type', ['2', '3'])
-                ->first();
-
+                ->where('user_type', '3')
+                ->first();           
+            }
+          
             if (empty($userEmail)) {
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
             }

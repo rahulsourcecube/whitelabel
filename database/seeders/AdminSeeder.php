@@ -30,6 +30,7 @@ class AdminSeeder extends Seeder
             'password' => Hash::make('Admin@2023'),
             'view_password' => 'Admin@2023',
             'user_type' => '1',
+         
         ]);
 
         $setting = SettingModel::create([
@@ -41,6 +42,15 @@ class AdminSeeder extends Seeder
             'twitter_link' => 'https://www.Twitter.com',
             'linkedin_link' => 'https://www.linkedin.com',
             'user_id' => $admin->id,
+            'mail_mailer'=>'smtp',
+            'mail_host'=>'smtp.gmail.com',
+            'mail_port'=>'587',
+            'mail_username'=>'makrubiyajaynish7500@gmail.com',
+            'mail_password'=>'ypjdxlyfhfkahvex',
+            'mail_encryption'=>'tls',
+            'mail_address'=>'user@gmail.com',
+            'stripe_key' => 'pk_test_51Mo53GSF7jse029jEgWM9ZxB9dCsBccGMzSykWfF2QDVI3mg2mhSMO3eBiYoXUiNFycNxLh0rAODKPQbX46WvpVq00g9xdcNPf',
+            'stripe_secret' => 'sk_test_51Mo53GSF7jse029jHMjdSJqH60MGgJZTO056vmY690KRkjdA2AtniAV9qJH4zcMaZTuVg8flAjGWVbTsSu7z1qrD00tKIJTDPd',
         ]);
         $package = PackageModel::create([
             'title' => 'Company',

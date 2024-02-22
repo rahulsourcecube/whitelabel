@@ -599,6 +599,11 @@ class UsrController extends Controller
     public function forget(Request $request)
     {
         try {
+            $getdomain = Helper::getdomain();
+
+            if (!empty($getdomain) && $getdomain == config('app.pr_name')) {
+                return redirect(env('ASSET_URL') . '/company/signup');
+            }
 
             $siteSetting = Helper::getSiteSetting();
 

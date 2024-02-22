@@ -58,14 +58,16 @@ class PackageController extends Controller
     public function buy(Request $request)
     {
         try {
+            $stripe="null";
+            $stripe = Helper::stripeKey();
             $package = PackageModel::where('id', $request->package_id)->first();
             if (empty($package)) {
                 return redirect()->back()->with('error', 'Package not found');
             }
             if ($package->price != 0) {
                 try {
-                    StripeStripe::setApiKey(env('STRIPE_SECRET'));
-                    $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+                    StripeStripe::setApiKey($stripe->stripe_secret);
+                    $stripe = new \Stripe\StripeClient($stripe->stripe_secret);
 
                     $stripe->paymentIntents->create([
                         'amount' => $package->price * 100,
@@ -127,8 +129,9 @@ class PackageController extends Controller
     public function stripePost(Request $request)
     {
         try {
-            StripeStripe::setApiKey(env('STRIPE_SECRET'));
-            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+            $stripe = Helper::stripeKey();
+            StripeStripe::setApiKey($stripe->stripe_secret);
+            $stripe = new \Stripe\StripeClient($stripe->stripe_secret);
             $stripe->paymentIntents->create([
                 'amount' => 50 * 100,
                 'currency' => 'usd',

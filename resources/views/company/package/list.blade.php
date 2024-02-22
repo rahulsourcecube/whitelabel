@@ -204,7 +204,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
     <script src="https://js.stripe.com/v3/"></script>
     <script>
         Stripe.setPublishableKey(
-            "{{ env('STRIPE_KEY') }}"
+            "{{ config('app.stripe_key')  }}"
         );
 
     </script>
@@ -324,14 +324,14 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
             , }
             , submitHandler: function(form, e) {
                 Stripe.setPublishableKey(
-                    "{{ env('STRIPE_KEY') }}"
+                    "{{ config('app.stripe_key')  }}"
                 );
 
                 $form.on('submit', function(e) {
                     if (!$form.data('cc-on-file')) {
                         e.preventDefault();
                         Stripe.setPublishableKey($form.data(
-                            "{{ env('STRIPE_KEY') }}"
+                            "{{ config('app.stripe_key')  }}"
                         ));
                         Stripe.createToken({
                             number: $('.card-number').val()

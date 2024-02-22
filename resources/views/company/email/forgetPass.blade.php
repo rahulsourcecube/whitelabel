@@ -11,4 +11,3 @@
     <p>Thank you</p>
 </body>
 </html>
-<?php exit;?>
