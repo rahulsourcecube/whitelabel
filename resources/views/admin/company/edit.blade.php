@@ -164,9 +164,9 @@
                                                     </div>
                                                     <div class="form-group col-md-4">
                                                         <label for="cdomainname">Company Domain</label>
-                                                        <input type="text" class="form-control mb-2" name=""
+                                                        <input type="text" class="form-control mb-2" name="" 
                                                             id=""
-                                                            value="{{ !empty($user_company->subdomain) ? $user_company->subdomain : 'my.whitelabel.com' }}"
+                                                            value="{{ !empty($user_company->subdomain) ? $user_company->subdomain : "" }}"
                                                             readonly>
                                                     </div>
                                                     <div class="form-group col-md-4">

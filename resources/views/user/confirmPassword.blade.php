@@ -32,11 +32,13 @@
                             <div class="card shadow-lg">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
+                                        <a href="{{!empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : "" }} "  {{!empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : "" }}>
                                         <img  style="width: 130px ; hight:50px" src="@if (
                                             !empty($siteSetting) &&
                                                 !empty($siteSetting->logo) &&
                                                 file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
                                             alt="Logo">
+                                        </a>
                                         <h2 class="m-b-0">Confirm Password</h2>
                                     </div>
                                     <form id="fromData" action="{{ route('user.reset-password') }}" method="POST">

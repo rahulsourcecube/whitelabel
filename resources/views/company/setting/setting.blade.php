@@ -74,14 +74,17 @@
                             <label for="leader_image">Logo</label>
                             <input type="file" class="form-control" name="logo" id="logofiles"
                                 accept=".png, .jpg, .jpeg">
-                            <div class="form-row">
-                                <div class="form-group col-md-3  mt-2">
-                                    <img id="logoimagePreviews"
-                                        src="{{ !empty($setting) && $setting->logo ?  env('ASSET_URL').'/uploads/setting/' . $setting->logo : '' }}"
-                                        alt="Logo Preview" class="img-reposive w-100">
-                                    <!-- <button type="button" id="logodeleteImageButtons" class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button> -->
-                                </div>
-                            </div>
+                                
+                              
+                                    <div class="form-row">
+                                        <div class="form-group col-md-3  mt-2">
+                                            <img id="logoimagePreviews"
+                                                src="{{ !empty($setting) && $setting->logo && file_exists(base_path("/uploads/setting/".$setting->logo)) ?  asset('/uploads/setting/' . $setting->logo) : '' }}"
+                                                alt="Logo Preview" class="img-reposive w-100">
+                                            <!-- <button type="button" id="logodeleteImageButtons" class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button> -->
+                                        </div>
+                                    </div>
+                               
                         </div>
                         <div class="form-group col-md-4">
                             <label for="leader_image">Favicon</label>
@@ -90,11 +93,16 @@
                             <div class="form-row">
                                 <div class="form-group col-md-1 mt-2">
                                     <img id="imagePreviews"
-                                        src="{{ !empty($setting) && $setting->favicon ? env('ASSET_URL').'/uploads/setting/' . $setting->favicon : '' }}"
+                                        src="{{ !empty($setting) && $setting->favicon && file_exists(base_path("/uploads/setting/".$setting->favicon)) ? env('ASSET_URL').'/uploads/setting/' . $setting->favicon : '' }}"
                                         alt="Favicon Icon Preview" class="img-reposive w-100">
                                     <!-- <button type="button" id="deleteImageButtons" class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button> -->
                                 </div>
                             </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="l_link">Logo Link</label>
+                            <input type="url" class="form-control mb-2" name="logo_link" id="l_link"
+                                placeholder="Logo Link" value="{{ !empty($setting) ? $setting->logo_link : '' }}">
                         </div>
                     </div>
                     @can('general-setting-create')

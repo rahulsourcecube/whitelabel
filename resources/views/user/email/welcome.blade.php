@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>White label</title>
+    <title>Referdio</title>
 
 </head>
 
@@ -68,7 +68,7 @@
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                             valign="top"><br><br>
                                             We just heard an awesome new person became a part of our team!<br><br>
-                                            Welcome to the {{ isset($mail->title) ? $mail->title : 'White Label' }} !
+                                            Welcome to the {{ isset($mail->title) ? $mail->title : 'Referdio' }} !
                                         </td>
                                     </tr>
                                     <tr
@@ -77,7 +77,7 @@
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                             valign="top"><br>
                                             &mdash; <b>Team </b> -
-                                            {{ isset($mail->title) ? $mail->title : 'White Label' }}
+                                            {{ isset($mail->title) ? $mail->title : 'Referdio' }}
                                         </td>
                                     </tr>
                                 </table>

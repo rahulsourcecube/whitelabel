@@ -39,7 +39,7 @@
                             @enderror
                         </div> --}}
                         <div class="col-md-6">
-                            <div class="int-reward w-80">
+                            <div class="int-reward w-100">
                                 <label for="reward"> Reward <span class="error">*</span></label>
                                 <div class="input-group">
                                     <div class="input-group-append">
@@ -55,7 +55,7 @@
                                     <label id="reward-error" class="error" for="reward"></label>
                                 @enderror
                             </div>
-                            <div class="custom-reward-text w-80" style="display: none;">
+                            <div class="custom-reward-text w-100" style="display: none;">
                                 <label for="text_reward"> Custom Reward Title <span class="error">*</span></label>
                                 <input type="text" name="text_reward" class="form-control" id="text_reward" maxlength="250" required>
                                 @error('text_reward')
@@ -64,7 +64,7 @@
                                     <label id="text_reward-error" class="error" for="text_reward"></label>
                                 @enderror
                             </div>
-                            <div class="custom-reward-chk w-20  mt-2">
+                            <div class="custom-reward-chk w-100  mt-2">
                                 <label for="custom_reward_chk"> Custom Reward</label>
                                 <input type="checkbox" name="custom_reward_chk" id="custom_reward_chk" value="1">
                             </div>

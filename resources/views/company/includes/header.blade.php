@@ -1,12 +1,11 @@
 <div class="header">
     <div class="logo logo-dark">
-        <a href="{{ route('company.dashboard') }}">
+        <a href="{{!empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : route('company.dashboard') }} "  {{!empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : "" }}>
             <img  style="width: 130px ; hight:50px" src="@if (
                 !empty($siteSetting) &&
                     !empty($siteSetting->logo) &&
                     file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
                 alt="Logo">
-           
         </a>
     </div>
     <div class="logo logo-white">

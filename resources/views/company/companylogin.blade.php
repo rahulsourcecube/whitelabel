@@ -28,11 +28,13 @@
         <div class="container-fluid">
             <div class="d-flex full-height p-v-15 flex-column justify-content-between">
                 <div class="d-none d-md-flex p-h-40">
+                    <a href="{{!empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : "" }} "  {{!empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : "" }}>
                     <img  style="width: 130px ; hight:50px" src="@if (
                         !empty($siteSetting) &&
                             !empty($siteSetting->logo) &&
                             file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
                         alt="Logo">
+                    </a>
                 </div>
                 <div class="container">
                     <div class="row align-items-center">
@@ -136,3 +138,9 @@
 </body>
 
 </html>
+
+<script>
+    setTimeout(function() {
+        $(".alert").remove();
+    }, 5000); // 5 secs
+</script>

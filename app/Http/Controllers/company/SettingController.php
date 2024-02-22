@@ -88,6 +88,7 @@ class SettingController extends Controller
             $SettingModel->facebook_link = $request->facebook_link;
             $SettingModel->twitter_link = $request->twitter_link;
             $SettingModel->linkedin_link = $request->linkedin_link;
+            $SettingModel->logo_link = $request->logo_link;
             $SettingModel->save();
             return redirect()->route('company.setting.index')->with('success', 'Setting Update successfully');
          }

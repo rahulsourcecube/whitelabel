@@ -47,12 +47,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome White Lable</h1>
+        <h1>Welcome Referdio</h1>
         <p>Hi @if(!empty($userName)) {{ $userName }} @endif,</p>
         <p>Congratulations! I would like to extend a warm welcome to you behalf of the Company</p>
 
         <br><br>
-        <b>White Lable Team</b>
+        <b>Referdio Team</b>
     </div>
 </body>
 </html>

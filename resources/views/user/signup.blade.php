@@ -39,11 +39,13 @@
                                 <div class="card-body">
                                     @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
-                                        <img  style="width: 130px ; hight:50px" src="@if (
-                                        !empty($siteSetting) &&
-                                            !empty($siteSetting->logo) &&
-                                            file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
-                                        alt="Logo">
+                                        <a href="{{!empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : "" }} "  {{!empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : "" }}>
+                                            <img  style="width: 130px ; hight:50px" src="@if (
+                                            !empty($siteSetting) &&
+                                                !empty($siteSetting->logo) &&
+                                                file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
+                                            alt="Logo">
+                                        </a>
                                         <h2 class="m-b-0">Signup</h2>
                                     </div>
                                     <form id="fomData" action="{{ route('user.store') }}" method="POST">
