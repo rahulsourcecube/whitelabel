@@ -233,7 +233,7 @@ class CompanyLoginController extends Controller
 			 try {
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
-                $subject = 'Welcome Mail';
+                $subject = 'Welcome To ' . $SettingValue->title?:env('APP_NAME');
                 $message = '';
                 if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
                     SendEmailJob::dispatch($to, $subject, $message, $userName,'','company');
@@ -293,7 +293,7 @@ class CompanyLoginController extends Controller
 
             $token = Str::random(64);
             try {
-                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email], function ($message) use ($request) {
+                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email , 'name' => $userEmail->FullName], function ($message) use ($request) {
                     $message->to($request->email);
                     $message->subject('Reset Password');
                 });

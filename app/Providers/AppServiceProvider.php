@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
                     Config::set('mail.port', $mailConfig->mail_port);
                     Config::set('mail.username', $mailConfig->mail_username);
                     Config::set('mail.password', $mailConfig->mail_password);
-                    Config::set('mail.name', config('app.pr_name'));
+                    Config::set('mail.from.name', $mailConfig->title);
                     // You can set other mail configuration values here as well
                 }
                 $stripe = Helper::stripeKey();

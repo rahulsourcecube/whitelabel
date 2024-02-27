@@ -46,10 +46,10 @@
                                             <div class="d-none d-md-flex p-h-40">
                                                 @if (isset($mail) && !empty($mail->logo) && file_exists('uploads/setting/' . $mail->logo))
                                                     <img src="{{ asset('uploads/setting/' . $mail->logo) }}"
-                                                        style="height: 55px;width: 125px;">
+                                                        style="width: 125px;">
                                                 @else
                                                     <img src="{{ asset('assets/images/logo/logo.png') }}"
-                                                        style="height: 55px;width: 125px;" alt="">
+                                                        style="width: 125px;" alt="">
                                                 @endif
                                             </div>
                                         </td>
@@ -59,16 +59,15 @@
                                         <td class="content-block"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                             valign="top"><br><br>
-                                            Welcome ,
+                                            Hello {{ $name }} ,
                                         </td>
                                     </tr>
                                     <tr
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="content-block"
                                             style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
-                                            valign="top">
-                                            Forget Password Email
-                                            <br><br>
+                                            valign="top">                                         
+                                            
                                             You can reset password by clicking below link:<br><br>
                                             <a href="{{ route('user.confirmPassword', $token) }}" class="btn-primary"
                                                 itemprop="url"

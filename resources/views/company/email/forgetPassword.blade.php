@@ -1,53 +1,112 @@
+
 <!DOCTYPE html>
 <html lang="en">
+  <?php
+  use App\Models\SettingModel;
+  $mail = SettingModel::first();
+ 
+  ?>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #F4F4F4;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 20px auto;
-      background-color: #FFFFFF;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    h1 {
-      color: #333333;
-    }
-    p {
-      color: #555555;
-    }
-    .cta-button {
-      display: inline-block;
-      padding: 10px 20px;
-      text-decoration: none;
-      background-color: #4CAF50;
-      color: #FFFFFF;
-      border-radius: 4px;
-    }
-    .footer {
-      margin-top: 20px;
-      color: #777777;
-      font-size: 12px;
-    }
-  </style>
+    <meta charset="utf-8" />
+    <title>Referdio</title>
+
 </head>
-<body>
-  <div class="container">
-    <h1>Forgot Your Password?</h1>
-    <p>Hi {{ $email}},</p>
-    <p>We received a request to reset the password associated with this email address. If you made this request, please click the button below to reset your password:</p>
-    <a href="{{ route('company.confirmPassword', $token) }}" class="cta-button">Reset Password</a>
-    <br><br><br>
-    <p>If you did not request to reset your password, please ignore this email. Your password will remain unchanged.</p>
-    <p>If you have any questions or need assistance, feel free to contact our support team.</p>
-  </div>
+
+<body
+    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; background-color: #f6f6f6; margin: 0;"
+    bgcolor="#f6f6f6">
+
+
+    
+
+    <table class="body-wrap"
+        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: #f6f6f6; margin: 0;"
+        bgcolor="#f6f6f6">
+        <tr
+            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+            <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
+                valign="top"></td>
+            <td class="container" width="600"
+                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; display: block !important; max-width: 600px !important; clear: both !important; margin: 0 auto;"
+                valign="top">
+                <div class="content"
+                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; max-width: 600px; display: block; margin: 0 auto; padding: 20px;">
+                    <table class="main" width="100%" cellpadding="0" cellspacing="0" itemprop="action" itemscope
+                        itemtype="http://schema.org/ConfirmAction"
+                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; border-radius: 3px; margin: 0; border: none;">
+                        <tr
+                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                            <td class="content-wrap"
+                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;padding: 30px;border: 3px solid #5d6dc3; display: inline-block; border-radius: 7px; background-color: #fff;"
+                                valign="top">
+                                <meta itemprop="name" content="Confirm Email"
+                                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;" />
+                                <table width="100%" cellpadding="0" cellspacing="0"
+                                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                    <tr>
+                                        <td style="text-align: center">
+                                            <div class="d-none d-md-flex p-h-40">
+                                                @if (isset($mail) && !empty($mail->logo) && file_exists('uploads/setting/' . $mail->logo))
+                                                    <img src="{{ asset('uploads/setting/' . $mail->logo) }}"
+                                                        style="width: 125px;">
+                                                @else
+                                                    <img src="{{ asset('assets/images/logo/logo.png') }}"
+                                                        style="width: 125px;" alt="">
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr
+                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                        <td class="content-block"
+                                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                            valign="top"><br><br>
+                                           <b>Hello {{ $name }},</b>
+                                        </td>
+                                    </tr>
+                                    <tr
+                                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                    <td class="content-block"
+                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                        valign="top">
+                                        <p>We received a request to reset the password associated with this email address. If you made this request, please click the button below to reset your password:</p>
+                                    </td>
+                                </tr>
+                                    <tr
+                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                        <td class="content-block"
+                                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                            valign="top">                                         
+                                            
+                                            You can reset password by clicking below link:<br><br>
+                                            <a href="{{ route('company.confirmPassword', $token) }}" class="cta-button"
+                                                itemprop="url"
+                                                style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 5px; text-transform: capitalize; background: linear-gradient(to top, #5d6dc3, #3c86d8); margin: 0;  padding: 8px 16px;">Reset
+                                                Password</a>                                            
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                       <td> <p>If you did not request to reset your password, please ignore this email. Your password will remain unchanged.</p>
+                                        <p>If you have any questions or need assistance, feel free to contact our support team.</p></td>
+                                    </tr>
+                                    <tr
+                                        style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
+                                        <td class="content-block pb-0"
+                                            style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
+                                            valign="top"><br>
+                                            &mdash; <b>Team </b> -
+                                            {{ isset($mail->title) ? $mail->title : 'Referdio' }}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+            <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
+                valign="top"></td>
+        </tr>
+    </table>
 </body>
 </html>

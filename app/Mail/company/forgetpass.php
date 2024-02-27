@@ -35,7 +35,7 @@ class forgetpass extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from ItSolutionStuff.com')
+        return $this->subject('Mail from Referdio.com')
                     ->view('company.email.forgetpass');
     }
 }

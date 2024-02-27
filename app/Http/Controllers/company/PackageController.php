@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Company;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\User;
 use App\Models\CompanyPackage;
 use App\Models\PackageModel;
 use App\Models\Payment;
+use App\Models\User as ModelsUser;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Session;
@@ -57,27 +59,67 @@ class PackageController extends Controller
 
     public function buy(Request $request)
     {
+        $jsonResponse = [];
+        $jsonResponse['success'] = false;
+        $jsonResponse['message'] = 'Something went wrong.';
         try {
-            $stripe="null";
-            $stripe = Helper::stripeKey();
+            $stripeData = Helper::stripeKey();
             $package = PackageModel::where('id', $request->package_id)->first();
             if (empty($package)) {
                 return redirect()->back()->with('error', 'Package not found');
             }
             if ($package->price != 0) {
                 try {
-                    StripeStripe::setApiKey($stripe->stripe_secret);
-                    $stripe = new \Stripe\StripeClient($stripe->stripe_secret);
+                    $stripe = new \Stripe\StripeClient($stripeData->stripe_secret);
 
-                    $stripe->paymentIntents->create([
-                        'amount' => $package->price * 100,
-                        'currency' => 'usd',
-                        'description' => $package->title,
-                        'payment_method_types' => ['card'],
+                    $user = ModelsUser::find(Auth::user()->id);
+
+                    if ($user->stripe_client_id == '' || $user->stripe_client_id == NULL) {
+                        $response = $stripe->customers->create([
+                            'name' => $user->first_name . ' ' .  $user->last_name,
+                            'email' => $user->email,
+                        ]);
+                        if (isset($response) && isset($response->id)) {
+                            $user->stripe_client_id = $response->id;
+                            $user->save();
+                        }
+                    }
+                    $paymentMethods = $stripe->paymentMethods->create([
+                        'type' => 'card',
+                        'card' => [
+                            'token' => $request->stripeToken,
+                        ],
                     ]);
+
+                    $payment_intent = $stripe->paymentIntents->create([
+                        'amount' =>  $package->price * 100,
+                        'currency' => 'USD',
+                        'customer' => $user->stripe_client_id,
+                        'payment_method' => $paymentMethods->id,
+                    ]); 
+                          
+                    $jsonResponse[ 'client_secret'] = $payment_intent->client_secret;
+                    $jsonResponse[ 'payment_intente'] = $payment_intent->id;
+                    
+                    // StripeStripe::setApiKey($stripe->stripe_secret);
+                    // $stripe = new \Stripe\StripeClient($stripe->stripe_secret);
+
+                    // $stripe->paymentIntents->create([
+                    //     'amount' => $package->price * 100,
+                    //     'currency' => 'usd',
+                    //     'description' => $package->title,
+                    //     'payment_method_types' => ['card'],
+                    // ]);
+
                 } catch (Exception $e) {
                     Log::error('PackageController::Buy => ' . $e->getMessage());
-                    return redirect()->back()->with('error', "Error : " . $e->getMessage());
+                    if (str_contains($e->getMessage(), 'No such destination:')) {
+                        $jsonResponse['message'] =  "Stripe Account Not Activeted !" ;
+                        return response()->json($jsonResponse);
+                    }
+                    Log::info("Buy package action API Error: " . $e->getMessage());
+                    $jsonResponse['message'] =  "Error : " . $e->getMessage();
+                    return response()->json($jsonResponse);
                 }
             }
 
@@ -108,21 +150,27 @@ class PackageController extends Controller
                 $makePayment->amount = $addPackage->price;
                 $makePayment->name_on_card = $request->name_on_card ?? '';
                 $makePayment->card_number = $request->card_number ?? '';
+                $makePayment->client_secret = !empty($jsonResponse['client_secret']) ? $jsonResponse['client_secret']: '';
+                $makePayment->payment_intente = !empty($jsonResponse['payment_intente']) ? $jsonResponse['payment_intente']: '';
                 $expiryDate = explode('/', $request->expiry_date) ?? '';
-                $makePayment->card_expiry_month = $request->card_expiry_month ?? '';
-                $makePayment->card_expiry_year = $request->card_expiry_year ?? '';
-                $makePayment->card_cvv = $request->card_cvv ?? '';
+                // $makePayment->card_expiry_month = $request->card_expiry_month ?? '';
+                // $makePayment->card_expiry_year = $request->card_expiry_year ?? '';
+                // $makePayment->card_cvv = $request->card_cvv ?? '';
                 $makePayment->zipcode = $request->zipcode ?? '';
                 $makePayment->save();
 
                 $addPackage->update(['paymnet_id' => $makePayment->id]);
-                return redirect()->back()->with('success', 'Package activated successfully!');
-            } else {
-                return redirect()->back()->with('error', 'Something went wrong, please try again later!');
+                //return redirect()->back()->with('success', 'Package activated successfully!');
+                
+                $jsonResponse['success'] = true;
+                $jsonResponse['message'] =  "Package purchased successfully!" ;
             }
+            return response()->json($jsonResponse);
         } catch (Exception $e) {
             Log::error('PackageController::Buy => ' . $e->getMessage());
-            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+            $jsonResponse['message'] =  "Error : " . $e->getMessage();
+            return response()->json($jsonResponse);
+            //return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 

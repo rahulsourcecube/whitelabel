@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendEmailJob;
-
-
+use App\Models\SettingModel;
 
 class UsrController extends Controller
 {
@@ -564,17 +563,21 @@ class UsrController extends Controller
             $userRegister->referral_user_id = !empty($user_id) ? $user_id : null;
             $userRegister->package_id = $ActivePackageData->id;
 
-            // try {
+            try {
+                $SettingValue = SettingModel::where('id',$companyId)->first();
+                
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
-                $subject = 'Welcome Mail';     
+                $subject = 'Welcome To '. $SettingValue->title?:env('APP_NAME');     
                 $message = '';  
                 $type=  "user";     
                 if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
                      $data =  ['user' => $userRegister, 'first_name' => $request->first_name]; 
                         SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type);
                  }
-          
+            } catch (Exception $e) {
+                Log::error('UsrController::Store => ' . $e->getMessage());
+            }
           
 
             // try {
@@ -627,7 +630,7 @@ class UsrController extends Controller
             $token = Str::random(64);
 
             try {
-                Mail::send('user.email.forgetPassword', ['token' => $token], function ($message) use ($request) {
+                Mail::send('user.email.forgetPassword', ['token' => $token , 'name' => $userEmail->FullName ], function ($message) use ($request) {
                     $message->to($request->email);
                     $message->subject('Reset Password');
                 });

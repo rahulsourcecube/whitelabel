@@ -34,7 +34,7 @@ class CompanyWelcomeMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from Referdio')
+        return $this->subject('Welcome To Referdio')
             ->view('company.email.company_welcome');
     }
 }
