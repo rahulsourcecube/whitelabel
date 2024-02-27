@@ -10,7 +10,8 @@ $user = Auth::user();
 $isActivePackage = App\Helpers\Helper::isActivePackage();
 use App\Models\Notification;
 
-$notificationCount = Notification::where('company_id', $user->id)
+$companyId = App\Helpers\Helper::getCompanyId();   
+$notificationCount = Notification::where('company_id', $companyId)
 ->where('is_read', '0')
 ->where('type', '2')
 ->get();
@@ -182,11 +183,9 @@ $notificationCount = Notification::where('company_id', $user->id)
                     </span>
                     <span class="title">Notification </span>
                     @if ($notificationCount->count() != 0)
-                    <i class="fa-solid fa-circle" style="color: #ff0000;font-size: 16px;">
-                        <span style="margin-left: -11px;color: white;font-size: 12px;position: absolute;margin-top: 3px;">
+                        <span class="badge badge-pill badge-danger">
                             {{ isset($notificationCount) ? $notificationCount->count() : 0 }}
                         </span>
-                    </i>
                     @endif
                 </a>
             </li>

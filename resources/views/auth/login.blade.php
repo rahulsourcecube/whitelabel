@@ -30,12 +30,14 @@
                                     <i class="uil uil-times me-2"></i>
                                     {!! \Session::get('success') !!}
                                 </div>
+                                {{ \Session::forget('success') }}
                                 @endif
                                 @if (\Session::has('error'))
                                 <div class="alert alert-danger alert-dismissible fade show error" style="margin-top: 17px;}" role="alert">
                                     <i class="uil uil-times me-2"></i>
                                     {!! \Session::get('error') !!}
                                 </div>
+                                {{ \Session::forget('error') }}
                                 @endif
                                 <p class="m-b-30">Enter your credential to get access</p>
                                 <form method="POST" action="{{ route('login') }}">
@@ -90,3 +92,9 @@
 </body>
 
 </html>
+
+<script>
+    setTimeout(function() {
+        $(".alert").remove();
+    }, 5000); // 5 secs
+</script>

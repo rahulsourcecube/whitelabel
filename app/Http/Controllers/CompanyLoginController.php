@@ -165,7 +165,9 @@ class CompanyLoginController extends Controller
             if (!empty($getdomain) && $getdomain != config('app.pr_name')) {
                 return redirect(env('ASSET_URL') . '/company/signup');
             }
-            $siteSetting = Helper::getSiteSetting();
+            $user = user::where('user_type', '1' )->first();
+            $siteSetting = SettingModel::where('user_id', $user->id)->first();
+         
             return view('company.signup', compact('siteSetting'));
         } catch (Exception $e) {
             Log::error('CompanyLoginController::Signup => ' . $e->getMessage());
@@ -181,7 +183,6 @@ class CompanyLoginController extends Controller
             ]);
             $input = $request->all();
             $input['dname'] = strtolower($input['dname']);
-
             $useremail = User::where('email', $request->email)->where('user_type', '2')->first();
             if (!empty($useremail)) {
                 return redirect()->back()->with('error', 'Email is already registered!!')->withInput();
@@ -194,7 +195,6 @@ class CompanyLoginController extends Controller
             if (!empty($subdomain)) {
                 return redirect()->back()->with('error', 'Subdomain is already registered!!')->withInput();
             }
-
             $user = new User();
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;
@@ -204,19 +204,6 @@ class CompanyLoginController extends Controller
             $user->contact_number = $request->ccontact;
             $user->user_type = '2';
             $user->save();
-
-            try {
-                $userName  = $request->fname . ' ' . $request->lname;
-                $to = $request->email;
-                $subject = 'Welcome Mail';
-                $message = '';
-                if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-                    SendEmailJob::dispatch($to, $subject, $message, $userName);
-                }
-            } catch (Exception $e) {
-                Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
-            }
-
             if (isset($user)) {
                 $compnay = new CompanyModel();
                 $compnay->user_id = $user->id;
@@ -232,15 +219,33 @@ class CompanyLoginController extends Controller
                 ]);
                 $role = Role::where('name', 'Company')->first();
                 $user->assignRole([$role->id]);
+
+                $userAdmin = user::where('user_type','1')->first();
+                $SettingValue = SettingModel::where('id',$userAdmin->id)->first();
+
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
+                $settingModel->logo = $SettingValue->logo;
+                $settingModel->favicon = $SettingValue->favicon;
                 $settingModel->title = $request->cname;
                 $settingModel->save();
             }
+			 try {
+                $userName  = $request->fname . ' ' . $request->lname;
+                $to = $request->email;
+                $subject = 'Welcome To ' . $SettingValue->title?:env('APP_NAME');
+                $message = '';
+                if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
+                    SendEmailJob::dispatch($to, $subject, $message, $userName,'','company');
+                }
+            } catch (Exception $e) {
+                Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
+            }
+			
             return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
             /*if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == '2') {
-                    //$domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']); 
+                    //$domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']);
                     return redirect($request->getScheme() .'://' . $request->dname .'.'. $request->getHost().'/company/dashboard');
                 } else {
                     return redirect()->back()->with('error', 'These credentials do not match our records.');
@@ -257,6 +262,11 @@ class CompanyLoginController extends Controller
     public function forget()
     {
         try {
+            $getdomain = Helper::getdomain();
+
+            if (!empty($getdomain) && $getdomain == config('app.pr_name')) {
+                return redirect(env('ASSET_URL') . '/company/signup');
+            }
             $siteSetting = Helper::getSiteSetting();
             return view('company.forgetPassword', compact('siteSetting'));
         } catch (Exception $e) {
@@ -269,19 +279,21 @@ class CompanyLoginController extends Controller
     {
         try {
             $companyId = Helper::getCompanyId();
-
-            $userEmail = User::where('company_id', $companyId)
+            $userEmail = User::where('id', $companyId)->where('email', $request->email)->where('user_type', '2')->first();
+            if(empty($userEmail)){
+                $userEmail = User::where('company_id', $companyId)
                 ->where('email', $request->email)
-                ->whereIn('user_type', ['2', '3'])
-                ->first();
-
+                ->where('user_type', '3')
+                ->first();           
+            }
+          
             if (empty($userEmail)) {
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
             }
 
             $token = Str::random(64);
             try {
-                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email], function ($message) use ($request) {
+                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email , 'name' => $userEmail->FullName], function ($message) use ($request) {
                     $message->to($request->email);
                     $message->subject('Reset Password');
                 });

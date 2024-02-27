@@ -134,7 +134,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                         <i class="anticon anticon-close"></i>
                     </button>
                 </div>
-                <form action="{{ route('company.package.buy') }}" method="POST" id="package-payment-form">
+                <form action="{{ route('company.package.buy') }}" method="POST" id="package-payment-form" data-cc-on-file="false" data-stripe-publishable-key="{{ config('app.stripe_key') }}">
                     @csrf
                     <input type="hidden" name="package_id" value="">
                     <div class="modal-body">
@@ -166,7 +166,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                                 <div class="round-form-group">
                                     <label class="paymenttab-label content-para">CVV
                                         Code</label>
-                                    <input type="text" class="form-control round-input remove-arrow card-cvv" placeholder="123" name="cvv_code" size="3" maxlength="3" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                    <input type="text" class="form-control round-input remove-arrow card-cvc" placeholder="123" name="cvv_code" size="3" maxlength="3" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                     <label class="error" id="cvv_code-error"></label>
                                 </div>
                             </div>
@@ -174,7 +174,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                                 <div class="round-form-group">
                                     <label class="paymenttab-label content-para">Name on
                                         Card</label>
-                                    <input type="text" class="form-control round-input remove-arrow" placeholder="Name On Card" name="name_on_card" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123) || (event.charCode==32)">
+                                    <input type="text" class="form-control round-input remove-arrow name_on_card" placeholder="Name On Card" name="name_on_card" id="name_on_card" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123) || (event.charCode==32)">
                                     <label class="error" id="name_on_card-error"></label>
                                 </div>
                             </div>
@@ -182,7 +182,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                                 <div class="round-form-group">
                                     <label class="paymenttab-label content-para">Zip
                                         Code</label>
-                                    <input type="text" class="form-control round-input remove-arrow" placeholder="123456" name="zipcode" onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="6">
+                                    <input type="text" class="form-control round-input remove-arrow zipcode" placeholder="123456" id="zipcode" name="zipcode" onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="6">
                                     <label class="error" id="zipcode-error"></label>
                                 </div>
                             </div>
@@ -201,10 +201,10 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
 
     @endsection
     @section('js')
-    <script src="https://js.stripe.com/v3/"></script>
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
     <script>
         Stripe.setPublishableKey(
-            "{{ env('STRIPE_KEY') }}"
+            "{{ config('app.stripe_key')  }}"
         );
 
     </script>
@@ -322,26 +322,24 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                     required: "Please enter zip code"
                 }
             , }
-            , submitHandler: function(form, e) {
+            ,   submitHandler: function(form, e) { 
+                e.preventDefault();
                 Stripe.setPublishableKey(
-                    "{{ env('STRIPE_KEY') }}"
+                    "{{ config('app.stripe_key')  }}"
                 );
-
-                $form.on('submit', function(e) {
-                    if (!$form.data('cc-on-file')) {
-                        e.preventDefault();
-                        Stripe.setPublishableKey($form.data(
-                            "{{ env('STRIPE_KEY') }}"
-                        ));
-                        Stripe.createToken({
-                            number: $('.card-number').val()
-                            , cvc: $('.card-cvc').val()
-                            , exp_month: $('.card-expiry-month').val()
-                            , exp_year: $('.card-expiry-year').val()
-                        }, stripeResponseHandler);
-                    }
-                });
-
+                var $form = $("#package-payment-form");
+                if (!$form.data('cc-on-file')) {
+                    
+                    // Stripe.setPublishableKey($form.data(
+                    //     "{{ config('app.stripe_key')  }}"
+                    // ));
+                    Stripe.createToken({
+                        number: $('.card-number').val()
+                        , cvc: $('.card-cvc').val()
+                        , exp_month: $('.card-expiry-month').val()
+                        , exp_year: $('.card-expiry-year').val()
+                    }, stripeResponseHandler);
+                }
                 function stripeResponseHandler(status, response) {
                     if (response.error) {
                         $('.error')
@@ -355,26 +353,43 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                         $form.find('input[type=text]').empty();
                         $form.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
                         console.log(token);
-                        $form.get(0).submit();
+                        $.ajax({
+                            type: "POST"
+                            , url: $(form).attr('action')
+                            , data: $("#package-payment-form").serialize()
+                            , success: function(response) {
+                                if (response.success) {
+                                    var stripe = Stripe('{{ config('app.stripe_key') }}');
+
+                                    stripe.confirmCardPayment(response.payment_intente, {
+                                        payment_method: {
+                                            card: $('.card-number').val(),
+                                        }
+                                    }).then(function(result) {
+                                        if (result.error) {
+                                            console.error(result.error.message);
+                                            alert(result.error.message);
+                                        } else {
+                                            console.log(result);
+                                            // alert(result);
+                                            showSuccessAlert();    
+                                        }
+                                    });
+                                
+                                } else {
+                                    Swal.fire({
+                                        text: response.message
+                                        , icon: "error"
+                                        , button: "Ok"
+                                    , });
+                                }
+                            }
+                        });
+                        
                     }
                 }
-                e.preventDefault();
-                $.ajax({
-                    type: "POST"
-                    , url: $(form).attr('action')
-                    , data: $(form).serialize()
-                    , success: function(response) {
-                        if (response.success == true) {
-                            showSuccessAlert();
-                        } else {
-                            Swal.fire({
-                                text: response.message
-                                , icon: "error"
-                                , button: "Ok"
-                            , });
-                        }
-                    }
-                });
+
+                
             }
         });
 

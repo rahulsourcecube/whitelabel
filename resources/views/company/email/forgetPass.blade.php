@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ItsolutionStuff.com</title>
+    <title>Referdio.com</title>
 </head>
 <body>
-    <h1>123</h1>
+    <h1>Referdio Mail</h1>
     
-    <a href="{{route('company.confirmPassword',$details->id)}}">dfkkgskdfgg</p>
+    <a href="{{route('company.confirmPassword',$details->id)}}">Testing mail</p>
    
     <p>Thank you</p>
 </body>
 </html>
-<?php exit;?>

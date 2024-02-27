@@ -88,7 +88,7 @@
                     <div class="card-body">
                         <h4>Recent Activity Feed</h4>
                         <div class="m-t-25">
-                            <table id="user_tables" class="table">
+                            <table id="user_tables" class="table table-sm">
                                 <thead>
                                     <tr>
                                         <th>Campaign</th>
@@ -103,7 +103,7 @@
                                     @foreach ($campaignList as $data)
                                         <tr>
                                             <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                            <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
+                                            <td>{{ $data->text_reward ? Str::limit( $data->text_reward, 15) : (isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '0' )}}
                                             </td>
                                             <td>
                                                 @if (isset($data->getCampaign->description))
@@ -235,6 +235,8 @@
                     "serverSide": false,
                     responsive: true,
                     pageLength: 10,
+                    "bLengthChange": false
+
                     // Initial no order.
                     'order': [
                         [0, 'desc']
@@ -302,35 +304,34 @@
                     data: {
                         labels: chartdata.day,
                         datasets: [{
-                          
                             label: "Total Revenue",
                             borderColor: '#3f87f5',
                             data: chartdata.revenue,
                         }]
                     },
-                    options: {
-                        layout: {
-                            padding: 10,
-                        },
-                        legend: {
-                            position: 'bottom',
-                        },
-                        title: {
-                            display: true,
-                        },
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    stepSize: 10
-                                }
-                            }],
-                            xAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                }
-                            }]
-                        }
-                    }
+                    // options: {
+                    //     layout: {
+                    //         padding: 10,
+                    //     },
+                    //     legend: {
+                    //         position: 'bottom',
+                    //     },
+                    //     title: {
+                    //         display: true,
+                    //     },
+                    //     scales: {
+                    //         yAxes: [{
+                    //             ticks: {
+                    //                 stepSize: 10
+                    //             }
+                    //         }],
+                    //         xAxes: [{
+                    //             scaleLabel: {
+                    //                 display: true,
+                    //             }
+                    //         }]
+                    //     }
+                    // }
                 });
             });
         </script>

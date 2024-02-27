@@ -21,8 +21,7 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendEmailJob;
-
-
+use App\Models\SettingModel;
 
 class UsrController extends Controller
 {
@@ -50,7 +49,7 @@ class UsrController extends Controller
     public function dashboard()
     {
         try {
-            $campaignList = UserCampaignHistoryModel::orderBy('campaign_id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
+            $campaignList = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('user_id', Auth::user()->id)->take(10)->get();
             $totalJoinedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '1')->where('user_id', Auth::user()->id)->get();
             $totalCompletedCampaign = UserCampaignHistoryModel::orderBy('id', 'DESC')->where('status', '3')->where('user_id', Auth::user()->id)->get();
             $totalReferralUser = User::where('referral_user_id', Auth::user()->id)->get();
@@ -412,23 +411,23 @@ class UsrController extends Controller
     function analytics(Request $request)
     {
         try {
-            $fromDate = request('from_date');
-            $toDate = request('to_date');
+            $year = request('year') ?:date("Y");
 
             $topFromDate = request('top_from_date');
             $topToDate = request('top_to_date');
 
-            $monthlyReferrals = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('MONTH(created_at) as month'))
+            $monthlyReferralsData = User::select(DB::raw('COUNT(*) as user_count'), DB::raw('DATE_FORMAT(created_at, "%b") as month'))
                 ->where('referral_user_id', Auth::user()->id)
-                ->when($fromDate, function ($query) use ($fromDate) {
-                    return $query->where('created_at', '>=', $fromDate);
-                })
-                ->when($toDate, function ($query) use ($toDate) {
-                    return $query->where('created_at', '<=', $toDate);
-                })
-                ->groupBy(DB::raw('MONTH(created_at)'))
-                ->get()->toArray();
-
+                ->whereYear('created_at', '=', $year)
+                ->groupBy(DB::raw('DATE_FORMAT(created_at, "%b")'))
+                ->get()
+                ->toArray();
+            $monthlyReferrals  = ['Jan' => 0, 'Feb' => 0, 'Mar' => 0, 'Apr' => 0, 'May' => 0, 'Jun' => 0, 'Jul' => 0, 'Aug' => 0, 'Sep' => 0, 'Oct' => 0, 'Nov' => 0, 'Dec' => 0]; 
+           
+           foreach($monthlyReferralsData as $result){
+                $monthlyReferrals[$result['month']] = $result['user_count'];
+           }
+           $monthlyReferrals = ['months'=>array_keys($monthlyReferrals), 'data' => array_values($monthlyReferrals)];
             $topUserReferral = UserCampaignHistoryModel::whereExists(function ($query) {
                 $query->from('users')
                     ->whereRaw('user_campaign_history.user_id = users.id')
@@ -451,7 +450,6 @@ class UsrController extends Controller
                 ->selectRaw('user_campaign_history.user_id,Sum(reward) as sum')
                 ->orderBy('sum', 'DESC')->take(5)
                 ->get()->toArray();
-               
 
             if ($request->ajax()) {
                 return [
@@ -484,6 +482,7 @@ class UsrController extends Controller
     }
     public function signup()
     {
+        
         try {
             $companyId = Helper::getCompanyId();
 
@@ -508,7 +507,9 @@ class UsrController extends Controller
 
     public function store(Request $request)
     {
+       
         try {
+          
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
@@ -538,6 +539,17 @@ class UsrController extends Controller
             if ($userCount >= $ActivePackageData->no_of_user) {
                 return redirect()->back()->with('error', 'The user registration limit is over. please contact to administrator.');
             }
+            $user_id = null;
+            if (Session('referral_link') != null) {
+                $referral_link = Session('referral_link');
+                $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
+                $user = UserCampaignHistoryModel::where('referral_link', $lastSegment->value)->first();
+                $user_id=  $user->user_id;    
+              
+            }else{
+                !empty($referrer_user) ? $user_id = $referrer_user->id : null;
+            }
+           
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;
             $userRegister->last_name = $request->last_name;
@@ -548,20 +560,24 @@ class UsrController extends Controller
             $userRegister->password = Hash::make($request->password);
             $userRegister->view_password = $request->password;
             $userRegister->contact_number = $request->contact_number;
-            $userRegister->referral_user_id = !empty($referrer_user) ? $referrer_user->id : null;
+            $userRegister->referral_user_id = !empty($user_id) ? $user_id : null;
             $userRegister->package_id = $ActivePackageData->id;
 
-            // try {
+            try {
+                $SettingValue = SettingModel::where('id',$companyId)->first();
+                
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
-                $subject = 'Welcome Mail';     
+                $subject = 'Welcome To '. $SettingValue->title?:env('APP_NAME');     
                 $message = '';  
                 $type=  "user";     
                 if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
                      $data =  ['user' => $userRegister, 'first_name' => $request->first_name]; 
                         SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type);
                  }
-          
+            } catch (Exception $e) {
+                Log::error('UsrController::Store => ' . $e->getMessage());
+            }
           
 
             // try {
@@ -586,6 +602,11 @@ class UsrController extends Controller
     public function forget(Request $request)
     {
         try {
+            $getdomain = Helper::getdomain();
+
+            if (!empty($getdomain) && $getdomain == config('app.pr_name')) {
+                return redirect(env('ASSET_URL') . '/company/signup');
+            }
 
             $siteSetting = Helper::getSiteSetting();
 
@@ -609,7 +630,7 @@ class UsrController extends Controller
             $token = Str::random(64);
 
             try {
-                Mail::send('user.email.forgetPassword', ['token' => $token], function ($message) use ($request) {
+                Mail::send('user.email.forgetPassword', ['token' => $token , 'name' => $userEmail->FullName ], function ($message) use ($request) {
                     $message->to($request->email);
                     $message->subject('Reset Password');
                 });

@@ -88,6 +88,18 @@ class SettingController extends Controller
                 $SettingModel->facebook_link = $request->flink;
                 $SettingModel->twitter_link = $request->t_link;
                 $SettingModel->linkedin_link = $request->l_link;
+//Mail Credentials
+                $SettingModel->mail_mailer = $request->mail_mailer;
+                $SettingModel->mail_host = $request->mail_host;
+                $SettingModel->mail_port = $request->mail_port;
+                $SettingModel->mail_username = $request->mail_username;
+                $SettingModel->mail_password = $request->mail_password;
+                $SettingModel->mail_encryption = $request->mail_encryption;
+                $SettingModel->mail_address = $request->mail_address;
+ //Stripe Credentials
+                $SettingModel->stripe_key = $request->stripe_key;
+                $SettingModel->stripe_secret = $request->stripe_secret;
+
                 $SettingModel->user_id = Auth::user()->id;
                 $SettingModel->save();
             } else {
@@ -149,6 +161,17 @@ class SettingController extends Controller
                 $SettingModel->facebook_link = $request->flink;
                 $SettingModel->twitter_link = $request->t_link;
                 $SettingModel->linkedin_link = $request->l_link;
+                //Mail Credentials
+                $SettingModel->mail_mailer = $request->mail_mailer;
+                $SettingModel->mail_host = $request->mail_host;
+                $SettingModel->mail_port = $request->mail_port;
+                $SettingModel->mail_username = $request->mail_username;
+                $SettingModel->mail_password = $request->mail_password;
+                $SettingModel->mail_encryption = $request->mail_encryption;
+                $SettingModel->mail_address = $request->mail_address;
+ //Stripe Credentials
+                $SettingModel->stripe_key = $request->stripe_key;
+                $SettingModel->stripe_secret = $request->stripe_secret;
                 $SettingModel->save();
             }
             return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');

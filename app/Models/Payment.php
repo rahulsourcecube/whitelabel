@@ -19,6 +19,8 @@ class Payment extends Model
         'card_expiry_year',
         'card_cvv',
         'zipcode',
+        'client_secret',
+        'payment_intente',
         'status'
     ];
 }

@@ -34,7 +34,7 @@ class SendEmailJob implements ShouldQueue
     protected $type;
     // protected $details;
 
-    public function __construct($to, $subject, $message, $userName, $data = null, $type = null)
+    public function __construct($to, $subject, $message, $userName, $data = [], $type = null)
     {
         $this->to = $to;
         $this->subject = $subject;

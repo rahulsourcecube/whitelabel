@@ -25,8 +25,10 @@ class Notification extends Controller
     function index(Request $request)
     {
         try {
+            
+            $companyId = Helper::getCompanyId();   
             $user = Auth::user();
-            $notifications = ModelsNotification::where('company_id', $user->id)->where('type', '2')->where('is_read', '0')->get();
+            $notifications = ModelsNotification::where('company_id', $companyId)->where('type', '2')->where('is_read', '0')->get();
             foreach ($notifications as $notification) {
                 $notification->is_read = '1';
                 $notification->save();
@@ -40,9 +42,10 @@ class Notification extends Controller
     public function dtList(Request $request)
     {
         try {
+            $companyId = Helper::getCompanyId();  
             $columns = ['id', 'title'];
             $user = Auth::user();
-            $totalData = ModelsNotification::where('company_id', $user->id)->where('type', '2')->count();
+            $totalData = ModelsNotification::where('company_id', $companyId)->where('type', '2')->count();
             $start = $request->input('start');
             $length = $request->input('length');
             $order = $request->input('order.0.column');
@@ -52,7 +55,7 @@ class Notification extends Controller
             $searchColumn = ['created_at', 'message'];
 
             $query = ModelsNotification::orderBy($columns[$order], $dir)
-                ->where('company_id', Auth::user()->id)
+                ->where('company_id', $companyId)
                 ->where('type', '2');
 
             // Server-side search

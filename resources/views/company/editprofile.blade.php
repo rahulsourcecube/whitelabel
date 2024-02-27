@@ -176,7 +176,7 @@
                     newPassword: {
                         required: true,
                         minlength: 8,
-                        maxlength: 15
+                        maxlength: 50
                     },
                     confirmPassword: {
                         equalTo: '#newPassword'

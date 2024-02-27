@@ -15,6 +15,8 @@
                 </nav>
             </div>
         </div>
+        <input type="hidden" class="user_Campaign"
+            value="{{ !empty($user_Campaign->id) ? base64_encode($user_Campaign->id) : null }}">
         <div class="container1">
             <div class="row">
                 <div class="col-md-3">
@@ -22,7 +24,7 @@
                         <div class="card-content">
                             @if (isset($campagin_detail) &&
                                     $campagin_detail->image != '' &&
-                                    file_exists(base_path().'/uploads/company/campaign/' . $campagin_detail->image))
+                                    file_exists(base_path() . '/uploads/company/campaign/' . $campagin_detail->image))
                                 <img class="card-img-top"
                                     src="{{ asset('uploads/company/campaign/' . $campagin_detail->image) }}"
                                     class="w-100 img-responsive">
@@ -53,23 +55,32 @@
 
                                 @if (!empty($user_Campaign) && $user_Campaign->status != '0')
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 1)
-                                        <a class="badge badge-primary badge-tone"><span class="m-l-5"
-                                                style="color: white;">Claim reward</span></a>
-                                    @endif
+                                        Status: <strong
+                                            class=" text-primary \" > Claim Reward</strong>
+@endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 2)
-                                        <a class="badge badge-primary badge-tone"><span class="m-l-5"
-                                                style="color: white;">Claim Pending</span></a>
+Status: <strong class="text-primary">
+                                            Claim Pending</strong>
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 5)
-                                        <a class="badge badge-primary badge-tone"><span class="m-l-5"
-                                                style="color: white;">Reopen</span></a>
+                                        Status: <strong
+                                            class=" text-primary \" > Reopen</strong>
+@endif
+                                    @if (isset($user_Campaign->status) && $user_Campaign->status == 4)
+Status: <strong
+                                        class="
+                                            text-danger \"> Rejected</strong>
                                     @endif
-                                @else
-                                    <a onclick="showSuccessAlert()" href="#" data-id=""
-                                        class="btn btn-primary btn-tone" id="btnJoined">
-                                        <span class="m-l-5">Join</span>
-                                    </a>
-                                @endif
+                                    @if (isset($user_Campaign->status) && $user_Campaign->status == 3)
+                                        Status: <strong
+                                            class=" text-success  \" >Completed</strong>
+@endif
+@else
+<a onclick="showSuccessAlert()"
+                                            href="#" data-id="" class="btn btn-primary btn-tone" id="btnJoined">
+                                            <span class="m-l-5">Join</span>
+                                            </a>
+                                    @endif
 
                             </div>
                         </div>
@@ -82,10 +93,7 @@
                         <div class="card-body">
                             <h4 class="m-b-10">{{ isset($campagin_detail->title) ? $campagin_detail->title : '' }}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">
-                                <div class="m-l-1">
-                                    <span class="text-gray font-weight-semibold">Reward:
-                                        <b>{{ isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '' }}</b></span>
-                                    <span class="m-h-5 text-gray">|</span>
+                                <div class="m-l-0">
                                     <span
                                         class="text-gray">{{ isset($campagin_detail->task_type) ? $campagin_detail->task_type : '' }}</span>
                                     @if (isset($campagin_detail->type) && $campagin_detail->type == '1')
@@ -96,6 +104,9 @@
                                     <span class="m-h-5 text-gray">|</span>
                                     <span class="text-gray">Expire on
                                         {{ isset($campagin_detail->expiry_date) ? App\Helpers\Helper::Dateformat($campagin_detail->expiry_date) : '' }}</span>
+                                    <p class="text-gray font-weight-semibold">Reward:
+                                            <b>{{ $campagin_detail->text_reward ? $campagin_detail->text_reward : (isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '0') }}</b></p>
+                                        
                                 </div>
                             </div>
                             <p class="m-b-20">{!! isset($campagin_detail->description) ? $campagin_detail->description : '' !!}
@@ -108,16 +119,18 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5>Recent Referral Users</h5>
-                                    <div class="alert alert-warning alert-dismissible alert-live show">
-                                        <b>List of users who connected with the link shared.</b>
+                                    <div class="col-md-4">
+                                        <h5>Recent Referral Users</h5>
                                     </div>
-                                    {{-- @if (
-                                        $user_Campaign != null &&
-                                            $user_Campaign->referral_link != '' &&
-                                            $user_Campaign->getCampaign->task_expired != 'Expired' &&
-                                            $ReferralCount > $user_Campaign->no_of_referral_users) --}}
-                                        <div class="text-center mt-4 ml-3">
+                                    <div class="col-md-4">
+
+                                        <div class="alert alert-warning alert-dismissible alert-live show w-max-content">
+                                            <b>List of users who connected with the link shared.</b>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{-- @if ($user_Campaign != null && $user_Campaign->referral_link != '' && $user_Campaign->getCampaign->task_expired != 'Expired' && $ReferralCount > $user_Campaign->no_of_referral_users) --}}
+                                        <div class="text-center ml-3">
                                             <a href="https://www.facebook.com/sharer/sharer.php?u={{ route('campaign.referral', $user_Campaign->referral_link) }}"
                                                 target="_blank">
                                                 <button class="m-r-5 btn btn-icon btn-hover btn-rounded">
@@ -144,6 +157,7 @@
                                                 <span class="m-l-5">Copy referral link</span>
                                             </button>
                                         </div>
+                                    </div>
                                     {{-- @endif --}}
                                 </div>
                                 <div class="m-t-30">
@@ -171,10 +185,16 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5>MY Referral connected Users</h5>
-                                </div>
-                                <div class="alert alert-warning alert-dismissible alert-live show">
-                                    <b>List of users who connected with the my refferel code.</b>
+                                    <div class="col-md-4">
+                                        <h5>MY Referral connected Users</h5>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="alert alert-warning alert-dismissible alert-live show w-max-content">
+                                            <b>List of users who connected with the my refferel code.</b>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                    </div>
                                 </div>
                                 <div class="m-t-30">
                                     <div class="table-responsive">
@@ -220,52 +240,55 @@
             </div>
         </div>
         <!-- Content Wrapper START -->
-      
-           
         @php
             $showConversationBox = false;
             if ($user_Campaign != null && $user_Campaign->getCampaign->type == '1') {
-                if ($user_Campaign->getCampaign->task_expired == 'Expired' || $ReferralCount < $user_Campaign->no_of_referral_users) {
+                if ($user_Campaign->getCampaign->task_expired != 'Completed' || $ReferralCount <= $user_Campaign->no_of_referral_users) {
                     $showConversationBox = true;
                 }
             } else {
-                $showConversationBox = true;
+                $showConversationBox = false;
             }
         @endphp
-      @if ($user_Campaign != null && $showConversationBox)
-         <div class="alert alert-info alert-dismissible alert-live show">
-         <b>Contact with support to verify your task.</b>
-        </div>
-            <div class="container-fluid p-h-0 m-t-20">
+
+
+        @if ($user_Campaign != null)
+            <div class="row">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                    <div class="alert alert-info alert-dismissible alert-live show mb-0 w-max-content">
+                        <b>Contact with support to verify your task.</b>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+            <div class="container-fluid p-h-0 m-t-10">
                 <div class="chat chat-app row">
                     <div class="chat-content "style="width:100%;">
                         <div class="conversation">
                             <div class="conversation-wrapper">
-                               
+
                                 <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
-                                    style="overflow-y: auto;" id="style-4">
+                                    style="overflow-y: auto; " id="style-4">
                                     @if (!empty($chats) && $chats->count() != 0)
-                                    
-                                        @foreach ($chats as $item)  
-                                                                        
-                                            @if ($item->sender_id == $user->id    )
+
+                                        @foreach ($chats as $item)
+                                            @if ($item->sender_id == $user->id)
                                                 <div class="msg msg-sent">
                                                 @else
                                                     <div class="msg msg-recipient">
                                                         @if (isset($item->getCompanySetting->logo) &&
                                                                 !empty($item->getCompanySetting->logo) &&
-                                                                file_exists(base_path().'/uploads/setting/' . $item->getCompanySetting->logo))
+                                                                file_exists(base_path() . '/uploads/setting/' . $item->getCompanySetting->logo))
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
-                                                                    <img src="{{ asset('/uploads/setting') .'/'. $item->getCompanySetting->logo }}"
-                                                                    alt="">
+                                                                    <img src="{{ asset('/uploads/setting') . '/' . $item->getCompanySetting->logo }}"
+                                                                        alt="">
                                                                 </div>
                                                             </div>
-                                                            
-                                                         
                                                         @else
-                                                       
-
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
                                                                     <img
@@ -297,15 +320,16 @@
                                 </div>
         @endforeach
     @else
-        <div class="msg justify-content-center">
-            <div class="font-weight-semibold font-size-12">
+        <div class="msg justify-content-center align-items-center" style="text-align: center;">
+            <div class="font-weight-semibold font-size-12" style="margin: auto;">
                 <h3> Please drop message and add attachment for claim reward. </h3>
             </div>
         </div>
 
         @endif
     </div>
-    @if (isset($user_Campaign->status) )
+
+    {{-- @if (isset($user_Campaign->status) && $user_Campaign->status != '3') --}}
         <div class="conversation-footer custom-footer">
             <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
             <ul class="list-inline d-flex align-items-center m-b-0">
@@ -321,19 +345,53 @@
                         <span class="m-r-10">Send</span>
                         <i class="far fa-paper-plane"></i>
                     </button>
+
                     <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
                         <i class="far fa-paper-plane"></i>
                     </a>
                 </li>
+
+                @if (
+                    ($user_Campaign != null && $ReferralCount >= $user_Campaign->no_of_referral_users && $user_Campaign->status == 1) ||
+                        $user_Campaign->status == 4)
+
+                    @if ($user_Campaign->status != 4)
+                        <li class="list-inline-item">
+                            <button onclick="requestSuccessAlert()"
+                                class="d-none d-md-block btn btn-primary custom-button" id="done"><span
+                                    class="m-r-10">Send For Approval</span>
+                            </button>
+                            <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
+                                <i class="far fa-paper-plane"></i>
+                            </a>
+                        </li>
+                    @else
+                        <li class="list-inline-item">
+                            <button onclick="reopenSuccessAlert()" class="d-none d-md-block btn btn-danger custom-button"
+                                id="Reopen"><span class="m-r-10">Reopen</span>
+                            </button>
+                            <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
+                                <i class="far fa-paper-plane"></i>
+                            </a>
+                        </li>
+                    @endif
+
+                @endif
+
             </ul>
         </div>
+        
+    {{-- @endif --}}
+    
+    </div>
+    </div>
+    </div>
+    </div>
+   
     @endif
     </div>
     </div>
-    </div>
-    </div>
-    @endif
-    </div>
+   
     <!-- Modal -->
     <div class="modal fade" id="exampleModal">
         <div class="modal-dialog">
@@ -366,15 +424,21 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default img_file_remove" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary"
-                        @if ($user_Campaign != null) onclick="loadDataAndShowModal({{ $user_Campaign->id }})" @endif>Save
-                        changes</button>
+                    <button type="button" class="btn btn-primary submitform"
+                        @if ($user_Campaign != null) onclick="loadDataAndShowModal({{ $user_Campaign->id }})" @endif>Upload
+                    </button>
                 </div>
             </div>
         </div>
+
     </div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    {{-- <script>
+          $(document).ready(function() {
+            chat = "{{ ($chat) }}"
+          });
+    </script> --}}
     <script>
         function showSuccessAlert() {
             var ID = "{{ base64_encode($campagin_detail->id) }}";
@@ -394,6 +458,71 @@
                         text: 'Campaign joined successfully',
                         confirmButtonColor: '#3085D6',
                         confirmButtonText: 'OK'
+                    }).then(function() {
+                        // Reload the page
+                        location.reload();
+                    });
+                }
+            });
+        }
+    </script>
+    <script>
+        function requestSuccessAlert() {
+
+            var ID = $('.user_Campaign').val();
+
+            var url = "{{ route('user.campaign.requestSend', ':id') }}"
+            url = url.replace(':id', ID);
+
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+
+                },
+                success: function(data) {
+                    $("#done").hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Request send successfully',
+                        confirmButtonColor: '#3085D6',
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        // Reload the page
+                        location.reload();
+                    });
+                }
+            });
+        }
+    </script>
+    <script>
+        function reopenSuccessAlert() {
+
+            var ID = $('.user_Campaign').val();
+
+            var url = "{{ route('user.campaign.reopenSend', ':id') }}"
+            url = url.replace(':id', ID);
+
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+
+                },
+                success: function(data) {
+                    $("#done").hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Request send successfully',
+                        confirmButtonColor: '#3085D6',
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        // Reload the page
+                        location.reload();
                     });
                 }
             });
@@ -458,6 +587,9 @@
 
     <script>
         function loadDataAndShowModal(id) {
+
+
+
             var storeChatUrl = '{{ route('company.campaign.storeChat', ':id') }}';
             storeChatUrl = storeChatUrl.replace(':id', id);
 
@@ -467,7 +599,7 @@
             // Check if either chat_input or upload_file is not null
             if (chat_input !== '' || upload_file !== undefined) {
                 var formData = new FormData();
-                
+
                 formData.append('image', upload_file);
                 formData.append('chat_input', chat_input);
 
@@ -502,7 +634,7 @@
             } else {
                 $(".error_msg").text("");
                 btnOuter.addClass("file_uploading");
-                    btnOuter.addClass("file_uploaded");
+                btnOuter.addClass("file_uploaded");
                 var uploadedFile = URL.createObjectURL(e.target.files[0]);
                 $("#uploaded_view").append('<img src="' + uploadedFile + '" />').addClass("show");
             }
@@ -517,6 +649,8 @@
     </script>
     <script>
         function loadDataAndShowModal(id) {
+
+
             var storeChatUrl = '{{ route('user.storeChat', ':id') }}';
             storeChatUrl = storeChatUrl.replace(':id', id);
 
@@ -525,6 +659,10 @@
 
             // Check if either chat_input or upload_file is not null
             if (chat_input !== '' || upload_file !== undefined) {
+                $('.submitform').html(
+                    'Upload <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>'
+                ).attr('disabled', true);
+                $('#button-spinner').show();
                 var formData = new FormData();
                 formData.append('image', upload_file);
                 formData.append('chat_input', chat_input);
@@ -539,6 +677,7 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
                     success: function(data) {
+                        $('#button-spinner').hide();
                         location.reload();
                     },
                     error: function() {

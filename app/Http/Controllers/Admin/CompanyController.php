@@ -43,7 +43,7 @@ class CompanyController extends Controller
             // and then you can get query log
             $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
             $FreePackagePurchased = CompanyPackage::where('company_id', $companyId)->where('price', 0.00)->first();
-            $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
+            $packages = PackageModel::get();
             $html = '<div class="row">';
             if (isset($packages) && count($packages) > 0) {
                 foreach ($packages as $list) {

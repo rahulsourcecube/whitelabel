@@ -159,7 +159,7 @@
         $('.datepicker').datepicker();
 
         var user_total = {!! json_encode($user_total) !!};
-        user_total = JSON.parse(user_total);
+        user_total = JSON.parse(user_total);      
         new Chartist.Line('#simple-line-referral', {
             labels: user_total.day,
             series: [
@@ -211,6 +211,8 @@
             $('#filterdata').removeAttr("disabled");
         });
         $('#date_filter').daterangepicker({
+            startDate: moment().subtract(6, 'days'), // Start date is 6 days ago
+            endDate: moment(), // End date is today
             dateLimit: {
                 days: 7
             },
@@ -398,8 +400,7 @@
                 // "headers": {
                 //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 // },
-                success: function(data) {
-                    console.log(data);
+                success: function(data) {                    
                     // Extract labels and values
                     var labels = data.map(function(item) {
                         return item.label;

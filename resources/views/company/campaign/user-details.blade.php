@@ -22,7 +22,9 @@
                                 <div class="d-md-flex align-items-center">
                                     <div class="text-center text-sm-left ">
                                         <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                            @if (isset($user) && !empty($user->profile_image) && file_exists(base_path().'/uploads/user/user-profile/' . $user->profile_image))
+                                            @if (isset($user) &&
+                                                    !empty($user->profile_image) &&
+                                                    file_exists(base_path() . '/uploads/user/user-profile/' . $user->profile_image))
                                                 <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}">
                                             @else
                                                 <img src="{{ asset('assets/images/profile_image.jpg') }}">
@@ -120,7 +122,7 @@
                                                     <tr>
                                                         <td>{{ $loop->index + 1 }}</td>
                                                         <td>{{ optional($list->getuser)->first_name }}</td>
-                                                        <td>{{ App\Helpers\Helper::getcurrency() . $list->reward }}</td>
+                                                        <td>{{ $list->text_reward? Str::limit($list->text_reward, 15) :App\Helpers\Helper::getcurrency() . $list->reward }}</td>
                                                         <td>{{ App\Helpers\Helper::Dateformat($list->created_at) }}</td>
                                                     </tr>
                                                 @endforeach
@@ -146,6 +148,8 @@
                     <div style="float: inline-start;">
                         Current task status : <B>{{ $camphistory->task_status }}</B>
                     </div>
+
+
                     <div style="float: inline-end;">
                         {{-- @if ($camphistory->status == 2) --}}
                         {{-- <button class="btn btn-success btn-sm action" data-action="3"
@@ -155,17 +159,25 @@
                             <button class="btn btn-success btn-sm action" data-action="3"
                                 data-id="{{ base64_encode($id) }}"
                                 data-url="{{ route('company.campaign.action') }}">Accept</button>
+
                             <button class="btn btn-danger btn-sm action" data-action="4" data-id="{{ base64_encode($id) }}"
                                 data-url="{{ route('company.campaign.action') }}" data-action="Reject">Reject</button>
                         @else
-                            @if ($camphistory->status == 3)
+                            @if ($camphistory->status == 3 )
                                 <button class="btn btn-danger btn-sm action" data-action="4"
                                     data-id="{{ base64_encode($id) }}" data-url="{{ route('company.campaign.action') }}"
                                     data-action="Reject">Reject</button>
                             @else
+                            @if ($camphistory->status != 1)
                                 <button class="btn btn-success btn-sm action" data-action="3"
                                     data-id="{{ base64_encode($id) }}"
                                     data-url="{{ route('company.campaign.action') }}">Accept</button>
+                                    @if ($camphistory->status == 5)
+                            <button class="btn btn-danger btn-sm action" data-action="4"
+                                data-id="{{ base64_encode($id) }}" data-url="{{ route('company.campaign.action') }}"
+                                data-action="Reject">Reject</button>
+                            @endif
+                                @endif
                             @endif
                         @endif
                         {{-- @endif --}}
@@ -173,22 +185,29 @@
                 </div>
 
                 <!-- Content Wrapper START -->
+            
+           
+    
+    
                 <div class="container-fluid p-h-0 m-t-20">
                     <div class="chat chat-app row">
                         <div class="chat-content "style="width:100%;">
                             <div class="conversation">
                                 <div class="conversation-wrapper">
                                     <div class="conversation-body scrollbar  @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
-                                        style="overflow-y: auto;" id="style-4">
-                                      
+                                        style="overflow-y: auto; " id="style-4">
+
                                         @if (!empty($chats) && $chats->count() != 0)
                                             @foreach ($chats as $item)
-                                           
-                                                @if ($item->sender_id == Auth::user()->id  ||  (  $item->getuser->user_type == '3' || $item->getuser->user_type == '2' ))
+                                                @if (
+                                                    $item->sender_id == Auth::user()->id ||
+                                                        ($item->getuser->user_type == '1' || $item->getuser->user_type == '3' || $item->getuser->user_type == '2'))
                                                     <div class="msg msg-sent">
                                                     @else
                                                         <div class="msg msg-recipient">
-                                                            @if (isset($user) && !empty($user->profile_image) && file_exists(base_path().'/uploads/user/user-profile/' . $user->profile_image))
+                                                            @if (isset($user) &&
+                                                                    !empty($user->profile_image) &&
+                                                                    file_exists(base_path() . '/uploads/user/user-profile/' . $user->profile_image))
                                                                 <div class="m-r-10">
                                                                     <div class="avatar avatar-image">
                                                                         <img src="{{ asset('uploads/user/user-profile/' . $user->profile_image) }}"
@@ -206,7 +225,8 @@
                                                 @endif
                                                 @if (isset($item) && !empty($item->document) && file_exists(base_path('public/' . $item->document)))
                                                     <div class="bubble">
-                                                        <div class="bubble-wrapper p-5" @if($item->sender_id == Auth::user()->id) style="max-width: 220px; border: 2px solid rgb(11, 192, 224);" @else style="max-width: 220px;" @endif>
+                                                        <div class="bubble-wrapper p-5"
+                                                            @if ($item->sender_id == Auth::user()->id) style="max-width: 220px; border: 2px solid rgb(11, 192, 224);" @else style="max-width: 220px;" @endif>
                                                             <img src="{{ asset('public/' . $item->document) }}"
                                                                 alt="{{ asset('public/' . $item->document) }}"
                                                                 style="inline-size: -webkit-fill-available;">
@@ -214,7 +234,8 @@
                                                     </div>
                                                 @else
                                                     <div class="bubble">
-                                                        <div class="bubble-wrapper" @if($item->sender_id == Auth::user()->id) style=" border: 2px solid rgb(11, 192, 224);" @endif>
+                                                        <div class="bubble-wrapper"
+                                                            @if ($item->sender_id == Auth::user()->id) style=" border: 2px solid rgb(11, 192, 224);" @endif>
                                                             <span>{!! $item->message ?? '' !!} <br>
                                                                 <p
                                                                     style="font-size: x-small;color: black; margin-bottom:0px;">
@@ -228,32 +249,37 @@
                                     @endif
 
                                 </div>
-                                <div class="conversation-footer custom-footer">
-                                    <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
-                                    <ul class="list-inline d-flex align-items-center m-b-0">
-                                        <li class="list-inline-item m-r-15">
-                                            <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);"
-                                                title="Attachment" data-toggle="modal" data-target="#exampleModal">
-                                                <i class="anticon anticon-paper-clip"></i>
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <button class="d-none d-md-block btn btn-primary custom-button"
-                                                onclick="loadDataAndShowModal({{ $id }})">
-                                                <span class="m-r-10">Send</span>
-                                                <i class="far fa-paper-plane"></i>
-                                            </button>
-                                            <a href="javascript:void(0);"
-                                                class="text-gray font-size-20 d-md-none d-block">
-                                                <i class="far fa-paper-plane"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                {{-- @if ($camphistory->status != 3) --}}
+                                    <div class="conversation-footer custom-footer">
+                                        <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
+                                        <ul class="list-inline d-flex align-items-center m-b-0">
+                                            <li class="list-inline-item m-r-15">
+                                                <a class="text-gray font-size-20 img_file_remove"
+                                                    href="javascript:void(0);" title="Attachment" data-toggle="modal"
+                                                    data-target="#exampleModal">
+                                                    <i class="anticon anticon-paper-clip"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <button class="d-none d-md-block btn btn-primary custom-button"
+                                                    onclick="loadDataAndShowModal({{ $id }})">
+                                                    <span class="m-r-10">Send</span>
+                                                    <i class="far fa-paper-plane"></i>
+                                                </button>
+                                                <a href="javascript:void(0);"
+                                                    class="text-gray font-size-20 d-md-none d-block">
+                                                    <i class="far fa-paper-plane"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                {{-- @endif --}}
                             </div>
                         </div>
                     </div>
                 </div>
+               
+
             </div>
             <!-- Content Wrapper END -->
             <!-- Modal -->
@@ -289,8 +315,8 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default img_file_remove"
                                 data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary"
-                                onclick="loadDataAndShowModal({{ $id }})">Save changes</button>
+                            <button type="button" class="btn btn-primary submitform"
+                                onclick="loadDataAndShowModal({{ $id }})">Upload</button>
                         </div>
                     </div>
                 </div>
@@ -369,14 +395,14 @@
             } else {
                 $(".error_msg").text("");
                 btnOuter.addClass("file_uploading");
-                    btnOuter.addClass("file_uploaded");
+                btnOuter.addClass("file_uploaded");
                 var uploadedFile = URL.createObjectURL(e.target.files[0]);
                 $("#uploaded_view").append('<img src="' + uploadedFile + '" />').addClass("show");
-               
+
             }
         });
         $(".img_file_remove").on("click", function(e) {
-        
+
             $("#uploaded_view").removeClass("show");
             $("#uploaded_view").find("img").remove();
             btnOuter.removeClass("file_uploading");
@@ -386,6 +412,8 @@
     </script>
     <script>
         function loadDataAndShowModal(id) {
+            
+            
             var storeChatUrl = '{{ route('company.campaign.storeChat', ':id') }}';
             storeChatUrl = storeChatUrl.replace(':id', id);
 
@@ -394,6 +422,10 @@
 
             // Check if either chat_input or upload_file is not null
             if (chat_input !== '' || upload_file !== undefined) {
+
+                $('.submitform').html('Upload <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>').attr('disabled', true);
+                $('#button-spinner').show();
+
                 var formData = new FormData();
                 formData.append('image', upload_file);
                 formData.append('chat_input', chat_input);
@@ -409,6 +441,7 @@
                     },
                     success: function(data) {
                         $('.chat-input').val('');
+                        $('#button-spinner').hide();
                         location.reload();
                     },
                     error: function() {

@@ -102,7 +102,7 @@
                                 <?php $campaign_id = base64_encode($data->campaign_id); ?>
                                 <tr>
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
-                                    <td>{{ isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '' }}
+                                    <td>{{ $data->text_reward ? Str::limit($data->text_reward, 15)  : (isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '0') }}
                                     </td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
@@ -136,10 +136,10 @@
                                     </td>
                                     <td>
                                         @if (isset($data->status) && $data->status == 3)
-                                            <span class="btn btn-success  btn-sm">Completed</span>
+                                            <span class=" text-success  btn-sm">Completed</span>
                                         @elseif (isset($data->status) && $data->status == 4)
                                             
-                                            <span class="btn btn-danger  btn-sm">Rejected</span>
+                                            <span class=" text-danger  btn-sm">Rejected</span>
                                         @endif
                                     </td>
                                     <td>
