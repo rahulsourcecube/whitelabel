@@ -9,16 +9,17 @@ use App\Models\CompanyPackage;
 use App\Models\PackageModel;
 use App\Models\Payment;
 use App\Models\User as ModelsUser;
-use Carbon\Carbon;
+// use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Stripe\Exception\CardException;
-use Stripe\PaymentIntent;
+// use Stripe\Exception\CardException;
+// use Stripe\PaymentIntent;
 use Stripe\Stripe as StripeStripe;
 use Stripe;
+use Illuminate\Support\Str;
 
 class PackageController extends Controller
 {
@@ -70,47 +71,36 @@ class PackageController extends Controller
             }
             if ($package->price != 0) {
                 try {
-                    $stripe = new \Stripe\StripeClient($stripeData->stripe_secret);
+                    Stripe\Stripe::setApiKey($stripeData->stripe_secret);
 
                     $user = ModelsUser::find(Auth::user()->id);
-
                     if ($user->stripe_client_id == '' || $user->stripe_client_id == NULL) {
-                        $response = $stripe->customers->create([
+                        $customer = Stripe\Customer::create(array(
                             'name' => $user->first_name . ' ' .  $user->last_name,
                             'email' => $user->email,
-                        ]);
-                        if (isset($response) && isset($response->id)) {
-                            $user->stripe_client_id = $response->id;
+                            "source" => $request->stripeToken
+                        ));
+                        if (isset($customer) && isset($customer->id)) {
+                            $user->stripe_client_id = $customer->id;
                             $user->save();
                         }
                     }
-                    $paymentMethods = $stripe->paymentMethods->create([
-                        'type' => 'card',
-                        'card' => [
-                            'token' => $request->stripeToken,
-                        ],
+                    Stripe\Charge::create([
+                        "amount" => $package->price * 100,
+                        "currency" => "usd",
+                        "customer" => $user->stripe_client_id,
+                        "description" => "Test payment.",
+                        "shipping" => [
+                            "name" => $user->first_name . ' ' .  $user->last_name,
+                            "address" => [
+                                "line1" => rand(123,45654) . ' ' . Str::random(10),
+                                "postal_code" => rand(123,45654),
+                                "city" => Str::random(10),
+                                "state" => "CA",
+                                "country" => "US",
+                            ],
+                        ]
                     ]);
-
-                    $payment_intent = $stripe->paymentIntents->create([
-                        'amount' =>  $package->price * 100,
-                        'currency' => 'USD',
-                        'customer' => $user->stripe_client_id,
-                        'payment_method' => $paymentMethods->id,
-                    ]); 
-                          
-                    $jsonResponse[ 'client_secret'] = $payment_intent->client_secret;
-                    $jsonResponse[ 'payment_intente'] = $payment_intent->id;
-                    
-                    // StripeStripe::setApiKey($stripe->stripe_secret);
-                    // $stripe = new \Stripe\StripeClient($stripe->stripe_secret);
-
-                    // $stripe->paymentIntents->create([
-                    //     'amount' => $package->price * 100,
-                    //     'currency' => 'usd',
-                    //     'description' => $package->title,
-                    //     'payment_method_types' => ['card'],
-                    // ]);
-
                 } catch (Exception $e) {
                     Log::error('PackageController::Buy => ' . $e->getMessage());
                     if (str_contains($e->getMessage(), 'No such destination:')) {
@@ -160,17 +150,23 @@ class PackageController extends Controller
                 $makePayment->save();
 
                 $addPackage->update(['paymnet_id' => $makePayment->id]);
-                //return redirect()->back()->with('success', 'Package activated successfully!');
-                
+
                 $jsonResponse['success'] = true;
                 $jsonResponse['message'] =  "Package purchased successfully!" ;
             }
-            return response()->json($jsonResponse);
+            if ($package->price != 0) {
+                return response()->json($jsonResponse);
+            }else{
+                return redirect()->back()->with('success', 'Package activated successfully!');
+            }
         } catch (Exception $e) {
             Log::error('PackageController::Buy => ' . $e->getMessage());
             $jsonResponse['message'] =  "Error : " . $e->getMessage();
-            return response()->json($jsonResponse);
-            //return redirect()->back()->with('error', "Error : " . $e->getMessage());
+            if ($package->price != 0) {
+                return response()->json($jsonResponse);
+            }else{
+                return redirect()->back()->with('error', "Error : " . $e->getMessage());
+            }
         }
     }
 

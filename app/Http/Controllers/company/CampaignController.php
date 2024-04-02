@@ -118,7 +118,7 @@ class CampaignController extends Controller
             $order = $request->input('order.0.column');
             $dir = $request->input('order.0.dir');
             $list = [];
-            
+
             $searchColumn = ['user_campaign_history.created_at', 'users.email', 'users.contact_number', 'users.first_name', 'users.last_name'];
 
             $query = UserCampaignHistoryModel::leftJoin('users', 'user_campaign_history.user_id', '=', 'users.id')
@@ -178,7 +178,7 @@ class CampaignController extends Controller
     function create($type)
     {
         try {
-            //Check  Active Package Access 
+            //Check  Active Package Access
             $isActivePackageAccess = Helper::isActivePackageAccess();
 
             if (!$isActivePackageAccess) {
@@ -320,6 +320,7 @@ class CampaignController extends Controller
                 ->get();
             $start_time = strtotime(date("Y-m-d",strtotime("-6 day")));
             $end_time = strtotime(date("Y-m-d"));
+
             $list = [];
             for ($i = $start_time; $i <= $end_time; $i += 86400) {
                 $list[date('D', $i)] = 0;
@@ -328,10 +329,13 @@ class CampaignController extends Controller
             foreach ($total_join_users as $values) {
                 $list[$values->day] = $values->total_user;
             }
-            $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);           
+            $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
             $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
 
-            return view('company.campaign.analytics', compact('user_total', 'customTasks'));
+            $startDate =  date("m/d/Y",$start_time);
+            $endDate =  date("m/d/Y",$end_time);
+
+            return view('company.campaign.analytics', compact('user_total', 'customTasks','startDate','endDate'));
         } catch (Exception $e) {
             Log::error('CampaignController::Analytics => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -522,8 +526,8 @@ class CampaignController extends Controller
 
     public function storeChat(UserCampaignHistoryModel $id, Request $request)
     {
-       
-       
+
+
         try {
             if ($request->hasFile('image') || $request->chat_input != null) {
                 if ($request->hasFile('image')) {
@@ -543,7 +547,7 @@ class CampaignController extends Controller
                     }else{
                         $sentMessage = ' sent a message '.' '.  Str::limit($request->chat_input, 10) ?? "-";
                     }
-                   
+
                     $Notification = new Notification();
                     if(auth()->user()->user_type == '4'){
                         $Notification->user_id =  $id->user_id;
@@ -558,12 +562,12 @@ class CampaignController extends Controller
                         $Notification->company_id =  $id->campaign_id;
                         $Notification->title =  "Company send message";
                         $Notification->message = "New message for the task ". $id->getCampaign->title ?? "-"; ;
-                        $Notification->type =  "1";    
+                        $Notification->type =  "1";
                         $Notification->save();
                     }
-                       
+
                         // dd($Notification);
-                    
+
                 // }
                 // if ($id->status == '4' && Auth::user()->user_type == 4) {
                 //     $id->status = '5';
@@ -656,7 +660,7 @@ class CampaignController extends Controller
 
                 $userCounts = $query->get();
                 $data = [];
-                
+
                 foreach ($userCounts as $item) {
                     $data[] = [
                         $item->id, // Format the day of the month

@@ -10,11 +10,12 @@
 <body
     style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; background-color: #f6f6f6; margin: 0;"
     bgcolor="#f6f6f6">
-
-
     <?php
     use App\Models\SettingModel;
     $mail = SettingModel::first();
+    if(!empty($company_id)){ 
+        $mail = SettingModel::where('id',$company_id)->first();
+    }
     ?>
 
     <table class="body-wrap"

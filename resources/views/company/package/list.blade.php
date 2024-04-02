@@ -99,7 +99,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                             {!! $list->description !!}
                             @can('package-create')
                             @if ($list->type == '1')
-                            <form action="{{ route('company.package.buy') }}" method="POST" id="package-payment-form">
+                            <form action="{{ route('company.package.buy') }}" method="POST" id="package-buy-form">
                                 @csrf
                                 <input type="hidden" name="package_id" value="{{ $list->id }}">
                                 <div class="text-center">
@@ -134,11 +134,21 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                         <i class="anticon anticon-close"></i>
                     </button>
                 </div>
-                <form action="{{ route('company.package.buy') }}" method="POST" id="package-payment-form" data-cc-on-file="false" data-stripe-publishable-key="{{ config('app.stripe_key') }}">
+                <form action="{{ route('company.package.buy') }}" method="POST" class="require-validation" id="package-payment-form" data-cc-on-file="false" data-stripe-publishable-key="{{ config('app.stripe_key') }}">
                     @csrf
                     <input type="hidden" name="package_id" value="">
                     <div class="modal-body">
                         <div class="row">
+                            <div class="col-12">
+                            <div class="payment-errors alert alert-danger d-none">Error</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="round-form-group">
+                                    <label class="paymenttab-label content-para">Name on Card</label>
+                                    <input type="text" class="form-control round-input remove-arrow name_on_card" placeholder="Name On Card" name="name_on_card" id="name_on_card" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123) || (event.charCode==32)">
+                                    <label class="error" id="name_on_card-error"></label>
+                                </div>
+                            </div>
                             <div class="col-12">
                                 <div class="round-form-group">
                                     <label class="paymenttab-label content-para">Card Number</label>
@@ -170,14 +180,6 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                                     <label class="error" id="cvv_code-error"></label>
                                 </div>
                             </div>
-                            <div class="col-12">
-                                <div class="round-form-group">
-                                    <label class="paymenttab-label content-para">Name on
-                                        Card</label>
-                                    <input type="text" class="form-control round-input remove-arrow name_on_card" placeholder="Name On Card" name="name_on_card" id="name_on_card" onkeypress="return (event.charCode > 64 && event.charCode < 91) || (event.charCode > 96 && event.charCode < 123) || (event.charCode==32)">
-                                    <label class="error" id="name_on_card-error"></label>
-                                </div>
-                            </div>
                             <div class="col-xl-6">
                                 <div class="round-form-group">
                                     <label class="paymenttab-label content-para">Zip
@@ -190,7 +192,7 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default m-r-10" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Pay</button>
+                        <button type="submit" class="btn btn-primary" id="payBtn">Pay</button>
                     </div>
                 </form>
             </div>
@@ -202,38 +204,6 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
     @endsection
     @section('js')
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
-    <script>
-        Stripe.setPublishableKey(
-            "{{ config('app.stripe_key')  }}"
-        );
-
-    </script>
-    <script>
-        $(function() {
-            $('form.require-validation').bind('submit', function(e) {
-                var $form = $(e.target).closest('form')
-                    , inputSelector = ['input[type=email]', 'input[type=password]'
-                        , 'input[type=text]', 'input[type=file]'
-                        , 'textarea'
-                    ].join(', ')
-                    , $inputs = $form.find('.required').find(inputSelector)
-                    , $errorMessage = $form.find('div.error')
-                    , valid = true;
-
-                $errorMessage.addClass('hide');
-                $('.has-error').removeClass('has-error');
-                $inputs.each(function(i, el) {
-                    var $input = $(el);
-                    if ($input.val() === '') {
-                        $input.parent().addClass('has-error');
-                        $errorMessage.removeClass('hide');
-                        e.preventDefault(); // cancel on first error
-                    }
-                });
-            });
-        });
-
-    </script>
 
     <script>
         function openPaymentModal(packageId) {
@@ -322,74 +292,85 @@ $FreePackagePurchased = App\Helpers\Helper::FreePackagePurchased();
                     required: "Please enter zip code"
                 }
             , }
-            ,   submitHandler: function(form, e) { 
+            ,   submitHandler: function(form, e) {
+                $("#payBtn").prop("disabled",true).html('<i class="fa fa-spinner" aria-hidden="true"></i> Pay')
                 e.preventDefault();
-                Stripe.setPublishableKey(
-                    "{{ config('app.stripe_key')  }}"
-                );
-                var $form = $("#package-payment-form");
-                if (!$form.data('cc-on-file')) {
-                    
-                    // Stripe.setPublishableKey($form.data(
-                    //     "{{ config('app.stripe_key')  }}"
-                    // ));
-                    Stripe.createToken({
-                        number: $('.card-number').val()
-                        , cvc: $('.card-cvc').val()
-                        , exp_month: $('.card-expiry-month').val()
-                        , exp_year: $('.card-expiry-year').val()
-                    }, stripeResponseHandler);
-                }
+
+                var $form = $(".require-validation");
+
+                // $('form.require-validation').bind('submit', function(e) {
+                    var $form = $(".require-validation"),
+                        inputSelector = ['input[type=email]', 'input[type=password]',
+                            'input[type=text]', 'input[type=file]',
+                            'textarea'
+                        ].join(', '),
+                        $inputs = $form.find('.required').find(inputSelector),
+                        $errorMessage = $form.find('div.error'),
+                        valid = true;
+                    $errorMessage.addClass('hide');
+
+                    $('.has-error').removeClass('has-error');
+                    $inputs.each(function(i, el) {
+                        var $input = $(el);
+                        if ($input.val() === '') {
+                            $input.parent().addClass('has-error');
+                            $errorMessage.removeClass('hide');
+                            e.preventDefault();
+                        }
+                    });
+
+                    if (!$form.data('cc-on-file')) {
+                        e.preventDefault();
+                        Stripe.setPublishableKey($form.data('stripe-publishable-key'));
+                        Stripe.createToken({
+                            number: $('.card-number').val().split(' ').join(''),
+                            cvc: $('.card-cvc').val(),
+                            exp_month: $('.card-expiry-month').val(),
+                            exp_year: $('.card-expiry-year').val()
+                        }, stripeResponseHandler);
+                    }
+                // });
                 function stripeResponseHandler(status, response) {
                     if (response.error) {
-                        $('.error')
-                            .removeClass('hide')
-                            .find('.alert')
+                        $('.payment-errors')
+                            .removeClass('d-none')
                             .text(response.error.message);
+                        $("#payBtn").prop("disabled",false).html('Pay');
                     } else {
-                        // token contains id, last4, and card type
+                        /* token contains id, last4, and card type */
                         var token = response['id'];
-                        // insert the token into the form so it gets submitted to the server
-                        $form.find('input[type=text]').empty();
-                        $form.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
-                        console.log(token);
-                        $.ajax({
-                            type: "POST"
-                            , url: $(form).attr('action')
-                            , data: $("#package-payment-form").serialize()
-                            , success: function(response) {
-                                if (response.success) {
-                                    var stripe = Stripe('{{ config('app.stripe_key') }}');
 
-                                    stripe.confirmCardPayment(response.payment_intente, {
-                                        payment_method: {
-                                            card: $('.card-number').val(),
-                                        }
-                                    }).then(function(result) {
-                                        if (result.error) {
-                                            console.error(result.error.message);
-                                            alert(result.error.message);
-                                        } else {
-                                            console.log(result);
-                                            // alert(result);
-                                            showSuccessAlert();    
-                                        }
-                                    });
-                                
+                        $form.find('input[type=text]').empty();
+                        if(!$("#stripeToken").length){
+                            $form.append("<input type='hidden' name='stripeToken' id='stripeToken' value='" + token + "'/>");
+                        }else{
+                            $("#stripeToken").val(token);
+                        }
+                        $.ajax({
+                            type: "POST",
+                            url: $(form).attr('action'),
+                            data: $("#package-payment-form").serialize(),
+                            success: function(response) {
+                                $("#payBtn").prop("disabled",false).html('Pay');
+                                if (response.success) {
+                                    showSuccessAlert();
                                 } else {
                                     Swal.fire({
-                                        text: response.message
-                                        , icon: "error"
-                                        , button: "Ok"
-                                    , });
+                                        text: response.message,
+                                        icon: "error",
+                                        button: "Ok",
+                                    }).then(function() {
+                                        location.reload();
+                                    });
                                 }
+                            },
+                            error: function(response) {
+                                $("#payBtn").prop("disabled",false).html('Pay');
                             }
                         });
-                        
+
                     }
                 }
-
-                
             }
         });
 

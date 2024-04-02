@@ -568,13 +568,12 @@ class UsrController extends Controller
                 
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
-                $subject = 'Welcome To '. $SettingValue->title?:env('APP_NAME');     
+                $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');     
                 $message = '';  
                 $type=  "user";     
-                if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-                     $data =  ['user' => $userRegister, 'first_name' => $request->first_name]; 
-                        SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type);
-                 }
+            
+                $data =  ['user' => $userRegister, 'first_name' => $request->first_name, 'company_id' => $companyId]; 
+                SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type);
             } catch (Exception $e) {
                 Log::error('UsrController::Store => ' . $e->getMessage());
             }
@@ -630,7 +629,7 @@ class UsrController extends Controller
             $token = Str::random(64);
 
             try {
-                Mail::send('user.email.forgetPassword', ['token' => $token , 'name' => $userEmail->FullName ], function ($message) use ($request) {
+                Mail::send('user.email.forgetPassword', ['token' => $token , 'name' => $userEmail->FullName, 'company_id' => $companyId ], function ($message) use ($request) {
                     $message->to($request->email);
                     $message->subject('Reset Password');
                 });

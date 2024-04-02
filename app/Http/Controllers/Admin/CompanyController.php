@@ -157,7 +157,7 @@ class CompanyController extends Controller
     {
         try {
             $columns = ['id', 'company_name', 'id', 'contact_number', 'company_name', 'subdomain', 'id']; // Add more columns as needed
-            $totalData = CompanyModel::count();
+
             $start = $request->input('start');
             $length = $request->input('length');
             $order = $request->input('order.0.column');
@@ -186,7 +186,7 @@ class CompanyController extends Controller
             $results = $query->skip($start)
                 ->take($length)
                 ->get();
-
+                $totalData = CompanyModel::count();
             $list = [];
             foreach ($results as $result) {
                 $list[] = [
@@ -195,7 +195,7 @@ class CompanyController extends Controller
                     $result->user->email,
                     $result->user->contact_number,
                     $result['company_name'],
-                    $result['subdomain'].'.'.$request->getHost(),   
+                    $result['subdomain'].'.'.$request->getHost(),
                     $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
                     $result['email'],
                     $result['email'],

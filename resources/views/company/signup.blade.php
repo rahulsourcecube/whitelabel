@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
+
     <title>Sign Up || {{ !empty($siteSetting) && !empty($siteSetting->title) ? $siteSetting->title : env('APP_NAME') }} </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
@@ -56,7 +56,7 @@
                                                     placeholder="Last name" value="{{old('lname')}}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-12">
-                                                <label class="font-weight-semibold" for="email">Emails:</label>
+                                                <label class="font-weight-semibold" for="email">Email:</label>
                                                 <input type="email" class="form-control" name="email" id="email"
                                                     placeholder="Email" value="{{old('email')}}" maxlength="50">
                                             </div>
@@ -69,7 +69,7 @@
                                                 <label class="font-weight-semibold" for="ccontact">Contact
                                                     Number:</label>
                                                 <input type="text"   class="form-control" name="ccontact" id="ccontact"
-                                                    placeholder="Contact Number" maxlength="10"  
+                                                    placeholder="Contact Number" maxlength="10"
                                                     value="{{old('ccontact')}}"   onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
                                             <div class="col-md-12">
@@ -125,8 +125,8 @@
                 /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i
                 .test(value);
         }, "Please enter a valid email id");
-        
-        
+
+
         $.validator.addMethod("subdomainV", function(value, element) {
         var regex = new RegExp("^[a-zA-Z]+[a-zA-Z0-9\\-]*$");
         return regex.test(value);
@@ -195,8 +195,8 @@
                     equalTo: "The password you entered does not match.",
                 },
             },
-            submitHandler: function(form) {                    
-                 // Show the spinner                 
+            submitHandler: function(form) {
+                 // Show the spinner
                 $('.submitform').html('Sign Up <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>').attr('disabled', true);
                 $('#button-spinner').show();
                 form.submit();

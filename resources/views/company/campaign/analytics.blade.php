@@ -23,19 +23,27 @@
 
                         <div class="m-t-25">
                             <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group col-md-12">
-                                        <label class="font-weight-semibold" for="date_filter">Date:</label>
-                                        <input type="text" class="form-control attribute" name="date_range_filter"
-                                            id="date_filter" placeholder="From Date">
-                                    </div>
+								<div class="col-md-3">
+									<div class="form-group col-md-12">
+										<label>Date:</label>
+										<div class="input-affix m-b-10">
+											<i class="prefix-icon anticon anticon-calendar"></i>
+											<input type="text" class="form-control datepicker2 attribute"
+												   placeholder="Pick a date" id="referral_from_date"
+												   value="{{ $startDate }}">
+											<input type="hidden" class="form-control " id="referral_from_date2"
+												   value="{{ $startDate }}-{{ $endDate }}">
 
-                                    <div class="col-md-12">
+										</div>
+										<label id="referral_task_date_range">Date: <b>From</b> {{ $startDate }} <b>to</b>
+											{{ $endDate }}</label>
+									</div>
+									<div class="col-md-12">
                                         <button id="filterdata" class="btn btn-primary m-t-30" disabled>Filter <span
                                                 class="spinner"></span></button>
 
                                     </div>
-                                </div>
+								</div>
                                 <div class="col-md-9">
                                     <div class="ct-chart" id="simple-line-referral"></div>
                                     {{-- <div class="ct-chart" id="simple-line-referral-filter"></div> --}}
@@ -96,9 +104,7 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     @php
-                                        $start = Carbon\Carbon::now()
-                                            ->startOfMonth()
-                                            ->format('m/d/Y');
+                                        $start = Carbon\Carbon::now()->startOfMonth()->format('m/d/Y');
                                         $end = Carbon\Carbon::now()->format('m/d/Y');
                                     @endphp
                                     <div class="form-group col-md-12">
@@ -157,9 +163,14 @@
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <script>
         $('.datepicker').datepicker();
+        var endDate = '{{$startDate}}';
+
+        $(".datepicker2").datepicker({
+            endDate: endDate
+        });
 
         var user_total = {!! json_encode($user_total) !!};
-        user_total = JSON.parse(user_total);      
+        user_total = JSON.parse(user_total);
         new Chartist.Line('#simple-line-referral', {
             labels: user_total.day,
             series: [
@@ -207,9 +218,34 @@
             }
         });
 
-        $('.attribute').on('click', function() {
+        $('.attribute').on('change', function() {
+			var fromDate = $("#referral_from_date").val();
+
+			// Split the date string into day, month, and year components
+			var parts = fromDate.split('/');
+			var day = parseInt(parts[1], 10);
+			var month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript
+			var year = parseInt(parts[2], 10);
+
+			// Create a new Date object with the extracted components
+			var fromDateObj = new Date(year, month, day);
+
+			// Add 6 days to the date
+			fromDateObj.setDate(fromDateObj.getDate() + 6);
+
+			// Format the resulting date back into the desired format
+			var formattedMonth = String(fromDateObj.getMonth() + 1).padStart(2, '0');
+			var formattedDay = String(fromDateObj.getDate()).padStart(2, '0');
+			var formattedYear = fromDateObj.getFullYear();
+
+			var formattedDate = formattedMonth + '/' + formattedDay + '/' + formattedYear;
+
+			 $("#referral_from_date2").val(fromDate + '-' + formattedDate);
+
+			$("#referral_task_date_range").html('Date: <b>From</b> ' + fromDate + ' <b>to</b> ' + formattedDate);
             $('#filterdata').removeAttr("disabled");
         });
+
         $('#date_filter').daterangepicker({
             startDate: moment().subtract(6, 'days'), // Start date is 6 days ago
             endDate: moment(), // End date is today
@@ -221,7 +257,6 @@
             },
         });
         $('#filterdata').on('click', function() {
-
             var date_range_filter = $('#date_filter').val();
             $.ajax({
                 url: "{{ route('company.campaign.fetch_data') }}",
@@ -237,7 +272,7 @@
                     $('#filterdata').prop('disabled', true);
                 },
                 success: function(data) {
-                     $(".spinner").html('');
+                    $(".spinner").html('');
                     var user_total = data;
                     new Chartist.Line('#simple-line-referral', {
                         labels: user_total.day,
@@ -342,8 +377,8 @@
                     // // }
                 },
                 error: function() {
-                
-                    // $('#simple-line-referral').remove(); 
+
+                    // $('#simple-line-referral').remove();
                     $(".spinner").html('');
                     $('#filterdata').prop('disabled', false);
 
@@ -400,7 +435,7 @@
                 // "headers": {
                 //     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 // },
-                success: function(data) {                    
+                success: function(data) {
                     // Extract labels and values
                     var labels = data.map(function(item) {
                         return item.label;

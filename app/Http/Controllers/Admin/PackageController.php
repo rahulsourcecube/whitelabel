@@ -22,7 +22,7 @@ class PackageController extends Controller
     {
         try {
             $columns = ['id', 'title', 'type', 'duration', 'price', 'no_of_campaign']; // Add more columns as needed
-            $totalData = PackageModel::count();
+
             $start = $request->input('start');
             $length = $request->input('length');
             $order = $request->input('order.0.column');
@@ -50,6 +50,7 @@ class PackageController extends Controller
             $results = $query->skip($start)
                 ->take($length)
                 ->get();
+            $totalData = $results->count();
             foreach ($results as $result) {
                 $list[] = [
                     $result->id,
