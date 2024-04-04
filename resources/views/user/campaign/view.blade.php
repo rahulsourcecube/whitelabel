@@ -1,6 +1,23 @@
 @extends('user.layouts.master')
 @section('title', 'Campaign List')
 @section('main-content')
+<style>
+    .rating {
+    font-size: 24px;
+}
+
+.rating i {
+    cursor: pointer;
+}
+
+.rating i.hover {
+    color: orange;
+}
+
+.rating i.selected {
+    color: gold;
+}
+    </style>
     <?php use Illuminate\Support\Facades\URL; ?>
     <!-- Content Wrapper START -->
     <div class="main-content">
@@ -236,6 +253,67 @@ Status: <strong
                             </div>
                         </div>
                     </div>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="container">
+                            <form id="ratingForm" method="POST">                              
+                                <h2>Add Reivews</h2>
+                              @php
+                                    $se='';
+                                    $th='';
+                                    $for='';
+                                    $fiv='';
+                                  $selectRating =!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1";
+                                  if($selectRating == '2'){                            
+                                        $se='selected';
+                                  }elseif($selectRating == '3'){
+                                    $se='selected';
+                                    $th='selected';
+                                  }elseif($selectRating == '4'){
+                                    $se='selected';
+                                    $th='selected';
+                                    $for='selected';
+
+                                  }elseif($selectRating == '5'){
+                                   
+                                    $se='selected';
+                                    $th='selected';
+                                    $for='selected';
+                                    $fiv='selected';
+                                    
+                                  }
+
+                              @endphp
+                                    <div class="rating form-group center">
+                                        <!-- Rating stars -->
+                                        <div class="rating">
+                                            <i class="bi bi-star selected"></i>
+                                            <i class="bi bi-star {{$se}}"></i>
+                                            <i class="bi bi-star {{$th}}"></i>
+                                            <i class="bi bi-star {{$for}}"></i>
+                                            <i class="bi bi-star {{$fiv}}"></i>
+                                        </div>
+                                        <div id="selected-rating">
+                                            Selected rating: {{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}
+                                        </div>
+                                       
+                                    </div>
+                                   
+                                    <input type="hidden" name="no_of_rating" class="valRarting" value="{{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}">
+                                    <input type="hidden" name="campaign_id" value="{{ $campagin_detail->id ?? '' }}">
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="comment" name="comments" rows="3" placeholder="Please Enter Comment..">{{!empty($ratings) && $ratings->comments ?$ratings->comments:""}}</textarea>
+                                        <label id="comment-error" class="error" for="comment"></label>
+                                    </div>
+                                    <div class="mt-3 form-group">
+                                        <!-- Submit button -->
+                                        <button id="submitRating" class="btn btn-primary">Submit Rating</button>
+                                    </div>
+                                
+                            </form>
+                        </div>
+                        </div>
+                    </div>
                 @endif
             </div>
         </div>
@@ -381,6 +459,7 @@ Status: <strong
             </ul>
         </div>
         
+        
     {{-- @endif --}}
     
     </div>
@@ -439,6 +518,85 @@ Status: <strong
             chat = "{{ ($chat) }}"
           });
     </script> --}}
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+<script>
+    $(document).ready(function(){
+        // Initially, no star is selected
+        var selectedRating = 0;
+
+        // Highlight stars on hover
+        $(".rating i").hover(function() {
+            $(this).prevAll().addBack().addClass("hover");
+        }, function() {
+            $(this).prevAll().addBack().removeClass("hover");
+        });
+
+        // Set rating on click
+        $(".rating i").click(function() {
+            selectedRating = $(this).index() + 1;
+            $(".rating i").removeClass("selected");
+            $(this).prevAll().addBack().addClass("selected");
+            $("#selected-rating").text("Selected rating: " + selectedRating);
+            $(".valRarting").val(selectedRating);
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Add validation rules
+        var ratingTask = "";
+        $("#ratingForm").validate({
+            rules: {
+                // Define rules for each form field
+                comments: {
+                    required: true,
+                    minlength: 10  // Example: Minimum length of 10 characters
+                }
+            },
+            messages: {
+                // Define custom error messages
+                comment: {
+                    required: "Please enter your comment.",
+                    minlength: "Your comment must be at least {0} characters long."
+                }
+            },
+            // Specify where to display error messages
+            errorPlacement: function(error, element) {
+                error.appendTo(element.parent().next());
+            },
+            submitHandler: function(form,e) {
+            e.preventDefault();
+            console.log('Form submitted');
+            $.ajax({
+                url:'{{ route('user.store.rating.task') }}',
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                },
+                data: $('form').serialize(),
+                success: function(result) {
+                    $("#btnJoined").hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Thankyou for given rating',
+                        confirmButtonColor: '#3085D6',
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        // Reload the page
+                        location.reload();
+                    });
+                },
+                error : function(error) {
+
+                }
+            });
+            return false;
+        }
+   
+        });
+    });
+</script>
     <script>
         function showSuccessAlert() {
             var ID = "{{ base64_encode($campagin_detail->id) }}";

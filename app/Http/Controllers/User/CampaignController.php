@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\Notification;
+use App\Models\ratings;
 use App\Models\Referral;
 use App\Models\TaskEvidence;
 use App\Models\User;
@@ -93,8 +94,7 @@ class CampaignController extends Controller
 
     function campaignview(Request $request)
     {
-        try {
-          
+        try {         
           
             $campagin_id = base64_decode($request->id);
             $companyId = Helper::getCompanyId();
@@ -120,6 +120,7 @@ class CampaignController extends Controller
               
 
             $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+            $data['ratings'] = ratings::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
            
           
             if ($data['user_Campaign'] != null) {

@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendEmailJob;
+use App\Models\ratings;
 use App\Models\SettingModel;
 
 class UsrController extends Controller
@@ -690,6 +691,56 @@ class UsrController extends Controller
             Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
+    }
+    public function addTaskRating(Request $request)
+    {
+      
+            
+            $user = Auth::user();
+            $companyId = null; // Initialize companyId to null
+            
+            // Get the domain and company ID
+            $host = $request->getHost();
+            $domain = explode('.', $host);
+            $CompanyModel = new CompanyModel();
+            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            
+            if ($exitDomain) {
+                $companyId = $exitDomain->user_id;
+            } else {
+                throw new \Exception("Domain not found");
+            }
+    
+            // Check if the user has already rated the campaign
+            $existingRating = ratings::where('user_id', $user->id)
+                                    ->where('company_id', $companyId)
+                                    ->where('campaign_id', $request->campaign_id)
+                                    ->first();
+    
+            if (!empty($existingRating)) {
+                // Update the existing rating
+                $existingRating->no_of_rating = $request->no_of_rating;
+                $existingRating->comments = $request->comments;
+                $existingRating->save();
+            } else {
+               
+                // Create a new rating
+                $ratings = new ratings();
+                $ratings->user_id = $user->id;
+                $ratings->company_id = $companyId;
+                $ratings->campaign_id = $request->campaign_id;
+                $ratings->no_of_rating = $request->no_of_rating;
+                $ratings->comments = $request->comments;
+                $ratings->save();
+            }
+         
+            return response()->json(['success' => true]);
+            
+        // } catch (\Exception $e) {
+        //     Log::error('UsrController::addTaskRating => ' . $e->getMessage());
+        //     return response()->json(['success' => false, 'error' => "Error: " . $e->getMessage()]);
+        // }
+
     }
 
     public function Logout()

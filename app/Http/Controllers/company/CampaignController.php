@@ -7,6 +7,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
 use App\Models\Notification;
+use App\Models\ratings;
 use App\Models\Referral;
 use App\Models\SettingModel;
 use App\Models\TaskEvidence;
@@ -396,6 +397,7 @@ class CampaignController extends Controller
     public function view($type, $id)
     {
         try {
+         
             $companyId = Helper::getCompanyId();
 
             $type = CampaignModel::TYPE[strtoupper($type)];
@@ -505,6 +507,7 @@ class CampaignController extends Controller
     }
     public function userDetails(Request $request, $id)
     {
+     
         try {
             $id = base64_decode($id);
             $companyId = Helper::getCompanyId();
@@ -512,12 +515,14 @@ class CampaignController extends Controller
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
             $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
             $user = User::where('id', $camphistory->user_id)->where('company_id', $companyId)->first();
+            $ratings = ratings::where('campaign_id', $camphistory->campaign_id)->where('user_id', $camphistory->user_id)->first();
+
 
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
             $chats = TaskEvidence::where('campaign_id', $id)->where('company_id', $companyId)->get();
-            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id'));
+            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id','ratings'));
         } catch (Exception $e) {
             Log::error('CampaignController::UserDetails => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());

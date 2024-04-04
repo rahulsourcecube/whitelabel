@@ -171,6 +171,10 @@ Route::get('send-email-queue', function () {
                 Route::post('/social-account', [UsrController::class, 'socialAccount'])->name('socialAccount');
                 Route::post('/bank-details', [UsrController::class, 'bankDetail'])->name('bankDetail');
                 Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
+                //Rating
+                Route::post('/rating/store', [UsrController::class, 'addTaskRating'])->name('store.rating.task');
+
+                
             });
         });
 

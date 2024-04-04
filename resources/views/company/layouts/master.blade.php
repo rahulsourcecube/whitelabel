@@ -27,6 +27,8 @@
     <!-- Core css -->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
+
 </head>
 
 <body>
