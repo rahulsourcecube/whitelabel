@@ -6,8 +6,7 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
-                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">{{ $taskType }} Tasks</span>
                 </nav>
             </div>
@@ -16,8 +15,7 @@
             <div class="card-body">
                 <h4>{{ $taskType }} Task List</h4>
                 @if (isset($totalData) && count($totalData) > 0)
-                    <a class="btn btn-primary float-right btn-sm p-10 h-40"
-                        href="{{ route('company.campaign.export', $taskType) }}" role="button">Export</a>
+                    <a class="btn btn-primary float-right btn-sm p-10 h-40" href="{{ route('company.campaign.export', $taskType) }}" role="button">Export</a>
                 @endif
                 <div>
                     <table id="campaign_tables" class="table">
@@ -26,6 +24,8 @@
                                 <th></th>
                                 <th>Name</th>
                                 <th>Reward</th>
+                                <th>Priority</th>
+                                <th>Public</th>
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>No of referral users</th>
@@ -79,12 +79,28 @@
                         },
                     },
                     {
-                        'targets': 5,
+                        'targets': 3,
+                        'visible': true,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            return row[8];
+                        },
+                    },
+                    {
+                        'targets': 4,
+                        'visible': true,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            return row[9];
+                        },
+                    },
+                    {
+                        'targets': 7,
                         'visible': taskTypeString === 'Referral', // Corrected syntax
                         'orderable': false,
                     },
                     {
-                        'targets': 6,
+                        'targets': 8,
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
@@ -99,7 +115,7 @@
                             }
                         },
                     }, {
-                        'targets': 7,
+                        'targets': 9,
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
@@ -119,14 +135,15 @@
                                     '<a class="btn btn-danger btn-sm" role="button" href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
                                     deleteUrl +
                                     '\')" title="Delete"><i class="fa fa-trash"></i></a>';
-                            }else{
-                                 deleteButton =
+                            } else {
+                                deleteButton =
                                     `<button  type='button' class='btn btn-danger btn-sm ' style='background-color: rgb(222 68 54 / 50%);' role='button' data-toggle='tooltip' data-placement='top'  title="You can't delete his campaign due to users already joined this campaign "><i class='fa fa-trash'></i></button>`;
                             }
                             return '<a class="btn btn-success  btn-sm" href="' + viewUrl +
                                 '" role="button" title="View"><i class="fa fa-eye"></i></a> @can('task-edit') <a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
-                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can('task-delete') '+ deleteButton +' @endcan';
+                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can('task-delete') ' +
+                                deleteButton + ' @endcan';
 
                         },
                     }

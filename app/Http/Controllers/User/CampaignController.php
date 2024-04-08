@@ -64,7 +64,25 @@ class CampaignController extends Controller
                 ->select('campaign.*')
                 ->get();
 
+
+
             foreach ($results as $result) {
+
+                $priority = "-";
+                switch ($result->priority) {
+                    case 1:
+                        $priority = "High";
+                        break;
+                    case 2:
+                        $priority = "Medium";
+                        break;
+                    case 3:
+                        $priority = "Low";
+                        break;
+                }
+
+                $public = $result->public ? "Yes" : "No";
+
                 $list[] = [
                     base64_encode($result->id),
                     $result->title ?? "-",
@@ -72,6 +90,8 @@ class CampaignController extends Controller
                     Str::limit($result->description, 40) ?? "-",
                     $result->task_type ?? "_",
                     $result->status ?? "_",
+                    $priority, // Priority value
+                    $public // Public value,
                 ];
             }
             return response()->json([
@@ -94,15 +114,15 @@ class CampaignController extends Controller
     function campaignview(Request $request)
     {
         try {
-          
-          
+
+
             $campagin_id = base64_decode($request->id);
             $companyId = Helper::getCompanyId();
             $data = [];
             $data['chats'] = null;
             $data['user'] = null;
             $data['ReferralCount'] = 0;
-            $data['user_Campaign'] =null;
+            $data['user_Campaign'] = null;
             $data['campagin_detail'] = CampaignModel::where('id', $campagin_id)->where('company_id', $companyId)->first();
 
             if (empty($data['campagin_detail'])) {
@@ -117,18 +137,18 @@ class CampaignController extends Controller
                         ->whereNotNull('users.referral_user_id');
                 })
                 ->orderBy('user_id', 'desc')->get();
-              
+
 
             $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
-           
-          
+
+
             if ($data['user_Campaign'] != null) {
                 $data['chats'] = TaskEvidence::where('campaign_id', $data['user_Campaign']->id)->where('company_id', $companyId)->get();
                 $data['user'] = User::where('id', $data['user_Campaign']->user_id)->where('company_id', $companyId)->first();
                 $query = Referral::where('campagin_id', $data['user_Campaign']->campaign_id)->where('referral_user_id', Auth::user()->id);
                 $data['ReferralCount'] = $query->count();
             }
-           
+
 
             $data['referral_user_detail'] = Referral::where('campagin_id', $campagin_id)->where('referral_user_id', Auth::user()->id)->get();
             return view('user.campaign.view', $data);
@@ -137,7 +157,7 @@ class CampaignController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
-    
+
     public function GetReferralUserDetail(Request $request)
     {
         try {
@@ -208,11 +228,11 @@ class CampaignController extends Controller
             $campagin_id = base64_decode($request->id);
 
             $getcampaign = CampaignModel::where('id', $campagin_id)->where('company_id', $companyId)->first();
-        
+
             $input = new UserCampaignHistoryModel;
             $input->campaign_id = isset($getcampaign->id) ? $getcampaign->id : '';
             $input->user_id = Auth::user()->id;
-            $input->reward = ($getcampaign->reward?:0);
+            $input->reward = ($getcampaign->reward ?: 0);
             $input->text_reward = $getcampaign->text_reward;
 
             if ($getcampaign->type == 1) {
@@ -261,19 +281,19 @@ class CampaignController extends Controller
     function requestSend(Request $request)
     {
         try {
-            $companyId = Helper::getCompanyId();           
+            $companyId = Helper::getCompanyId();
             $id = base64_decode($request->id);
-            
+
             $input = new UserCampaignHistoryModel;
             $input = UserCampaignHistoryModel::where('id', $id)->first();
-        
+
             $CampaignModel = CampaignModel::where('id', $input['campaign_id'])->where('company_id', $companyId)->first();
-        
+
             $input->status = 2;
             $input->verified_by = 0;
-            $input->reward=$CampaignModel->reward??0;
-            $input->text_reward=$CampaignModel->text_reward;
-           
+            $input->reward = $CampaignModel->reward ?? 0;
+            $input->text_reward = $CampaignModel->text_reward;
+
             if (isset($input)) {
                 $Notification = new Notification();
                 $Notification->user_id =  $CampaignModel->user_id;
@@ -291,11 +311,11 @@ class CampaignController extends Controller
                 $TaskEvidence->message = "Task completed";
                 $TaskEvidence->save();
             }
-                
+
             // $UserCampaign->reward = $UserCampaign->reward + $UserCampaign->getCampaign->reward;
             // $UserCampaign->save();
             $input->save();
-           
+
             return $input;
         } catch (Exception $e) {
             Log::error('CampaignController::requestSend => ' . $e->getMessage());
@@ -304,40 +324,39 @@ class CampaignController extends Controller
     }
     function reopenSend(Request $request)
     {
-       
-          
-            $companyId = Helper::getCompanyId();           
-            $id = base64_decode($request->id);
-        
-         
-            
-            $input = new UserCampaignHistoryModel;
-            $input = UserCampaignHistoryModel::where('id', $id)->first();
-        
-            $CampaignModel = CampaignModel::where('id', $input['campaign_id'])->where('company_id', $companyId)->first();
-            
-        
-            $input->status = 5;
-            $input->verified_by = 0;
-            $input->reward= $CampaignModel->reward??0;
-            $input->text_reward=$CampaignModel->text_reward;
-           
-                    if (isset($input)) {
-                        $Notification = new Notification();
-                        $Notification->user_id =  $CampaignModel->user_id;
-                        $Notification->company_id =  $companyId;
-                        $Notification->type =  '2';
-                        $Notification->title =  " Campaign Reopen request";
-                        $Notification->message =  $CampaignModel->title . " approval Reopen by " . $input->getuser->FullName;
-                        $Notification->save();
-                    }
-                
-                     // $UserCampaign->reward = $UserCampaign->reward + $UserCampaign->getCampaign->reward;
-                        // $UserCampaign->save();
-            $input->save();
 
-           
-            return $input;
-       
+
+        $companyId = Helper::getCompanyId();
+        $id = base64_decode($request->id);
+
+
+
+        $input = new UserCampaignHistoryModel;
+        $input = UserCampaignHistoryModel::where('id', $id)->first();
+
+        $CampaignModel = CampaignModel::where('id', $input['campaign_id'])->where('company_id', $companyId)->first();
+
+
+        $input->status = 5;
+        $input->verified_by = 0;
+        $input->reward = $CampaignModel->reward ?? 0;
+        $input->text_reward = $CampaignModel->text_reward;
+
+        if (isset($input)) {
+            $Notification = new Notification();
+            $Notification->user_id =  $CampaignModel->user_id;
+            $Notification->company_id =  $companyId;
+            $Notification->type =  '2';
+            $Notification->title =  " Campaign Reopen request";
+            $Notification->message =  $CampaignModel->title . " approval Reopen by " . $input->getuser->FullName;
+            $Notification->save();
+        }
+
+        // $UserCampaign->reward = $UserCampaign->reward + $UserCampaign->getCampaign->reward;
+        // $UserCampaign->save();
+        $input->save();
+
+
+        return $input;
     }
 }

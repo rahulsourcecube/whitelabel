@@ -7,8 +7,7 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
-                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item">Campaign</span>
                     <span class="breadcrumb-item active">VIew </span>
                 </nav>
@@ -20,11 +19,9 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if (isset($task) && $task->image != '' && file_exists(base_path('uploads/company/campaign/' . $task->image)))
-                                <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
-                                    class="w-100 img-responsive">
+                                <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}" class="w-100 img-responsive">
                             @else
-                                <img src="{{ asset('assets/images/others/No_image_available.png') }}"
-                                    class="w-100 img-responsive">
+                                <img src="{{ asset('assets/images/others/No_image_available.png') }}" class="w-100 img-responsive">
                             @endif
                         </div>
                         <div class="col-md-8">
@@ -41,14 +38,40 @@
                                         @endif
                                     </span>
                                     @if ($task->type == '1')
-                                    <span class="m-h-5 text-gray">|</span>
-                                    <span class="text-gray"> <b>No of referral users: </b>{{ $task->no_of_referral_users ?? '' }}</span>
+                                        <span class="m-h-5 text-gray">|</span>
+                                        <span class="text-gray"> <b>No of referral users: </b>{{ $task->no_of_referral_users ?? '' }}</span>
                                     @endif
                                     <span class="m-h-5 text-gray">|</span>
-                                    <span class="text-gray">{{  App\Helpers\Helper::Dateformat($task->expiry_date) ?? '' }}</span>
-                                    <p class="text-gray font-weight-semibold">Reward:
-                                        <b>{{ $task->text_reward ? $task->text_reward : (isset($task->reward) ? \App\Helpers\Helper::getcurrency() . $task->reward : '0') }}</b></p>
-                            
+                                    <span class="text-gray">{{ App\Helpers\Helper::Dateformat($task->expiry_date) ?? '' }}</span>
+
+                                    <p class="text-gray font-weight-semibold">
+                                        @if ($task->priority == 1)
+                                            <span class="badge badge-pill badge-danger"> High </span>
+                                        @elseif($task->priority == 2)
+                                            <span class="badge badge-pill badge-info"> Medium </span>
+                                        @elseif($task->priority == 3)
+                                            <span class="badge badge-pill badge-success"> Low </span>
+                                        @else
+                                            {{-- Handle other cases if needed --}}
+                                        @endif
+
+                                        </span>
+                                        Reward:
+                                        <b>{{ $task->text_reward ? $task->text_reward : (isset($task->reward) ? \App\Helpers\Helper::getcurrency() . $task->reward : '0') }}</b>
+
+                                        <span class="m-h-5 text-gray">|</span>
+                                        <span class="text-gray"><b>Public: </b>
+                                            @if ($task->public == 1)
+                                                Yes
+                                            @elseif($task->public == 0)
+                                                No
+                                            @else
+                                                {{-- Handle other cases if needed --}}
+                                            @endif
+                                        </span>
+
+                                    </p>
+
                                 </div>
                             </div>
                             <p class="m-b-20">{!! $task->description !!}</p>
@@ -61,26 +84,26 @@
                         <div class="m-t-25">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                 <li class="nav-item my-table-tab" data-status="1">
-                                    <a class="nav-link active" id="user-tab" data-toggle="pill" href="#Joined_user"
-                                        role="tab" aria-controls="user" aria-selected="true">Recently Joined User </a>
+                                    <a class="nav-link active" id="user-tab" data-toggle="pill" href="#Joined_user" role="tab" aria-controls="user"
+                                        aria-selected="true">Recently Joined User </a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="2">
-                                    <a class="nav-link" id="request-tab" data-toggle="pill" href="#request" role="tab"
-                                        aria-controls="request" aria-selected="false">Approval Requset</a>
+                                    <a class="nav-link" id="request-tab" data-toggle="pill" href="#request" role="tab" aria-controls="request"
+                                        aria-selected="false">Approval Requset</a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="5">
-                                    <a class="nav-link" id="reopen-tab" data-toggle="pill" href="#reopen" role="tab"
-                                        aria-controls="reopen" aria-selected="false">Reopen</a>
+                                    <a class="nav-link" id="reopen-tab" data-toggle="pill" href="#reopen" role="tab" aria-controls="reopen"
+                                        aria-selected="false">Reopen</a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="3">
-                                    <a class="nav-link" id="accept-tab" data-toggle="pill" href="#accept" role="tab"
-                                        aria-controls="accept" aria-selected="false">Accepted</a>
+                                    <a class="nav-link" id="accept-tab" data-toggle="pill" href="#accept" role="tab" aria-controls="accept"
+                                        aria-selected="false">Accepted</a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="4">
-                                    <a class="nav-link" id="reject-tab" data-toggle="pill" href="#reject" role="tab"
-                                        aria-controls="reject" aria-selected="false">Rejected</a>
+                                    <a class="nav-link" id="reject-tab" data-toggle="pill" href="#reject" role="tab" aria-controls="reject"
+                                        aria-selected="false">Rejected</a>
                                 </li>
-                                
+
                             </ul>
                         </div>
                     </div>
@@ -122,8 +145,6 @@
 
         </div>
     </div>
-
-
 
 @endsection
 @section('js')
@@ -187,24 +208,23 @@
 
         table1.column(6).visible(true);
         $(document).on("click", ".my-table-tab", function() {
-            title="Recently User Joined List";
-            if($(this).data('status') == '1'){
-                  title = 'Recently User Joined List';
-            }else if($(this).data('status') == '2'){
+            title = "Recently User Joined List";
+            if ($(this).data('status') == '1') {
+                title = 'Recently User Joined List';
+            } else if ($(this).data('status') == '2') {
                 title = 'Approval Requset List';
-            }
-            else if($(this).data('status') == '5'){
+            } else if ($(this).data('status') == '5') {
                 title = 'Reopen List';
-            }else if($(this).data('status') == '3'){
+            } else if ($(this).data('status') == '3') {
                 title = 'Accepted List';
-            }else if($(this).data('status') == '4'){
+            } else if ($(this).data('status') == '4') {
                 title = 'Rejected List';
-            }            
+            }
             $('.addtitle').html(title);
-            
+
             $('#status').val($(this).data('status'));
             table1.draw();
-            if ($(this).data('status') != '3' ) {
+            if ($(this).data('status') != '3') {
                 table1.column(6).visible(true);
             } else {
                 table1.column(6).visible(true);

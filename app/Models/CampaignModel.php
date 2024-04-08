@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CampaignModel extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     const TYPE = [
         'REFERRAL' => 1,
         'SOCIAL' => 2,
@@ -22,6 +22,8 @@ class CampaignModel extends Model
         'reward',
         'text_reward',
         'description',
+        'priority',
+        'public',
         'expiry_date',
         'type',
         'image',
@@ -60,7 +62,7 @@ class CampaignModel extends Model
         }
         return $string;
     }
-   
+
 
     public function campaign()
     {
@@ -75,8 +77,9 @@ class CampaignModel extends Model
     {
         return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id', 'id');
     }
-    public function campaignUSerHistory() {
-        return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id','id')->where('status','3');
+    public function campaignUSerHistory()
+    {
+        return $this->hasMany(UserCampaignHistoryModel::class, 'campaign_id', 'id')->where('status', '3');
     }
     public function PendingCampaignUSerHistory()
     {

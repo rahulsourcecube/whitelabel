@@ -6,8 +6,7 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
-                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <a class="breadcrumb-item" href="{{ route('company.user.list') }}">User</a>
                     <span class="breadcrumb-item active">Profile</span>
                 </nav>
@@ -21,9 +20,8 @@
                             <div class="row align-items-center">
                                 <div class="text-center text-sm-left col-md-2">
                                     <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                        @if (isset($user) && !empty($user->profile_image) && file_exists(base_path().'/uploads/company/user-profile/' . $user->profile_image))
-                                            <img src="{{ asset('uploads/company/user-profile/' . $user->profile_image) }}"
-                                                alt="">
+                                        @if (isset($user) && !empty($user->profile_image) && file_exists(base_path() . '/uploads/company/user-profile/' . $user->profile_image))
+                                            <img src="{{ asset('uploads/company/user-profile/' . $user->profile_image) }}" alt="">
                                         @else
                                             <img src="{{ asset('assets/images/default-user.jpg') }}" alt="">
                                         @endif
@@ -52,29 +50,40 @@
                                                         {{ isset($user) ? $user->contact_number : '' }}
                                                     </p>
                                                 </li>
+                                                <li class="row">
+                                                    <p class="font-weight-semibold text-dark m-b-5">
+                                                        <i class="m-r-8 text-primary anticon anticon-home"></i>
+                                                    </p>
+                                                    <p class="col font-weight-semibold">
+                                                        {{ isset($user->city->name) ? $user->city->name : '-' }}
+                                                        {{ isset($user->state->name) ? $user->state->name : '-' }}
+                                                        {{ isset($user->country->name) ? $user->country->name : '-' }}
+                                                    </p>
+                                                </li>
+
                                             </ul>
                                             <div class="d-flex font-size-22 m-t-15">
                                                 @if (isset($user->facebook_link) && !empty($user->facebook_link))
-                                                    <a href="{{ isset($user->facebook_link) ? $user->facebook_link : ' #' }}"
-                                                        target="blank" class="text-gray p-r-20">
+                                                    <a href="{{ isset($user->facebook_link) ? $user->facebook_link : ' #' }}" target="blank"
+                                                        class="text-gray p-r-20">
                                                         <i class="anticon anticon-facebook"></i>
                                                     </a>
                                                 @endif
                                                 @if (isset($user->instagram_link) && !empty($user->instagram_link))
-                                                    <a href="{{ isset($user->instagram_link) ? $user->instagram_link : ' #' }}"
-                                                        target="blank" class="text-gray p-r-20">
+                                                    <a href="{{ isset($user->instagram_link) ? $user->instagram_link : ' #' }}" target="blank"
+                                                        class="text-gray p-r-20">
                                                         <i class="anticon anticon-instagram"></i>
                                                     </a>
                                                 @endif
                                                 @if (isset($user->twitter_link) && !empty($user->twitter_link))
-                                                    <a href="{{ isset($user->twitter_link) ? $user->twitter_link : ' #' }}"
-                                                        target="blank" class="text-gray p-r-20">
+                                                    <a href="{{ isset($user->twitter_link) ? $user->twitter_link : ' #' }}" target="blank"
+                                                        class="text-gray p-r-20">
                                                         <i class="anticon anticon-twitter"></i>
                                                     </a>
                                                 @endif
                                                 @if (isset($user->youtube_link) && !empty($user->youtube_link))
-                                                    <a href="{{ isset($user->youtube_link) ? $user->youtube_link : ' #' }}"
-                                                        target="blank" class="text-gray p-r-20">
+                                                    <a href="{{ isset($user->youtube_link) ? $user->youtube_link : ' #' }}" target="blank"
+                                                        class="text-gray p-r-20">
                                                         <i class="anticon anticon-youtube"></i>
                                                     </a>
                                                 @endif
