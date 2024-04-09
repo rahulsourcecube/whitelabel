@@ -6,11 +6,14 @@ use App\Exports\Export;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
+use App\Models\Feedback;
 use App\Models\Notification;
 use App\Models\ratings;
 use App\Models\Referral;
 use App\Models\SettingModel;
 use App\Models\TaskEvidence;
+use App\Models\TaskProgression;
+use App\Models\taskProgressionUserHistory;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Exception;
@@ -239,6 +242,8 @@ class CampaignController extends Controller
             $Campaign->company_id = $companyId;
             $Campaign->status = !empty($request->status) ? '1' : "0";
             $Campaign->package_id = $ActivePackageData->id;
+            $Campaign->feedback_type = $request->feedback_type;
+            $Campaign->referral_url_segment = $request->referral_url;
 
             $Campaign->save();
             $taskType = Helper::taskType($request->type);
@@ -292,6 +297,8 @@ class CampaignController extends Controller
             $Campaign->image = $image;
             $Campaign->company_id = $companyId;
             $Campaign->status = !empty($request->status) ? '1' : '0';
+            $Campaign->feedback_type = $request->feedback_type;
+            $Campaign->referral_url_segment = $request->referral_url;
             $Campaign->save();
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task update successfuly.');
@@ -458,13 +465,32 @@ class CampaignController extends Controller
     {
         try {
             $id = base64_decode($request->id);
-
+            $companyId = Helper::getCompanyId();
             $action = UserCampaignHistoryModel::where('id', $id)->first();
             $Notification = new Notification();
 
             if ($request->action == '3') {
+                
                 $action->status = '3';
                 $action->save();
+                if(!empty($action)) {
+                    $batch=UserCampaignHistoryModel::where('user_id', $action->user_id)->where('status', 3)->get()->count(); 
+                 
+                    $progression=[];
+                    if(!empty($batch)){
+                        $progression = TaskProgression::where('company_id',$companyId)->where('no_of_task',$batch)->first(); 
+                        $taskProgressionUserHistory = taskProgressionUserHistory::where('company_id',$companyId)->where('user_id', $action->user_id)->where('no_of_task',$batch)->first(); 
+                       if(!empty($progression) && empty($taskProgressionUserHistory)){
+                            $taskProgressionUserHistoryStore= new taskProgressionUserHistory();
+                            $taskProgressionUserHistoryStore->company_id = $companyId;
+                            $taskProgressionUserHistoryStore->user_id = $action->user_id;
+                            $taskProgressionUserHistoryStore->no_of_task = $progression->no_of_task; 
+                            $taskProgressionUserHistoryStore->progression_id = $progression->id; 
+                    $taskProgressionUserHistoryStore->save();
+
+                       }
+                    }
+                }
                 if (isset($action)) {
                     $Notification->user_id =  $action->user_id;
                     $Notification->company_id =  $action->campaign_id;
@@ -516,13 +542,14 @@ class CampaignController extends Controller
             $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
             $user = User::where('id', $camphistory->user_id)->where('company_id', $companyId)->first();
             $ratings = ratings::where('campaign_id', $camphistory->campaign_id)->where('user_id', $camphistory->user_id)->first();
+            $feedback = Feedback::where('campaign_id', $camphistory->campaign_id)->where('user_id', $camphistory->user_id)->first();
 
 
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
             $chats = TaskEvidence::where('campaign_id', $id)->where('company_id', $companyId)->get();
-            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id','ratings'));
+            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id','ratings','feedback'));
         } catch (Exception $e) {
             Log::error('CampaignController::UserDetails => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());

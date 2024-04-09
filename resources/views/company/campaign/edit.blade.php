@@ -117,7 +117,16 @@
                             <label id="image-error" class="error" for="image">{{ $message }}</label>
                             @enderror
                         </div>
+                        @if(isset($type) && $type == "1")
+                            <div class="form-group col-md-6">
+                                <label for="referral_url">URl Setting <span class="error"></span></label>
+
+                                <input type="text" name="referral_url" class="form-control" value="{{$task->referral_url_segment ?? ''}}" id="referral_url" maxlength="250"  oninput="this.value = this.value.replace(/\s/g, '');">
+                      
+                            </div>
+                        @endif
                     </div>
+                    
                     <div class="form-row">
                         <div class="form-group col-md-3" style="max-height: 200px;">
                             @if (isset($task) && !empty($task->image) && file_exists(base_path('uploads/company/campaign/' . $task->image)))
@@ -133,6 +142,17 @@
                                 @endif
                         </div>
                     </div>
+                    <hr>
+                <h4>Feedback Management</h4>
+                <div class="form-group col-md-3">
+                    <label for="feedback_type">Feedback Type <span class="error">*</span></label>
+                    <select id="feedback_type" name="feedback_type" class="form-control type">
+
+                        <option  value="rating"  {{ !empty($task->feedback_type) && $task->feedback_type == 'rating' ? 'selected' : '' }} >Rating </option>
+                        <option  value="description"  {{ !empty($task->feedback_type) && $task->feedback_type == 'description' ? 'selected' : '' }} >Description</option>
+                        <option value="both"  {{ !empty($task->feedback_type) && $task->feedback_type == 'both' ? 'selected' : '' }}>Both</option>
+                    </select>
+                </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>

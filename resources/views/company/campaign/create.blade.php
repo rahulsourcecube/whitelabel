@@ -109,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-row">
+                    <div class="row">
                         <div class="form-group col-md-6">
                             <label for="file">Image <span class="error">*</span></label>
                             <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg"
@@ -118,6 +118,12 @@
                             <label id="image-error" class="error" for="image">{{ $message }}</label>
                             @enderror
                         </div>
+                        @if(isset($typeInText) && $typeInText == "Referral")
+                        <div class="form-group col-md-6">
+                            <label for="referral_url">URl Setting <span class="error">*</span></label>
+                            <input type="text" name="referral_url" class="form-control" id="referral_url" maxlength="250"  oninput="this.value = this.value.replace(/\s/g, '');">
+                         </div>
+                        @endif
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3" style="max-height: 200px;">
@@ -127,6 +133,23 @@
                                 style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
                         </div>
                     </div>
+                <hr>
+                <h4>Feedback Management</h4>
+                <div class="form-group col-md-3">
+                    <label for="feedback_type">Feedback Type <span class="error">*</span></label>
+                    <select id="feedback_type" name="feedback_type" class="form-control type">
+
+                        <option  value="rating"
+                            >Rating
+                        </option>
+                        <option selected value="description"
+                           >Description
+                        </option>
+                        <option value="both"
+                           >Both
+                        </option>
+                    </select>
+                </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>

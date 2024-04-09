@@ -32,6 +32,7 @@
                 </nav>
             </div>
         </div>
+        
         <input type="hidden" class="user_Campaign"
             value="{{ !empty($user_Campaign->id) ? base64_encode($user_Campaign->id) : null }}">
         <div class="container1">
@@ -203,7 +204,7 @@ Status: <strong
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="col-md-4">
-                                        <h5>MY Referral connected Users</h5>
+                                        <h5>                                                                                                                                                                                                                                                                         Users</h5>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="alert alert-warning alert-dismissible alert-live show w-max-content">
@@ -255,8 +256,9 @@ Status: <strong
                     </div>
                     <div class="col-lg-12">
                         <div class="card">
-                            <div class="container">
-                            <form id="ratingForm" method="POST">                              
+                            <div class="container mt-5">
+                            <form id="ratingForm" method="POST"> 
+                                @csrf                             
                                 <h2>Add Reivews</h2>
                               @php
                                     $se='';
@@ -284,7 +286,7 @@ Status: <strong
                                   }
 
                               @endphp
-                                    <div class="rating form-group center">
+                                    <div class="rating reivews form-group center">
                                         <!-- Rating stars -->
                                         <div class="rating">
                                             <i class="bi bi-star selected"></i>
@@ -294,7 +296,7 @@ Status: <strong
                                             <i class="bi bi-star {{$fiv}}"></i>
                                         </div>
                                         <div id="selected-rating">
-                                            Selected rating: {{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}
+                                            Selected Star: {{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}
                                         </div>
                                        
                                     </div>
@@ -302,18 +304,88 @@ Status: <strong
                                     <input type="hidden" name="no_of_rating" class="valRarting" value="{{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}">
                                     <input type="hidden" name="campaign_id" value="{{ $campagin_detail->id ?? '' }}">
                                     <div class="form-group">
+                                        <label for="inputype"><b>Comment </b><span class="error"></span></label>
                                         <textarea class="form-control" id="comment" name="comments" rows="3" placeholder="Please Enter Comment..">{{!empty($ratings) && $ratings->comments ?$ratings->comments:""}}</textarea>
                                         <label id="comment-error" class="error" for="comment"></label>
                                     </div>
                                     <div class="mt-3 form-group">
                                         <!-- Submit button -->
-                                        <button id="submitRating" class="btn btn-primary">Submit Rating</button>
+                                        <button id="submitRating" class="btn btn-primary">Send</button>
                                     </div>
                                 
                             </form>
                         </div>
                         </div>
                     </div>
+                    @if (isset($user_Campaign->status) && $user_Campaign->status == '3')
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="container mt-5">
+                            <form id="feedbackForm" method="POST">     
+                                @csrf                          
+                                <h2>Add Feedback</h2>
+                              @php
+                                    $fse='';
+                                    $fth='';
+                                    $ffor='';
+                                    $ffiv='';
+                                  $feedbackSelectRating =!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1";
+                                  if($feedbackSelectRating == '2'){                            
+                                        $se='selected';
+                                  }elseif($feedbackSelectRating == '3'){
+                                    $fse='selected';
+                                    $fth='selected';
+                                  }elseif($feedbackSelectRating == '4'){
+                                    $fse='selected';
+                                    $fth='selected';
+                                    $ffor='selected';
+
+                                  }elseif($feedbackSelectRating == '5'){
+                                   
+                                    $fse='selected';
+                                    $fth='selected';
+                                    $ffor='selected';
+                                    $ffiv='selected';
+                                    
+                                  }
+
+                              @endphp
+                              @if($campagin_detail->feedback_type =='rating' || $campagin_detail->feedback_type =='both')
+                                    <div class="rating form-group center">
+                                        <!-- Rating stars -->
+                                        <div class="rating feedback ">
+                                            <i class="bi bi-star selected"></i>
+                                            <i class="bi bi-star {{$fse}}"></i>
+                                            <i class="bi bi-star {{$fth}}"></i>
+                                            <i class="bi bi-star {{$ffor}}"></i>
+                                            <i class="bi bi-star {{$ffiv}}"></i>
+                                        </div>
+                                        <div id="feedback-selected-rating">
+                                            Selected Star: {{!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1"}}
+                                        </div>
+                                       
+                                    </div>
+                                    <input type="hidden" name="no_of_rating" class="valRetingFeedback" value="{{!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1"}}">
+                                    @endif
+                                   
+                                    <input type="hidden" name="campaign_id" value="{{ $campagin_detail->id ?? '' }}">
+                                    @if(($campagin_detail->feedback_type =='description'  || $campagin_detail->feedback_type =='both')  )
+                                        <div class="form-group">
+                                            <label for="comment"><b>Description </b></label>
+                                            <textarea class="form-control" id="comment" name="comments" rows="3" placeholder="Please Enter Comment..">{{!empty($feedback) && $feedback->comments ?$feedback->comments:""}}</textarea>
+                                            <label id="comment-error" class="error" for="comment"></label>
+                                        </div>
+                                    @endif
+                                    <div class="mt-3 form-group">
+                                        <!-- Submit button -->
+                                        <button id="submitRating" class="btn btn-primary">Send</button>
+                                    </div>
+                                
+                            </form>
+                        </div>
+                        </div>
+                    </div>
+                @endif
                 @endif
             </div>
         </div>
@@ -532,12 +604,21 @@ Status: <strong
         });
 
         // Set rating on click
-        $(".rating i").click(function() {
+        $(".reivews i").click(function() {
             selectedRating = $(this).index() + 1;
-            $(".rating i").removeClass("selected");
+            $(".reivews i").removeClass("selected");
             $(this).prevAll().addBack().addClass("selected");
             $("#selected-rating").text("Selected rating: " + selectedRating);
             $(".valRarting").val(selectedRating);
+        });
+
+        $(".feedback i").click(function() {
+            alert(123);
+            selectedRating = $(this).index() + 1;
+            $(".feedback i").removeClass("selected");
+            $(this).prevAll().addBack().addClass("selected");
+            $(" #feedback-selected-rating").text("Selected rating: " + selectedRating);
+            $(".valRetingFeedback").val(selectedRating);
         });
     });
 </script>
@@ -573,13 +654,70 @@ Status: <strong
                 data: {
                     "_token": "{{ csrf_token() }}",
                 },
-                data: $('form').serialize(),
+                data: $('#ratingForm').serialize(),
                 success: function(result) {
                     $("#btnJoined").hide();
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
                         text: 'Thankyou for given rating',
+                        confirmButtonColor: '#3085D6',
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        // Reload the page
+                        location.reload();
+                    });
+                },
+                error : function(error) {
+
+                }
+            });
+            return false;
+        }
+   
+        });
+    });
+</script>
+ {{-- feedback Form --}}
+ <script>
+    $(document).ready(function() {
+        // Add validation rules
+        var ratingTask = "";
+        $("#feedbackForm").validate({
+            rules: {
+                // Define rules for each form field
+                comments: {
+                    required: true,
+                    minlength: 10  // Example: Minimum length of 10 characters
+                }
+            },
+            messages: {
+                // Define custom error messages
+                comment: {
+                    required: "Please enter your comment.",
+                    minlength: "Your comment must be at least {0} characters long."
+                }
+            },
+            // Specify where to display error messages
+            errorPlacement: function(error, element) {
+                error.appendTo(element.parent().next());
+            },
+            submitHandler: function(form,e) {
+            e.preventDefault();
+            console.log('Form submitted');
+            $.ajax({
+                url:'{{ route('user.store.feedback.task') }}',
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                },
+                data: $('#feedbackForm').serialize(),
+                success: function(result) {
+                    $("#btnJoined").hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Thankyou for given feedback',
                         confirmButtonColor: '#3085D6',
                         confirmButtonText: 'OK'
                     }).then(function() {

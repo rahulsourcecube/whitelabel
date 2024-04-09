@@ -26,6 +26,8 @@ class CampaignModel extends Model
         'type',
         'image',
         'status',
+        'feedback_type',
+        'referral_url_segment',
     ];
 
     protected $append = ["task_type", "social_task_user_count", "task_expired"];

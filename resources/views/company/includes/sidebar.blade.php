@@ -171,6 +171,15 @@ $notificationCount = Notification::where('company_id', $companyId)
                         <a href="{{ route('company.billing.billing') }}">Billing and Payment</a>
                     </li>
                     @endcan
+                    <li @if (request()->segment(2) == 'progression') class='active' @endif>
+                        <a href="{{ route('company.progression.index') }}">Task Progression</a>
+                    </li>
+                    <li @if (request()->segment(2) == 'mail') class='active' @endif>
+                        <a href="{{ route('company.mail.index') }}">Mail Template</a>
+                    </li>
+                    <li @if (request()->segment(2) == 'progression') class='active' @endif>
+                        <a href="{{ route('company.progression.index') }}">Sms Template</a>
+                    </li>
                 </ul>
             </li>
             @endif

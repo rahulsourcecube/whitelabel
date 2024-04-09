@@ -21,8 +21,12 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Sum;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendEmailJob;
+use App\Models\Feedback;
+use App\Models\MailTemplate;
 use App\Models\ratings;
 use App\Models\SettingModel;
+use App\Models\TaskProgression;
+use App\Models\taskProgressionUserHistory;
 
 class UsrController extends Controller
 {
@@ -280,7 +284,14 @@ class UsrController extends Controller
         try {
             $userData = Auth::user();
             $referralUser = User::orderBy('id', 'DESC')->where('referral_user_id', Auth::user()->id)->get();
-            return view('user.profile', compact('userData', 'referralUser'));
+           
+            $progressions = taskProgressionUserHistory::with('taskProgressionHistory')
+            ->where('user_id', Auth::user()->id)
+            ->where('company_id', Auth::user()->company_id)
+            ->orderBy('id', 'desc')
+            ->get();
+           
+            return view('user.profile', compact('userData', 'referralUser','progressions'));
         } catch (Exception $e) {
             Log::error('UsrController::Profile => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -508,8 +519,7 @@ class UsrController extends Controller
 
     public function store(Request $request)
     {
-       
-        try {
+         try {
           
             $host = $request->getHost();
             $domain = explode('.', $host);
@@ -564,20 +574,25 @@ class UsrController extends Controller
             $userRegister->referral_user_id = !empty($user_id) ? $user_id : null;
             $userRegister->package_id = $ActivePackageData->id;
 
-            try {
+             try {
+     
                 $SettingValue = SettingModel::where('id',$companyId)->first();
+                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type','welcome')->first();
+
+                $wlcomeHtml = SettingModel::where('id',$companyId)->first();
                 
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
                 $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');     
                 $message = '';  
                 $type=  "user";     
+                $html=  $mailTemplate->template_html;     
             
-                $data =  ['user' => $userRegister, 'first_name' => $request->first_name, 'company_id' => $companyId]; 
-                SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type);
-            } catch (Exception $e) {
-                Log::error('UsrController::Store => ' . $e->getMessage());
-            }
+                $data =  ['user' => $userRegister, 'first_name' => $request->first_name, 'company_id' => $companyId ,'template'=>$html]; 
+                SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type,$html);
+             } catch (Exception $e) {
+                 Log::error('UsrController::Store => ' . $e->getMessage());
+             }
           
 
             // try {
@@ -589,7 +604,7 @@ class UsrController extends Controller
             //     Log::error('UsrController::Store => ' . $e->getMessage());
             // }
 
-            $userRegister->save();
+             $userRegister->save();
             $message = "Registration Successfully!";
 
             return redirect()->route('user.login')->with('success', $message);
@@ -619,7 +634,8 @@ class UsrController extends Controller
 
     public function submitForgetPassword(Request $request)
     {
-        try {
+        
+         try {
             $companyId = Helper::getCompanyId();
 
             $userEmail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type','4')->first();
@@ -628,9 +644,14 @@ class UsrController extends Controller
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
             }
             $token = Str::random(64);
+            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type','forgot_password')->first();
+            $html="";
+            if(!empty($mailTemplate)){
+                $html =$mailTemplate->template_html;
+            }
 
             try {
-                Mail::send('user.email.forgetPassword', ['token' => $token , 'name' => $userEmail->FullName, 'company_id' => $companyId ], function ($message) use ($request) {
+                Mail::send('user.email.forgetPassword', ['token' => $token , 'name' => $userEmail->FullName, 'company_id' => $companyId , 'template' =>$html], function ($message) use ($request) {
                     $message->to($request->email);
                     $message->subject('Reset Password');
                 });
@@ -728,6 +749,56 @@ class UsrController extends Controller
                 $ratings = new ratings();
                 $ratings->user_id = $user->id;
                 $ratings->company_id = $companyId;
+                $ratings->campaign_id = $request->campaign_id;
+                $ratings->no_of_rating = $request->no_of_rating;
+                $ratings->comments = $request->comments;
+                $ratings->save();
+            }
+         
+            return response()->json(['success' => true]);
+            
+        // } catch (\Exception $e) {
+        //     Log::error('UsrController::addTaskRating => ' . $e->getMessage());
+        //     return response()->json(['success' => false, 'error' => "Error: " . $e->getMessage()]);
+        // }
+
+    }
+
+    public function addTaskFeedback(Request $request)
+    {
+                  
+            $user = Auth::user();
+            $companyId = null; // Initialize companyId to null
+            
+            // Get the domain and company ID
+            $host = $request->getHost();
+            $domain = explode('.', $host);
+            $CompanyModel = new CompanyModel();
+            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            
+            if ($exitDomain) {
+                $companyId = $exitDomain->user_id;
+            } else {
+                throw new \Exception("Domain not found");
+            }
+    
+            // Check if the user has already rated the campaign
+            $existingRating = Feedback::where('user_id', $user->id)
+                                    ->where('company_id', $companyId)
+                                    ->where('campaign_id', $request->campaign_id)
+                                    ->first();
+    
+            if (!empty($existingRating)) {
+                // Update the existing rating
+                $existingRating->no_of_rating = $request->no_of_rating;
+                $existingRating->comments = $request->comments;
+                $existingRating->save();
+            } else {
+               
+                // Create a new rating
+                $ratings = new Feedback();
+                $ratings->user_id = $user->id;
+                $ratings->company_id = $companyId; 
                 $ratings->campaign_id = $request->campaign_id;
                 $ratings->no_of_rating = $request->no_of_rating;
                 $ratings->comments = $request->comments;

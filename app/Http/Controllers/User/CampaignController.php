@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
+use App\Models\Feedback;
 use App\Models\Notification;
 use App\Models\ratings;
 use App\Models\Referral;
@@ -121,6 +122,7 @@ class CampaignController extends Controller
 
             $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
             $data['ratings'] = ratings::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+            $data['feedback'] = Feedback::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
            
           
             if ($data['user_Campaign'] != null) {

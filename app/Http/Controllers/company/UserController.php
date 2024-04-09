@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Company;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\TaskProgression;
+use App\Models\taskProgressionUserHistory;
 use App\Models\User;
+use App\Models\UserCampaignHistoryModel;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -235,18 +238,23 @@ class UserController extends Controller
 
     function View($id)
     {
-        try {
+         try {
             $companyId = Helper::getCompanyId();
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
-            return view('company.user.view', compact('user'));
+            $progressions = taskProgressionUserHistory::with('taskProgressionHistory')
+            ->where('user_id', $user_id)
+            ->where('company_id', $companyId)
+            ->orderBy('id', 'desc')
+            ->get();
+            return view('company.user.view', compact('user','progressions'));
         } catch (\Exception $e) {
-            Log::error('UserController::View ' . $e->getMessage());
-            return redirect()->back()->with('error', "Error: " . $e->getMessage());
-        }
+             Log::error('UserController::View ' . $e->getMessage());
+             return redirect()->back()->with('error', "Error: " . $e->getMessage());
+         }
     }
 
     function edit($id)

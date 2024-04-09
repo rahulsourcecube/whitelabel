@@ -1,3 +1,29 @@
+<?php
+use App\Models\SettingModel;
+$mail = SettingModel::first();
+if(!empty($company_id)){
+    $mail = SettingModel::where('id',$company_id)->first();
+}
+
+?>
+@if(!empty($template))
+<?php
+$name = $first_name;
+$company_title = !empty($mail) && !empty($mail->title) ? $mail->title : 'Referdio';
+
+if (isset($mail) && !empty($mail->logo) && file_exists(base_path().'/uploads/setting/' . $mail->logo)){
+    $logo = "<img src='" . asset('uploads/setting/' . $mail->logo) . "' style='width: 125px;'>";
+} else {
+    $logo = "<img src='" . asset('assets/images/logo/logo.png') . "' style='width: 125px;' alt=''>";
+}
+
+// Perform the replacement
+$html = str_replace(["[user_name]", "[company_logo]","[company_title]"], [$name, $logo ,$company_title], $template);
+
+// Output the modified HTML
+echo $html;
+?>
+@else
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,13 +36,7 @@
 <body
     style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; width: 100% !important; height: 100%; line-height: 1.6em; background-color: #f6f6f6; margin: 0;"
     bgcolor="#f6f6f6">
-    <?php
-    use App\Models\SettingModel;
-    $mail = SettingModel::first();
-    if(!empty($company_id)){
-        $mail = SettingModel::where('id',$company_id)->first();
-    }
-    ?>
+   
 
     <table class="body-wrap"
         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; background-color: #f6f6f6; margin: 0;"
@@ -93,3 +113,10 @@
 </body>
 
 </html>
+@endif
+
+
+
+
+
+
