@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
+use App\Http\Controllers\company\MailtemplateController;
 use App\Http\Controllers\Company\Notification;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
@@ -173,6 +174,11 @@ Route::get('send-email-queue', function () {
                 Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
                 //Rating
                 Route::post('/rating/store', [UsrController::class, 'addTaskRating'])->name('store.rating.task');
+                //end Rating
+
+                //Feedback
+                Route::post('/feedback/store', [UsrController::class, 'addTaskFeedback'])->name('store.feedback.task');
+                //end Feedback
 
                 
             });
@@ -289,6 +295,24 @@ Route::get('send-email-queue', function () {
                 Route::prefix('setting')->name('setting.')->group(function () {
                     Route::get('', [CompanySettingController::class, 'index'])->name('index');
                     Route::post('store', [CompanySettingController::class, 'store'])->name('store');
+                   
+                });
+                //Task Progression
+                Route::prefix('progression')->name('progression.')->group(function () {
+                    Route::get('progression', [CompanySettingController::class, 'progressionIndex'])->name('index');
+                    Route::get('progression/list', [CompanySettingController::class, 'progressionList'])->name('list');
+                    Route::get('create', [CompanySettingController::class, 'progressionCreate'])->name('create');
+                    Route::post('progression', [CompanySettingController::class, 'progressionStore'])->name('store');
+                    Route::get('edit/{id}', [CompanySettingController::class, 'progressionEdit'])->name('edit');
+                    Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+                });
+                Route::prefix('mail')->name('mail.')->group(function () {
+                    Route::get('template', [MailtemplateController::class, 'index'])->name('index');
+                    Route::get('template/create', [MailtemplateController::class, 'create'])->name('create');
+                    Route::get('template/list', [MailtemplateController::class, 'list'])->name('template.list');
+                    Route::post('template/store', [MailtemplateController::class, 'store'])->name('template.store');
+                    Route::get('edit/{id}', [MailtemplateController::class, 'edit'])->name('template.edit');
+                    Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
                 });
                 // roles Route
                 Route::prefix('role')->name('role.')->group(function () {
