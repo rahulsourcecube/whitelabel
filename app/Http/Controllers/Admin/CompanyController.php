@@ -11,6 +11,9 @@ use App\Models\PackageModel;
 use App\Models\Payment;
 use App\Models\SettingModel;
 use App\Models\User;
+use App\Models\CountryModel;
+use App\Models\StateModel;
+use App\Models\CityModel;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,6 +24,23 @@ use Illuminate\Support\Facades\Log;
 
 class CompanyController extends Controller
 {
+
+
+    function statelist()
+    {
+        // dd('egvertg');
+        return view('admin.location.statelist');
+    }
+
+    function citylist()
+    {
+        // dd('egvertg');
+        return view('admin.location.citylist');
+    }
+
+
+
+
     function index()
     {
         try {
@@ -153,6 +173,10 @@ class CompanyController extends Controller
         }
     }
 
+
+
+
+
     public function dtList(Request $request)
     {
         try {
@@ -186,7 +210,7 @@ class CompanyController extends Controller
             $results = $query->skip($start)
                 ->take($length)
                 ->get();
-                $totalData = CompanyModel::count();
+            $totalData = CompanyModel::count();
             $list = [];
             foreach ($results as $result) {
                 $list[] = [
@@ -195,7 +219,7 @@ class CompanyController extends Controller
                     $result->user->email,
                     $result->user->contact_number,
                     $result['company_name'],
-                    $result['subdomain'].'.'.$request->getHost(),
+                    $result['subdomain'] . '.' . $request->getHost(),
                     $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
                     $result['email'],
                     $result['email'],

@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable , HasRoles,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
     const USER_TYPE = [
         'ADMIN' => 1,
         'COMPANY' => 2,
@@ -28,6 +28,9 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'email',
+        'country_id',
+        'state_id',
+        'city_id',
         'contact_number',
         'password',
         'view_password',
@@ -60,16 +63,33 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function getFullNameAttribute() {
+    public function getFullNameAttribute()
+    {
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    public function getUserStatusAttribute() {
+    public function getUserStatusAttribute()
+    {
         $status = $this->status;
         $string = 'Active';
-        if($status == 0){
+        if ($status == 0) {
             $string = 'Deactive';
         }
         return $string;
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(CountryModel::class);
+    }
+
+    public function state()
+    {
+        return $this->belongsTo(StateModel::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(CityModel::class);
     }
 }

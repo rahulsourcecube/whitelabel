@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Company;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\CountryModel;
+use App\Models\StateModel;
+use App\Models\CityModel;
+
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -106,14 +110,36 @@ class UserController extends Controller
 
     function create()
     {
-       //Check  ActivePackageAccess 
-        $isActivePackageAccess= Helper::isActivePackageAccess();
+        // dd('dfgdg');
+        //Check  ActivePackageAccess
+        $country_data = CountryModel::all();
+        $isActivePackageAccess = Helper::isActivePackageAccess();
 
-        if(!$isActivePackageAccess){
-            return redirect()->back()->with('error', 'Your package expired. Please buy the package.');  
+        if (!$isActivePackageAccess) {
+            return redirect()->back()->with('error', 'Your package expired. Please buy the package.');
         }
 
-        return view('company.user.create');
+        return view('company.user.create', compact('country_data'));
+    }
+
+
+    public function get_states(Request $request)
+    {
+        $country_id = $request->input('country_id');
+
+        $states = StateModel::where('country_id', $country_id)->get();
+        // dd($states);
+        return response()->json($states);
+    }
+
+
+    public function get_city(Request $request)
+    {
+        $state_id = $request->input('state_id');
+
+        $city = CityModel::where('state_id', $state_id)->get();
+        // dd($states);
+        return response()->json($city);
     }
 
     function checkEmail(Request $request)
@@ -185,13 +211,14 @@ class UserController extends Controller
                 return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_user . ' users');
             }
 
-           
+
             $usernumber = User::where('company_id', $companyId)->where('contact_number', $request->number)->where('user_type', 4)->first();
             if (!empty($usernumber)) {
                 return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
             }
 
             $user = new User();
+            // dd($user);
             if ($request->hasFile('image')) {
                 $extension = $request->file('image')->getClientOriginalExtension();
                 $randomNumber = rand(1000, 9999);
@@ -209,6 +236,9 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = hash::make($request->password);
             $user->view_password = $request->password;
+            $user->country_id = $request->country;
+            $user->state_id = $request->state;
+            $user->city_id = $request->city;
             $user->user_type = User::USER_TYPE['USER'];
             $user->company_id = $companyId;
             $user->status = !empty($request->status) ? '1' : '0';
@@ -259,11 +289,16 @@ class UserController extends Controller
             $user_id = base64_decode($id);
             $companyId = Helper::getCompanyId();
 
+            $country_data = CountryModel::all();
+            $state_data = StateModel::all();
+            $city_data = CityModel::all();
+
+
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
-            return view('company.user.edit', compact('user'));
+            return view('company.user.edit', compact('user', 'country_data', 'state_data', 'city_data'));
         } catch (\Exception $e) {
             Log::error('UserController::edit ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());
@@ -276,16 +311,16 @@ class UserController extends Controller
             $companyId = Helper::getCompanyId();
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
-            
+
             if (empty($user)) {
-                
+
                 return redirect()->back()->with('error', 'Something went wrong');
             }
-           
+
 
             $validator = Validator::make($request->all(), [
-                'fname' => 'required|string|max:255',   
-                'lname' => 'required|string|max:255',               
+                'fname' => 'required|string|max:255',
+                'lname' => 'required|string|max:255',
                 'number' => 'required|numeric|digits:10',
                 'image' => 'file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
@@ -294,14 +329,14 @@ class UserController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
             $usernumber = User::where('id', '!=', $user->id)
-            ->where('company_id', $companyId)
-            ->where('contact_number', $request->number)
-            ->where('user_type', 4)
-            ->first();
+                ->where('company_id', $companyId)
+                ->where('contact_number', $request->number)
+                ->where('user_type', 4)
+                ->first();
             if (!empty($usernumber)) {
                 return redirect()->back()->withErrors($validator)->with('error', 'User Mobile Number already exit.')->withInput();
             }
-          
+
             if ($request->hasFile('image')) {
                 $oldImage = $user->profile_image;
                 $extension = $request->file('image')->getClientOriginalExtension();
@@ -322,6 +357,9 @@ class UserController extends Controller
             $user->contact_number = $request->number;
             // $user->email = $request->email;
             $user->password = !empty($request->password) ? hash::make($request->password) : hash::make($user->view_password);
+            $user->country_id = $request->country;
+            $user->state_id = $request->state;
+            $user->city_id = $request->city;
             $user->view_password = !empty($request->password) ? $request->password : $user->view_password;
             $user->status = !empty($request->status) ? '1' : '0';
             $user->facebook_link = $request->facebook_link;
@@ -334,7 +372,7 @@ class UserController extends Controller
             $user->paypal_id = $request->paypal_id;
             $user->stripe_id = $request->stripe_id;
             $user->ac_no = $request->ac_no;
-           
+
             $user->save();
             return redirect()->route('company.user.list')->with('success', 'User updated successfully');
         } catch (Exception $e) {
