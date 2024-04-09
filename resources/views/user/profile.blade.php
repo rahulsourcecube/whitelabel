@@ -5,8 +5,7 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
-                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">Profile</span>
                 </nav>
             </div>
@@ -21,11 +20,8 @@
                                 <div class="d-md-flex align-items-center">
                                     <div class="text-center text-sm-left ">
                                         <div class="avatar avatar-image" style="width: 150px; height:150px">
-                                            @if (isset($userData) &&
-                                                    !empty($userData->profile_image) &&
-                                                    file_exists(base_path().'/uploads/user/user-profile/' . $userData->profile_image))
-                                                <img
-                                                    src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}">
+                                            @if (isset($userData) && !empty($userData->profile_image) && file_exists(base_path() . '/uploads/user/user-profile/' . $userData->profile_image))
+                                                <img src="{{ asset('uploads/user/user-profile/' . $userData->profile_image) }}">
                                             @else
                                                 <img src="{{ asset('assets/images/profile_image.jpg') }}">
                                             @endif
@@ -54,6 +50,17 @@
                                                         </p>
                                                         <p class="col font-weight-semibold">
                                                             {{ isset($userData->contact_number) ? $userData->contact_number : '-' }}
+                                                        </p>
+                                                    </li>
+
+                                                    <li class="row">
+                                                        <p class="font-weight-semibold text-dark m-b-5">
+                                                            <i class="m-r-8 text-primary anticon anticon-home"></i>
+                                                        </p>
+                                                        <p class="col font-weight-semibold">
+                                                            {{ isset($userData->city->name) ? $userData->city->name : '-' }}
+                                                            {{ isset($userData->state->name) ? $userData->state->name : '-' }}
+                                                            {{ isset($userData->country->name) ? $userData->country->name : '-' }}
                                                         </p>
                                                     </li>
                                                 </ul>
@@ -189,26 +196,24 @@
                    
                 </div>
             </div>
-        </div>
-    </div>
-   
+      
     
     <script>
         $(document).ready(function() {
-                var table = $('#user_tables').DataTable({
-                    // Processing indicator
-                    "processing": false,
-                    // DataTables server-side processing mode
-                    "serverSide": false,
-                    responsive: true,
-                    pageLength: 10,
-                    // Initial no order.
-                    'order': [],
-                    language: {
-                        search: "",
-                        searchPlaceholder: "Search Here",
-                    },
-                });
+            var table = $('#user_tables').DataTable({
+                // Processing indicator
+                "processing": false,
+                // DataTables server-side processing mode
+                "serverSide": false,
+                responsive: true,
+                pageLength: 10,
+                // Initial no order.
+                'order': [],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search Here",
+                },
             });
+        });
     </script>
 @endsection

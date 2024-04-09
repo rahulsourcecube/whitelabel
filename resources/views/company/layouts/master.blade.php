@@ -2,21 +2,22 @@
 <html lang="en">
 @php
     $siteSetting = App\Helpers\Helper::getSiteSetting();
-    
+
     $packagebuymessage = App\Helpers\Helper::isInactivePackage();
     $GetActivePackageData = App\Helpers\Helper::GetActivePackageData();
     $remainingDays = App\Helpers\Helper::getRemainingDays();
-    @endphp
+@endphp
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>@yield('title') ||
         {{ !empty($siteSetting) && !empty($siteSetting->title) ? $siteSetting->title : env('APP_NAME') }}
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-    href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{env('ASSET_URL').'/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
@@ -45,15 +46,13 @@
                 <div class="container notification">
                     @if ($remainingDays && $remainingDays != null)
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <strong> {{ $remainingDays }}</strong>. <a
-                                href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            <strong> {{ $remainingDays }}</strong>. <a href="{{ route('company.package.list', 'Free') }}">Click</a>
                             here to buy package.
                         </div>
                     @endif
-                    @if (  $GetActivePackageData == null)
+                    @if ($GetActivePackageData == null)
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Please purchase package</strong>. <a
-                                href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            <strong>Please purchase package</strong>. <a href="{{ route('company.package.list', 'Free') }}">Click</a>
                             here to buy package.
                         </div>
                     @endif

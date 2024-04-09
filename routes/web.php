@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\CompanyController as AdminCompanyController;
+use App\Http\Controllers\Admin\CountryController;
+use App\Http\Controllers\Admin\StateController;
+use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\CompanyLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
@@ -17,6 +20,8 @@ use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
+
+
 use App\Jobs\SendEmailJob;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -70,19 +75,19 @@ Route::get('send-email-queue', function () {
 // Routes that require session timeout checks
 
 
-    Route::get('/login', [AdminController::class, 'index'])->name('login');
+Route::get('/login', [AdminController::class, 'index'])->name('login');
 
-    Route::group(['prefix' => 'admin'], function () {
-        Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
-    });
-    Auth::routes();
-    Route::get('/errors', function () {
-        return view('error');
-    })->name('error');
-    Route::get('/', [UsrController::class, 'index'])->middleware('checkNotLoggedIn');
+Route::group(['prefix' => 'admin'], function () {
+    Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+});
+Auth::routes();
+Route::get('/errors', function () {
+    return view('error');
+})->name('error');
+Route::get('/', [UsrController::class, 'index'])->middleware('checkNotLoggedIn');
 
-    Route::group(['middleware' => 'check.session'], function () {   
-           
+Route::group(['middleware' => 'check.session'], function () {
+
     // Admin Middleware
     Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
         // Route::get('/login', [AdminController::class, 'index'])->name('login');
@@ -120,6 +125,49 @@ Route::get('send-email-queue', function () {
         });
         Route::get('change-password', [AdminController::class, 'change_password'])->name('change_password');
         Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
+
+        Route::prefix('location')->name('location.')->group(function () {
+
+            // country
+
+            Route::prefix('country')->name('country.')->group(function () {
+
+                Route::get('', [CountryController::class, 'index'])->name('list');
+                Route::post('list', [CountryController::class, 'dtList'])->name('dtlist');
+                Route::get('create', [CountryController::class, 'create'])->name('create');
+                Route::post('store', [CountryController::class, 'store'])->name('store');
+                Route::get('edit/{country}', [CountryController::class, 'edit'])->name('edit');
+                Route::put('update/{country}', [CountryController::class, 'update'])->name('update');
+                Route::delete('delete/{country}', [CountryController::class, 'delete'])->name('delete');
+            });
+
+            // state
+
+            Route::prefix('state')->name('state.')->group(function () {
+
+                Route::get('', [StateController::class, 'index'])->name('list');
+                Route::post('list', [StateController::class, 'dtList'])->name('dtlist');
+                Route::get('create', [StateController::class, 'create'])->name('create');
+                Route::post('store', [StateController::class, 'store'])->name('store');
+                Route::get('edit/{state}', [StateController::class, 'edit'])->name('edit');
+                Route::put('update/{state}', [StateController::class, 'update'])->name('update');
+                Route::delete('delete/{state}', [StateController::class, 'delete'])->name('delete');
+            });
+
+
+            // city
+
+            Route::prefix('city')->name('city.')->group(function () {
+
+                Route::get('', [CityController::class, 'index'])->name('list');
+                Route::post('list', [CityController::class, 'dtList'])->name('dtlist');
+                Route::get('create', [CityController::class, 'create'])->name('create');
+                Route::post('store', [CityController::class, 'store'])->name('store');
+                Route::get('edit/{city}', [CityController::class, 'edit'])->name('edit');
+                Route::put('update/{city}', [CityController::class, 'update'])->name('update');
+                Route::delete('delete/{city}', [CityController::class, 'delete'])->name('delete');
+            });
+        });
     });
 
     Route::get('migrate', function () {
@@ -148,6 +196,9 @@ Route::get('send-email-queue', function () {
             Route::post('/forget-password', [UsrController::class, 'submitForgetPassword'])->name('forget-password');
             Route::get('/confirm/password/{token}', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
             Route::post('/reset-password', [UsrController::class, 'submitResetPassword'])->name('reset-password');
+            Route::post('/get_states', [UsrController::class, 'get_states'])->name('get_states');
+            Route::post('/get_city', [UsrController::class, 'get_city'])->name('get_city');
+
 
             Route::middleware(['user'])->group(function () {
                 Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
@@ -240,6 +291,8 @@ Route::get('send-email-queue', function () {
                 Route::get('view/{id}', [UserController::class, 'view'])->name('view');
                 Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
                 Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
+                Route::post('/get_states', [UserController::class, 'get_states'])->name('get_states');
+                Route::post('/get_city', [UserController::class, 'get_city'])->name('get_city');
             });
             Route::prefix('package')->name('package.')->group(function () {
                 Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');

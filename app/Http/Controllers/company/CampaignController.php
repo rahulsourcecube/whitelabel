@@ -55,7 +55,6 @@ class CampaignController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
-
     public function tdlist($type, Request $request)
     {
         try {
@@ -65,7 +64,7 @@ class CampaignController extends Controller
             $length = $request->input('length');
             $list = [];
 
-            $searchColumn = ['title', 'reward', 'description', 'no_of_referral_users'];
+            $searchColumn = ['title', 'priority', 'public', 'reward', 'description', 'no_of_referral_users'];
 
             $query = CampaignModel::where('company_id', $companyId)->where('type', $type);
 
@@ -84,6 +83,21 @@ class CampaignController extends Controller
                 ->get();
 
             foreach ($results as $result) {
+                $priority = "-";
+                switch ($result->priority) {
+                    case 1:
+                        $priority = "High";
+                        break;
+                    case 2:
+                        $priority = "Medium";
+                        break;
+                    case 3:
+                        $priority = "Low";
+                        break;
+                }
+
+                $public = $result->public ? "Yes" : "No";
+
                 $list[] = [
                     base64_encode($result->id),
                     $result->title ?? "-",
@@ -92,7 +106,9 @@ class CampaignController extends Controller
                     $result->task_type,
                     $result->no_of_referral_users,
                     $result->task_status,
-                    $result->campaignUSerHistoryData->count() == 0
+                    $result->campaignUSerHistoryData->count() == 0,
+                    $priority, // Priority value
+                    $public // Public value
                 ];
             }
 
@@ -154,7 +170,7 @@ class CampaignController extends Controller
                     $result->getuser->full_name ?? "-",
                     $result->getuser->email ?? "-",
                     $result->getuser->contact_number ?? "-",
-                    $result->text_reward ? Str::limit($result->text_reward,15) : Helper::getcurrency() . ($result->reward ?? "0"),
+                    $result->text_reward ? Str::limit($result->text_reward, 15) : Helper::getcurrency() . ($result->reward ?? "0"),
                     Helper::Dateformat($result->created_at)  ?? "-",
                     $result->TaskStatus ?? "-",
                     base64_encode($result->user_id) ?? "-",
@@ -232,10 +248,13 @@ class CampaignController extends Controller
 
             $Campaign = new CampaignModel();
             $Campaign->title = $request->title;
-            $Campaign->reward = $request->reward??0;
+            $Campaign->reward = $request->reward ?? 0;
             $Campaign->text_reward = $request->text_reward;
             $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
+            $Campaign->priority = $request->priority;
+            $Campaign->public = $request->has('public') ? 1 : 0;
+            // $Campaign->public = $request->public;
             $Campaign->expiry_date = $request->expiry_date;
             $Campaign->type = $request->type;
             $Campaign->image = $image;
@@ -288,10 +307,12 @@ class CampaignController extends Controller
             $request->merge(['image' => $image, 'company_id' => $companyId]);
 
             $Campaign->title = $request->title;
-            $Campaign->reward = $request->reward??0;
+            $Campaign->reward = $request->reward ?? 0;
             $Campaign->text_reward = $request->text_reward;
             $Campaign->no_of_referral_users = $request->no_of_referral_users;
             $Campaign->description = $request->description;
+            $Campaign->priority = $request->priority;
+            $Campaign->public = $request->has('public') ? 1 : 0;
             $Campaign->expiry_date = $request->expiry_date;
             $Campaign->type = $request->type;
             $Campaign->image = $image;
@@ -326,7 +347,7 @@ class CampaignController extends Controller
                 ->select(DB::raw('COUNT(uch.user_id) as total_user , DATE_FORMAT(uch.created_at, "%a") as day'))
                 ->groupBy('day')
                 ->get();
-            $start_time = strtotime(date("Y-m-d",strtotime("-6 day")));
+            $start_time = strtotime(date("Y-m-d", strtotime("-6 day")));
             $end_time = strtotime(date("Y-m-d"));
 
             $list = [];
@@ -340,10 +361,10 @@ class CampaignController extends Controller
             $user_total = json_encode(['day' => array_keys($list), 'total_user' => array_values($list)]);
             $customTasks = CampaignModel::where('company_id', $companyId)->where('type', 3)->get();
 
-            $startDate =  date("m/d/Y",$start_time);
-            $endDate =  date("m/d/Y",$end_time);
+            $startDate =  date("m/d/Y", $start_time);
+            $endDate =  date("m/d/Y", $end_time);
 
-            return view('company.campaign.analytics', compact('user_total', 'customTasks','startDate','endDate'));
+            return view('company.campaign.analytics', compact('user_total', 'customTasks', 'startDate', 'endDate'));
         } catch (Exception $e) {
             Log::error('CampaignController::Analytics => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -572,33 +593,32 @@ class CampaignController extends Controller
                 $chats = TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
                 // if ($chats->count() == 0) {
 
-                    // $id->status = '2';
-                    // $id->save();
-                    if ($request->hasFile('image')) {
-                        $sentMessage = ' sent file...';
-                    }else{
-                        $sentMessage = ' sent a message '.' '.  Str::limit($request->chat_input, 10) ?? "-";
-                    }
+                // $id->status = '2';
+                // $id->save();
+                if ($request->hasFile('image')) {
+                    $sentMessage = ' sent file...';
+                } else {
+                    $sentMessage = ' sent a message ' . ' ' .  Str::limit($request->chat_input, 10) ?? "-";
+                }
 
-                    $Notification = new Notification();
-                    if(auth()->user()->user_type == '4'){
-                        $Notification->user_id =  $id->user_id;
-                        $Notification->company_id =  $id->getCampaign->company_id;
-                        $Notification->type =  '2';
-                        $Notification->title =  "User send message";
-                        $Notification->message =  $id->getuser->FullName .' '. $sentMessage;
-                        $Notification->save();
+                $Notification = new Notification();
+                if (auth()->user()->user_type == '4') {
+                    $Notification->user_id =  $id->user_id;
+                    $Notification->company_id =  $id->getCampaign->company_id;
+                    $Notification->type =  '2';
+                    $Notification->title =  "User send message";
+                    $Notification->message =  $id->getuser->FullName . ' ' . $sentMessage;
+                    $Notification->save();
+                } else {
+                    $Notification->user_id =  $id->user_id;
+                    $Notification->company_id =  $id->campaign_id;
+                    $Notification->title =  "Company send message";
+                    $Notification->message = "New message for the task " . $id->getCampaign->title ?? "-";;
+                    $Notification->type =  "1";
+                    $Notification->save();
+                }
 
-                    }else{
-                        $Notification->user_id =  $id->user_id;
-                        $Notification->company_id =  $id->campaign_id;
-                        $Notification->title =  "Company send message";
-                        $Notification->message = "New message for the task ". $id->getCampaign->title ?? "-"; ;
-                        $Notification->type =  "1";
-                        $Notification->save();
-                    }
-
-                        // dd($Notification);
+                // dd($Notification);
 
                 // }
                 // if ($id->status == '4' && Auth::user()->user_type == 4) {

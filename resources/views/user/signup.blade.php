@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  
-    <title> Sign Up || {{!empty($siteSetting) && !empty($siteSetting->title) ? ucfirst($siteSetting->title).' Sign Up'  : env('APP_NAME') }} </title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title> Sign Up || {{ !empty($siteSetting) && !empty($siteSetting->title) ? ucfirst($siteSetting->title) . ' Sign Up' : env('APP_NAME') }} </title>
 
     <!-- Favicon -->
     <link rel="shortcut icon"
-    href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{env('ASSET_URL').'/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
 
     <!-- Core css -->
@@ -29,8 +28,7 @@
 
 <body>
     <div class="app">
-        <div class="container-fluid p-h-0 p-v-20 bg full-height d-flex"
-            style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
+        <div class="container-fluid p-h-0 p-v-20 bg full-height d-flex" style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
             <div class="d-flex flex-column justify-content-between w-100">
                 <div class="container d-flex h-100">
                     <div class="row align-items-center w-100">
@@ -39,66 +37,88 @@
                                 <div class="card-body">
                                     @include('admin.includes.message')
                                     <div class="d-flex align-items-center justify-content-between m-b-30">
-                                        <a href="{{!empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : "" }} "  {{!empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : "" }}>
-                                            <img  style="width: 130px ; hight:50px" src="@if (
-                                            !empty($siteSetting) &&
-                                                !empty($siteSetting->logo) &&
-                                                file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
-                                            alt="Logo">
+                                        <a href="{{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : '' }} "
+                                            {{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : '' }}>
+                                            <img style="width: 130px ; hight:50px"
+                                                src="@if (!empty($siteSetting) && !empty($siteSetting->logo) && file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->logo }} @else {{ asset('assets/images/logo/logo.png') }} @endif"
+                                                alt="Logo">
                                         </a>
                                         <h2 class="m-b-0">Signup</h2>
                                     </div>
                                     <form id="fomData" action="{{ route('user.store') }}" method="POST">
                                         @csrf
                                         @if (isset(request()->referral_code))
-                                        <input type="hidden" name="referral_code"
-                                            value="{{ request()->referral_code }}">
+                                            <input type="hidden" name="referral_code" value="{{ request()->referral_code }}">
                                         @endif
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">First Name:</label>
-                                                <input type="text" class="form-control" id="first_name"
-                                                    placeholder="First Name" name="first_name"
-                                                    value="{{old('first_name')}}" maxlength="50">
+                                                <input type="text" class="form-control" id="first_name" placeholder="First Name" name="first_name"
+                                                    value="{{ old('first_name') }}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">Last name</label>
-                                                <input type="text" class="form-control" id="last_name"
-                                                    placeholder="Last name" name="last_name"
-                                                    value="{{old('last_name')}}" maxlength="50">
+                                                <input type="text" class="form-control" id="last_name" placeholder="Last name" name="last_name"
+                                                    value="{{ old('last_name') }}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
-                                                <input type="email" class="form-control" id="email" placeholder="Email"
-                                                    name="email" value="{{old('email')}}" maxlength="50">
+                                                <input type="email" class="form-control" id="email" placeholder="Email" name="email"
+                                                    value="{{ old('email') }}" maxlength="50">
                                             </div>
+                                            <div class="form-group col-md-4">
+                                                <label class="font-weight-semibold" for="country">Country:</label>
+                                                <select name="country" id="country" class="form-control">
+                                                    <option value="">Select Country</option>
+                                                    @if ($country_data)
+                                                        @foreach ($country_data as $country)
+                                                            <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                        @endforeach
+
+                                                    @endif
+                                                </select>
+
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label class="font-weight-semibold" for="state">State:</label>
+                                                <select name="state" id="state" class="form-control">
+                                                    <option value="">Select State</option>
+                                                </select>
+
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label class="font-weight-semibold" for="city">City:</label>
+                                                <select name="city" id="city" class="form-control">
+                                                    <option value="">Select City</option>
+                                                </select>
+
+                                            </div>
+
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="contact">Contact
                                                     Number:</label>
-                                                <input type="text" class="form-control" id="contact"
-                                                    placeholder="Contact Number" maxlength="10"
-                                                    name="contact_number" value="{{old('contact_number')}}"
+                                                <input type="text" class="form-control" id="contact" placeholder="Contact Number" maxlength="10"
+                                                    name="contact_number" value="{{ old('contact_number') }}"
                                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
-                                                <input type="password" class="form-control" id="password"
-                                                    placeholder="Password" name="password" value="{{old('password')}}" maxlength="50">
+                                                <input type="password" class="form-control" id="password" placeholder="Password" name="password"
+                                                    value="{{ old('password') }}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
-                                                <input type="password" class="form-control" id="confirmPassword"
-                                                    placeholder="Confirm Password" name="password_confirmation"
-                                                    value="{{old('password_confirmation')}}" maxlength="50">
+                                                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password"
+                                                    name="password_confirmation" value="{{ old('password_confirmation') }}" maxlength="50">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <div class="d-flex align-items-center justify-content-between p-t-15">
-                                             
+
                                                 <label for="checkbox"><span>Already have an account? <a
                                                             href="{{ route('user.login') }}">Login</a></span></label>
-                                               
+
                                                 <button type="submit" class="btn btn-primary submitform">Sign Up</button>
                                             </div>
                                         </div>
@@ -120,9 +140,8 @@
         </div>
     </div>
 
-
-
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
 
@@ -142,8 +161,8 @@
 
         jQuery(document).ready(function($) {
             $('#button-spinner').hide();
-          
-            
+
+
             $("#fomData").validate({
                 rules: {
                     first_name: {
@@ -158,7 +177,7 @@
                     },
                     contact_number: {
                         required: true,
-                        minlength:'10',
+                        minlength: '10',
                         digits: true
                     },
                     password: {
@@ -194,12 +213,62 @@
                         equalTo: "Password and confirm password dose not match",
                     },
                 },
-                submitHandler: function(form) {                    
-                 // Show the spinner                 
-                $('.submitform').html('Sign Up <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>').attr('disabled', true);
-                $('#button-spinner').show();
-                form.submit();
+                submitHandler: function(form) {
+                    // Show the spinner
+                    $('.submitform').html(
+                        'Sign Up <div id="button-spinner" style="margin-left: 10px; width: 15px; height: 15px; display: none" class="spinner-border"></div>'
+                    ).attr('disabled', true);
+                    $('#button-spinner').show();
+                    form.submit();
                 }
+            });
+
+            $('#country').on('change', function() {
+                var country_id = $(this).val();
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    url: '/user/get_states',
+                    type: 'POST',
+                    data: {
+                        country_id: country_id,
+                        _token: CSRF_TOKEN // Include CSRF token in the request data
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        var len = response.length;
+                        $("#state").empty();
+                        for (var i = 0; i < len; i++) {
+                            var id = response[i]['id'];
+                            var name = response[i]['name'];
+                            $("#state").append("<option value='" + id + "'>" + name + "</option>");
+                        }
+                    }
+                });
+            });
+
+            $('#state').on('change', function() {
+                var state_id = $(this).val();
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    url: '/user/get_city',
+                    type: 'POST',
+                    data: {
+                        state_id: state_id,
+                        _token: CSRF_TOKEN // Include CSRF token in the request data
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        var len = response.length;
+                        $("#city").empty();
+                        for (var i = 0; i < len; i++) {
+                            var id = response[i]['id'];
+                            var name = response[i]['name'];
+                            $("#city").append("<option value='" + id + "'>" + name + "</option>");
+                        }
+                    }
+                });
             });
         });
     </script>
@@ -212,7 +281,5 @@
     <script src="{{ asset('assets/js/app.min.js') }}"></script>
 
 </body>
-
-
 
 </html>

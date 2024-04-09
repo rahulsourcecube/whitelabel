@@ -6,6 +6,9 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\User;
+use App\Models\CountryModel;
+use App\Models\StateModel;
+use App\Models\CityModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\company\forgetpass;
@@ -35,7 +38,7 @@ class CompanyLoginController extends Controller
             if (!empty($getdomain) && $getdomain == config('app.pr_name')) {
                 return redirect(env('ASSET_URL') . '/company/signup');
             }
-            //end     
+            //end
             if (!empty(auth()->user()) && auth()->user()->user_type == '1') {
                 return redirect()->route('admin.dashboard');
             } elseif (!empty(auth()->user()) && auth()->user()->user_type == '2') {
@@ -165,9 +168,9 @@ class CompanyLoginController extends Controller
             if (!empty($getdomain) && $getdomain != config('app.pr_name')) {
                 return redirect(env('ASSET_URL') . '/company/signup');
             }
-            $user = user::where('user_type', '1' )->first();
+            $user = user::where('user_type', '1')->first();
             $siteSetting = SettingModel::where('user_id', $user->id)->first();
-         
+
             return view('company.signup', compact('siteSetting'));
         } catch (Exception $e) {
             Log::error('CompanyLoginController::Signup => ' . $e->getMessage());
@@ -220,8 +223,8 @@ class CompanyLoginController extends Controller
                 $role = Role::where('name', 'Company')->first();
                 $user->assignRole([$role->id]);
 
-                $userAdmin = user::where('user_type','1')->first();
-                $SettingValue = SettingModel::where('id',$userAdmin->id)->first();
+                $userAdmin = user::where('user_type', '1')->first();
+                $SettingValue = SettingModel::where('id', $userAdmin->id)->first();
 
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
@@ -230,18 +233,18 @@ class CompanyLoginController extends Controller
                 $settingModel->title = $request->cname;
                 $settingModel->save();
             }
-			 try {
+            try {
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
-                $subject = 'Welcome To ' . $SettingValue->title?:env('APP_NAME');
+                $subject = 'Welcome To ' . $SettingValue->title ?: env('APP_NAME');
                 $message = '';
                 if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-                    SendEmailJob::dispatch($to, $subject, $message, $userName,'','company');
+                    SendEmailJob::dispatch($to, $subject, $message, $userName, '', 'company');
                 }
             } catch (Exception $e) {
                 Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
             }
-			
+
             return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
             /*if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
                 if (!empty(auth()->user()) &&  auth()->user()->user_type == '2') {
@@ -284,16 +287,16 @@ class CompanyLoginController extends Controller
                 $userEmail = User::where('company_id', $companyId)
                 ->where('email', $request->email)
                 ->where('user_type', '3')
-                ->first();           
+                ->first();
             }
-          
+
             if (empty($userEmail)) {
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
             }
 
             $token = Str::random(64);
             try {
-                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email , 'name' => $userEmail->FullName], function ($message) use ($request) {
+                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email, 'name' => $userEmail->FullName], function ($message) use ($request) {
                     $message->to($request->email);
                     $message->subject('Reset Password');
                 });
@@ -390,9 +393,14 @@ class CompanyLoginController extends Controller
     }
     public function editProfile()
     {
+
         try {
             $editprofiledetail = User::where('id', Auth::user()->id)->first();
-            return view('company.editprofile', compact('editprofiledetail'));
+            $country_data = CountryModel::all();
+            $state_data = StateModel::all();
+            $city_data = CityModel::all();
+
+            return view('company.editprofile', compact('editprofiledetail',  'country_data', 'state_data', 'city_data'));
         } catch (Exception $e) {
             Log::error('CompanyLoginController::EditProfile => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -406,6 +414,10 @@ class CompanyLoginController extends Controller
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
             $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
+            $updateprofiledetail['country_id'] = isset($request->country) ? $request->country : '';
+            $updateprofiledetail['state_id'] = isset($request->state) ? $request->state : '';
+            $updateprofiledetail['city_id'] = isset($request->city) ? $request->city : '';
+
             if ($request->hasFile('profile_image')) {
                 if ($updateprofiledetail->profile_image && file_exists(base_path() . '/uploads/user-profile/') . $updateprofiledetail->profile_image) {
                     unlink(base_path() . '/uploads/user-profile/' . $updateprofiledetail->profile_image);

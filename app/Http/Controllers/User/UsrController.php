@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\CountryModel;
+use App\Models\StateModel;
+use App\Models\CityModel;
 use App\Models\UserCampaignHistoryModel;
 use Carbon\Carbon;
 use Exception;
@@ -94,13 +97,13 @@ class UsrController extends Controller
             $CompanyModel = new CompanyModel();
             $exitDomain = $CompanyModel->checkDmain($domain['0']);
             $companyId = $exitDomain->user_id;
-            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status','1')->first();         
+            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status', '1')->first();
             if (empty($companyActive)) {
-                return redirect()->back()->with('error', 'Please contact to Company administrator.'); 
+                return redirect()->back()->with('error', 'Please contact to Company administrator.');
             }
-            $userActive = User::where('email', $request->email)->where('user_type', '4')->where('status','1')->first();         
+            $userActive = User::where('email', $request->email)->where('user_type', '4')->where('status', '1')->first();
             if (empty($userActive)) {
-                return redirect()->back()->with('error', 'Please contact to Company administrator.'); 
+                return redirect()->back()->with('error', 'Please contact to Company administrator.');
             }
 
             $input = $request->all();
@@ -138,8 +141,8 @@ class UsrController extends Controller
     }
     function campaignview()
     {
-        try {     
-         
+        try {
+
             return view('user.campaign.view');
         } catch (Exception $e) {
             Log::error('UsrController::campaignview => ' . $e->getMessage());
@@ -171,9 +174,14 @@ class UsrController extends Controller
 
     public function editProfile()
     {
+
         try {
             $userData = Auth::user();
-            return view('user.editprofile', compact('userData'));
+            $country_data = CountryModel::all();
+            $state_data = StateModel::all();
+            $city_data = CityModel::all();
+
+            return view('user.editprofile', compact('userData', 'country_data', 'state_data', 'city_data'));
         } catch (Exception $e) {
             Log::error('UsrController::EditProfile => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -215,6 +223,9 @@ class UsrController extends Controller
             $profileEdit->last_name = $request->last_name;
             $profileEdit->email = $request->email;
             $profileEdit->contact_number = $request->contact_number;
+            $profileEdit->country_id = $request->country;
+            $profileEdit->state_id = $request->state;
+            $profileEdit->city_id = $request->city;
 
 
             if ($request->hasFile('profile_image')) {
@@ -282,7 +293,7 @@ class UsrController extends Controller
     public function Profile()
     {
         try {
-            $userData = Auth::user();
+            $userData = Auth::user()->load('country', 'state', 'city');
             $referralUser = User::orderBy('id', 'DESC')->where('referral_user_id', Auth::user()->id)->get();
            
             $progressions = taskProgressionUserHistory::with('taskProgressionHistory')
@@ -423,7 +434,7 @@ class UsrController extends Controller
     function analytics(Request $request)
     {
         try {
-            $year = request('year') ?:date("Y");
+            $year = request('year') ?: date("Y");
 
             $topFromDate = request('top_from_date');
             $topToDate = request('top_to_date');
@@ -434,21 +445,21 @@ class UsrController extends Controller
                 ->groupBy(DB::raw('DATE_FORMAT(created_at, "%b")'))
                 ->get()
                 ->toArray();
-            $monthlyReferrals  = ['Jan' => 0, 'Feb' => 0, 'Mar' => 0, 'Apr' => 0, 'May' => 0, 'Jun' => 0, 'Jul' => 0, 'Aug' => 0, 'Sep' => 0, 'Oct' => 0, 'Nov' => 0, 'Dec' => 0]; 
-           
-           foreach($monthlyReferralsData as $result){
+            $monthlyReferrals  = ['Jan' => 0, 'Feb' => 0, 'Mar' => 0, 'Apr' => 0, 'May' => 0, 'Jun' => 0, 'Jul' => 0, 'Aug' => 0, 'Sep' => 0, 'Oct' => 0, 'Nov' => 0, 'Dec' => 0];
+
+            foreach ($monthlyReferralsData as $result) {
                 $monthlyReferrals[$result['month']] = $result['user_count'];
-           }
-           $monthlyReferrals = ['months'=>array_keys($monthlyReferrals), 'data' => array_values($monthlyReferrals)];
+            }
+            $monthlyReferrals = ['months' => array_keys($monthlyReferrals), 'data' => array_values($monthlyReferrals)];
             $topUserReferral = UserCampaignHistoryModel::whereExists(function ($query) {
                 $query->from('users')
                     ->whereRaw('user_campaign_history.user_id = users.id')
-                     ->where('users.referral_user_id', Auth::user()->id)
+                    ->where('users.referral_user_id', Auth::user()->id)
                     ->where('user_campaign_history.status', '3')
                     ->whereNotNull('users.referral_user_id');
             })
-            
-         
+
+
                 ->when($topFromDate, function ($query) use ($topFromDate) {
                     return $query->where('created_at', '>=', $topFromDate);
                 })
@@ -469,7 +480,7 @@ class UsrController extends Controller
                     "topUserReferral" => $topUserReferral,
                 ];
             }
-           
+
             return view('user.analytics', compact('monthlyReferrals', 'topUserReferral'));
         } catch (Exception $e) {
             Log::error('UsrController::Analytics => ' . $e->getMessage());
@@ -494,28 +505,51 @@ class UsrController extends Controller
     }
     public function signup()
     {
-        
+
         try {
             $companyId = Helper::getCompanyId();
 
-            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status','1')->first();  
-                   
-            if (empty($companyActive)) {
-                return redirect()->back()->with('error', 'Please contact to Company administrator.'); 
-            }
-            $isActivePackageAccess= Helper::isActivePackageAccess();
+            $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status', '1')->first();
 
-            if(!$isActivePackageAccess){
-                return redirect()->back()->with('error', 'Please  inform you company administer')->withInput();   
+            $country_data = CountryModel::all();
+
+
+            if (empty($companyActive)) {
+                return redirect()->back()->with('error', 'Please contact to Company administrator.');
+            }
+            $isActivePackageAccess = Helper::isActivePackageAccess();
+
+            if (!$isActivePackageAccess) {
+                return redirect()->back()->with('error', 'Please  inform you company administer')->withInput();
             }
             $siteSetting = Helper::getSiteSetting();
 
-            return view('user.signup', compact('siteSetting'));
+            return view('user.signup', compact('siteSetting', 'country_data'));
         } catch (Exception $e) {
             Log::error('UsrController::Signup => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
+
+    public function get_states(Request $request)
+    {
+        $country_id = $request->input('country_id');
+
+        $states = StateModel::where('country_id', $country_id)->get();
+        // dd($states);
+        return response()->json($states);
+    }
+
+
+    public function get_city(Request $request)
+    {
+        $state_id = $request->input('state_id');
+
+        $city = CityModel::where('state_id', $state_id)->get();
+        // dd($states);
+        return response()->json($city);
+    }
+
 
     public function store(Request $request)
     {
@@ -537,7 +571,7 @@ class UsrController extends Controller
             }
             if (isset($request->referral_code)) {
                 $referrer_user = User::where('referral_code', $request->referral_code)->where('referral_code', '!=', null)->where('company_id', $companyId)->first();
-            }          
+            }
             // Get domain
             $host = $request->getHost();
             $domain = explode('.', $host);
@@ -555,16 +589,18 @@ class UsrController extends Controller
                 $referral_link = Session('referral_link');
                 $lastSegment = Str::of($referral_link)->afterLast('/'); //referral_link
                 $user = UserCampaignHistoryModel::where('referral_link', $lastSegment->value)->first();
-                $user_id=  $user->user_id;    
-              
-            }else{
+                $user_id =  $user->user_id;
+            } else {
                 !empty($referrer_user) ? $user_id = $referrer_user->id : null;
             }
-           
+
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;
             $userRegister->last_name = $request->last_name;
             $userRegister->email = $request->email;
+            $userRegister->country_id = $request->country;
+            $userRegister->state_id = $request->state;
+            $userRegister->city_id = $request->city;
             $userRegister->user_type = '4';
             $userRegister->company_id = $companyId;
             $userRegister->referral_code = Str::random(6);
@@ -638,7 +674,7 @@ class UsrController extends Controller
          try {
             $companyId = Helper::getCompanyId();
 
-            $userEmail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type','4')->first();
+            $userEmail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type', '4')->first();
 
             if (empty($userEmail)) {
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
