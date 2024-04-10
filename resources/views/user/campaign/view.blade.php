@@ -31,9 +31,7 @@
                 </nav>
             </div>
         </div>
-        
-        <input type="hidden" class="user_Campaign"
-            value="{{ !empty($user_Campaign->id) ? base64_encode($user_Campaign->id) : null }}">
+        <input type="hidden" class="user_Campaign" value="{{ !empty($user_Campaign->id) ? base64_encode($user_Campaign->id) : null }}">
         <div class="container1">
             <div class="row">
                 <div class="col-md-3">
@@ -536,10 +534,11 @@ Status: <strong
                     </li>
                 @endif
 
-            </ul>
-        </div>
-        
-        
+            @endif
+
+        </ul>
+    </div>
+
     {{-- @endif --}}
 
     </div>

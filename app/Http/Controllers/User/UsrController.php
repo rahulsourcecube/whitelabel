@@ -28,8 +28,10 @@ use App\Models\Feedback;
 use App\Models\MailTemplate;
 use App\Models\ratings;
 use App\Models\SettingModel;
+use App\Models\SmsTemplate;
 use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
+use App\Services\TwilioService;
 
 class UsrController extends Controller
 {
@@ -54,6 +56,21 @@ class UsrController extends Controller
         }
     }
 
+        
+public function sendSMS(Request $request, TwilioService $twilioService)
+{
+    $to = '+18777804236';
+    $message = 'hello123';
+
+    try {
+        $twilioService->sendSMS($to, $message);
+        echo "SMS sent successfully";
+    } catch (Exception $e) {
+        Log::error('Failed to send SMS: ' . $e->getMessage());
+        echo "Failed to send SMS: " . $e->getMessage();
+    }
+}
+    
     public function dashboard()
     {
         try {
@@ -614,9 +631,6 @@ class UsrController extends Controller
      
                 $SettingValue = SettingModel::where('id',$companyId)->first();
                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type','welcome')->first();
-
-                $wlcomeHtml = SettingModel::where('id',$companyId)->first();
-                
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
                 $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');     
@@ -629,6 +643,23 @@ class UsrController extends Controller
              } catch (Exception $e) {
                  Log::error('UsrController::Store => ' . $e->getMessage());
              }
+             $mailTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type','welcome')->first();             
+             if(!empty($mailTemplate)){
+                
+                
+             //sms code
+             $to = '+1'.$request->contact_number;
+             $message = $mailTemplate->template_html_sms;
+             $twilioService=new twilioService();
+             try {
+                 $twilioService->sendSMS($to, $message);
+                
+             } catch (Exception $e) {
+                 Log::error('Failed to send SMS: ' . $e->getMessage());
+                 echo "Failed to send SMS: " . $e->getMessage();
+             }
+            }
+            //  end sms
           
 
             // try {
@@ -640,7 +671,7 @@ class UsrController extends Controller
             //     Log::error('UsrController::Store => ' . $e->getMessage());
             // }
 
-             $userRegister->save();
+            //  $userRegister->save();
             $message = "Registration Successfully!";
 
             return redirect()->route('user.login')->with('success', $message);

@@ -177,8 +177,8 @@ $notificationCount = Notification::where('company_id', $companyId)
                     <li @if (request()->segment(2) == 'mail') class='active' @endif>
                         <a href="{{ route('company.mail.index') }}">Mail Template</a>
                     </li>
-                    <li @if (request()->segment(2) == 'progression') class='active' @endif>
-                        <a href="{{ route('company.progression.index') }}">Sms Template</a>
+                    <li @if (request()->segment(2) == 'sms') class='active' @endif>
+                        <a href="{{ route('company.sms.index') }}">Sms Template</a>
                     </li>
                 </ul>
             </li>

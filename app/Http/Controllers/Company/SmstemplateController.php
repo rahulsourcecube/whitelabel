@@ -4,22 +4,22 @@ namespace App\Http\Controllers\company;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
-use App\Models\MailTemplate;
+use App\Models\SmsTemplate;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class MailtemplateController extends Controller
+class SmstemplateController extends Controller
 {
     function index()
     {
         try {
             $companyId = Helper::getCompanyId();
 
-            return view('company.mailTemplate.list');
+            return view('company.smsTemplate.list');
         } catch (Exception $e) {
-            Log::error('MailtemplateController::Index => ' . $e->getMessage());
+            Log::error('SmstemplateController::Index => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
@@ -28,14 +28,14 @@ class MailtemplateController extends Controller
         try {
             $companyId = Helper::getCompanyId();
             $columns = ['id'];
-            $totalData = MailTemplate::where('company_id', $companyId)->count();
+            $totalData = SmsTemplate::where('company_id', $companyId)->count();
             $start = $request->input('start');
             $length = $request->input('length');
             $order = $request->input('order.0.column');
             $dir = $request->input('order.0.dir');
             $list = [];
             $searchColumn = ['template_html'];
-            $query = MailTemplate::orderBy($columns[0], $dir);
+            $query = SmsTemplate::orderBy($columns[0], $dir);
 
             if ($request->has('search') && !empty($request->input('search.value'))) {
                 $search = $request->input('search.value');
@@ -90,9 +90,9 @@ class MailtemplateController extends Controller
     function create()
     {
         try {
-            return view('company.mailTemplate.create');
+            return view('company.smsTemplate.create');
         } catch (Exception $e) {
-            Log::error('MailtemplateController::Create => ' . $e->getMessage());
+            Log::error('SmstemplateController::Create => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
@@ -100,45 +100,45 @@ class MailtemplateController extends Controller
     {
         try {
             $companyId = Helper::getCompanyId();
-            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
-            return view('company.mailTemplate.create', compact('mailTemplate'));
+            $SmsTemplate = SmsTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
+            return view('company.smsTemplate.create', compact('SmsTemplate'));
         } catch (Exception $e) {
-            Log::error('MailtemplateController::Create => ' . $e->getMessage());
+            Log::error('SmstemplateController::Create => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
     public function store(Request $request)
     {
+
         try {
             $companyId = Helper::getCompanyId();
-            $mailTemplate = MailTemplate::where('company_id', $companyId)
+            $SmsTemplate = SmsTemplate::where('company_id', $companyId)
                 ->where('template_type', $request->type)
                 ->first();
-              
-            
-            if (empty($mailTemplate) || empty($request->id)) {
-               
-                $existingTemplate = MailTemplate::where('company_id', $companyId)
-                ->where('template_type', $request->type)
-                ->first();
+
+
+            if (empty($SmsTemplate) || empty($request->id)) {
+
+                $existingTemplate = SmsTemplate::where('company_id', $companyId)
+                    ->where('template_type', $request->type)
+                    ->first();
                 if (!empty($existingTemplate)) {
-                    return redirect()->back()->with('error', 'Template already exit ' . $request->type );
+                    return redirect()->back()->with('error', 'Template already exit ' . $request->type);
                 }
-                
-                $mailTemplate = new MailTemplate;
-                $mailTemplate->template_type = $request->type;
+
+                $SmsTemplate = new SmsTemplate;
+                $SmsTemplate->template_type = $request->type;
             }
 
-            $mailTemplate->company_id = $companyId;
+            $SmsTemplate->company_id = $companyId;
 
-            $mailTemplate->template_html = $request->tempHtml;
-            $mailTemplate->subject = $request->subject;
+            $SmsTemplate->template_html_sms = $request->tempHtml;
 
-            $mailTemplate->save();
-            return redirect()->route('company.mail.index')
+            $SmsTemplate->save();
+            return redirect()->route('company.sms.index')
                 ->with('success', 'Setting updated successfully');
         } catch (Exception $e) {
-            Log::error('MailtemplateController::store => ' . $e->getMessage());
+            Log::error('SmstemplateController::store => ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }

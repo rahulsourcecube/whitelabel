@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('country_id')->after('email_verified_at')->nullable();
-            $table->unsignedBigInteger('state_id')->after('country')->nullable();
-            $table->unsignedBigInteger('city_id')->after('state')->nullable();
+            $table->unsignedBigInteger('state_id')->after('country_id')->nullable();
+            $table->unsignedBigInteger('city_id')->after('state_id')->nullable();
         });
     }
 
@@ -28,7 +28,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['country', 'state', 'city']);
+            $table->dropColumn(['country_id', 'state_id', 'city_id']);
         });
     }
 };
