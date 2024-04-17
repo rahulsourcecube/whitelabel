@@ -32,6 +32,7 @@
                         <div class="form-group col-md-4">
                             <label for="cdomainname">Company Domain</label>
                             <div class="input-group mb-3">
+                              
                                 <input type="text" class="form-control" name=""
                                     placeholder="Domain Name" id=""  value="{{!empty($companyname->subdomain)? Request::getHost():""}}" readonly>
                                 

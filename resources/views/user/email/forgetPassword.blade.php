@@ -8,8 +8,10 @@ if(!empty($company_id)){
 @if(!empty($template))
 <?php
 $name = $name;
-$route = route('user.confirmPassword', $token);
 $company_title = !empty($mail) && !empty($mail->title) ? $mail->title : 'Referdio';
+$another_tab = ' target="_blank" ';
+$company_link = $webUrl? $webUrl :"";
+$submit= route('user.confirmPassword', $token);
 
 if (isset($mail) && !empty($mail->logo) && file_exists(base_path().'/uploads/setting/' . $mail->logo)){
     $logo = "<img src='" . asset('uploads/setting/' . $mail->logo) . "' style='width: 125px;'>";
@@ -18,13 +20,14 @@ if (isset($mail) && !empty($mail->logo) && file_exists(base_path().'/uploads/set
 }
 
 // Perform the replacement
-$html = str_replace(["[user_name]", "[company_logo]","[company_title]","[route]"], [$name, $logo ,$company_title,$route], $template);
+ $html = str_replace(["[user_name]", "[company_logo]", "[company_title]", "[change_password_link]", "['company_web_link']", "[another_tab]"], [$name, $logo, $company_title, $submit, $company_link, $another_tab], $template);
 
 // Output the modified HTML
-echo $html;
+echo  $html ;
+
 ?>
 @else
-@endif
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -120,5 +123,4 @@ echo $html;
 </body>
 
 </html>
-
-<?php exit; ?>
+@endif

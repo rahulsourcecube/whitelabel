@@ -36,7 +36,7 @@
     </div>
 @endif
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
  // Show the alert 1
          $("alert").fadeIn();
 

@@ -48,10 +48,14 @@ class CityController extends Controller
                         $query->orWhere($column, 'like', "%{$search}%");
                     }
                 });
+               // Count total records after applying search criteria
+               $totalData = $query->count();
+            } else {
+                // Count total records without search criteria
+                $totalData = CityModel::count();
             }
 
             $results = $query->skip($start)->take($length)->get();
-            $totalData = CityModel::count();
 
             foreach ($results as $result) {
                 $list[] = [
@@ -90,10 +94,28 @@ class CityController extends Controller
     public function store(Request $request)
     {
         try {
+            $StateCheckName = CityModel::where(function($query) use ($request) {
+                $query->where('name', $request->name)
+                      ->Where('state_id', $request->state);
+                     
+            })
+            ->first();
+            
+            if (!empty($StateCheckName)) {
+                $errorFields = [];
+                if ($StateCheckName->name === $request->name) {
+                    $errorFields[] = 'City name';
+                }
+                if ($StateCheckName->country__id === $request->state) {
+                    $errorFields[] = 'State name';
+                }
+               
+                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+            }
             $city = new CityModel();
             $city->state_id = $request->state;
             $city->name = $request->name;
-            $city->zipcode = $request->zipcode;
+            // $city->zipcode = $request->zipcode;
             $city->save();
 
             return redirect()->route('admin.location.city.list')->with('success', 'City Added successfully');
@@ -123,12 +145,33 @@ class CityController extends Controller
     function update(Request $request, $id)
     {
         try {
+            $StateCheckName = CityModel::where('id', '!=', $id)
+            ->where(function($query) use ($request) {
+                $query->where('name', $request->name)
+                      ->Where('state_id', $request->state)
+                      ->Where('zipcode', $request->zipcode);
+                     
+            })
+            ->first();
+            
+            if (!empty($StateCheckName)) {
+                $errorFields = [];
+                if ($StateCheckName->name === $request->name) {
+                    $errorFields[] = 'City name';
+                }
+                if ($StateCheckName->state_id === $request->state_id) {
+                    $errorFields[] = 'State name';
+                }
+               
+            
+                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+            }
 
             $city =   CityModel::find($id);
 
             $city->state_id = $request->state;
             $city->name = $request->name;
-            $city->zipcode = $request->zipcode;
+            // $city->zipcode = $request->zipcode;
             $city->save();
 
             return redirect()->route('admin.location.city.list')->with('success', 'City Update successfully');

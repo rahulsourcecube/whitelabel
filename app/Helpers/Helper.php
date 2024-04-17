@@ -40,6 +40,38 @@ class Helper
         $domainName = $domain['0'] ? $domain['0'] : null;
         return $domainName;
     }
+    public static function mainDomain()
+    {
+        $url = request()->getHttpHost();
+    
+        // Parse the URL
+        $parsedUrl = $url;
+        // Check if 'host' key exists in the parsed URL array
+        if (isset($parsedUrl)) {
+            // Extract the host/domain
+            $host = $parsedUrl; // Your host/domain
+
+            // If the host is an IP address, return it directly
+            if (filter_var($host, FILTER_VALIDATE_IP)) {
+                return $host;
+            }
+        
+            // If the host is in the format "subdomain.domain.tld",
+            // return the last two parts as the main domain
+            $parts = explode('.', $host);
+            if (count($parts) >= 2) {
+                return $parts[count($parts) - 2] . '.' . $parts[count($parts) - 1];
+            }
+        
+    
+            // If the host doesn't match any of the above conditions,
+            // return it as is (assuming it's already the main domain)
+            return $host;
+        }
+    
+        // Return a default value or handle the error as needed
+        return 'Unknown';
+    }
     public static function getcurrency()
     {
         return '$';
@@ -357,6 +389,14 @@ class Helper
         return $packageData;
     }
     public static function stripeKey()
+    {
+        $admin = User::where('user_type', '1')->first();; // Fetching the first mail configuration
+        $mailConfig = SettingModel::where('user_id', $admin->id)
+        ->select('stripe_key', 'stripe_secret')
+        ->first();       
+        return $mailConfig;
+    }
+    public static function smsMessage()
     {
         $admin = User::where('user_type', '1')->first();; // Fetching the first mail configuration
         $mailConfig = SettingModel::where('user_id', $admin->id)

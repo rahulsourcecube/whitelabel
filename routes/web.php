@@ -9,6 +9,7 @@ use App\Http\Controllers\CompanyLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
@@ -55,7 +56,7 @@ Route::get('/clears', function () {
 Route::get('send-email-queue', function () {
     // Your code inside the try block
     $userName  = 'testing data';
-    $to = 'news@mailinator.com';
+    $to = 'vuxipy@mailinator.com';
     $subject = 'Welcome Mail'; // Set your subject here
     $message = 'thank you'; // Set your message here
 
@@ -168,6 +169,25 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::put('update/{city}', [CityController::class, 'update'])->name('update');
                 Route::delete('delete/{city}', [CityController::class, 'delete'])->name('delete');
             });
+
+            
+        });
+        //Mail
+
+        Route::prefix('mail')->name('mail.')->group(function () {
+            Route::get('template', [TemplateController::class, 'index'])->name('index');
+            Route::get('template/create', [TemplateController::class, 'create'])->name('create');
+            Route::get('template/list', [TemplateController::class, 'list'])->name('template.list');
+            Route::post('template/store', [TemplateController::class, 'store'])->name('template.store');
+            Route::get('edit/{id}', [TemplateController::class, 'edit'])->name('template.edit');
+            Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+        });
+        Route::prefix('sms')->name('sms.')->group(function () {
+            Route::get('template', [TemplateController::class, 'smsIndex'])->name('index');
+            Route::get('template/create', [TemplateController::class, 'smsCreate'])->name('create');
+            Route::get('template/list', [TemplateController::class, 'smsList'])->name('template.list');
+            Route::post('template/store', [TemplateController::class, 'smsStore'])->name('template.store');
+            Route::get('edit/{id}', [TemplateController::class, 'smsEdit'])->name('template.edit');
         });
     });
 

@@ -1,7 +1,8 @@
 @extends('admin.layouts.master')
-@section('title', 'Add Country')
+@section('title', 'Country')
 @section('main-content')
     <div class="main-content">
+        @include('admin.includes.message')
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
@@ -26,17 +27,16 @@
                             <div class="form-group col-md-6">
                                 <label for="name">Name <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="Country" maxlength="150"
-                                    value="{{ !empty($country->name) ? $country->name : '' }}">
+                                    value="{{ !empty($country->name) ? $country->name : old('name') }}">
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="name">Short Name<span class="error">*</span></label>
+                                <label for="name">Short Name<span class="error"></span></label>
                                 <input type="text" class="form-control" id="short_name" name="short_name" placeholder="IND" maxlength="150"
-                                    value="{{ !empty($country->short_name) ? $country->short_name : '' }}">
+                                    value="{{ !empty($country->short_name) ? $country->short_name : old('short_name') }}">
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="name">Code <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="code" name="code" placeholder="+91" maxlength="150"
-                                    value="{{ !empty($country->code) ? $country->code : '' }}">
+                                <label for="name">Phone Code <span class="error"></span></label>
+                                <input type="text" class="form-control" id="code" name="code" placeholder="+91" maxlength="150" value="{{ !empty($country->code) ? $country->code : old('code') }}">
                             </div>
                         </div>
 
@@ -61,26 +61,14 @@
                 rules: {
                     name: {
                         required: true
-                    },
-                    code: {
-                        required: true,
-                        validateCountryCode: true
-                    },
-                    short_name: {
-                        required: true
                     }
+                  
                 },
                 messages: {
-                    country: {
-                        required: "Please enter country"
-                    },
-                    code: {
-                        required: "Please enter code",
-                        validateCountryCode: "Please enter valid code (e.g., +91)"
-                    },
-                    short_name: {
-                        required: "Please enter short name"
+                    name: {
+                        required: "Please enter country name"
                     }
+                    
                 }
             });
 

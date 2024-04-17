@@ -31,9 +31,9 @@ class UserCampaignHistoryModel extends Model
         return $this->hasOne(User::class,'id','user_id');
     }
     
-    function getCampaign(){
-        return $this->belongsTo(CampaignModel::class, 'campaign_id');
-    }
+        function getCampaign(){
+            return $this->belongsTo(CampaignModel::class, 'campaign_id');
+        }
     
     public function getTaskStatusAttribute() {
         $status = $this->status;

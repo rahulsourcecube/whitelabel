@@ -69,7 +69,7 @@
                                             <div class="form-group col-md-4">
                                                 <label class="font-weight-semibold" for="country">Country:</label>
                                                 <select name="country" id="country" class="form-control">
-                                                    <option value="">Select Country</option>
+                                                    <option value="">Country</option>
                                                     @if ($country_data)
                                                         @foreach ($country_data as $country)
                                                             <option value="{{ $country->id }}">{{ $country->name }}</option>
@@ -82,14 +82,14 @@
                                             <div class="form-group col-md-4">
                                                 <label class="font-weight-semibold" for="state">State:</label>
                                                 <select name="state" id="state" class="form-control">
-                                                    <option value="">Select State</option>
+                                                    <option value="">State</option>
                                                 </select>
 
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label class="font-weight-semibold" for="city">City:</label>
                                                 <select name="city" id="city" class="form-control">
-                                                    <option value="">Select City</option>
+                                                    <option value="">City</option>
                                                 </select>
 
                                             </div>
@@ -235,17 +235,12 @@
                         _token: CSRF_TOKEN // Include CSRF token in the request data
                     },
                     success: function(response) {
-                        console.log(response);
-                        var len = response.length;
-                        $("#state").empty();
-                        for (var i = 0; i < len; i++) {
-                            var id = response[i]['id'];
-                            var name = response[i]['name'];
-                            $("#state").append("<option value='" + id + "'>" + name + "</option>");
-                        }
+                        // Clear previous options and append new ones
+                        $("#city").empty().append("<option value=''>City</option>");
+                         $("#state").empty().append(response);
                     }
                 });
-            });
+            })
 
             $('#state').on('change', function() {
                 var state_id = $(this).val();
@@ -259,14 +254,7 @@
                         _token: CSRF_TOKEN // Include CSRF token in the request data
                     },
                     success: function(response) {
-                        console.log(response);
-                        var len = response.length;
-                        $("#city").empty();
-                        for (var i = 0; i < len; i++) {
-                            var id = response[i]['id'];
-                            var name = response[i]['name'];
-                            $("#city").append("<option value='" + id + "'>" + name + "</option>");
-                        }
+                        $("#city").empty().append(response);
                     }
                 });
             });

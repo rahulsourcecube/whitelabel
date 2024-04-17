@@ -9,13 +9,13 @@
                     <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                         <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <a href="{{ route('company.employee.list') }}" class="breadcrumb-item">Template</a>
-                    <span class="breadcrumb-item active">Add</span>
+                    <span class="breadcrumb-item active">{{!empty($SmsTemplate)?'Edit': "Add"}}</span>
                 </nav>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Add Mail Template</h4>
+                <h4>{{!empty($SmsTemplate)?'Edit': "Add"}} Sms Template</h4>
                
                 <div class="m-t-50" style="">
                     <form id="mailTemplate" method="POST" action="{{ route('company.sms.template.store') }}">
@@ -132,13 +132,13 @@
                 var html = "";
     
                 if (type == 'welcome') {
-                    html = "[user_name] [company_title] [company_logo] [company_web_link]";
+                    html = "[user_name] [company_title] [company_web_link]";
                     $('.htmltemplateClass').show();
                 } else if (type == 'forgot_password') {
-                    html = "[user_name] [company_logo] [company_title] [company_web_link] [change_password_link]";
+                    html = "[user_name]  [company_title] [company_web_link] [change_password_link] ";
                     $('.htmltemplateClass').show();
                 }  else if (type == 'change_pass') {
-                    html = "[user_name] [company_logo] [company_title] [company_web_link] ";
+                    html = "[user_name]  [company_title] [company_web_link] ";
                     $('.htmltemplateClass').show();
                 } else {
                     $('.htmltemplateClass').hide();

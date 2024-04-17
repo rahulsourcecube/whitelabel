@@ -127,11 +127,17 @@ class UserController extends Controller
 
     public function get_states(Request $request)
     {
-        $country_id = $request->input('country_id');
-
-        $states = StateModel::where('country_id', $country_id)->get();
-        // dd($states);
-        return response()->json($states);
+        $country_id = $request->input('country_id');    
+      
+        $states = StateModel::where('country_id', $country_id)->get();   
+       
+        $options = '';
+        $options .= "<option value=''>Select state</option>";       
+        foreach ($states as $state) {            
+            $options .= "<option value='" . $state->id . "'>" . $state->name . "</option>";
+        }    
+        // Return the options as JSON response
+        return response()->json($options);
     }
 
 
@@ -139,9 +145,13 @@ class UserController extends Controller
     {
         $state_id = $request->input('state_id');
 
-        $city = CityModel::where('state_id', $state_id)->get();
-        // dd($states);
-        return response()->json($city);
+        $citys = CityModel::where('state_id', $state_id)->get();
+        $options = '';
+        $options .= "<option value=''>Select City</option>";       
+        foreach ($citys as $city) {            
+            $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
+        }    
+        return response()->json($options);
     }
 
     function checkEmail(Request $request)
@@ -296,12 +306,12 @@ class UserController extends Controller
             $user_id = base64_decode($id);
             $companyId = Helper::getCompanyId();
 
-            $country_data = CountryModel::all();
-            $state_data = StateModel::all();
-            $city_data = CityModel::all();
-
-
+            
+            
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
+            $country_data = CountryModel::all();
+            $state_data = StateModel::where('country_id',$user->country_id)->get();
+            $city_data = CityModel::where('state_id',$user->state_id)->get();
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }

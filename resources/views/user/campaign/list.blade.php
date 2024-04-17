@@ -16,6 +16,51 @@
         <div class="card">
             <div class="card-body">
                 <h4>Campaign List</h4>
+                <div class="d-flex my-3 align-items-end gap-3">
+                    <form method="get" action="{{ route('user.campaign.list') }}" id="searchForm" onsubmit="return validateForm()">
+                        <div class="row mt-3">
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-semibold" for="country">Country:</label>
+                                <select name="country" id="country" class="form-control">
+                                    <option value="">Select Country</option>
+                                    @if(!empty($countrys))
+                                    @foreach ($countrys as $country)
+                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                    @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-semibold" for="state">State:</label>
+                                <select name="state" id="state" class="form-control">
+                                    <option value="">Select State</option>
+                                    @if(!empty($states))
+                                    @foreach ($states as $state)
+                                    <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                    @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-semibold" for="city">City:</label>
+                                <select name="city" id="city" class="form-control">
+                                    <option value="">Select City</option>
+                                    @if(!empty($citys))
+                                    @foreach ($citys as $city)
+                                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                    @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3" style="margin-top: 29px;">
+                                <button type="button" id="filter_button" class="btn btn-success">Search</button>
+                                <a href="{{ route('user.campaign.list') }}" class="btn btn-success ms-2">Refresh</a>
+                            </div>
+                        </div>
+                        {{-- <span class="err" style="display: none;color: red;">Please select any one column</span> --}}
+                    </form>
+                </div>
+                
                 <div class="m-t-25">
                     <table id="campaign_tables" class="table">
                         <thead>
@@ -41,7 +86,13 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
+      
         $(document).ready(function() {
+            $('#filter_button').on('click', function() {
+           
+        // Re-draw the DataTable to apply updated filters
+          table.ajax.reload();
+    });
             var table = $('#campaign_tables').DataTable({
                 // Processing indicator
                 "processing": true,
@@ -65,7 +116,15 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
                     "data": function(d) {
-                        // d.search_name = $('#search_name').val();
+                            if ($('#country').val() !== '') {
+                            d.country = $('#country').val();
+                        }
+                        if ($('#state').val() !== '') {
+                            d.state = $('#state').val();
+                        }
+                        if ($('#city').val() !== '') {
+                            d.city = $('#city').val();
+                        }
                     }
                 },
                 'columnDefs': [{
@@ -168,6 +227,45 @@
                 }
             });
         }
+    </script>
+    <script>
+        $(document).ready(function($) {
+            
+            $('#country').on('change', function() {
+                var country_id = $(this).val();
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    
+                $.ajax({
+                    url: "{{route('user.get_states')}}",
+                    type: 'POST',
+                    data: {
+                        country_id: country_id,
+                        _token: CSRF_TOKEN // Include CSRF token in the request data
+                    },
+                    success: function(response) {
+                        $("#city").empty().append("<option value=''>Select City</option>");
+                     $("#state").empty().append(response);
+                    }
+                });
+            });
+    
+            $('#state').on('change', function() {
+                var state_id = $(this).val();
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    
+                $.ajax({
+                    url: "{{route('user.get_city')}}",
+                    type: 'POST',
+                    data: {
+                        state_id: state_id,
+                        _token: CSRF_TOKEN // Include CSRF token in the request data
+                    },
+                    success: function(response) {
+                        $("#city").empty().append(response);
+                    }
+                });
+            });
+        });
     </script>
 
 @endsection

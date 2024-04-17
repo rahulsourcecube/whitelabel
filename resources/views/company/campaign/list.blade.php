@@ -95,9 +95,20 @@
                         },
                     },
                     {
+                        'targets': 5,
+                        'visible': true,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            return row[3];
+                        },
+                    },
+                    {
                         'targets': 7,
                         'visible': taskTypeString === 'Referral', // Corrected syntax
                         'orderable': false,
+                        'render': function(data, type, row) {
+                            return row[5];
+                        },
                     },
                     {
                         'targets': 8,

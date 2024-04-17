@@ -36,7 +36,7 @@ class SmstemplateController extends Controller
             $list = [];
             $searchColumn = ['template_html'];
             $query = SmsTemplate::orderBy($columns[0], $dir);
-
+            $query->where('company_id', $companyId);
             if ($request->has('search') && !empty($request->input('search.value'))) {
                 $search = $request->input('search.value');
                 $query->where(function ($query) use ($search, $searchColumn) {

@@ -1,4 +1,4 @@
-@extends('company.layouts.master')
+@extends('admin.layouts.master')
 @section('title', 'Add Employee')
 @section('main-content')
     <div class="main-content">
@@ -9,54 +9,50 @@
                     <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                         <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <a href="{{ route('company.employee.list') }}" class="breadcrumb-item">Template</a>
-                    <span class="breadcrumb-item active">{{!empty($mailTemplate)?'Edit': "Add"}}</span>
+                    <span class="breadcrumb-item active">{{!empty($SmsTemplate)?'Edit': "Add"}}</span>
                 </nav>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>{{!empty($mailTemplate)?'Edit': "Add"}}  Mail Template</h4>
+                <h4>{{!empty($SmsTemplate)?'Edit': "Add"}} Sms Template</h4>
                
                 <div class="m-t-50" style="">
-                    <form id="mailTemplate" method="POST" action="{{ route('company.mail.template.store') }}">
+                    <form id="mailTemplate" method="POST" action="{{ route('admin.sms.template.store') }}">
                         @csrf
                         <div class="form-row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-8">
                                 <label for="type">Template Type <span class="error">*</span></label>
                                
-                                <select id="type" name="type" class="form-control templateType" {{ !empty($mailTemplate) && $mailTemplate->template_type?'disabled':"";  }}>
+                                <select id="type" name="type" class="form-control templateType" {{ !empty($SmsTemplate) && $SmsTemplate->template_type?'disabled':"";  }}>
                                     <option value="">Selcet Type
                                     </option>
-                                        <option value="forgot_password" {{ !empty($mailTemplate) && $mailTemplate->template_type == 'forgot_password' ? 'selected' : '' }}>Forgot Password</option>
-                                        <option  value="welcome"  {{ !empty($mailTemplate) && $mailTemplate->template_type == 'welcome' ? 'selected' : '' }}>Welcome
-                                        <option  value="change_pass"  {{ !empty($mailTemplate) && $mailTemplate->template_type == 'change_pass' ? 'selected' : '' }}>Change password
+                                        <option value="forgot_password" {{ !empty($SmsTemplate) && $SmsTemplate->template_type == 'forgot_password' ? 'selected' : '' }}>Forgot Password</option>
+                                        <option  value="welcome"  {{ !empty($SmsTemplate) && $SmsTemplate->template_type == 'welcome' ? 'selected' : '' }}>Welcome
+                                        <option  value="change_pass"  {{ !empty($SmsTemplate) && $SmsTemplate->template_type == 'change_pass' ? 'selected' : '' }}>Change password
                                     </option>
                                 </select>
                            
-                                @if(!empty($mailTemplate) && !empty($mailTemplate->template_type))
-                                <input type="hidden" name="type" value="{{!empty($mailTemplate) && !empty($mailTemplate->template_type)?$mailTemplate->template_type : '' }}">
-                                <input type="hidden" name="id" value="{{!empty($mailTemplate) && !empty($mailTemplate->id)?$mailTemplate->id : '' }}">
+                                @if(!empty($SmsTemplate) && !empty($SmsTemplate->template_type))
+                                <input type="hidden" name="type" value="{{!empty($SmsTemplate) && !empty($SmsTemplate->template_type)?$SmsTemplate->template_type : '' }}">
+                                <input type="hidden" name="id" value="{{!empty($SmsTemplate) && !empty($SmsTemplate->id)?$SmsTemplate->id : '' }}">
                            
                                @endif 
                                 
 
                             </div>
-                            <div class="form-group col-md-4">
-                                <label for="tempHtml">Subject</label>
-                                <input type="text" class="form-control" id="subject" name="subject" value="{{!empty($mailTemplate) && !empty($mailTemplate->subject)?$mailTemplate->subject:"";}}"
-                                    placeholder="Subject" maxlength="150" value="{{ old('subject') }}">
-                            </div>
+                          
                            
                             <div class="form-group col-md-8 mt-2 htmltemplateClass">
-                                <div class="alert alert-success" role="alert">
+                                <div class="alert-c alert-success" role="alert">
                                     <b><p class="alert-heading usedPoint" > </p></b>
                                     <p class="mb-0"></p>
                                 </div>
                             </div>
                             <div class="form-group col-md-8">
                                 <label for="tempHtml">Html</label>
-                                {{-- <textarea type="text" class="form-control" id="tempHtml" name="tempHtml" placeholder="Html" >{{ !empty($mailTemplate) && !empty($mailTemplate->template_html)  ? $mailTemplate->template_html : '' }}</textarea> --}}
-                                <textarea class="form-control ckeditor" id="tempHtml" name="tempHtml" placeholder="Html">{{ !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : '' }}</textarea>
+                                {{-- <textarea type="text" class="form-control" id="tempHtml" name="tempHtml" placeholder="Html" >{{ !empty($SmsTemplate) && !empty($SmsTemplate->template_html)  ? $SmsTemplate->template_html : '' }}</textarea> --}}
+                                <textarea class="form-control ckeditor" id="tempHtml" name="tempHtml" placeholder="Html">{{ !empty($SmsTemplate) && !empty($SmsTemplate->template_html_sms) ? $SmsTemplate->template_html_sms : '' }}</textarea>
 
                             </div>
 
@@ -97,10 +93,7 @@
                 rules: {
                     type: {
                         required: true
-                    },
-                    subject: {
-                        required: true
-                    },
+                    },                    
                     tempHtml: {
                         ckeditorContent: true  // Use custom validation method for CKEditor
                     }
@@ -108,9 +101,6 @@
                 messages: {
                     type: {
                         required: "Please select template type"
-                    },
-                    subject: {
-                        required: "Please select template subject"
                     },
                     tempHtml: {
                         ckeditorContent: "Please enter HTML"  // Custom error message for CKEditor
@@ -142,13 +132,13 @@
                 var html = "";
     
                 if (type == 'welcome') {
-                    html = "[user_name] [company_title] [company_logo] [company_web_link] [another_tab]";
+                    html = "[user_name] [company_title] [company_web_link]";
                     $('.htmltemplateClass').show();
                 } else if (type == 'forgot_password') {
-                    html = "[user_name] [company_logo] [company_title] [company_web_link] [change_password_link] [another_tab] ";
+                    html = "[user_name]  [company_title] [company_web_link] [change_password_link] ";
                     $('.htmltemplateClass').show();
                 }  else if (type == 'change_pass') {
-                    html = "[user_name] [company_logo] [company_title] [company_web_link] [another_tab]";
+                    html = "[user_name]  [company_title] [company_web_link] ";
                     $('.htmltemplateClass').show();
                 } else {
                     $('.htmltemplateClass').hide();

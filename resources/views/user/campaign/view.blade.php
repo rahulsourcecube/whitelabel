@@ -183,8 +183,12 @@ Status: <strong
                                                     <i class="anticon anticon-instagram"></i>
                                                 </button>
                                             </a>
-                                            <p id="referral_code_copy" style="display: none;">
-                                                {{ route('campaign.referral', $user_Campaign->referral_link) }}</p>
+                                            @php
+                                               
+                                                $customUrl=!empty($campagin_detail)&& !empty($campagin_detail->referral_url_segment)?"?".$campagin_detail->referral_url_segment: "";
+                                            @endphp
+                                            <p id="referral_code_copy" style="display:none">
+                                                {{ route('campaign.referral',$user_Campaign->referral_link.$customUrl) }}</p>
                                             <button onclick="copyToClipboard('#referral_code_copy')" class="btn btn-primary btn-tone">
                                                 <i class="anticon anticon-copy"></i>
                                                 <span class="m-l-5">Copy referral link</span>
@@ -269,6 +273,7 @@ Status: <strong
                             </div>
                         </div>
                     </div>
+                    @if (isset($user_Campaign->status) && $user_Campaign->status == '3')
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="container mt-5">
@@ -325,14 +330,13 @@ Status: <strong
                                     </div>
                                     <div class="mt-3 form-group">
                                         <!-- Submit button -->
-                                        <button id="submitRating" class="btn btn-primary">Send</button>
+                                        <button id="submitRating" class="btn btn-primary">{{!empty($ratings)?'Update':'Send'}}</button>
                                     </div>
                                 
                             </form>
                         </div>
                         </div>
                     </div>
-                    @if (isset($user_Campaign->status) && $user_Campaign->status == '3')
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="container mt-5">
@@ -393,7 +397,7 @@ Status: <strong
                                     @endif
                                     <div class="mt-3 form-group">
                                         <!-- Submit button -->
-                                        <button id="submitRating" class="btn btn-primary">Send</button>
+                                        <button id="submitRating" class="btn btn-primary">{{!empty($feedback)?'Update':'Send'}}</button>
                                     </div>
                                 
                             </form>
@@ -620,7 +624,6 @@ Status: <strong
         });
 
         $(".feedback i").click(function() {
-            alert(123);
             selectedRating = $(this).index() + 1;
             $(".feedback i").removeClass("selected");
             $(this).prevAll().addBack().addClass("selected");

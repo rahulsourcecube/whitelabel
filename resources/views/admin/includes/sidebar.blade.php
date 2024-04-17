@@ -49,13 +49,38 @@
                     </li>
                 </ul>
             </li>
-            <li class="nav-item dropdown open @if (request()->segment(2) == 'setting') active @endif">
+            {{-- <li class="nav-item dropdown open @if (request()->segment(2) == 'setting') active @endif">
                 <a class="dropdown-toggle" href="{{ route('admin.setting.index') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-setting"></i>
                     </span>
                     <span class="title">Setting</span>
                 </a>
+            </li> --}}
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0);">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-setting"></i>
+                    </span>
+                    <span class="title">Settings</span>
+                    <span class="arrow">
+                        <i class="arrow-icon"></i>
+                    </span>
+                </a>
+                <ul class="dropdown-menu">
+                  
+                    <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                        <a class="dropdown-toggle" href="{{ route('admin.setting.index') }}">                            
+                            <span class="title">Setting</span>
+                        </a>
+                    </li>
+                    <li @if (request()->segment(2) == 'mail') class='active' @endif>
+                        <a href="{{ route('admin.mail.index') }}">Mail Template</a>
+                    </li>
+                    <li @if (request()->segment(2) == 'sms') class='active' @endif>
+                        <a href="{{ route('admin.sms.index') }}">Sms Template</a>
+                    </li>
+                </ul>
             </li>
             <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('admin.logout') }}"

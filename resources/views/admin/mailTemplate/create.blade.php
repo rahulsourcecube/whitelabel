@@ -1,4 +1,4 @@
-@extends('company.layouts.master')
+@extends('admin.layouts.master')
 @section('title', 'Add Employee')
 @section('main-content')
     <div class="main-content">
@@ -9,16 +9,16 @@
                     <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                         <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <a href="{{ route('company.employee.list') }}" class="breadcrumb-item">Template</a>
-                    <span class="breadcrumb-item active">{{!empty($mailTemplate)?'Edit': "Add"}}</span>
+                    <span class="breadcrumb-item active"> {{!empty($mailTemplate)?'Edit': "Add"}}</span>
                 </nav>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>{{!empty($mailTemplate)?'Edit': "Add"}}  Mail Template</h4>
+                <h4>{{!empty($mailTemplate)?'Edit': "Add"}} Mail Template</h4>
                
                 <div class="m-t-50" style="">
-                    <form id="mailTemplate" method="POST" action="{{ route('company.mail.template.store') }}">
+                    <form id="mailTemplate" method="POST" action="{{ route('admin.mail.template.store') }}">
                         @csrf
                         <div class="form-row">
                             <div class="form-group col-md-4">
@@ -48,7 +48,7 @@
                             </div>
                            
                             <div class="form-group col-md-8 mt-2 htmltemplateClass">
-                                <div class="alert alert-success" role="alert">
+                                <div class="alert-s alert-success" role="alert">
                                     <b><p class="alert-heading usedPoint" > </p></b>
                                     <p class="mb-0"></p>
                                 </div>

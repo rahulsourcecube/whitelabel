@@ -15,7 +15,10 @@ return new class extends Migration
     {
         Schema::table('campaign', function (Blueprint $table) {
             $table->string('feedback_type')->nullable()->after('package_id');           
-            $table->text('referral_url_segment')->nullable()->after('feedback_type');           
+            $table->text('referral_url_segment')->nullable()->after('feedback_type');   
+            $table->unsignedBigInteger('country_id')->after('referral_url_segment')->nullable();
+            $table->unsignedBigInteger('state_id')->after('country_id')->nullable();
+            $table->unsignedBigInteger('city_id')->after('state_id')->nullable();        
         });
     }
 
