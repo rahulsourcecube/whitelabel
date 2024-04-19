@@ -2,6 +2,7 @@
 @section('title', 'Add State')
 @section('main-content')
     <div class="main-content">
+        @include('admin.includes.message')
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
@@ -25,7 +26,9 @@
                                     <option value="">Select Country</option>
                                     @if ($country)
                                         @foreach ($country as $data)
-                                            <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                        <option value="{{ $data->id }}" {{ !empty(old('country')) && old('country') == $data->id ? 'selected' : '' }}>
+                                            {{ $data->name }}
+                                        </option>
                                         @endforeach
                                     @endif
 
@@ -33,7 +36,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="name">State <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="State" maxlength="150">
+                                <input type="text" class="form-control" id="name" name="name" value="{{!empty(old('name'))?old('name'):""}}" placeholder="State" maxlength="150">
                             </div>
 
                         </div>
@@ -68,11 +71,11 @@
 
                 },
                 messages: {
-                    counrtry: {
-                        required: "Please enter country"
+                    country: {
+                        required: "Please select country"
                     },
                     name: {
-                        required: "Please enter state"
+                        required: "Please enter state name"
                     },
 
                 }

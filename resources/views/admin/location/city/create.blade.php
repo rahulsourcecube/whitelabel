@@ -2,6 +2,7 @@
 @section('title', 'Add City')
 @section('main-content')
     <div class="main-content">
+        @include('admin.includes.message')
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
@@ -35,10 +36,7 @@
                                 <label for="name">City<span class="error">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="City" maxlength="150">
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="name">Zipcode<span class="error">*</span></label>
-                                <input type="number" class="form-control" id="zipcode" name="zipcode" placeholder="394107" maxlength="150">
-                            </div>
+                            
 
                         </div>
 
@@ -67,22 +65,16 @@
                     },
                     name: {
                         required: true
-                    },
-                    zipcode: {
-                        required: true
-                    },
+                    }                   
 
                 },
                 messages: {
                     state: {
-                        required: "Please enter state"
+                        required: "Please select state"
                     },
                     name: {
                         required: "Please enter city"
-                    },
-                    zipcode: {
-                        required: "Please enter zipcode"
-                    },
+                    }                   
 
                 }
             });

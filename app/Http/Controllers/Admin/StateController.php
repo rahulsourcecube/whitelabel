@@ -45,10 +45,16 @@ class StateController extends Controller
                         $query->orWhere($column, 'like', "%{$search}%");
                     }
                 });
+            
+                // Count total records after applying search criteria
+                $totalData = $query->count();
+            } else {
+                // Count total records without search criteria
+                $totalData = StateModel::count();
             }
 
             $results = $query->skip($start)->take($length)->get();
-            $totalData = StateModel::count();
+          
 
             foreach ($results as $result) {
                 $list[] = [
@@ -85,6 +91,25 @@ class StateController extends Controller
     public function store(Request $request)
     {
         try {
+            $StateCheckName = StateModel::where(function($query) use ($request) {
+                $query->where('name', $request->name)
+                      ->Where('country_id', $request->country);
+                     
+            })
+            ->first();
+            
+            if (!empty($StateCheckName)) {
+                $errorFields = [];
+                if ($StateCheckName->name === $request->name) {
+                    $errorFields[] = 'State Name';
+                }
+                if ($StateCheckName->country_id === $request->country) {
+                    $errorFields[] = 'Country name';
+                }
+               
+            
+                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+            }
             $state = new StateModel();
             $state->country_id = $request->country;
             $state->name = $request->name;
@@ -115,6 +140,26 @@ class StateController extends Controller
     function update(Request $request, $id)
     {
         try {
+             $StateCheckName = StateModel::where('id', '!=', $id)
+            ->where(function($query) use ($request) {
+                $query->where('name', $request->name)
+                      ->Where('country_id', $request->country);
+                     
+            })
+            ->first();
+            
+            if (!empty($StateCheckName)) {
+                $errorFields = [];
+                if ($StateCheckName->name === $request->name) {
+                    $errorFields[] = 'State name';
+                }
+                if ($StateCheckName->country_id === $request->country) {
+                    $errorFields[] = 'Country name';
+                }
+               
+            
+                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+            }
 
             $state =   StateModel::find($id);
             $state->country_id = $request->country;

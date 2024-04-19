@@ -6,11 +6,17 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyModel;
 use App\Models\SettingModel;
+use App\Models\TaskProgression;
+use App\Models\taskProgressionUserHistory;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use PDO;
+use Spatie\Permission\Models\Role;
 
 class SettingController extends Controller
 {
@@ -89,6 +95,19 @@ class SettingController extends Controller
             $SettingModel->twitter_link = $request->twitter_link;
             $SettingModel->linkedin_link = $request->linkedin_link;
             $SettingModel->logo_link = $request->logo_link;
+             //Mail Credentials
+             $SettingModel->mail_mailer = $request->mail_mailer;
+             $SettingModel->mail_host = $request->mail_host;
+             $SettingModel->mail_port = $request->mail_port;
+             $SettingModel->mail_username = $request->mail_username;
+             $SettingModel->mail_password = $request->mail_password;
+             $SettingModel->mail_encryption = $request->mail_encryption;
+             $SettingModel->mail_address = $request->mail_address;
+             //Sms
+             $SettingModel->sms_account_sid = $request->sms_account_sid;
+             $SettingModel->sms_account_token = $request->sms_account_token;
+             $SettingModel->sms_account_number = $request->sms_account_number;
+
             $SettingModel->save();
             return redirect()->route('company.setting.index')->with('success', 'Setting Update successfully');
          }
@@ -97,4 +116,197 @@ class SettingController extends Controller
          return redirect()->back()->with('error', "Error : " . $e->getMessage());
       }
    }
+   function progressionIndex()
+   {
+      try {
+         $companyId = Helper::getCompanyId();
+         return view('company.setting.progressionIndex');
+      } catch (Exception $e) {
+         Log::error('SettingController::Index => ' . $e->getMessage());
+         return redirect()->back()->with('error', "Error : " . $e->getMessage());
+      }
+   }
+   public function progressionList(Request $request)
+   {
+       try {
+                $companyId = Helper::getCompanyId();
+                $columns = ['id'];
+                $totalData = TaskProgression::where('company_id', Auth::user()->id)->count();
+                $start = $request->input('start');
+                $length = $request->input('length');
+                $order = $request->input('order.0.column');
+                $dir = $request->input('order.0.dir');
+                $list = [];
+                $searchColumn = ['first_name', 'last_name', 'email', 'full_name'];
+                $query = TaskProgression::orderBy($columns[0], $dir);
+                    
+                if ($request->has('search') && !empty($request->input('search.value'))) {
+                    $search = $request->input('search.value');
+                    $query->where(function ($query) use ($search, $searchColumn) {
+                        foreach ($searchColumn as $column) {
+                            if ($column == 'full_name') {
+                                $query->orWhere(DB::raw('concat(title)'), 'like', "%{$search}%");
+                            } else {
+                                $query->orWhere("$column", 'like', "%{$search}%");
+                            }
+                        }
+                    });
+                }
+
+                $results = $query->skip($start)
+                    ->take($length)
+                    ->get();
+
+                foreach ($results as $result) {
+
+                    $list[] = [
+                        base64_encode($result->id),
+                        $result->title ?? "-",
+                        $result->no_of_task ?? "-",
+                        $result->image ?? "-",
+                        
+                    ];
+                }
+                return response()->json([
+                    "draw" => intval($request->input('draw')),
+                    "recordsTotal" => $totalData,
+                    "recordsFiltered" => $totalData,
+                    "data" => $list
+                ]);
+            } catch (Exception $e) {
+                Log::error('SettingController::Elist  => ' . $e->getMessage());
+                return response()->json([
+                    "draw" => 0,
+                    "recordsTotal" => 0,
+                    "recordsFiltered" => 0,
+                    "data" => [],
+                ]);
+            }
+   }
+   function progressionCreate()
+    {
+        try {
+            $isActivePackageAccess= Helper::isActivePackageAccess();
+
+            if(!$isActivePackageAccess){
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            }
+            $companyId = Helper::getCompanyId();
+
+            return view('company.setting.progressioncreate');
+        } catch (Exception $e) {
+            Log::error('SettingController::progressionCreate => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+    }
+    function progressionStore(Request $request)
+    {
+     
+        try {
+
+            $companyId = Helper::getCompanyId();
+            $validator = Validator::make($request->all(), [
+                'title' => 'required|string|max:255',
+                'no_of_task' => 'required|string|max:255'
+                
+            ]);
+            $progressionNoOfTask = TaskProgression::where('id','!=',base64_decode($request->id))->where('no_of_task',$request->no_of_task)->first();
+            $progression = TaskProgression::where('id',base64_decode($request->id))->first();
+            if($progressionNoOfTask ){
+              
+                return redirect()->back()->with('error', 'No of task is already added')->withInput();   
+            }
+           if(!empty($progression)){
+
+            if ($request->hasFile('image')) {
+                $extension = $request->file('image')->getClientOriginalExtension();
+                $randomNumber = rand(1000, 9999);
+                $timestamp = time();
+                $image = $timestamp . '_' . $randomNumber . '.' . $extension;
+                $request->file('image')->move(base_path('uploads/company/progression/'), $image);
+                if (!empty($progression->image)) {
+                    $oldImagePath = base_path() . '/uploads/company/progression/' . $progression->image;
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+            } else {
+                $image = $progression->image;
+            }
+            //  $progression = new TaskProgression();
+             $progression->title = $request->title;
+             $progression->company_id = $companyId;
+             $progression->no_of_task = $request->no_of_task;           
+             $progression->image = $image;  
+                   
+            $progression->save();
+           $message="Task Progression Update successfuly.";
+        }else{
+            
+            
+            if ($request->hasFile('image')) {
+                $extension = $request->file('image')->getClientOriginalExtension();
+                $randomNumber = rand(1000, 9999);
+                $timestamp = time();
+                $image = $timestamp . '_' . $randomNumber . '.' . $extension;
+                $request->file('image')->move(base_path('uploads/company/progression/'), $image);
+            } 
+            $progression = new TaskProgression();
+            $progression->title = $request->title;
+            $progression->company_id = $companyId;
+            $progression->no_of_task = $request->no_of_task;           
+            $progression->image = $image;  
+            
+            $progression->save();
+            
+            $message="Task Progression added successfuly.";
+    }
+        return redirect()->route('company.progression.index')->with('success', $message);
+    } catch (Exception $e) {
+            Log::error('SettingController::progressionStore => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+        
+    }
+    function progressionedit($id)
+    {
+        try {
+            $isActivePackageAccess= Helper::isActivePackageAccess();
+
+            if(!$isActivePackageAccess){
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            }
+            $companyId = Helper::getCompanyId();
+            $progression = TaskProgression::where('id',base64_decode($id))->first();
+
+            return view('company.setting.progressioncreate',compact('progression'));
+        } catch (Exception $e) {
+            Log::error('SettingController::progressionCreate => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+    }
+    public function progressionDelete($id)
+    {
+        try {
+            $companyId = Helper::getCompanyId();
+            $id = base64_decode($id);
+            $taskProgressionUserHistory = taskProgressionUserHistory::where('progression_id', $id)->first();
+            if(!empty($taskProgressionUserHistory)){
+                return response()->json(['error' => true, 'message' => 'You cannot delete these record']);
+            }
+            $taskProgression = TaskProgression::where('id', $id)->where('company_id', $companyId)->first();
+            if (!empty($taskProgression->image)) {
+                $oldImagePath = base_path() . '/uploads/company/progression/' . $taskProgression->image;
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+            $taskProgression = TaskProgression::where('id', $id)->where('company_id', $companyId)->delete();
+            return response()->json(['success' => true, 'message' => 'Task deleted successfully']);
+        } catch (Exception $e) {
+            Log::error('SettingController::Delete  => ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error : ' . $e->getMessage()]);
+        }
+    }
 }
+

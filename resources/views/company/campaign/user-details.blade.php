@@ -1,6 +1,23 @@
 @extends('company.layouts.master')
 @section('title', 'Campaign User Details')
 @section('main-content')
+<style>
+    .rating {
+    font-size: 24px;
+}
+
+.rating i {
+    cursor: pointer;
+}
+
+.rating i.hover {
+    color: orange;
+}
+
+.rating i.selected {
+    color: gold;
+}
+    </style>
 
     <div class="main-content">
         <div class="page-header">
@@ -97,6 +114,112 @@
                             </div>
                         </div>
                     </div>
+                    @php
+                    $se='';
+                    $th='';
+                    $for='';
+                    $fiv='';
+                  $selectRating =!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1";
+                  if($selectRating == '2'){                            
+                        $se='selected';
+                  }elseif($selectRating == '3'){
+                    $se='selected';
+                    $th='selected';
+                  }elseif($selectRating == '4'){
+                    $se='selected';
+                    $th='selected';
+                    $for='selected';
+
+                  }elseif($selectRating == '5'){
+                   
+                    $se='selected';
+                    $th='selected';
+                    $for='selected';
+                    $fiv='selected';
+                    
+                  }
+
+              @endphp
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Reviews</h5>
+                            <div class="m-t-20">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item p-h-0">
+                                        
+                                        <span>{{!empty($ratings) && $ratings->comments ?$ratings->comments:""}}</span>
+                                        
+                                            <div class="rating">
+                                                <i class="bi bi-star selected"></i>
+                                                <i class="bi bi-star {{$se}}"></i>
+                                                <i class="bi bi-star {{$th}}"></i>
+                                                <i class="bi bi-star {{$for}}"></i>
+                                                <i class="bi bi-star {{$fiv}}"></i>
+                                            </div>
+                                            <div id="selected-rating">
+                                                <b>Selected rating:</b> {{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}
+                                            </div>
+                                        
+                                    </li>
+                                   
+                                </ul> 
+                            </div>  
+                        </div>
+                    </div>
+                    @if(!empty($feedback))
+                    @php
+                    $se='';
+                    $th='';
+                    $for='';
+                    $fiv='';
+                  $feedbackselectRating =!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1";
+                  if($feedbackselectRating == '2'){                            
+                        $se='selected';
+                  }elseif($feedbackselectRating == '3'){
+                    $se='selected';
+                    $th='selected';
+                  }elseif($feedbackselectRating == '4'){
+                    $se='selected';
+                    $th='selected';
+                    $for='selected';
+
+                  }elseif($feedbackselectRating == '5'){
+                   
+                    $se='selected';
+                    $th='selected';
+                    $for='selected';
+                    $fiv='selected';
+                    
+                  }
+
+              @endphp
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Feedback</h5>
+                            <div class="m-t-2">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item p-h-0">
+                                        
+                                        <span>{{!empty($feedback) && $feedback->comments ?$feedback->comments:""}}</span>
+                                        @if (!empty($feedback)  && $feedback->no_of_rating)
+                                            <div class="rating">
+                                                <i class="bi bi-star selected"></i>
+                                                <i class="bi bi-star {{$se}}"></i>
+                                                <i class="bi bi-star {{$th}}"></i>
+                                                <i class="bi bi-star {{$for}}"></i>
+                                                <i class="bi bi-star {{$fiv}}"></i>
+                                            </div>
+                                            <div id="selected-rating">
+                                                <b>Selected rating:</b> {{!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1"}}
+                                            </div>
+                                        @endif
+                                    </li>
+                                   
+                                </ul> 
+                            </div>  
+                        </div>
+                    </div>
+                    @endif
                 </div>
                 @if ($referral_user_detail->count() != 0)
                     <div class="col-lg-6">

@@ -308,53 +308,53 @@
                 }
             })
 
-            $('#country').on('change', function() {
-                var country_id = $(this).val();
-                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            // $('#country').on('change', function() {
+            //     var country_id = $(this).val();
+            //     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
-                $.ajax({
-                    url: '/user/get_states',
-                    type: 'POST',
-                    data: {
-                        country_id: country_id,
-                        _token: CSRF_TOKEN // Include CSRF token in the request data
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        var len = response.length;
-                        $("#state").empty();
-                        for (var i = 0; i < len; i++) {
-                            var id = response[i]['id'];
-                            var name = response[i]['name'];
-                            $("#state").append("<option value='" + id + "'>" + name + "</option>");
-                        }
-                    }
-                });
-            });
+            //     $.ajax({
+            //         url: '/user/get_states',
+            //         type: 'POST',
+            //         data: {
+            //             country_id: country_id,
+            //             _token: CSRF_TOKEN // Include CSRF token in the request data
+            //         },
+            //         success: function(response) {
+            //             console.log(response);
+            //             var len = response.length;
+            //             $("#state").empty();
+            //             for (var i = 0; i < len; i++) {
+            //                 var id = response[i]['id'];
+            //                 var name = response[i]['name'];
+            //                 $("#state").append("<option value='" + id + "'>" + name + "</option>");
+            //             }
+            //         }
+            //     });
+            // });
 
-            $('#state').on('change', function() {
-                var state_id = $(this).val();
-                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            // $('#state').on('change', function() {
+            //     var state_id = $(this).val();
+            //     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
-                $.ajax({
-                    url: '/user/get_city',
-                    type: 'POST',
-                    data: {
-                        state_id: state_id,
-                        _token: CSRF_TOKEN // Include CSRF token in the request data
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        var len = response.length;
-                        $("#city").empty();
-                        for (var i = 0; i < len; i++) {
-                            var id = response[i]['id'];
-                            var name = response[i]['name'];
-                            $("#city").append("<option value='" + id + "'>" + name + "</option>");
-                        }
-                    }
-                });
-            });
+            //     $.ajax({
+            //         url: '/user/get_city',
+            //         type: 'POST',
+            //         data: {
+            //             state_id: state_id,
+            //             _token: CSRF_TOKEN // Include CSRF token in the request data
+            //         },
+            //         success: function(response) {
+            //             console.log(response);
+            //             var len = response.length;
+            //             $("#city").empty();
+            //             for (var i = 0; i < len; i++) {
+            //                 var id = response[i]['id'];
+            //                 var name = response[i]['name'];
+            //                 $("#city").append("<option value='" + id + "'>" + name + "</option>");
+            //             }
+            //         }
+            //     });
+            // });
 
             $("#fromData").validate({
                 rules: {
@@ -523,6 +523,45 @@
                 $(".alert").remove();
             }, 5000); // 5 secs
 
+        });
+    </script>
+    <script>
+        $(document).ready(function($) {
+            
+            $('#country').on('change', function() {
+                var country_id = $(this).val();
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    
+                $.ajax({
+                    url: "{{route('user.get_states')}}",
+                    type: 'POST',
+                    data: {
+                        country_id: country_id,
+                        _token: CSRF_TOKEN // Include CSRF token in the request data
+                    },
+                    success: function(response) {
+                        $("#city").empty().append("<option value=''>Select City</option>");
+                     $("#state").empty().append(response);
+                    }
+                });
+            });
+    
+            $('#state').on('change', function() {
+                var state_id = $(this).val();
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    
+                $.ajax({
+                    url: "{{route('user.get_city')}}",
+                    type: 'POST',
+                    data: {
+                        state_id: state_id,
+                        _token: CSRF_TOKEN // Include CSRF token in the request data
+                    },
+                    success: function(response) {
+                        $("#city").empty().append(response);
+                    }
+                });
+            });
         });
     </script>
 @endsection

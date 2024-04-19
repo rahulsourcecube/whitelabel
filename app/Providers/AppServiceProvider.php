@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
+     * 
      *
      * @return void
      */
@@ -30,8 +31,10 @@ class AppServiceProvider extends ServiceProvider
     {
         {
             try {
+                $companyId = Helper::getCompanyId();
                 $admin = User::where('user_type', '1')->first();// Fetching the first mail configuration
-                $mailConfig = SettingModel::where('user_id', $admin->id)->first();
+                // dd($admin);
+                $mailConfig = SettingModel::where('user_id', $companyId)->first();
 
                 if ($mailConfig) {
                     Config::set('mail.driver', $mailConfig->mail_mailer);

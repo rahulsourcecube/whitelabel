@@ -5,8 +5,13 @@ namespace App\Http\Controllers\User;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
+use App\Models\CityModel;
+use App\Models\CountryModel;
+use App\Models\Feedback;
 use App\Models\Notification;
+use App\Models\ratings;
 use App\Models\Referral;
+use App\Models\StateModel;
 use App\Models\TaskEvidence;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
@@ -23,10 +28,14 @@ class CampaignController extends Controller
 {
     function campaign()
     {
-        return view('user.campaign.list');
+        $compact['countrys'] = CountryModel::all();
+        $compact['states'] = StateModel::all();
+        $compact['citys'] = CityModel::all();
+        return view('user.campaign.list',$compact);
     }
     function dtlist(Request $request)
     {
+        
         try {
             $companyId = Helper::getCompanyId();
             $columns = ['id', 'title'];
@@ -38,46 +47,54 @@ class CampaignController extends Controller
             $list = [];
 
             $searchColumn = ['title', 'reward', 'description'];
-
-            $query = CampaignModel::orderBy($columns[$order], $dir)
-                ->where('company_id', $companyId)
-                ->where('status', '1')
-                ->whereNotExists(function ($query) {
-                    $query->from('user_campaign_history')
-                        ->whereRaw('campaign.id = user_campaign_history.campaign_id')
-                        ->where('user_campaign_history.user_id', Auth::user()->id);
-                })
-                ->whereDate('expiry_date', '>=', now());
-
-            // Server-side search
-            if ($request->has('search') && !empty($request->input('search.value'))) {
-                $search = $request->input('search.value');
-                $query->where(function ($query) use ($search, $searchColumn) {
-                    foreach ($searchColumn as $column) {
-                        $query->orWhere($column, 'like', "%{$search}%");
-                    }
-                });
-            }
-            $totalData = $query->count();
-            $results = $query->skip($start)
-                ->take($length)
-                ->select('campaign.*')
-                ->get();
-
-
+        
+            $query = CampaignModel::orderByRaw('CASE WHEN priority = 1 THEN 1 WHEN priority = 2 THEN 2 ELSE 3 END ASC')
+            ->orderBy($columns[$order], $dir)            
+            ->where('company_id', $companyId)
+            ->where('status', '1')
+            ->whereNotExists(function ($query) {
+                $query->from('user_campaign_history')
+                    ->whereRaw('campaign.id = user_campaign_history.campaign_id')
+                    ->where('user_campaign_history.user_id', Auth::user()->id);
+            })
+            ->whereDate('expiry_date', '>=', now());
+        
+        // Server-side search
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($query) use ($search, $searchColumn) {
+                foreach ($searchColumn as $column) {
+                    $query->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        }
+        if (!empty($request->country)) {
+            $query->where('country_id', $request->country);
+        }
+        if (!empty($request->state)) {
+            $query->where('state_id', $request->state);
+        }
+        if (!empty($request->city)) {
+            $query->where('city_id', $request->city);
+        }
+        $totalData = $query->count();
+        $results = $query->skip($start)
+            ->take($length)
+            ->select('campaign.*')
+            ->get();
 
             foreach ($results as $result) {
 
                 $priority = "-";
                 switch ($result->priority) {
                     case 1:
-                        $priority = "High";
+                        $priority = "<span class=' text-danger'>High</span>";
                         break;
                     case 2:
-                        $priority = "Medium";
+                        $priority = "<span class=' text-info'>Medium</span>";
                         break;
                     case 3:
-                        $priority = "Low";
+                        $priority = "<span class=' text-success'>Low</span>";
                         break;
                 }
 
@@ -113,9 +130,8 @@ class CampaignController extends Controller
 
     function campaignview(Request $request)
     {
-        try {
-
-
+        try {         
+          
             $campagin_id = base64_decode($request->id);
             $companyId = Helper::getCompanyId();
             $data = [];
@@ -140,6 +156,10 @@ class CampaignController extends Controller
 
 
             $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+            $data['ratings'] = ratings::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+            $data['feedback'] = Feedback::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
+           
+          
 
 
             if ($data['user_Campaign'] != null) {

@@ -171,10 +171,39 @@ $notificationCount = Notification::where('company_id', $companyId)
                         <a href="{{ route('company.billing.billing') }}">Billing and Payment</a>
                     </li>
                     @endcan
+                    <li @if (request()->segment(2) == 'progression') class='active' @endif>
+                        <a href="{{ route('company.progression.index') }}">Task Progression</a>
+                    </li>
+                    <li @if (request()->segment(2) == 'mail') class='active' @endif>
+                        <a href="{{ route('company.mail.index') }}">Mail Template</a>
+                    </li>
+                    <li @if (request()->segment(2) == 'sms') class='active' @endif>
+                        <a href="{{ route('company.sms.index') }}">Sms Template</a>
+                    </li>
                 </ul>
             </li>
             @endif
             @endif
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0);">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-setting"></i>
+                    </span>
+                    <span class="title">Survey Setting</span>
+                    <span class="arrow">
+                        <i class="arrow-icon"></i>
+                    </span>
+                </a>
+                <ul class="dropdown-menu">
+                   
+                    <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                        <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
+                    </li>
+                    <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                        <a href="{{ route('company.setting.index') }}">General Setting</a>
+                    </li>
+                </ul>
+            </li>
             @can('notification-list')
             <li class="nav-item dropdown open @if(request()->segment(2) == 'notification') active @endif">
                 <a class="dropdown-toggle" href="{{ route('company.notification.list') }}">

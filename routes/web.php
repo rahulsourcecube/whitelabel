@@ -9,13 +9,17 @@ use App\Http\Controllers\CompanyLoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\EmployeeController;
+use App\Http\Controllers\company\MailtemplateController;
 use App\Http\Controllers\Company\Notification;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
+use App\Http\Controllers\company\SmstemplateController;
+use App\Http\Controllers\Company\SurveyController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
@@ -53,7 +57,7 @@ Route::get('/clears', function () {
 Route::get('send-email-queue', function () {
     // Your code inside the try block
     $userName  = 'testing data';
-    $to = 'news@mailinator.com';
+    $to = 'vuxipy@mailinator.com';
     $subject = 'Welcome Mail'; // Set your subject here
     $message = 'thank you'; // Set your message here
 
@@ -166,6 +170,25 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::put('update/{city}', [CityController::class, 'update'])->name('update');
                 Route::delete('delete/{city}', [CityController::class, 'delete'])->name('delete');
             });
+
+            
+        });
+        //Mail
+
+        Route::prefix('mail')->name('mail.')->group(function () {
+            Route::get('template', [TemplateController::class, 'index'])->name('index');
+            Route::get('template/create', [TemplateController::class, 'create'])->name('create');
+            Route::get('template/list', [TemplateController::class, 'list'])->name('template.list');
+            Route::post('template/store', [TemplateController::class, 'store'])->name('template.store');
+            Route::get('edit/{id}', [TemplateController::class, 'edit'])->name('template.edit');
+            Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+        });
+        Route::prefix('sms')->name('sms.')->group(function () {
+            Route::get('template', [TemplateController::class, 'smsIndex'])->name('index');
+            Route::get('template/create', [TemplateController::class, 'smsCreate'])->name('create');
+            Route::get('template/list', [TemplateController::class, 'smsList'])->name('template.list');
+            Route::post('template/store', [TemplateController::class, 'smsStore'])->name('template.store');
+            Route::get('edit/{id}', [TemplateController::class, 'smsEdit'])->name('template.edit');
         });
     });
 
@@ -198,6 +221,8 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::post('/get_states', [UsrController::class, 'get_states'])->name('get_states');
             Route::post('/get_city', [UsrController::class, 'get_city'])->name('get_city');
 
+            Route::get('/sendsms', [UsrController::class, 'sendSMS'])->name('sendSMS');
+
 
             Route::middleware(['user'])->group(function () {
                 Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
@@ -222,6 +247,15 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('/social-account', [UsrController::class, 'socialAccount'])->name('socialAccount');
                 Route::post('/bank-details', [UsrController::class, 'bankDetail'])->name('bankDetail');
                 Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
+                //Rating
+                Route::post('/rating/store', [UsrController::class, 'addTaskRating'])->name('store.rating.task');
+                //end Rating
+
+                //Feedback
+                Route::post('/feedback/store', [UsrController::class, 'addTaskFeedback'])->name('store.feedback.task');
+                //end Feedback
+
+                
             });
         });
 
@@ -335,10 +369,55 @@ Route::group(['middleware' => 'check.session'], function () {
                     // billing list Route
                     Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
                 });
+                
                 Route::prefix('setting')->name('setting.')->group(function () {
                     Route::get('', [CompanySettingController::class, 'index'])->name('index');
                     Route::post('store', [CompanySettingController::class, 'store'])->name('store');
+                   
                 });
+                //Survey Start
+                Route::prefix('survey')->name('survey.')->group(function () {
+                    Route::get('form', [SurveyController::class, 'formIndex'])->name('form.index');
+                    Route::get('form/list', [SurveyController::class, 'formList'])->name('form.list');
+                    Route::get('form/create', [SurveyController::class, 'formCreate'])->name('form.create');
+                    Route::POST('form/store', [SurveyController::class, 'formStore'])->name('form.store');
+                    Route::get('form/edit', [SurveyController::class, 'formCreate'])->name('edit');
+                    Route::get('form/filed/view', [SurveyController::class, 'formView'])->name('filed.view');
+                   
+                });
+                //Survey end
+                //Task Progression
+                Route::prefix('progression')->name('progression.')->group(function () {
+                    Route::get('progression', [CompanySettingController::class, 'progressionIndex'])->name('index');
+                    Route::get('progression/list', [CompanySettingController::class, 'progressionList'])->name('list');
+                    Route::get('create', [CompanySettingController::class, 'progressionCreate'])->name('create');
+                    Route::post('progression', [CompanySettingController::class, 'progressionStore'])->name('store');
+                    Route::get('edit/{id}', [CompanySettingController::class, 'progressionEdit'])->name('edit');
+                    Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+                });
+                Route::prefix('mail')->name('mail.')->group(function () {
+                    Route::get('template', [MailtemplateController::class, 'index'])->name('index');
+                    Route::get('template/create', [MailtemplateController::class, 'create'])->name('create');
+                    Route::get('template/list', [MailtemplateController::class, 'list'])->name('template.list');
+                    Route::post('template/store', [MailtemplateController::class, 'store'])->name('template.store');
+                    Route::get('edit/{id}', [MailtemplateController::class, 'edit'])->name('template.edit');
+                    Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+                });
+                Route::prefix('sms')->name('sms.')->group(function () {
+                    Route::get('template', [SmstemplateController::class, 'index'])->name('index');
+                    Route::get('template/create', [SmstemplateController::class, 'create'])->name('create');
+                    Route::get('template/list', [SmstemplateController::class, 'list'])->name('template.list');
+                    Route::post('template/store', [SmstemplateController::class, 'store'])->name('template.store');
+                    Route::get('edit/{id}', [SmstemplateController::class, 'edit'])->name('template.edit');
+                });
+                // Route::prefix('mail')->name('mail.')->group(function () {
+                //     Route::get('template', [MailtemplateController::class, 'index'])->name('index');
+                //     Route::get('template/create', [MailtemplateController::class, 'create'])->name('create');
+                //     Route::get('template/list', [MailtemplateController::class, 'list'])->name('template.list');
+                //     Route::post('template/store', [MailtemplateController::class, 'store'])->name('template.store');
+                //     Route::get('edit/{id}', [MailtemplateController::class, 'edit'])->name('template.edit');
+                //     Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+                // });
                 // roles Route
                 Route::prefix('role')->name('role.')->group(function () {
                     // roles list Route
@@ -368,6 +447,7 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('', [Notification::class, 'index'])->name('list');
                     Route::post('/list', [Notification::class, 'dtlist'])->name('dtlist');
                 });
+
             });
         });
     });

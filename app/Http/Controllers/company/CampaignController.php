@@ -6,10 +6,17 @@ use App\Exports\Export;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignModel;
+use App\Models\CityModel;
+use App\Models\CountryModel;
+use App\Models\Feedback;
 use App\Models\Notification;
+use App\Models\ratings;
 use App\Models\Referral;
 use App\Models\SettingModel;
+use App\Models\StateModel;
 use App\Models\TaskEvidence;
+use App\Models\TaskProgression;
+use App\Models\taskProgressionUserHistory;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use Exception;
@@ -82,13 +89,13 @@ class CampaignController extends Controller
                 $priority = "-";
                 switch ($result->priority) {
                     case 1:
-                        $priority = "High";
+                        $priority = "<span class=' text-danger'>High</span>";
                         break;
                     case 2:
-                        $priority = "Medium";
+                        $priority = "<span class=' text-info'>Medium</span>";
                         break;
                     case 3:
-                        $priority = "Low";
+                        $priority = "<span class=' text-success'>Low</span>";
                         break;
                 }
 
@@ -104,7 +111,7 @@ class CampaignController extends Controller
                     $result->task_status,
                     $result->campaignUSerHistoryData->count() == 0,
                     $priority, // Priority value
-                    $public // Public value
+                    $public // Public value 
                 ];
             }
 
@@ -200,10 +207,10 @@ class CampaignController extends Controller
             if (!$isActivePackageAccess) {
                 return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
-
+            $country_data = CountryModel::all();
             $typeInText = $type;
             $type = CampaignModel::TYPE[strtoupper($type)];
-            return view('company.campaign.create', compact('type', 'typeInText'));
+            return view('company.campaign.create', compact('type', 'typeInText','country_data'));
         } catch (Exception $e) {
             Log::error('CampaignController::Create => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -257,6 +264,12 @@ class CampaignController extends Controller
             $Campaign->company_id = $companyId;
             $Campaign->status = !empty($request->status) ? '1' : "0";
             $Campaign->package_id = $ActivePackageData->id;
+            $Campaign->feedback_type = $request->feedback_type;
+            $Campaign->referral_url_segment = $request->referral_url;
+
+            $Campaign->country_id = $request->country;
+            $Campaign->state_id = $request->state;
+            $Campaign->city_id = $request->city;
 
             $Campaign->save();
             $taskType = Helper::taskType($request->type);
@@ -312,6 +325,12 @@ class CampaignController extends Controller
             $Campaign->image = $image;
             $Campaign->company_id = $companyId;
             $Campaign->status = !empty($request->status) ? '1' : '0';
+            $Campaign->feedback_type = $request->feedback_type;
+            $Campaign->referral_url_segment = $request->referral_url;
+            
+            $Campaign->country_id = $request->country;
+            $Campaign->state_id = $request->state;
+            $Campaign->city_id = $request->city;
             $Campaign->save();
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task update successfuly.');
@@ -417,6 +436,7 @@ class CampaignController extends Controller
     public function view($type, $id)
     {
         try {
+         
             $companyId = Helper::getCompanyId();
 
             $type = CampaignModel::TYPE[strtoupper($type)];
@@ -440,15 +460,20 @@ class CampaignController extends Controller
             if (!$isActivePackageAccess) {
                 return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
-
+            $country_data = CountryModel::all();
+            $state_data = StateModel::all();
+            $city_data = CityModel::all();
             $companyId = Helper::getCompanyId();
             $type = CampaignModel::TYPE[strtoupper($type)];
             $taskId = base64_decode($id);
             $task = CampaignModel::where('id', $taskId)->where('company_id', $companyId)->where('type', $type)->first();
+            $country_data = CountryModel::all();
+            $state_data = StateModel::where('country_id',$task->country_id)->get();
+            $city_data = CityModel::where('state_id',$task->state_id)->get();
             if (empty($task)) {
                 return back()->with('error', 'Task not found');
             }
-            return view('company.campaign.edit', compact('type', 'taskId', 'task'));
+            return view('company.campaign.edit', compact('type', 'taskId', 'task','country_data','state_data','city_data'));
         } catch (Exception $e) {
             Log::error('CampaignController::Edit => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -477,13 +502,32 @@ class CampaignController extends Controller
     {
         try {
             $id = base64_decode($request->id);
-
+            $companyId = Helper::getCompanyId();
             $action = UserCampaignHistoryModel::where('id', $id)->first();
             $Notification = new Notification();
 
             if ($request->action == '3') {
+                
                 $action->status = '3';
                 $action->save();
+                if(!empty($action)) {
+                    $batch=UserCampaignHistoryModel::where('user_id', $action->user_id)->where('status', 3)->get()->count(); 
+                 
+                    $progression=[];
+                    if(!empty($batch)){
+                        $progression = TaskProgression::where('company_id',$companyId)->where('no_of_task',$batch)->first(); 
+                        $taskProgressionUserHistory = taskProgressionUserHistory::where('company_id',$companyId)->where('user_id', $action->user_id)->where('no_of_task',$batch)->first(); 
+                       if(!empty($progression) && empty($taskProgressionUserHistory)){
+                            $taskProgressionUserHistoryStore= new taskProgressionUserHistory();
+                            $taskProgressionUserHistoryStore->company_id = $companyId;
+                            $taskProgressionUserHistoryStore->user_id = $action->user_id;
+                            $taskProgressionUserHistoryStore->no_of_task = $progression->no_of_task; 
+                            $taskProgressionUserHistoryStore->progression_id = $progression->id; 
+                    $taskProgressionUserHistoryStore->save();
+
+                       }
+                    }
+                }
                 if (isset($action)) {
                     $Notification->user_id =  $action->user_id;
                     $Notification->company_id =  $action->campaign_id;
@@ -526,6 +570,7 @@ class CampaignController extends Controller
     }
     public function userDetails(Request $request, $id)
     {
+     
         try {
             $id = base64_decode($id);
             $companyId = Helper::getCompanyId();
@@ -533,12 +578,15 @@ class CampaignController extends Controller
             $camphistory = UserCampaignHistoryModel::where('id', $id)->first();
             $referral_user_detail = Referral::where('campagin_id', $camphistory->campaign_id)->where('referral_user_id', $camphistory->user_id)->get();
             $user = User::where('id', $camphistory->user_id)->where('company_id', $companyId)->first();
+            $ratings = ratings::where('campaign_id', $camphistory->campaign_id)->where('user_id', $camphistory->user_id)->first();
+            $feedback = Feedback::where('campaign_id', $camphistory->campaign_id)->where('user_id', $camphistory->user_id)->first();
+
 
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
             $chats = TaskEvidence::where('campaign_id', $id)->where('company_id', $companyId)->get();
-            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id'));
+            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id','ratings','feedback'));
         } catch (Exception $e) {
             Log::error('CampaignController::UserDetails => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());

@@ -68,10 +68,10 @@
                             <div class="form-group col-md-6">
                                 <label class="font-weight-semibold" for="country">Country:</label>
                                 <select name="country" id="country" class="form-control">
-
+                                    <option value=''>Select Country</option>
                                     @if ($country_data)
                                         @foreach ($country_data as $country)
-                                            <option value="{{ $country->id }}" {{ $user->country_id == $country->id ? 'selected' : '' }}>
+                                            <option value="{{ $country->id }}" {{!empty($user->country_id)&& $user->country_id == $country->id ? 'selected' : '' }}>
                                                 {{ $country->name }}</option>
                                         @endforeach
 
@@ -82,9 +82,10 @@
                             <div class="form-group col-md-6">
                                 <label class="font-weight-semibold" for="state">State:</label>
                                 <select name="state" id="state" class="form-control">
+                                    <option value=''>Select state</option>
                                     @if ($state_data)
                                         @foreach ($state_data as $state)
-                                            <option value="{{ $state->id }}" {{ $user->state_id == $state->id ? 'selected' : '' }}>
+                                            <option value="{{ $state->id }}" {{ !empty($user->state_id) && $user->state_id == $state->id ? 'selected' : '' }}>
                                                 {{ $state->name }}</option>
                                         @endforeach
                                     @endif
@@ -94,9 +95,10 @@
                             <div class="form-group col-md-6">
                                 <label class="font-weight-semibold" for="city">City:</label>
                                 <select name="city" id="city" class="form-control">
+                                    <option value=''>Select city</option>
                                     @if ($state_data)
                                         @foreach ($city_data as $city)
-                                            <option value="{{ $city->id }}" {{ $user->city_id == $city->id ? 'selected' : '' }}>
+                                            <option value="{{ $city->id }}" {{ !empty($user->city_id) && $user->city_id == $city->id ? 'selected' : '' }}>
                                                 {{ $city->name }}</option>
                                         @endforeach
                                     @endif
@@ -234,9 +236,10 @@
         var token = "{{ csrf_token() }}";
     </script>
     <script src="{{ asset('assets/js/pages/company-user.js?v=' . time()) }}"></script>
+   
 @endsection
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+{{-- 
 <script>
     jQuery(document).ready(function($) {
 
@@ -291,4 +294,4 @@
             });
         });
     });
-</script>
+</script> --}}

@@ -90,6 +90,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Reward</th>
+                                <th>Priority</th>
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>Status</th>
@@ -104,6 +105,21 @@
                                     <td>{{ isset($data->getCampaign->title) ? $data->getCampaign->title : '' }}</td>
                                     <td>{{ $data->text_reward ? Str::limit($data->text_reward, 15)  : (isset($data->reward) ? \App\Helpers\Helper::getcurrency() . $data->reward : '0') }}
                                     </td>
+                                    @php
+                                    $priority = "-";
+                                    switch ($data->getCampaign->priority) {
+                                        case 1:
+                                            $priority = "<span class='text-danger'>High</span>";
+                                            break;
+                                        case 2:
+                                            $priority = "<span class='text-info'>Medium</span>";
+                                            break;
+                                        case 3:
+                                            $priority = "<span class='text-success'>Low</span>";
+                                            break;
+                                    }
+                                @endphp
+                                <td>{!! isset($data->getCampaign->priority) ? $priority : '-' !!}</td>
                                     <td>
                                         @if (isset($data->getCampaign->description))
                                             <span class="truncated-description" style="cursor: pointer;"

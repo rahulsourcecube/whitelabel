@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('city', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('state_id');
-            $table->string('name');
-            $table->string('zipcode');
+            $table->unsignedBigInteger('state_id')->nullable();
+            $table->string('name')->nullable();
+            $table->string('zipcode')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

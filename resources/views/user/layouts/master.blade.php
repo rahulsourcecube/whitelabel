@@ -25,6 +25,8 @@ $siteSetting = App\Helpers\Helper::getSiteSetting();
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
+    
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
 </head>
 
 <body>
