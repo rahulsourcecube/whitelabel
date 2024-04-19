@@ -19,6 +19,7 @@ use App\Http\Controllers\Company\PackageController as CompanyPackageController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\company\SmstemplateController;
+use App\Http\Controllers\Company\SurveyController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
@@ -368,11 +369,23 @@ Route::group(['middleware' => 'check.session'], function () {
                     // billing list Route
                     Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
                 });
+                
                 Route::prefix('setting')->name('setting.')->group(function () {
                     Route::get('', [CompanySettingController::class, 'index'])->name('index');
                     Route::post('store', [CompanySettingController::class, 'store'])->name('store');
                    
                 });
+                //Survey Start
+                Route::prefix('survey')->name('survey.')->group(function () {
+                    Route::get('form', [SurveyController::class, 'formIndex'])->name('form.index');
+                    Route::get('form/list', [SurveyController::class, 'formList'])->name('form.list');
+                    Route::get('form/create', [SurveyController::class, 'formCreate'])->name('form.create');
+                    Route::POST('form/store', [SurveyController::class, 'formStore'])->name('form.store');
+                    Route::get('form/edit', [SurveyController::class, 'formCreate'])->name('edit');
+                    Route::get('form/filed/view', [SurveyController::class, 'formView'])->name('filed.view');
+                   
+                });
+                //Survey end
                 //Task Progression
                 Route::prefix('progression')->name('progression.')->group(function () {
                     Route::get('progression', [CompanySettingController::class, 'progressionIndex'])->name('index');
@@ -434,6 +447,7 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('', [Notification::class, 'index'])->name('list');
                     Route::post('/list', [Notification::class, 'dtlist'])->name('dtlist');
                 });
+
             });
         });
     });

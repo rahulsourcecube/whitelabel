@@ -197,7 +197,7 @@ $notificationCount = Notification::where('company_id', $companyId)
                 <ul class="dropdown-menu">
                    
                     <li @if (request()->segment(2) == 'setting') class='active' @endif>
-                        <a href="{{ route('company.setting.index') }}">Survey Form</a>
+                        <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
                     </li>
                     <li @if (request()->segment(2) == 'setting') class='active' @endif>
                         <a href="{{ route('company.setting.index') }}">General Setting</a>

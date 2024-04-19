@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sms_template', function (Blueprint $table) {
+        Schema::create('survey_form', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id')->nullable();
-            $table->string('title')->nullable();
-            $table->string('template_type')->nullable();
-            $table->text('template_html_sms')->nullable();
+            $table->string('company_id');
+            $table->longText('fields')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sms_template');
+        Schema::dropIfExists('survey_form');
     }
 };

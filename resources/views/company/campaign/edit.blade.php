@@ -181,8 +181,13 @@
                         @if(isset($type) && $type == "1")
                             <div class="form-group col-md-6">
                                 <label for="referral_url">URl Setting <span class="error"></span></label>
-
-                                <input type="text" name="referral_url" class="form-control" value="{{$task->referral_url_segment ?? ''}}" id="referral_url" maxlength="250"  oninput="this.value = this.value.replace(/\s/g, '');">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text" id="basic-addon2">{{
+                                            'XYZ.'.App\Helpers\Helper::mainDomain().'/4TvDSrAhrC'}}</span>
+                                    </div>
+                                    <input type="text" name="referral_url" class="form-control" value="{{$task->referral_url_segment ?? ''}}" id="referral_url" maxlength="250"  oninput="this.value = this.value.replace(/\s/g, '');">
+                                </div> 
                       
                             </div>
                         @endif

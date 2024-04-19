@@ -37,8 +37,7 @@
                                 <input type="hidden" name="type" value="{{!empty($SmsTemplate) && !empty($SmsTemplate->template_type)?$SmsTemplate->template_type : '' }}">
                                 <input type="hidden" name="id" value="{{!empty($SmsTemplate) && !empty($SmsTemplate->id)?$SmsTemplate->id : '' }}">
                            
-                               @endif 
-                                
+                               @endif                                
 
                             </div>
                           
