@@ -43,8 +43,8 @@
                                 @if ($key == '0')
                                     <span class="btn btn-primary float-right addFiledMore">Add More</span>
                                 @else
-                                    <span class="btn btn-danger float-right addFiledRemove" onclick="addFiledRemove(this)"
-                                        data-removeCount="{{ $key }}">Remove</span>
+                                    <span class="btn btn-danger float-right addFiledRemove" onclick="addFiledRemove(this)" data-removeCount="{{ $key }}"><i
+                                            class="fa fa-trash"></i></span>
                                 @endif
                                 <div class="form-group row ">
                                     <div class="col-md-6">
