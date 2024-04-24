@@ -182,313 +182,137 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
-    // public function signupStore(Request $request)
-    // {
-    //     // try {
-    //         $request->validate([
-    //             'email' => 'required|email',
-    //             // Other validation rules...
-    //         ]);
-    //         $input = $request->all();
-    //         $input['dname'] = strtolower($input['dname']);
-    //         $useremail = User::where('email', $request->email)->where('user_type', '2')->first();
-    //         if (!empty($useremail)) {
-    //             return redirect()->back()->with('error', 'Email is already registered!!')->withInput();
-    //         }
-    //         $usercontact = User::where('contact_number', $request->ccontact)->where('user_type', '2')->first();
-    //         if (!empty($usercontact)) {
-    //             return redirect()->back()->with('error', 'Contact number is already registered!!')->withInput();
-    //         }
-    //         $subdomain = CompanyModel::where('subdomain',  $input['dname'])->first();
-    //         if (!empty($subdomain)) {
-    //             return redirect()->back()->with('error', 'Subdomain is already registered!!')->withInput();
-    //         }
-    //         $user = new User();
-    //         $user->first_name = $request->fname;
-    //         $user->last_name = $request->lname;
-    //         $user->email = $request->email;
-    //         $user->password = hash::make($request->password);
-    //         $user->view_password = $request->password;
-    //         $user->contact_number = $request->ccontact;
-    //         $user->user_type = '2';
-    //         // $user->save();
-    //         if (isset($user)) {
-    //             $compnay = new CompanyModel();
-    //             $compnay->user_id = $user->id;
-    //             $compnay->company_name = $request->cname;
-    //             $compnay->contact_email = $request->email;
-    //             $compnay->subdomain = $input['dname'];
-    //             $compnay->contact_number = $request->ccontact;
-    //             // $compnay->save();
-    //             $token =  Hash::make($user->id);
-    //             // $user->update([
-    //             //     // 'company_id' => $compnay->id,
-    //             //     'token' => $token
-    //             // ]);
-    //             $role = Role::where('name', 'Company')->first();
-    //             $user->assignRole([$role->id]);
-
-    //             $userAdmin = user::where('user_type', '1')->first();
-    //             $SettingValue = SettingModel::where('id', $userAdmin->id)->first();
-
-    //             $settingModel = new SettingModel();
-    //             $settingModel->user_id = $user->id;
-    //             $settingModel->logo = $SettingValue->logo;
-    //             $settingModel->favicon = $SettingValue->favicon;
-    //             $settingModel->title = $request->cname;
-    //             // $settingModel->save();
-    //         }
-    //         // try {
-    //             $userName  = $request->fname . ' ' . $request->lname;
-    //             $to = $request->email;
-    //             $subject = 'Welcome To ' . $SettingValue->title ?: env('APP_NAME');
-    //             $message = '';
-    //             if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-    //                 SendEmailJob::dispatch($to, "asdasd", $message, $userName, '', 'company');
-    //             }
-    //         // } catch (Exception $e) {
-    //         //     dd($e->getMessage());
-    //         //     Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
-    //         // }
-    //         $webUrlGetHost = $request->getHost();  
-    //         $currentUrl = URL::current();
-    //         if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-    //             // URL is under HTTPS
-    //             $webUrl=  'https://'.$webUrlGetHost;
-    //         } else {
-    //             // URL is under HTTP
-    //             $webUrl=  'http://'.$webUrlGetHost;
-    //         }
-            
-    //             $adminId="1";
-    //         //  try {
-     
-    //         //     $SettingValue = SettingModel::first();
-    //         //     $mailTemplate = MailTemplate::where('company_id','1')->where('template_type','welcome')->first();
-    //         //     $userName  = $request->fname . ' ' . $request->lname;
-    //         //     $to = $request->email;
-
-    //         //     $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '';
-    //         //     $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
-    //         //     $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
-
-    //         //     $message = '';  
-    //         //      $type=  "";     
-    //         //     $html=  $mailTemplate->template_html;     
-               
-    //         //     $data =  [ 'first_name' => $request->fname, 'company_id' => $adminId ,'template'=>$html,'webUrl'=>$webUrl]; 
-                
-    //         //     SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type,$html);
-    //         //  } catch (Exception $e) {
-    //         //      Log::error('UsrController::Store => ' . $e->getMessage());
-    //         //  }
-    //          $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
-    //          if (!empty($smsTemplate)) {
-    //              $SettingModel = SettingModel::first();
-                 
-             
-    //              $name = $request->fname;
-    //              $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-    //              $company_link = $webUrl ? $webUrl : '';
-    //              $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
-             
-    //              // Remove HTML tags and decode HTML entities
-    //              $message = htmlspecialchars_decode(strip_tags($html));
-             
-    //              // Remove unwanted '&nbsp;' text
-    //              $message = str_replace('&nbsp;', ' ', $message);
-             
-    //              $to = '+18777804236';
-    //              $twilioService = new TwilioService();
-    //               try {
-    //                  $twilioService->sendSMS($to, $message);
-    //               } catch (Exception $e) {
-    //                 Log::error('Failed to send SMS: ' . $e->getMessage());
-    //                   echo "Failed to send SMS: " . $e->getMessage();
-    //               }
-    //             }
-    //         //  dd(123);
-    //         // End sms
-
-    //         return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
-    //         /*if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-    //             if (!empty(auth()->user()) &&  auth()->user()->user_type == '2') {
-    //                 //$domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']);
-    //                 return redirect($request->getScheme() .'://' . $request->dname .'.'. $request->getHost().'/company/dashboard');
-    //             } else {
-    //                 return redirect()->back()->with('error', 'These credentials do not match our records.');
-    //             }
-    //             Helper::createCompanySubDomain($input['dname']);
-    //         } else {
-    //             return redirect()->back()->with('error', 'These credentials do not match our records.');
-    //         }*/
-    //     // } catch (Exception $e) {
-    //     //     Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
-    //     //     return redirect()->back()->with('error', "Error : " . $e->getMessage());
-    //     // }
-    // }
-     public function signupStore(Request $request)
+    public function signupStore(Request $request)
     {
-         $userName  = 'testing data';
-                $to = 'vuxipy@mailinator.com';
-                $subject = 'Welcome Mail'; // Set your subject here
-                $message = 'thank you'; // Set your message here
-            
-                if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-                    SendEmailJob::dispatch($to, $subject, $message, $userName);
-                    return response()->json(['message' => 'Mail Send Successfully!!']);
-                } else {
-            
-                    return response()->json(['message' => 'Mail not Successfully!!']);
-                }
-                dd(123);
-                exit;
-        // try {
-            // $request->validate([
-            //     'email' => 'required|email',
-            //     // Other validation rules...
-            // ]);
-            // $input = $request->all();
-            // $input['dname'] = strtolower($input['dname']);
-            // $useremail = User::where('email', $request->email)->where('user_type', '2')->first();
-            // if (!empty($useremail)) {
-            //     return redirect()->back()->with('error', 'Email is already registered!!')->withInput();
-            // }
-            // $usercontact = User::where('contact_number', $request->ccontact)->where('user_type', '2')->first();
-            // if (!empty($usercontact)) {
-            //     return redirect()->back()->with('error', 'Contact number is already registered!!')->withInput();
-            // }
-            // $subdomain = CompanyModel::where('subdomain',  $input['dname'])->first();
-            // if (!empty($subdomain)) {
-            //     return redirect()->back()->with('error', 'Subdomain is already registered!!')->withInput();
-            // }
-            // $user = new User();
-            // $user->first_name = $request->fname;
-            // $user->last_name = $request->lname;
-            // $user->email = $request->email;
-            // $user->password = hash::make($request->password);
-            // $user->view_password = $request->password;
-            // $user->contact_number = $request->ccontact;
-            // $user->user_type = '2';
-            // // $user->save();
-            // if (isset($user)) {
-            //     $compnay = new CompanyModel();
-            //     $compnay->user_id = $user->id;
-            //     $compnay->company_name = $request->cname;
-            //     $compnay->contact_email = $request->email;
-            //     $compnay->subdomain = $input['dname'];
-            //     $compnay->contact_number = $request->ccontact;
-            //     // $compnay->save();
-            //     $token =  Hash::make($user->id);
-            //     // $user->update([
-            //     //     // 'company_id' => $compnay->id,
-            //     //     'token' => $token
-            //     // ]);
-            //     $role = Role::where('name', 'Company')->first();
-            //     $user->assignRole([$role->id]);
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                // Other validation rules...
+            ]);
+            $input = $request->all();
+            $input['dname'] = strtolower($input['dname']);
+            $useremail = User::where('email', $request->email)->where('user_type', '2')->first();
+            if (!empty($useremail)) {
+                return redirect()->back()->with('error', 'Email is already registered!!')->withInput();
+            }
+            $usercontact = User::where('contact_number', $request->ccontact)->where('user_type', '2')->first();
+            if (!empty($usercontact)) {
+                return redirect()->back()->with('error', 'Contact number is already registered!!')->withInput();
+            }
+            $subdomain = CompanyModel::where('subdomain',  $input['dname'])->first();
+            if (!empty($subdomain)) {
+                return redirect()->back()->with('error', 'Subdomain is already registered!!')->withInput();
+            }
+            $user = new User();
+            $user->first_name = $request->fname;
+            $user->last_name = $request->lname;
+            $user->email = $request->email;
+            $user->password = hash::make($request->password);
+            $user->view_password = $request->password;
+            $user->contact_number = $request->ccontact;
+            $user->user_type = '2';
+            $user->save();
+            if (isset($user)) {
+                $compnay = new CompanyModel();
+                $compnay->user_id = $user->id;
+                $compnay->company_name = $request->cname;
+                $compnay->contact_email = $request->email;
+                $compnay->subdomain = $input['dname'];
+                $compnay->contact_number = $request->ccontact;
+                $compnay->save();
+                $token =  Hash::make($user->id);
+                $user->update([
+                    // 'company_id' => $compnay->id,
+                    'token' => $token
+                ]);
+                $role = Role::where('name', 'Company')->first();
+                $user->assignRole([$role->id]);
 
-            //     $userAdmin = user::where('user_type','1')->first();
-            //     $SettingValue = SettingModel::where('id',$userAdmin->id)->first();
+                $userAdmin = user::where('user_type', '1')->first();
+                $SettingValue = SettingModel::where('id', $userAdmin->id)->first();
 
-            //     $settingModel = new SettingModel();
-            //     $settingModel->user_id = $user->id;
-            //     $settingModel->logo = $SettingValue->logo;
-            //     $settingModel->favicon = $SettingValue->favicon;
-            //     $settingModel->title = $request->cname;
-            //     // $settingModel->save();
+                $settingModel = new SettingModel();
+                $settingModel->user_id = $user->id;
+                $settingModel->logo = $SettingValue->logo;
+                $settingModel->favicon = $SettingValue->favicon;
+                $settingModel->title = $request->cname;
+                $settingModel->save();
+            }
+            // try {
+            //     $userName  = $request->fname . ' ' . $request->lname;
+            //     $to = $request->email;
+            //     $subject = 'Welcome To ' . $SettingValue->title ?: env('APP_NAME');
+            //     $message = '';
+            //     if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
+            //         SendEmailJob::dispatch($to, $subject, $message, $userName, '', 'company');
+            //     }
+            // } catch (Exception $e) {
+            //     Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
             // }
-            // $SettingValue = SettingModel::where('id',$userAdmin->id)->first();
-			// //   try {
-               
-            //     // $userName  = $request->fname . ' ' . $request->lname;
-            //     // $to = $request->email;
-            //     // $subject = 'Welcome To ' . $SettingValue->title?:env('APP_NAME');
-            //     // $message = '';
-            //     // if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-                   
-            //     //     // SendEmailJob::dispatch($to, $subject, $message, $userName,'','company');
-            //     //     SendEmailJob::dispatch($to, $subject, $message, $userName);
-            //     // }
-            // // } catch (Exception $e) {
-            // //     dd($e->getMessage());
-            // //     Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
-            // // }
-            // $webUrlGetHost = $request->getHost();  
-            // $currentUrl = URL::current();
-            // if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-            //     // URL is under HTTPS
-            //     $webUrl=  'https://'.$webUrlGetHost;
-            // } else {
-            //     // URL is under HTTP
-            //     $webUrl=  'http://'.$webUrlGetHost;
-            // }
-            
-            // $adminId="1";
-            //         //  try {
-             
-            //         //     $SettingValue = SettingModel::first();
-            //         //     $mailTemplate = MailTemplate::where('company_id','1')->where('template_type','welcome')->first();
-            //         //     $userName  = $request->fname . ' ' . $request->lname;
-            //         //     $to = $request->email;
-        
-            //         //     $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '';
-            //         //     $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
-            //         //     $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
-        
-            //         //     $message = '';  
-            //         //      $type=  "";     
-            //         //     $html=  $mailTemplate->template_html;     
-                       
-            //         //     $data =  [ 'first_name' => $request->fname, 'company_id' => $adminId ,'template'=>$html,'webUrl'=>$webUrl]; 
-                        
-            //         //     SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type,$html);
-            //         //  } catch (Exception $e) {
-            //         //      Log::error('UsrController::Store => ' . $e->getMessage());
-            //         //  }
-            //          $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
-            //          if (!empty($smsTemplate)) {
-            //              $SettingModel = SettingModel::first();
-                         
-                     
-            //              $name = $request->fname;
-            //              $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-            //              $company_link = $webUrl ? $webUrl : '';
-            //              $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
-                     
-            //              // Remove HTML tags and decode HTML entities
-            //              $message = htmlspecialchars_decode(strip_tags($html));
-                     
-            //              // Remove unwanted '&nbsp;' text
-            //              $message = str_replace('&nbsp;', ' ', $message);
-                     
-            //              $to = '+18777804236';
-            //              $twilioService = new TwilioService();
-            //               try {
-            //                  $twilioService->sendSMS($to, $message);
-            //               } catch (Exception $e) {
-            //                 Log::error('Failed to send SMS: ' . $e->getMessage());
-            //                   echo "Failed to send SMS: " . $e->getMessage();
-            //               }
-            //             }
-            //         //  dd(123);
-            //         // End sms
-			
-            // return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
-            /*if (auth()->attempt(array('email' => $input['email'], 'password' => $input['password']))) {
-                if (!empty(auth()->user()) &&  auth()->user()->user_type == '2') {
-                    //$domain =  Helper::get_domaininfo($_SERVER['ASSET_URL']);
-                    return redirect($request->getScheme() .'://' . $request->dname .'.'. $request->getHost().'/company/dashboard');
-                } else {
-                    return redirect()->back()->with('error', 'These credentials do not match our records.');
-                }
-                Helper::createCompanySubDomain($input['dname']);
+            $webUrlGetHost = $request->getHost();
+            $currentUrl = URL::current();
+            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+                // URL is under HTTPS
+                $webUrl =  'https://' . $webUrlGetHost;
             } else {
-                return redirect()->back()->with('error', 'These credentials do not match our records.');
-            }*/
-        // } catch (Exception $e) {
-        //     Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
-        //     return redirect()->back()->with('error', "Error : " . $e->getMessage());
-        // }
+                // URL is under HTTP
+                $webUrl =  'http://' . $webUrlGetHost;
+            }
+
+            $adminId = "1";
+            try {
+
+                $SettingValue = SettingModel::first();
+                $mailTemplate = MailTemplate::where('company_id', '1')->where('template_type', 'welcome')->first();
+                $userName  = $request->fname . ' ' . $request->lname;
+                $to = $request->email;
+
+                $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '';
+                $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
+                $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
+
+                $message = '';
+                $type =  "";
+                $html =  $mailTemplate->template_html;
+
+                $data =  ['first_name' => $request->fname, 'company_id' => $adminId, 'template' => $html, 'webUrl' => $webUrl];
+
+                SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type, $html);
+            } catch (Exception $e) {
+                Log::error('UsrController::Store => ' . $e->getMessage());
+            }
+
+            $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
+            if (!empty($smsTemplate)) {
+                $SettingModel = SettingModel::first();
+
+
+                $name = $request->fname;
+                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                $company_link = $webUrl ? $webUrl : '';
+                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
+
+                // Remove HTML tags and decode HTML entities
+                $message = htmlspecialchars_decode(strip_tags($html));
+
+                // Remove unwanted '&nbsp;' text
+                $message = str_replace('&nbsp;', ' ', $message);
+
+                $to = '+18777804236';
+                $twilioService = new TwilioService();
+                try {
+                    $twilioService->sendSMS($to, $message);
+                } catch (Exception $e) {
+                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                    echo "Failed to send SMS: " . $e->getMessage();
+                }
+            }
+
+            return redirect()->to($request->getScheme() . '://' . $request->dname . '.' . $request->getHost() . '/company/companyLoginWithToken/?token=' . $token);
+        } catch (Exception $e) {
+            Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
     public function forget()
     {
@@ -508,80 +332,79 @@ class CompanyLoginController extends Controller
 
     public function submitForgetPassword(Request $request)
     {
-       
+
         // try {
-            $companyId = Helper::getCompanyId();
-            $userEmail = User::where('id', $companyId)->where('email', $request->email)->where('user_type', '2')->first();
-            if(empty($userEmail)){
-                $userEmail = User::where('company_id', $companyId)
+        $companyId = Helper::getCompanyId();
+        $userEmail = User::where('id', $companyId)->where('email', $request->email)->where('user_type', '2')->first();
+        if (empty($userEmail)) {
+            $userEmail = User::where('company_id', $companyId)
                 ->where('email', $request->email)
                 ->where('user_type', '3')
                 ->first();
-            }
+        }
 
-            if (empty($userEmail)) {
-                return redirect()->back()->with('error', 'Something went wrong.')->withInput();
-            }
-            $token = Str::random(64);
-            $mailTemplate = MailTemplate::where('company_id', '1')->where('template_type','forgot_password')->first();
-            $html="";
-            $webUrl="";
-            $submit= route('user.confirmPassword', $token);
-            $currentUrl = URL::current();
-            $webUrlGetHost = $request->getHost();  
-            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-                // URL is under HTTPS
-                $webUrl=  'https://'.$webUrlGetHost;
-            } else {
-                // URL is under HTTP
-                $webUrl=  'http://'.$webUrlGetHost;
-            }
-            if(!empty($mailTemplate)){
-                $html =$mailTemplate->template_html;
-               
-            }
-            DB::table('password_resets')->insert([
-                'email' => $request->email,
-                'token' => $token,
-                'created_at' => Carbon::now()
-            ]);
-            //  try {
-                $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
-                Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email, 'name' => $userEmail->FullName,'webUrl' => $webUrl,'template' => $html], function ($message) use ($request, $mailTemplateSubject) {
-                    $message->to($request->email);
-                    $message->subject($mailTemplateSubject);
-                });
-            //  } catch (Exception $e) {
-            //     Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
-            //      return redirect()->back()->with('error', "Something went wrong");
-            // }
-            // Strat sms
-            $smsTemplate = SmsTemplate::where('company_id', '1')->where('template_type','forgot_password')->first(); 
-                         
-            if (!empty($smsTemplate)) {
-                $SettingModel = SettingModel::first();
-                            
-                $name = $userEmail->first_name;
-                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio'; 
-                $company_link = $webUrl ? $webUrl : '';
-                $submit= route('user.confirmPassword', $token);
-                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]" , "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
-                $message = htmlspecialchars_decode(strip_tags($html));
-         
-                // Remove unwanted '&nbsp;' text
-                $message = str_replace('&nbsp;', ' ', $message);
-            
-                $to = '+18777804236'; 
-                $twilioService = new TwilioService();
-                 try {
-                    $twilioService->sendSMS($to, $message);
-                 } catch (Exception $e) {
-                     Log::error('Failed to send SMS: ' . $e->getMessage());
-                     echo "Failed to send SMS: " . $e->getMessage();
-              }
-            }    
+        if (empty($userEmail)) {
+            return redirect()->back()->with('error', 'Something went wrong.')->withInput();
+        }
+        $token = Str::random(64);
+        $mailTemplate = MailTemplate::where('company_id', '1')->where('template_type', 'forgot_password')->first();
+        $html = "";
+        $webUrl = "";
+        $submit = route('user.confirmPassword', $token);
+        $currentUrl = URL::current();
+        $webUrlGetHost = $request->getHost();
+        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+            // URL is under HTTPS
+            $webUrl =  'https://' . $webUrlGetHost;
+        } else {
+            // URL is under HTTP
+            $webUrl =  'http://' . $webUrlGetHost;
+        }
+        if (!empty($mailTemplate)) {
+            $html = $mailTemplate->template_html;
+        }
+        DB::table('password_resets')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => Carbon::now()
+        ]);
+        //  try {
+        $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
+        Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email, 'name' => $userEmail->FullName, 'webUrl' => $webUrl, 'template' => $html], function ($message) use ($request, $mailTemplateSubject) {
+            $message->to($request->email);
+            $message->subject($mailTemplateSubject);
+        });
+        //  } catch (Exception $e) {
+        //     Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
+        //      return redirect()->back()->with('error', "Something went wrong");
+        // }
+        // Strat sms
+        $smsTemplate = SmsTemplate::where('company_id', '1')->where('template_type', 'forgot_password')->first();
 
-            return back()->with('success', 'We have e-mailed your password reset link!');
+        if (!empty($smsTemplate)) {
+            $SettingModel = SettingModel::first();
+
+            $name = $userEmail->first_name;
+            $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+            $company_link = $webUrl ? $webUrl : '';
+            $submit = route('user.confirmPassword', $token);
+            $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
+            $message = htmlspecialchars_decode(strip_tags($html));
+
+            // Remove unwanted '&nbsp;' text
+            $message = str_replace('&nbsp;', ' ', $message);
+
+            $to = '+18777804236';
+            $twilioService = new TwilioService();
+            try {
+                $twilioService->sendSMS($to, $message);
+            } catch (Exception $e) {
+                Log::error('Failed to send SMS: ' . $e->getMessage());
+                echo "Failed to send SMS: " . $e->getMessage();
+            }
+        }
+
+        return back()->with('success', 'We have e-mailed your password reset link!');
         // } catch (Exception $e) {
         //     Log::error('CompanyLoginController::SubmitForgetPassword => ' . $e->getMessage());
         //     return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -607,7 +430,7 @@ class CompanyLoginController extends Controller
 
     public function confirmPassword($token)
     {
-      
+
         try {
             $user = DB::table('password_resets')->where('token', $token)->first();
             $siteSetting = Helper::getSiteSetting();
@@ -620,7 +443,7 @@ class CompanyLoginController extends Controller
 
     public function submitResetPassword(Request $request)
     {
-       
+
         try {
             $updatePassword = DB::table('password_resets')
                 ->where([
@@ -638,66 +461,64 @@ class CompanyLoginController extends Controller
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
             $currentUrl = URL::current();
-            $webUrlGetHost = $request->getHost();  
+            $webUrlGetHost = $request->getHost();
             if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
                 // URL is under HTTPS
-                $webUrl=  'https://'.$webUrlGetHost;
+                $webUrl =  'https://' . $webUrlGetHost;
             } else {
                 // URL is under HTTP
-                $webUrl=  'http://'.$webUrlGetHost;
+                $webUrl =  'http://' . $webUrlGetHost;
             }
-            if(!empty($mailTemplate)){
-                $html =$mailTemplate->template_html;
-               
+            if (!empty($mailTemplate)) {
+                $html = $mailTemplate->template_html;
             }
             try {
                 $user = User::where('email', $request->email)->first();
                 // dd($user );
                 $SettingValue = SettingModel::first();
-                $mailTemplate = MailTemplate::where('company_id', 1)->where('template_type','change_pass')->first();
-               
+                $mailTemplate = MailTemplate::where('company_id', 1)->where('template_type', 'change_pass')->first();
+
                 $userName  = $user->first_name . ' ' . $user->last_name;
                 $to = $request->email;
-                // $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');   
-                  
-                $message = '';  
-                $type=  "user";     
-                $html=  $mailTemplate->template_html;     
-                
-                    Mail::send('company.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => 1 ,'template'=>$html,'webUrl'=>$webUrl], function ($message) use ($request) {
-                        $message->to($request->email);
-                        $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject :'Your New Password Is Set');
-                    });
-                
-             } catch (Exception $e) {
-                 Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
-             }
-              //Start sms
-              $smsTemplate = SmsTemplate::where('company_id', '1')->where('template_type','change_pass')->first(); 
-                         
-              if (!empty($smsTemplate)) {
-                  $SettingModel = SettingModel::first();
-                            
-                  $name = $user->first_name;
-                  $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio'; 
-                  $company_link = $webUrl ? $webUrl : '';
-                
-                  $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]" ], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
-                 $message = htmlspecialchars_decode(strip_tags($html));
-             
-                    // Remove unwanted '&nbsp;' text
-                    $message = str_replace('&nbsp;', ' ', $message);
-              
-                  $to = '+18777804236'; 
-                  $twilioService = new TwilioService();
-                  try {
-                      $twilioService->sendSMS($to, $message);
-                   } catch (Exception $e) {
-                       Log::error('Failed to send SMS: ' . $e->getMessage());
-                       echo "Failed to send SMS: " . $e->getMessage();
-                   }
-              }    
-        //End sms
+                // $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
+
+                $message = '';
+                $type =  "user";
+                $html =  $mailTemplate->template_html;
+
+                Mail::send('company.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => 1, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($request) {
+                    $message->to($request->email);
+                    $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Your New Password Is Set');
+                });
+            } catch (Exception $e) {
+                Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
+            }
+            //Start sms
+            $smsTemplate = SmsTemplate::where('company_id', '1')->where('template_type', 'change_pass')->first();
+
+            if (!empty($smsTemplate)) {
+                $SettingModel = SettingModel::first();
+
+                $name = $user->first_name;
+                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                $company_link = $webUrl ? $webUrl : '';
+
+                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
+                $message = htmlspecialchars_decode(strip_tags($html));
+
+                // Remove unwanted '&nbsp;' text
+                $message = str_replace('&nbsp;', ' ', $message);
+
+                $to = '+18777804236';
+                $twilioService = new TwilioService();
+                try {
+                    $twilioService->sendSMS($to, $message);
+                } catch (Exception $e) {
+                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                    echo "Failed to send SMS: " . $e->getMessage();
+                }
+            }
+            //End sms
             return redirect()->route('company.signin')->with('success', 'Your password has been changed!');
         } catch (Exception $e) {
             Log::error('CompanyLoginController::SubmitResetPassword => ' . $e->getMessage());
