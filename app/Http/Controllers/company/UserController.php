@@ -127,15 +127,15 @@ class UserController extends Controller
 
     public function get_states(Request $request)
     {
-        $country_id = $request->input('country_id');    
-      
-        $states = StateModel::where('country_id', $country_id)->get();   
-       
+        $country_id = $request->input('country_id');
+
+        $states = StateModel::where('country_id', $country_id)->get();
+
         $options = '';
-        $options .= "<option value=''>Select state</option>";       
-        foreach ($states as $state) {            
+        $options .= "<option value=''>Select state</option>";
+        foreach ($states as $state) {
             $options .= "<option value='" . $state->id . "'>" . $state->name . "</option>";
-        }    
+        }
         // Return the options as JSON response
         return response()->json($options);
     }
@@ -147,10 +147,10 @@ class UserController extends Controller
 
         $citys = CityModel::where('state_id', $state_id)->get();
         $options = '';
-        $options .= "<option value=''>Select City</option>";       
-        foreach ($citys as $city) {            
+        $options .= "<option value=''>Select City</option>";
+        foreach ($citys as $city) {
             $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
-        }    
+        }
         return response()->json($options);
     }
 
@@ -306,8 +306,8 @@ class UserController extends Controller
             $user_id = base64_decode($id);
             $companyId = Helper::getCompanyId();
 
-            
-            
+
+
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
             $country_data = CountryModel::all();
             $state_data = StateModel::where('country_id',$user->country_id)->get();

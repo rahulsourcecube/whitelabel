@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('survey_form', function (Blueprint $table) {
-            $table->id();
-            $table->string('company_id');
-            $table->string('title');
-            $table->longText('fields')->nullable();
-            $table->timestamps();
+        Schema::table('survey_form', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -29,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('survey_form');
+        Schema::table('survey_form', function (Blueprint $table) {
+            //
+        });
     }
 };

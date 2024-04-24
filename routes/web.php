@@ -170,8 +170,6 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::put('update/{city}', [CityController::class, 'update'])->name('update');
                 Route::delete('delete/{city}', [CityController::class, 'delete'])->name('delete');
             });
-
-            
         });
         //Mail
 
@@ -255,7 +253,7 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('/feedback/store', [UsrController::class, 'addTaskFeedback'])->name('store.feedback.task');
                 //end Feedback
 
-                
+
             });
         });
 
@@ -369,21 +367,25 @@ Route::group(['middleware' => 'check.session'], function () {
                     // billing list Route
                     Route::get('', [CompanyPackageController::class, 'billing'])->name('billing');
                 });
-                
+
                 Route::prefix('setting')->name('setting.')->group(function () {
                     Route::get('', [CompanySettingController::class, 'index'])->name('index');
                     Route::post('store', [CompanySettingController::class, 'store'])->name('store');
-                   
                 });
                 //Survey Start
                 Route::prefix('survey')->name('survey.')->group(function () {
                     Route::get('form', [SurveyController::class, 'formIndex'])->name('form.index');
                     Route::get('form/list', [SurveyController::class, 'formList'])->name('form.list');
                     Route::get('form/create', [SurveyController::class, 'formCreate'])->name('form.create');
-                    Route::POST('form/store', [SurveyController::class, 'formStore'])->name('form.store');
-                    Route::get('form/edit', [SurveyController::class, 'formCreate'])->name('edit');
-                    Route::get('form/filed/view', [SurveyController::class, 'formView'])->name('filed.view');
-                   
+                    Route::post('form/store', [SurveyController::class, 'formStore'])->name('form.store');
+                    Route::get('form/edit/{survey}', [SurveyController::class, 'formEdit'])->name('form.edit');
+                    Route::get('form/edit_form/{survey}', [SurveyController::class, 'formEditFrom'])->name('form.edit_form');
+
+                    Route::post('form/update/{survey}', [SurveyController::class, 'formUpdate'])->name('form.update');
+                    Route::post('form/update_form/', [SurveyController::class, 'formUpdateForm'])->name('form.updateform');
+                    Route::get('form/view/{survey}', [SurveyController::class, 'formView'])->name('form.view');
+                    Route::delete('form/delete/{survey}', [SurveyController::class, 'formDelete'])->name('form.delete');
+                    Route::get('form/addfield', [SurveyController::class, 'getAdditionalFields'])->name('form.addfield');
                 });
                 //Survey end
                 //Task Progression
@@ -447,7 +449,6 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('', [Notification::class, 'index'])->name('list');
                     Route::post('/list', [Notification::class, 'dtlist'])->name('dtlist');
                 });
-
             });
         });
     });

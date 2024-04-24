@@ -71,7 +71,8 @@
                                     <option value=''>Select Country</option>
                                     @if ($country_data)
                                         @foreach ($country_data as $country)
-                                            <option value="{{ $country->id }}" {{!empty($user->country_id)&& $user->country_id == $country->id ? 'selected' : '' }}>
+                                            <option value="{{ $country->id }}"
+                                                {{ !empty($user->country_id) && $user->country_id == $country->id ? 'selected' : '' }}>
                                                 {{ $country->name }}</option>
                                         @endforeach
 
@@ -236,10 +237,10 @@
         var token = "{{ csrf_token() }}";
     </script>
     <script src="{{ asset('assets/js/pages/company-user.js?v=' . time()) }}"></script>
-   
+
 @endsection
 {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-{{-- 
+{{--
 <script>
     jQuery(document).ready(function($) {
 
