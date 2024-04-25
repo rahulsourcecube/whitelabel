@@ -8,7 +8,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">Survey Form List</span>
                 </nav>
             </div>
@@ -16,7 +17,8 @@
         <div class="card">
             <div class="card-body">
                 <h4>Survey Form List</h4>
-                <a class="btn btn-primary float-right" href="{{ route('company.survey.form.create') }}" role="button">Add New</a>
+                <a class="btn btn-primary float-right" href="{{ route('company.survey.form.create') }}" role="button">Add
+                    New</a>
                 <div>
                     <table id="surveyform" class="table">
                         <thead>
@@ -77,13 +79,17 @@
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
+                            var copy = '{{ route('company.survey.form.view', ':survey') }}';
+                            copy = copy.replace(':survey', row[0]);
                             var view = '{{ route('company.survey.form.view', ':survey') }}';
                             view = view.replace(':survey', row[0]);
                             var editUrl = '{{ route('company.survey.form.edit', ':survey') }}';
                             editUrl = editUrl.replace(':survey', row[0]);
                             var deleteUrl = '{{ route('company.survey.form.delete', ':survey') }}';
                             deleteUrl = deleteUrl.replace(':survey', row[0]);
-                            return '</a><a class="btn btn-success btn-sm" href="' +
+
+                            return '<p id="referral_code_copy" style="display:none">' + copy +
+                                '</p><span class="btn btn-success btn-sm" role="button"  title="Field Copy" onclick="copyToClipboard(\'#referral_code_copy\')"><i class="anticon anticon-copy"></i></span> </a><a class="btn btn-success btn-sm" href="' +
                                 view +
                                 '" role="button"  title="Field View"><i class="fa fa-eye"></i></a>  <a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
@@ -152,6 +158,26 @@
                 }
             });
         }
+
+        function copyToClipboard(elementId) {
+            var el = document.querySelector(elementId);
+            var textArea = document.createElement("textarea");
+            textArea.value = el.textContent;
+
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Copied!',
+                text: 'URL copied to clipboard.',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
     </script>
+
 
 @endsection

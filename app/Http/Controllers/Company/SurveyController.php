@@ -22,7 +22,7 @@ class SurveyController extends Controller
     public function formList(Request $request)
     {
 
-        // try {
+        try {
         $companyId = Helper::getCompanyId(); // Assuming Helper is properly defined
 
         $columns = ['id', 'title'];
@@ -67,16 +67,15 @@ class SurveyController extends Controller
             'recordsFiltered' => $totalData,
             'data' => $list
         ]);
-        // } catch (\Exception $e) {
-        //     Log::error('SurveyController::formList ' . $e->getMessage());
-        //     dd($e->getMessage());
-        //     return response()->json([
-        //         'draw' => intval($request->input('draw')),
-        //         'recordsTotal' => 0,
-        //         'recordsFiltered' => 0,
-        //         'data' => []
-        //     ]);
-        // }
+        } catch (\Exception $e) {
+            Log::error('SurveyController::formList ' . $e->getMessage());
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
     }
 
 
@@ -99,41 +98,14 @@ class SurveyController extends Controller
         try {
 
             $surveyFiled = SurveyForm::find($id);
-            // dd($surveyFiled);
-
-
-
-            // Decode the JSON string containing the fields and sort them based on position
+          
             $fields = json_decode($surveyFiled->fields, true);
-            // dd($fields);
-
-
-            // if (!empty($fields)) {
-            //     usort($fields, function ($a, $b) {
-            //         return $a['position'] - $b['position'];
-            //     });
-            // }
-
-            // Pass the sorted fields to the view
-            // return view('company.survey.form.view', compact('surveyFiled', 'fields'));
+           
             return view('company.survey.form.view', compact('surveyFiled', 'fields'));
         } catch (Exception $e) {
             Log::error('SurveyController::formView => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-
-
-        // try {
-        //     $companyId = Helper::getCompanyId();
-        //     $surveyFiled = SurveyForm::find($id);
-        //     dd($surveyFiled);
-        //     // $survey_dtt = SurveyForm::where('company_id', $companyId)->count();
-
-        //     return view('company.survey.form.view ', compact('surveyFiled'));
-        // } catch (Exception $e) {
-        //     Log::error('SurveyController::formView => ' . $e->getMessage());
-        //     return redirect()->back()->with('error', "Error : " . $e->getMessage());
-        // }
     }
 
 
@@ -142,6 +114,7 @@ class SurveyController extends Controller
         try {
             $companyId = Helper::getCompanyId();
             $surveyFiled = SurveyForm::find($id);
+
             // $survey_dtt = SurveyForm::where('company_id', $companyId)->count();
 
             return view('company.survey.form.edit ', compact('surveyFiled'));
@@ -149,20 +122,7 @@ class SurveyController extends Controller
             Log::error('SurveyController::formEdit => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-    }
-    public function formEditFrom(Request $request, $id)
-    {
-        try {
-            $companyId = Helper::getCompanyId();
-            $surveyFiled = SurveyForm::find($id);
-            $survey_dtt = SurveyForm::where('company_id', $companyId)->count();
-
-            return view('company.survey.form.edit_form ', compact('surveyFiled', 'survey_dtt'));
-        } catch (Exception $e) {
-            Log::error('SurveyController::formEditFrom => ' . $e->getMessage());
-            return redirect()->back()->with('error', "Error : " . $e->getMessage());
-        }
-    }
+    }   
 
 
     public function getAdditionalFields(Request $request)
@@ -179,7 +139,7 @@ class SurveyController extends Controller
                 $additionalFields = ' <div class="form-group row">
                 <div class="col-sm-2">
                     <label for="label"  class="col-form-label">Option Name</label>
-                        <input type="text" class="form-control" name="select[]" id="label" placeholder="Enter Name">
+                        <input type="text" class="form-control" name="select[' . $addCount . '][]" id="label" placeholder="Enter Name">
                     </div>';
                 if ($add == 'addrequest') {
                     $additionalFields .= '
@@ -199,7 +159,7 @@ class SurveyController extends Controller
                 <div class="form-group row">
                     <div class="col-sm-2">
                         <label for="label"  class="col-form-label">Radio Name</label>
-                            <input type="text" class="form-control" name="radio[]" id="label" placeholder="Enter Name">
+                            <input type="text" class="form-control" name="radio[' . $addCount . '][]" id="label" placeholder="Enter Name">
                         </div>';
                 if (!empty($add) && $add == 'addrequest') {
                     $additionalFields .= '
@@ -220,7 +180,7 @@ class SurveyController extends Controller
                 $additionalFields = ' <div class="form-group row">
                 <div class="col-sm-2">
                     <label for="label"  class="col-form-label">Checkbox Name</label>
-                        <input type="text" class="form-control" name="checkbox[]" id="label" placeholder="Enter Name">
+                        <input type="text" class="form-control" name="checkbox[' . $addCount . '][]" id="label" placeholder="Enter Name">
                     </div>';
                 if ($add == 'addrequest') {
                     $additionalFields .= '
@@ -279,52 +239,10 @@ class SurveyController extends Controller
         // Return the additional fields HTML
         return response()->json(['additionalFields' => $additionalFields]);
     }
-
-
-
-
-    public function formUpdateForm(Request $request)
-    {
-        // try {
-        $companyId = Helper::getCompanyId();
-
-        $surveyField = SurveyForm::where('id', $request->id)->where('company_id', $companyId)->first();
-
-        if (!empty($surveyField)) {
-            $fields = json_decode($surveyField->fields, true);
-
-            // Append new data from the request to the existing fields
-            $newField = array(
-                'type' => $request->input('type'),
-                'label' => $request->input('label'), // corrected 'lable' to 'label'
-                'inputName' => $request->input('inputName'),
-                'idname' => $request->input('idname'),
-                'class' => $request->input('class'),
-                'placeholder' => $request->input('placeholder'),
-                'position' => $request->input('position')
-            );
-
-            $fields[] = $newField;
-
-            // Convert the merged fields array back to JSON and save it to the database
-            $surveyField->title = $request->input('survey_title');
-            $surveyField->fields = json_encode($fields);
-            $surveyField->save();
-
-            return redirect()->route('company.survey.form.view', ['survey' => $request->id])
-                ->with('success', 'Form updated successfully');
-        } else {
-            return redirect()->back()->with('error', 'Survey form not found');
-        }
-        // } catch (Exception $e) {
-        //     Log::error('SmstemplateController::store => ' . $e->getMessage());
-        //     return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
-        // }
-    }
-
     public function formStore(Request $request)
     {
         try {
+            $inputFields = $request->all();
             $companyId = Helper::getCompanyId();
             $SurveyForm = new SurveyForm;
             $SurveyForm->company_id = $companyId;
@@ -346,11 +264,10 @@ class SurveyController extends Controller
                     'idname' => $inputNames,
                     'class' => $inputNames,
                     'placeholder' => $placeholders[$key],
-                    $type => $request->input($type), // Assuming 'position' is common for all fields
+                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key] ) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
                 ];
             }
-
-
+           
             // Convert fields array to JSON and save it in the SurveyForm model
             $SurveyForm->fields = json_encode($fields);
 
@@ -366,10 +283,10 @@ class SurveyController extends Controller
     }
     public function formUpdate(Request $request, $id)
     {
-        try {
+         try {
             $companyId = Helper::getCompanyId();
             $SurveyForm = SurveyForm::find($id);
-
+            $inputFields = $request->all();
 
             $SurveyForm->company_id = $companyId;
             $SurveyForm->title = $request->input('survey_title');
@@ -378,11 +295,10 @@ class SurveyController extends Controller
             $types = $request->input('type');
             $labels = $request->input('label');
             $placeholders = $request->input('placeholder');
-
+           
             // Loop through each field and create an array for each field
             foreach ($types as $key => $type) {
                 $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
-
                 $fields[] = [
                     'type' => $type,
                     'inputName' => $inputNames,
@@ -390,11 +306,11 @@ class SurveyController extends Controller
                     'idname' => $inputNames,
                     'class' => $inputNames,
                     'placeholder' => $placeholders[$key],
-                    $type => $request->input($type), // Assuming 'position' is common for all fields
-                ];
+                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key] ) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
+                ];             
             }
-
-
+           
+            
             // Convert fields array to JSON and save it in the SurveyForm model
             $SurveyForm->fields = json_encode($fields);
 
@@ -404,11 +320,10 @@ class SurveyController extends Controller
             return redirect()->route('company.survey.form.index', ['survey' => $SurveyForm->id])
                 ->with('success', 'Survey updated successfully');
         } catch (Exception $e) {
-            Log::error('SmstemplateController::formUpdate => ' . $e->getMessage());
+            Log::error('SurveyController::formUpdate => ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
-
     public function formDelete($id)
     {
 

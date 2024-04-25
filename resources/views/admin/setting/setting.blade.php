@@ -141,7 +141,26 @@
                                         id="mail_address" placeholder="Mail From Address" value="{{ !empty($setting) ? $setting->mail_address : '' }}">
                                 </div>
                             </div>
-
+                            <h4>SMS Credentials</h4>
+                            <div class="m-t-50" style="">
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="sms_account_sid">Account Sid<span class="error">*</span> </label>
+                                        <input type="text" class="form-control mb-2" name="sms_account_sid" id="sms_account_sid"
+                                            placeholder="Account Sid" value="{{ !empty($setting) ? $setting->sms_account_sid : '' }}" required>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="sms_account_token">Account Token <span class="error">*</span> </label>
+                                        <input type="text" class="form-control mb-2" name="sms_account_token" id="sms_account_token"
+                                            placeholder="Account Token" value="{{ !empty($setting) ? $setting->sms_account_token : '' }}">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="sms_account_number">SMS Account Number  <span class="error">*</span> </label>
+                                        <input type="text" class="form-control mb-2" name="sms_account_number" id="sms_account_number"
+                                            placeholder="SMS Account Number"value="{{ !empty($setting) ? $setting->sms_account_number : '' }}">
+                                    </div>
+                                </div>
+                            </div>
                             <h4>Stripe Credentials</h4>
 
                             <div class="m-t-50" style="">                             
