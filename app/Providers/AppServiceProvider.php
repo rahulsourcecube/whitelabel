@@ -32,9 +32,12 @@ class AppServiceProvider extends ServiceProvider
         {
             try {
                 $companyId = Helper::getCompanyId();
-                $admin = User::where('user_type', '1')->first();// Fetching the first mail configuration
-                // dd($admin);
-                $mailConfig = SettingModel::where('user_id', $companyId)->first();
+                    $companymailConfig= SettingModel::where('user_id', $companyId)->first();
+                    if(!empty($companymailConfig->mail_username) && !empty($companymailConfig->mail_password)){
+                        $mailConfig = $companymailConfig;
+                    }else{
+                        $mailConfig = User::where('user_type', '1')->first();
+                    }
 
                 if ($mailConfig) {
                     Config::set('mail.driver', $mailConfig->mail_mailer);

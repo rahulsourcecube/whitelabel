@@ -99,6 +99,10 @@ class SettingController extends Controller
  //Stripe Credentials
                 $SettingModel->stripe_key = $request->stripe_key;
                 $SettingModel->stripe_secret = $request->stripe_secret;
+                //Sms
+                $SettingModel->sms_account_sid = $request->sms_account_sid;
+                $SettingModel->sms_account_token = $request->sms_account_token;
+                $SettingModel->sms_account_number = $request->sms_account_number;
 
                 $SettingModel->user_id = Auth::user()->id;
                 $SettingModel->save();

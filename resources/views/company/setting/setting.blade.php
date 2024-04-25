@@ -142,7 +142,7 @@
                                 </div>
                             </div>
                         </div>
-                        <h4>Mail Credentials</h4>
+                        <h4>SMS Credentials</h4>
                         <div class="m-t-50" style="">
                             <div class="form-row">
                                 <div class="form-group col-md-4">

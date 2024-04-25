@@ -187,8 +187,7 @@ Status: <strong
                                                
                                                 $customUrl=!empty($campagin_detail)&& !empty($campagin_detail->referral_url_segment)?"?".$campagin_detail->referral_url_segment: "";
                                             @endphp
-                                            <p id="referral_code_copy" style="display:none">
-                                                {{ route('campaign.referral',$user_Campaign->referral_link.$customUrl) }}</p>
+                                            <p id="referral_code_copy" style="display:none">{{ route('campaign.referral',$user_Campaign->referral_link.$customUrl) }}</p>
                                             <button onclick="copyToClipboard('#referral_code_copy')" class="btn btn-primary btn-tone">
                                                 <i class="anticon anticon-copy"></i>
                                                 <span class="m-l-5">Copy referral link</span>
