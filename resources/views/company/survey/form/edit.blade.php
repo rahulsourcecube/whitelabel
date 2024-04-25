@@ -35,7 +35,7 @@
 
                         @if (!empty($surveyFiled) && !empty($surveyFiled->fields))
                             @php
-                                $fieldData = json_decode($surveyFiled->fields);
+                                $fieldData = json_decode($surveyFiled->fields, true);
                                 $count = 0;
                             @endphp
 
@@ -52,22 +52,22 @@
                                         <select id="type" name="type[]" onchange="onchangeType(this,{{ $key }})" data-count="{{ $key }}"
                                             class="form-control templateType">
                                             <option value="">Select Type</option>
-                                            <option value="text" <?php if ($field->type == 'text') {
+                                            <option value="text" <?php if ($field['type'] == 'text') {
                                                 echo 'selected';
                                             } ?>>Text</option>
-                                            <option value="number" <?php if ($field->type == 'number') {
+                                            <option value="number" <?php if ($field['type'] == 'number') {
                                                 echo 'selected';
                                             } ?>>Number</option>
-                                            <option value="textarea" <?php if ($field->type == 'textarea') {
+                                            <option value="textarea" <?php if ($field['type'] == 'textarea') {
                                                 echo 'selected';
                                             } ?>>Textarea</option>
-                                            <option value="select" <?php if ($field->type == 'select') {
+                                            <option value="select" <?php if ($field['type'] == 'select') {
                                                 echo 'selected';
                                             } ?>>Select</option>
-                                            <option value="radio" <?php if ($field->type == 'radio') {
+                                            <option value="radio" <?php if ($field['type'] == 'radio') {
                                                 echo 'selected';
                                             } ?>>Radio</option>
-                                            <option value="checkbox" <?php if ($field->type == 'checkbox') {
+                                            <option value="checkbox" <?php if ($field['type'] == 'checkbox') {
                                                 echo 'selected';
                                             } ?>>Checkbox</option>
                                         </select>
@@ -75,7 +75,7 @@
                                     <div class="col-md-6">
                                         <label for="label" class=" col-form-label">Label</label>
                                         <input type="text" class="form-control" name="label[]" id="label" placeholder="Enter Label"
-                                            value="<?= $field->label ?>">
+                                            value="<?= $field['label'] ?>">
                                     </div>
 
                                     {{-- <div class="col-md-6">
@@ -86,20 +86,25 @@
                                     <div class="col-sm-6">
                                         <label for="placeholder" class=" col-form-label">Placeholder</label>
                                         <input type="text" class="form-control" name="placeholder[]" id="placeholder" placeholder="Enter Placeholder"
-                                            value="<?= $field->placeholder ?>">
+                                            value="<?= $field['placeholder'] ?>">
                                     </div>
 
                                     <!-- Add more fields as needed -->
                                 </div>
                                 <div id="additionalFieldsContainer{{ $key }}">
-                                    @php $type=$field->type; @endphp
-                                    @if (!empty($field->$type) && $field->type)
-                                        @foreach ($field->$type as $typeKey => $val)
+                                    @php
+                                        $type = $field['type'];
+                                        // echo "<pre>"; print_r($field[$type]); die();
+                                    @endphp
+                                    @if (!empty($field[$type]))
+                                        {{-- @dd($field['select']) --}}
+
+                                        @foreach ($field[$type] as $typeKey => $val)
                                             {{-- @dd($val); --}}
                                             @php
                                                 $k = [$key];
                                                 $value = $val;
-                                                $name = $type . '[]';
+                                                $name = $type;
 
                                             @endphp
                                             <div class="form-group row">
@@ -107,8 +112,8 @@
                                                     <label for="label"
                                                         class="col-form-label">{{ !empty($type) && $type == 'select' ? 'Option' : Str::ucfirst($type) }}
                                                         Name</label>
-                                                    <input type="text" value="{{ $value }}" class="form-control" name="{{ $name }}"
-                                                        id="label" placeholder="Enter Name">
+                                                    <input type="text" value="{{ $value }}" class="form-control"
+                                                        name="{{ $name }}[{{ $key }}][]" id="label" placeholder="Enter Name">
                                                 </div>
                                                 @if ($typeKey == '0')
                                                     <div class="col-sm-1 mt-4 float-right">
