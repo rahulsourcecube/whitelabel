@@ -6,11 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title> Sign Up || {{ !empty($siteSetting) && !empty($siteSetting->title) ? ucfirst($siteSetting->title) . ' Sign Up' : env('APP_NAME') }} </title>
+    <title> Sign Up ||
+        {{ !empty($siteSetting) && !empty($siteSetting->title) ? ucfirst($siteSetting->title) . ' Sign Up' : env('APP_NAME') }}
+    </title>
 
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href="@if (
+            !empty($siteSetting) &&
+                isset($siteSetting->favicon) &&
+                file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
 
     <!-- Core css -->
@@ -28,7 +33,8 @@
 
 <body>
     <div class="app">
-        <div class="container-fluid p-h-0 p-v-20 bg full-height d-flex" style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
+        <div class="container-fluid p-h-0 p-v-20 bg full-height d-flex"
+            style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
             <div class="d-flex flex-column justify-content-between w-100">
                 <div class="container d-flex h-100">
                     <div class="row align-items-center w-100">
@@ -40,7 +46,10 @@
                                         <a href="{{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : '' }} "
                                             {{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : '' }}>
                                             <img style="width: 130px ; hight:50px"
-                                                src="@if (!empty($siteSetting) && !empty($siteSetting->logo) && file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->logo }} @else {{ asset('assets/images/logo/logo.png') }} @endif"
+                                                src="@if (
+                                                    !empty($siteSetting) &&
+                                                        !empty($siteSetting->logo) &&
+                                                        file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->logo }} @else {{ asset('assets/images/logo/logo.png') }} @endif"
                                                 alt="Logo">
                                         </a>
                                         <h2 class="m-b-0">Signup</h2>
@@ -48,31 +57,38 @@
                                     <form id="fomData" action="{{ route('user.store') }}" method="POST">
                                         @csrf
                                         @if (isset(request()->referral_code))
-                                            <input type="hidden" name="referral_code" value="{{ request()->referral_code }}">
+                                            <input type="hidden" name="referral_code"
+                                                value="{{ request()->referral_code }}">
                                         @endif
                                         <div class="form-row">
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">First Name:</label>
-                                                <input type="text" class="form-control" id="first_name" placeholder="First Name" name="first_name"
+                                                <input type="text" class="form-control" id="first_name"
+                                                    placeholder="First Name" name="first_name"
                                                     value="{{ old('first_name') }}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="userName">Last name</label>
-                                                <input type="text" class="form-control" id="last_name" placeholder="Last name" name="last_name"
+                                                <input type="text" class="form-control" id="last_name"
+                                                    placeholder="Last name" name="last_name"
                                                     value="{{ old('last_name') }}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="email">Email:</label>
-                                                <input type="email" class="form-control" id="email" placeholder="Email" name="email"
-                                                    value="{{ old('email') }}" maxlength="50">
+                                                <input type="email" class="form-control" id="email"
+                                                    placeholder="Email" name="email" value="{{ old('email') }}"
+                                                    maxlength="50">
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label class="font-weight-semibold" for="country">Country:</label>
                                                 <select name="country" id="country" class="form-control">
                                                     <option value="">Country</option>
-                                                    @if ($country_data)
+                                                    @if (!empty($country_data))
                                                         @foreach ($country_data as $country)
-                                                            <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                            <option
+                                                                value="{{ !empty($country->id) ? $country->id : '' }}">
+                                                                {{ !empty($country->name) ? $country->name : '' }}
+                                                            </option>
                                                         @endforeach
 
                                                     @endif
@@ -97,20 +113,23 @@
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="contact">Contact
                                                     Number:</label>
-                                                <input type="text" class="form-control" id="contact" placeholder="Contact Number" maxlength="10"
-                                                    name="contact_number" value="{{ old('contact_number') }}"
+                                                <input type="text" class="form-control" id="contact"
+                                                    placeholder="Contact Number" maxlength="10" name="contact_number"
+                                                    value="{{ old('contact_number') }}"
                                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
-                                                <input type="password" class="form-control" id="password" placeholder="Password" name="password"
+                                                <input type="password" class="form-control" id="password"
+                                                    placeholder="Password" name="password"
                                                     value="{{ old('password') }}" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
                                                     Password:</label>
-                                                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password"
-                                                    name="password_confirmation" value="{{ old('password_confirmation') }}" maxlength="50">
+                                                <input type="password" class="form-control" id="confirmPassword"
+                                                    placeholder="Confirm Password" name="password_confirmation"
+                                                    value="{{ old('password_confirmation') }}" maxlength="50">
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -119,7 +138,8 @@
                                                 <label for="checkbox"><span>Already have an account? <a
                                                             href="{{ route('user.login') }}">Login</a></span></label>
 
-                                                <button type="submit" class="btn btn-primary submitform">Sign Up</button>
+                                                <button type="submit" class="btn btn-primary submitform">Sign
+                                                    Up</button>
                                             </div>
                                         </div>
                                     </form>
@@ -237,7 +257,7 @@
                     success: function(response) {
                         // Clear previous options and append new ones
                         $("#city").empty().append("<option value=''>City</option>");
-                         $("#state").empty().append(response);
+                        $("#state").empty().append(response);
                     }
                 });
             })

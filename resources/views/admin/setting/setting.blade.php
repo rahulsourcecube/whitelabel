@@ -108,77 +108,91 @@
                                 <div class="form-group col-md-4">
                                     <label for="mail_mailer">Driver <span class="error">*</span> </label>
                                     <input type="text" class="form-control mb-2" name="mail_mailer" id="mail_mailer"
-                                        placeholder="Mail MaiLer" value="{{ !empty($setting) ? $setting->mail_mailer : '' }}" required>
+                                        placeholder="Mail MaiLer"
+                                        value="{{ !empty($setting) ? $setting->mail_mailer : '' }}" required>
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="mail_host">Mail Host <span class="error">*</span> </label>
                                     <input type="text" class="form-control mb-2" name="mail_host" id="mail_host"
-                                        placeholder="Mail Host" value="{{ !empty($setting) ? $setting->mail_host : '' }}">
+                                        placeholder="Mail Host"
+                                        value="{{ !empty($setting) ? $setting->mail_host : '' }}">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="mail_port">Mail Port <span class="error">*</span> </label>
                                     <input type="text" class="form-control mb-2" name="mail_port" id="mail_port"
-                                        placeholder="Mail Port" value="{{ !empty($setting) ? $setting->mail_port : '' }}">
+                                        placeholder="Mail Port"
+                                        value="{{ !empty($setting) ? $setting->mail_port : '' }}">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="mail_username">Mail Username <span class="error">*</span> </label>
                                     <input type="text" class="form-control mb-2" name="mail_username"
-                                        id="mail_username" placeholder="Mail Username" value="{{ !empty($setting) ? $setting->mail_username : '' }}">
+                                        id="mail_username" placeholder="Mail Username"
+                                        value="{{ !empty($setting) ? $setting->mail_username : '' }}">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="mail_password">Mail Password <span class="error">*</span> </label>
                                     <input type="text" class="form-control mb-2" name="mail_password"
-                                        id="mail_password" placeholder="Mail Password" value="{{ !empty($setting) ? $setting->mail_password : '' }}">
+                                        id="mail_password" placeholder="Mail Password"
+                                        value="{{ !empty($setting) ? $setting->mail_password : '' }}">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="mail_encryption">Mail Encryption <span class="error">*</span> </label>
                                     <input type="text" class="form-control mb-2" name="mail_encryption"
-                                        id="mail_encryption" placeholder="Mail Encryption" value="{{ !empty($setting) ? $setting->mail_encryption : '' }}">
+                                        id="mail_encryption" placeholder="Mail Encryption"
+                                        value="{{ !empty($setting) ? $setting->mail_encryption : '' }}">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="mail_address">Mail From Address <span class="error">*</span> </label>
                                     <input type="text" class="form-control mb-2" name="mail_address"
-                                        id="mail_address" placeholder="Mail From Address" value="{{ !empty($setting) ? $setting->mail_address : '' }}">
+                                        id="mail_address" placeholder="Mail From Address"
+                                        value="{{ !empty($setting) ? $setting->mail_address : '' }}">
                                 </div>
                             </div>
                             <h4>SMS Credentials</h4>
                             <div class="m-t-50" style="">
                                 <div class="form-row">
                                     <div class="form-group col-md-4">
-                                        <label for="sms_account_sid">Account Sid<span class="error">*</span> </label>
-                                        <input type="text" class="form-control mb-2" name="sms_account_sid" id="sms_account_sid"
-                                            placeholder="Account Sid" value="{{ !empty($setting) ? $setting->sms_account_sid : '' }}" required>
+                                        <label for="sms_account_sid">Account SID<span class="error">*</span> </label>
+                                        <input type="text" class="form-control mb-2" name="sms_account_sid"
+                                            id="sms_account_sid" placeholder="Account SID"
+                                            value="{{ !empty($setting) ? $setting->sms_account_sid : '' }}" required>
                                     </div>
                                     <div class="form-group col-md-4">
-                                        <label for="sms_account_token">Account Token <span class="error">*</span> </label>
-                                        <input type="text" class="form-control mb-2" name="sms_account_token" id="sms_account_token"
-                                            placeholder="Account Token" value="{{ !empty($setting) ? $setting->sms_account_token : '' }}">
+                                        <label for="sms_account_token">Account Token <span class="error">*</span>
+                                        </label>
+                                        <input type="text" class="form-control mb-2" name="sms_account_token"
+                                            id="sms_account_token" placeholder="Account Token"
+                                            value="{{ !empty($setting) ? $setting->sms_account_token : '' }}">
                                     </div>
                                     <div class="form-group col-md-4">
-                                        <label for="sms_account_number">SMS Account Number  <span class="error">*</span> </label>
-                                        <input type="text" class="form-control mb-2" name="sms_account_number" id="sms_account_number"
+                                        <label for="sms_account_number">SMS Account Number <span class="error">*</span>
+                                        </label>
+                                        <input type="text" class="form-control mb-2" name="sms_account_number"
+                                            id="sms_account_number"
                                             placeholder="SMS Account Number"value="{{ !empty($setting) ? $setting->sms_account_number : '' }}">
                                     </div>
                                 </div>
                             </div>
                             <h4>Stripe Credentials</h4>
 
-                            <div class="m-t-50" style="">                             
-                                    <div class="form-row">
-                                        <div class="form-group col-md-4">
-                                            <label for="stripe_key">Stripe Key <span class="error">*</span></label>
-                                            <input type="text" class="form-control mb-2" name="stripe_key"
-                                                id="stripe_key" placeholder="Stripe Key" value="{{ !empty($setting) ? $setting->stripe_key : '' }}" required>
-                                        </div>
-                                        <div class="form-group col-md-4">
-                                            <label for="stripe_secret">Stripe Secret <span class="error">*</span> </label>
-                                            <input type="text" class="form-control mb-2" name="stripe_secret"
-                                                id="stripe_secret" placeholder="Stripe Secret" value="{{ !empty($setting) ? $setting->stripe_secret : '' }}">
-                                        </div>
-
+                            <div class="m-t-50" style="">
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="stripe_key">Stripe Key <span class="error">*</span></label>
+                                        <input type="text" class="form-control mb-2" name="stripe_key"
+                                            id="stripe_key" placeholder="Stripe Key"
+                                            value="{{ !empty($setting) ? $setting->stripe_key : '' }}" required>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="stripe_secret">Stripe Secret <span class="error">*</span> </label>
+                                        <input type="text" class="form-control mb-2" name="stripe_secret"
+                                            id="stripe_secret" placeholder="Stripe Secret"
+                                            value="{{ !empty($setting) ? $setting->stripe_secret : '' }}">
                                     </div>
 
-                                    
+                                </div>
+
+
                             </div>
                         </div>
                         <button class="btn btn-primary" type="submit" id="btnSubmit">Submit</button>
@@ -225,6 +239,15 @@
                 },
                 stripe_secret: {
                     required: true
+                },
+                sms_account_token: {
+                    required: true
+                },
+                sms_account_sid: {
+                    required: true
+                },
+                sms_account_number: {
+                    required: true
                 }
             },
             messages: {
@@ -257,6 +280,15 @@
                 },
                 stripe_secret: {
                     required: "Please enter site stripe secret"
+                },
+                sms_account_token: {
+                    required: "Please enter sms account number"
+                },
+                sms_account_sid: {
+                    required: "Please enter sms account sid"
+                },
+                sms_account_number: {
+                    required: "Please enter sms account number"
                 }
             }
         });

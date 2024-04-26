@@ -24,6 +24,8 @@
                         <thead>
                             <tr>
                                 <th></th>
+                                <th></th>
+                                {{-- <th></th> --}}
                                 <th>Title</th>
                                 <th>Action</th>
                             </tr>
@@ -73,25 +75,42 @@
                                 '" class="chk-row">';
                         },
                     },
+                    {
+                        'targets': 1,
+                        'visible': false,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            return '<input type="checkbox" name="chk_row" value="' + row[0] +
+                                '" class="chk-row">';
+                        },
+                    },
+
                     // Adjust column indexes based on your data structure
                     {
-                        'targets': 2, // Assuming the second column in your data corresponds to this action column
+                        'targets': 3, // Assuming the second column in your data corresponds to this action column
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
-                            var copy = '{{ route('company.survey.form.view', ':survey') }}';
-                            copy = copy.replace(':survey', row[0]);
+                            var copy = '{{ route('front.survey.form', ':survey') }}';
+                            copy = copy.replace(':survey', row[1]);
                             var view = '{{ route('company.survey.form.view', ':survey') }}';
                             view = view.replace(':survey', row[0]);
+                            var count = row[3];
+
                             var editUrl = '{{ route('company.survey.form.edit', ':survey') }}';
                             editUrl = editUrl.replace(':survey', row[0]);
                             var deleteUrl = '{{ route('company.survey.form.delete', ':survey') }}';
                             deleteUrl = deleteUrl.replace(':survey', row[0]);
 
-                            return '<p id="referral_code_copy" style="display:none">' + copy +
-                                '</p><span class="btn btn-success btn-sm" role="button"  title="Field Copy" onclick="copyToClipboard(\'#referral_code_copy\')"><i class="anticon anticon-copy"></i></span> </a><a class="btn btn-success btn-sm" href="' +
+                            return '<a class="btn btn-info btn-sm" href="' +
                                 view +
-                                '" role="button"  title="Field View"><i class="fa fa-eye"></i></a>  <a class="btn btn-primary btn-sm" href="' +
+                                '" role="button"  title="View"> Total Submitted ' + count +
+                                '</a><p id="url_copy_' + row[1] + '" style="display:none">' + copy +
+                                '</p><span class="btn btn-success btn-sm" role="button"  title="Url Copy" onclick="copyToClipboard(\'#url_copy_' +
+                                row[1] +
+                                '\')"><i class="anticon anticon-copy"></i> Copy</span> </a><a class="btn btn-success btn-sm" href="' +
+                                view +
+                                '" role="button"  title="View"><i class="fa fa-eye"></i></a>  <a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
                                 '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
                                 deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> ';
@@ -163,7 +182,6 @@
             var el = document.querySelector(elementId);
             var textArea = document.createElement("textarea");
             textArea.value = el.textContent;
-
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand('copy');
