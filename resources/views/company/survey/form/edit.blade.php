@@ -19,21 +19,26 @@
 
                 <div class="m-t-50" style="">
                     <form id="surveyForm" method="POST"
-                        action="{{ route('company.survey.form.update', $surveyFiled->id) }}">
+                        action="{{ route('company.survey.form.update', $surveyFiled->id) }}" data-parsley-validate="">
                         @csrf
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group row">
-                                    <label for="title" class="col-sm-3 col-form-label">Title</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="survey_title" id="title"
-                                            value="{{ !empty($surveyFiled) && !empty($surveyFiled->title) ? $surveyFiled->title : '' }}"
-                                            placeholder="Enter Title">
-                                    </div>
-                                </div>
+                            <div class=" form-group col-md-6">
+
+                                <label for="survey_title" class="col-form-label">Title</label>
+                                <input type="text" class="form-control" name="survey_title" id="survey_title"
+                                    value="{{ !empty($surveyFiled) && !empty($surveyFiled->title) ? $surveyFiled->title : '' }}"
+                                    placeholder="Enter Title">
+
+                            </div>
+                            <div class=" form-group col-md-6">
+
+                                <label for="slug" class=" col-form-label">Slug</label>
+                                <input type="text" class="form-control" name="slug" id="slug"
+                                    value="{{ !empty($surveyFiled) && !empty($surveyFiled->slug) ? $surveyFiled->slug : '' }}"
+                                    placeholder="Enter Slug">
+
                             </div>
                         </div>
-                        {{-- <span class="btn btn-primary float-right addFiledMore">Add More</span> --}}
 
                         @if (!empty($surveyFiled) && !empty($surveyFiled->fields))
                             @php
@@ -43,34 +48,34 @@
 
                             @foreach ($fieldData as $key => $field)
                                 @if ($key == '0')
-                                    <span class="btn btn-primary float-right addFiledMore">Add More</span>
                                 @else
-                                    <span class="btn btn-danger float-right addFiledRemove" onclick="addFiledRemove(this)"
-                                        data-removeCount="{{ $key }}"><i class="fa fa-trash"></i></span>
+                                    <span class="btn btn-danger float-right addFiledRemove  btn-sm"
+                                        onclick="addFiledRemove(this)" data-removeCount="{{ $key }}"><i
+                                            class="fa fa-trash"></i></span>
                                 @endif
                                 <div class="form-group row ">
                                     <div class="col-md-6">
                                         <label for="type" class="col-form-label">Type</label>
                                         <select id="type" name="type[]"
                                             onchange="onchangeType(this,{{ $key }})"
-                                            data-count="{{ $key }}" class="form-control templateType">
+                                            data-count="{{ $key }}" class="form-control templateType" required>
                                             <option value="">Select Type</option>
-                                            <option value="text" <?php if ($field['type'] == 'text') {
+                                            <option value="text" <?php if (!empty($field['type']) && $field['type'] == 'text') {
                                                 echo 'selected';
                                             } ?>>Text</option>
-                                            <option value="number" <?php if ($field['type'] == 'number') {
+                                            <option value="number" <?php if (!empty($field['type']) && $field['type'] == 'number') {
                                                 echo 'selected';
                                             } ?>>Number</option>
-                                            <option value="textarea" <?php if ($field['type'] == 'textarea') {
+                                            <option value="textarea" <?php if (!empty($field['type']) && $field['type'] == 'textarea') {
                                                 echo 'selected';
                                             } ?>>Textarea</option>
-                                            <option value="select" <?php if ($field['type'] == 'select') {
+                                            <option value="select" <?php if (!empty($field['type']) && $field['type'] == 'select') {
                                                 echo 'selected';
                                             } ?>>Select</option>
-                                            <option value="radio" <?php if ($field['type'] == 'radio') {
+                                            <option value="radio" <?php if (!empty($field['type']) && $field['type'] == 'radio') {
                                                 echo 'selected';
                                             } ?>>Radio</option>
-                                            <option value="checkbox" <?php if ($field['type'] == 'checkbox') {
+                                            <option value="checkbox" <?php if (!empty($field['type']) && $field['type'] == 'checkbox') {
                                                 echo 'selected';
                                             } ?>>Checkbox</option>
                                         </select>
@@ -78,18 +83,23 @@
                                     <div class="col-md-6">
                                         <label for="label" class=" col-form-label">Label</label>
                                         <input type="text" class="form-control" name="label[]" id="label"
-                                            placeholder="Enter Label" value="<?= $field['label'] ?>">
+                                            placeholder="Enter Label" value="<?= $field['label'] ?>" required>
                                     </div>
-
-                                    {{-- <div class="col-md-6">
-                                        <label for="inputName" class=" col-form-label">Name</label>
-                                        <input type="hidden" class="form-control" name="inputName[]" id="inputName" placeholder="Enter Name"
-                                            value="<?= $field->inputName ?>">
-                                    </div> --}}
                                     <div class="col-sm-6">
                                         <label for="placeholder" class=" col-form-label">Placeholder</label>
                                         <input type="text" class="form-control" name="placeholder[]" id="placeholder"
                                             placeholder="Enter Placeholder" value="<?= $field['placeholder'] ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="required" class="col-form-label">Required</label>
+                                        <select id="required" name="required[]" class="form-control ">
+                                            <option value="yes" <?php if (!empty($field['required']) && $field['required'] == 'yes') {
+                                                echo 'selected';
+                                            } ?>>Yes</option>
+                                            <option value="no" <?php if (!empty($field['required']) && $field['required'] == 'no') {
+                                                echo 'selected';
+                                            } ?>>NO</option>
+                                        </select>
                                     </div>
 
                                     <!-- Add more fields as needed -->
@@ -97,11 +107,8 @@
                                 <div id="additionalFieldsContainer{{ $key }}">
                                     @php
                                         $type = $field['type'];
-                                        // echo "<pre>"; print_r($field[$type]); die();
                                     @endphp
                                     @if (!empty($field[$type]))
-                                        {{-- @dd($field['select']) --}}
-
                                         @foreach ($field[$type] as $typeKey => $val)
                                             {{-- @dd($val); --}}
                                             @php
@@ -114,19 +121,19 @@
                                                 <div class="col-sm-2">
                                                     <label for="label"
                                                         class="col-form-label">{{ !empty($type) && $type == 'select' ? 'Option' : Str::ucfirst($type) }}
-                                                        Name</label>
+                                                        Value</label>
                                                     <input type="text" value="{{ $value }}" class="form-control"
                                                         name="{{ $name }}[{{ $key }}][]" id="label"
-                                                        placeholder="Enter Name">
+                                                        placeholder="Enter Value" required>
                                                 </div>
                                                 @if ($typeKey == '0')
                                                     <div class="col-sm-1 mt-4 float-right">
-                                                        <span class="btn btn-primary"
+                                                        <span class="btn btn-primary btn-sm"
                                                             onclick="addFiledType({{ $key }},'{{ $type }}')">Add</span>
                                                     </div>
                                                 @else
                                                     <div class="col-sm-1 mt-4 float-right">
-                                                        <span class="btn btn-danger" onclick="removeFiledType()"><i
+                                                        <span class="btn btn-danger btn-sm" onclick="removeFiledType()"><i
                                                                 class="fa fa-trash"></i></span>
                                                     </div>
                                                 @endif
@@ -142,15 +149,16 @@
                             $addmoreCount = $key++;
                         @endphp
                         <input type="hidden" class="addMoreCount" value="{{ $addmoreCount }}">
+                        <input type="hidden" class="id" id="id"
+                            value="{{ !empty($surveyFiled) && !empty($surveyFiled->id) ? $surveyFiled->id : '' }}">
 
                         <div id="addFiledMore{{ $addmoreCount }}">
 
                         </div>
-                        {{-- <div class="col-md-6">
-                            <button type="submit" id="add_more" class="add_more">Add More</button>
-                        </div> --}}
+
                         <div class="form-group row">
                             <div class="col-md-12">
+                                <span class="btn btn-info addFiledMore">+ Add More Field</span>
                                 <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
@@ -164,7 +172,7 @@
 @endsection
 
 @section('js')
-
+    <script src="{{ asset('assets/js/parsley.min.js?v=' . time()) }}"></script>
     <script>
         function addFiledType(typecount, type) {
 
@@ -198,12 +206,7 @@
             $(th).remove();
         }
         $(document).ready(function() {
-            // $('.addFiledRemove').click(function() {
 
-            //     // Then remove the parent container itself
-            //     $(this).next('.form-group.row').remove();
-            //     $(this).remove();
-            // });
             $('.addFiledMore').click(function() {
                 var oldCount = parseInt($('.addMoreCount').val()); // Parse the old count as an integer
                 $('.addMoreCount').val(oldCount + 1); // Increment the count
@@ -228,31 +231,47 @@
             });
 
         });
-    </script>
-
-    <script>
         $(document).ready(function() {
+            $('#survey_title').on('input', function() {
+                var title = $(this).val().toLowerCase();
+                var slug = title.trim().replace(/\s+/g, '-').replace(/[^a-z-]/g, '').replace(/-{2,}/g,
+                    '-').replace(/^-+|-+$/g, '');
+                $('#slug').val(slug);
+            });
+            $('#slug').on('change', function() {
+                var title = $(this).val().toLowerCase();
+                var slug = title.trim().replace(/\s+/g, '-').replace(/[^a-z-]/g, '').replace(/-{2,}/g,
+                    '-').replace(/^-+|-+$/g, '');
+                $('#slug').val(slug);
+            });
+
+
             $('#submit').click(function() {
+
                 $('#surveyForm').validate({
                     rules: {
                         survey_title: 'required',
-                        // Add custom rule for validating at least one type is selected
                         'type[]': {
-                            required: function(element) {
-                                return $('[name="type[]"]').filter(':checked').length === 0;
-                            }
+                            required: true
                         },
-                        // Add custom rule for validating each label input in the array
                         'label[]': {
                             required: true
                         },
-                        // Add custom rule for validating each inputName input in the array
                         'inputName[]': {
                             required: true
                         },
-                        // Add custom rule for validating each placeholder input in the array
-                        'placeholder[]': {
-                            required: true
+                        slug: {
+                            required: true,
+                            remote: {
+                                url: "{{ route('company.survey.checkSlug') }}",
+                                type: "post",
+                                data: {
+                                    'id': $("#id").val()
+                                },
+                                headers: {
+                                    "X-CSRF-TOKEN": " {{ csrf_token() }}"
+                                },
+                            }
                         }
                     },
                     messages: {
@@ -260,18 +279,15 @@
                         'type[]': 'Please select at least one type',
                         'label[]': 'Please enter a label',
                         'inputName[]': 'Please enter a name',
-                        'placeholder[]': 'Please enter a placeholder'
+                        slug: {
+                            required: "Please enter a slug",
+                            remote: "Slug already exists"
+                        }
                     },
-                    // Handle form submission
-                    submitHandler: function(form) {
-                        form.submit();
-                    }
                 });
             });
         });
-    </script>
 
-    <script>
         function onchangeType(selectElement, count) {
 
             oldCount = "0";
@@ -293,24 +309,4 @@
 
         }
     </script>
-
-    {{-- <script>
-        $(document).ready(function() {
-            // Define the variable
-            var $name = "test";
-
-            // Function to find and replace text
-            function findAndReplaceText() {
-                // Select the elements containing the text "user_name" and replace it with the value of $name
-                $("body").find("*").contents().filter(function() {
-                    return this.nodeType === 3;
-                }).each(function() {
-                    $(this).replaceWith($(this).text().replace(/user_name/g, $name));
-                });
-            }
-
-            // Call the function to perform the replacement
-            findAndReplaceText();
-        });
-    </script> --}}
 @endsection

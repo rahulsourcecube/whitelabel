@@ -21,6 +21,9 @@ use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\SmstemplateController;
 use App\Http\Controllers\Company\SurveyController;
 use App\Http\Controllers\Company\UserController;
+use App\Http\Controllers\Fornt\CampaignController as ForntCampaignController;
+use App\Http\Controllers\Fornt\HomeController as ForntHomeController;
+use App\Http\Controllers\Fornt\SurveyController as ForntSurveyController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
 
@@ -205,6 +208,18 @@ Route::group(['middleware' => 'check.session'], function () {
             Artisan::call('expire:notification');
             return "Done!";
         });
+        Route::prefix('front')->name('front.')->group(function () {
+            Route::prefix('survey')->name('survey.')->group(function () {
+                Route::get('/{survey}', [ForntSurveyController::class, 'survey'])->name('form');
+                Route::post('/store', [ForntSurveyController::class, 'store'])->name('store');
+            });
+            Route::prefix('campaign')->name('campaign.')->group(function () {
+                Route::get('/', [ForntCampaignController::class, 'publicCampaign'])->name('public.view');
+            });
+
+            Route::get('/success-202', [ForntHomeController::class, 'success'])->name('success.page');
+        });
+
 
         Route::prefix('user')->name('user.')->group(function () {
             // Route::get('/', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
@@ -380,6 +395,8 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::post('form/store', [SurveyController::class, 'formStore'])->name('form.store');
                     Route::get('form/edit/{survey}', [SurveyController::class, 'formEdit'])->name('form.edit');
                     Route::get('form/edit_form/{survey}', [SurveyController::class, 'formEditFrom'])->name('form.edit_form');
+                    Route::post('/slug/check', [SurveyController::class, 'checkSlug'])->name('checkSlug');
+
 
                     Route::post('form/update/{survey}', [SurveyController::class, 'formUpdate'])->name('form.update');
                     Route::post('form/update_form/', [SurveyController::class, 'formUpdateForm'])->name('form.updateform');
