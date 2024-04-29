@@ -7,6 +7,7 @@ use App\MailConfiguration;
 use App\Models\SettingModel;
 use App\Models\User;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use App\Helpers\Helper;
 use Illuminate\Pagination\Paginator;
 
@@ -40,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
                     $user_id = User::where('user_type', '1')->first();
                     $mailConfig = SettingModel::where('user_id', $user_id)->first();
                 }
+                // dd($mailConfig);
+                Log::error('AppServiceProvider : ' . json_encode($mailConfig));
 
                 if ($mailConfig) {
                     Config::set('mail.driver', $mailConfig->mail_mailer);
@@ -58,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
                 Paginator::useBootstrap();
             } catch (\Throwable $th) {
                 //throw $th;
+                Log::error('Failed to send email to : ' . $th);
             }
         }
     }

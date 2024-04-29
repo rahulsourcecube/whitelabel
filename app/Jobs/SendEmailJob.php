@@ -42,8 +42,8 @@ class SendEmailJob implements ShouldQueue
         $this->userName = $userName;
         $this->data = $data;
         $this->type = $type;
-        
-        
+
+
         // $this->details = $details;
     }
 
@@ -54,7 +54,7 @@ class SendEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        //  try {
+        try {
             // Log before sending the email
             Log::info('Sending email to: ' . $this->to);
             if ($this->type == 'user') {
@@ -63,7 +63,7 @@ class SendEmailJob implements ShouldQueue
                     $message->subject($this->subject);
                 });
             } else {
-        
+
                 Mail::to($this->to)->send(new CompanyWelcomeMail($this->subject, $this->userName, $this->data));
                 // Mail::send('company.email.company_welcome', $this->data, function ($message) {
                 //     $message->to($this->to);
@@ -75,9 +75,9 @@ class SendEmailJob implements ShouldQueue
 
             // Log after sending the email
             Log::info('Email sent successfully to: ' . $this->to);
-        // } catch (\Exception $e) {
-        //     // Log any errors that occur
-        //     Log::error('Failed to send email to ' . $this->to . ': ' . $e->getMessage());
-        // }
+        } catch (\Exception $e) {
+            // Log any errors that occur
+            Log::error('Failed to send email to ' . $this->to . ': ' . $e->getMessage());
+        }
     }
 }
