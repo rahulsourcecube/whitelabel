@@ -7,7 +7,10 @@ use App\MailConfiguration;
 use App\Models\SettingModel;
 use App\Models\User;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use App\Helpers\Helper;
+use Illuminate\Pagination\Paginator;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,21 +26,23 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     * 
+     *
      *
      * @return void
      */
     public function boot()
-    {
-        {
+    { {
             try {
                 $companyId = Helper::getCompanyId();
-                    $companymailConfig= SettingModel::where('user_id', $companyId)->first();
-                    if(!empty($companymailConfig->mail_username) && !empty($companymailConfig->mail_password)){
-                        $mailConfig = $companymailConfig;
-                    }else{
-                        $mailConfig = User::where('user_type', '1')->first();
-                    }
+                $companymailConfig = SettingModel::where('user_id', $companyId)->first();
+                if (!empty($companymailConfig->mail_username) && !empty($companymailConfig->mail_password)) {
+                    $mailConfig = $companymailConfig;
+                } else {
+                    $user_id = User::where('user_type', '1')->first();
+                    $mailConfig = SettingModel::where('user_id', $user_id)->first();
+                }
+                // dd($mailConfig);
+                Log::error('AppServiceProvider : ' . json_encode($mailConfig));
 
                 if ($mailConfig) {
                     Config::set('mail.driver', $mailConfig->mail_mailer);
@@ -49,12 +54,14 @@ class AppServiceProvider extends ServiceProvider
                     // You can set other mail configuration values here as well
                 }
                 $stripe = Helper::stripeKey();
-                
+
                 Config::set('app.stripe_key', $stripe->stripe_key);
                 Config::set('app.stripe_secret', $stripe->stripe_secret);
 
+                Paginator::useBootstrap();
             } catch (\Throwable $th) {
                 //throw $th;
+                Log::error('Failed to send email to : ' . $th);
             }
         }
     }

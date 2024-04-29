@@ -33,6 +33,7 @@ use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
 use App\Services\TwilioService;
 use Illuminate\Support\Facades\URL;
+
 class UsrController extends Controller
 {
 
@@ -56,21 +57,21 @@ class UsrController extends Controller
         }
     }
 
-        
-public function sendSMS(Request $request, TwilioService $twilioService)
-{
-    $to = '+18777804236';
-    $message = 'hello123';
 
-    try {
-        $twilioService->sendSMS($to, $message);
-        echo "SMS sent successfully";
-    } catch (Exception $e) {
-        Log::error('Failed to send SMS: ' . $e->getMessage());
-        echo "Failed to send SMS: " . $e->getMessage();
+    public function sendSMS(Request $request, TwilioService $twilioService)
+    {
+        $to = '+18777804236';
+        $message = 'hello123';
+
+        try {
+            $twilioService->sendSMS($to, $message);
+            echo "SMS sent successfully";
+        } catch (Exception $e) {
+            Log::error('Failed to send SMS: ' . $e->getMessage());
+            echo "Failed to send SMS: " . $e->getMessage();
+        }
     }
-}
-    
+
     public function dashboard()
     {
         try {
@@ -312,14 +313,14 @@ public function sendSMS(Request $request, TwilioService $twilioService)
         try {
             $userData = Auth::user()->load('country', 'state', 'city');
             $referralUser = User::orderBy('id', 'DESC')->where('referral_user_id', Auth::user()->id)->get();
-           
+
             $progressions = taskProgressionUserHistory::with('taskProgressionHistory')
-            ->where('user_id', Auth::user()->id)
-            ->where('company_id', Auth::user()->company_id)
-            ->orderBy('id', 'desc')
-            ->get();
-           
-            return view('user.profile', compact('userData', 'referralUser','progressions'));
+                ->where('user_id', Auth::user()->id)
+                ->where('company_id', Auth::user()->company_id)
+                ->orderBy('id', 'desc')
+                ->get();
+
+            return view('user.profile', compact('userData', 'referralUser', 'progressions'));
         } catch (Exception $e) {
             Log::error('UsrController::Profile => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -364,7 +365,7 @@ public function sendSMS(Request $request, TwilioService $twilioService)
     public function progressreward(Request $request)
     {
         try {
-            $filter = UserCampaignHistoryModel::    where('user_id', Auth::user()->id)
+            $filter = UserCampaignHistoryModel::where('user_id', Auth::user()->id)
                 ->orderBy('id', 'DESC')
                 ->whereIn('status', [1, 2, 5]);
 
@@ -550,15 +551,15 @@ public function sendSMS(Request $request, TwilioService $twilioService)
 
     public function get_states(Request $request)
     {
-        $country_id = $request->input('country_id');    
-      
-        $states = StateModel::where('country_id', $country_id)->get();   
-       
+        $country_id = $request->input('country_id');
+
+        $states = StateModel::where('country_id', $country_id)->get();
+
         $options = '';
-        $options .= "<option value=''>Select state</option>";       
-        foreach ($states as $state) {            
+        $options .= "<option value=''>Select state</option>";
+        foreach ($states as $state) {
             $options .= "<option value='" . $state->id . "'>" . $state->name . "</option>";
-        }    
+        }
         // Return the options as JSON response
         return response()->json($options);
     }
@@ -570,10 +571,10 @@ public function sendSMS(Request $request, TwilioService $twilioService)
 
         $citys = CityModel::where('state_id', $state_id)->get();
         $options = '';
-        $options .= "<option value=''>Select City</option>";       
-        foreach ($citys as $city) {            
+        $options .= "<option value=''>Select City</option>";
+        foreach ($citys as $city) {
             $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
-        }    
+        }
         return response()->json($options);
     }
 
@@ -581,8 +582,8 @@ public function sendSMS(Request $request, TwilioService $twilioService)
 
     public function store(Request $request)
     {
-          try {
-          
+        try {
+
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
@@ -637,20 +638,20 @@ public function sendSMS(Request $request, TwilioService $twilioService)
             $userRegister->contact_number = $request->contact_number;
             $userRegister->referral_user_id = !empty($user_id) ? $user_id : null;
             $userRegister->package_id = $ActivePackageData->id;
-            $webUrlGetHost = $request->getHost();  
+            $webUrlGetHost = $request->getHost();
             $currentUrl = URL::current();
             if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
                 // URL is under HTTPS
-                $webUrl=  'https://'.$webUrlGetHost;
+                $webUrl =  'https://' . $webUrlGetHost;
             } else {
                 // URL is under HTTP
-                $webUrl=  'http://'.$webUrlGetHost;
+                $webUrl =  'http://' . $webUrlGetHost;
             }
-            
-              try {
-     
-                $SettingValue = SettingModel::where('id',$companyId)->first();
-                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type','welcome')->first();
+
+            try {
+
+                $SettingValue = SettingModel::where('id', $companyId)->first();
+                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
 
@@ -658,48 +659,48 @@ public function sendSMS(Request $request, TwilioService $twilioService)
                 $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
                 $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
 
-                $message = '';  
-                $type=  "user";     
-                $html=  $mailTemplate->template_html;     
-               
-                $data =  ['user' => $userRegister, 'first_name' => $request->first_name, 'company_id' => $companyId ,'template'=>$html,'webUrl'=>$webUrl]; 
+                $message = '';
+                $type =  "user";
+                $html =  $mailTemplate->template_html;
+
+                $data =  ['user' => $userRegister, 'first_name' => $request->first_name, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl];
                 if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-                    SendEmailJob::dispatch($to, $subject, $message ,$userName, $data ,$type,$html);
+                    SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type, $html);
                 }
-             } catch (Exception $e) {
-                 Log::error('UsrController::Store => ' . $e->getMessage());
-             }
-             // End mail
-             $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
-             if (!empty($smsTemplate)) {
-                 $SettingModel = SettingModel::first();
-                 if (!empty($companyId)) {
-                     $SettingModel = SettingModel::find($companyId);
-                 }
-             
-                 $name = $request->first_name;
-                 $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                 $company_link = $webUrl ? $webUrl : '';
-                 $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
-             
-                 // Remove HTML tags and decode HTML entities
-                 $message = htmlspecialchars_decode(strip_tags($html));
-             
-                 // Remove unwanted '&nbsp;' text
-                 $message = str_replace('&nbsp;', ' ', $message);
-             
-                 $to = '+18777804236';
-                 $twilioService = new TwilioService();
-                 try {
-                     $twilioService->sendSMS($to, $message);
-                 } catch (Exception $e) {
-                     Log::error('Failed to send SMS: ' . $e->getMessage());
-                     echo "Failed to send SMS: " . $e->getMessage();
-                 }
+            } catch (Exception $e) {
+                Log::error('UsrController::Store => ' . $e->getMessage());
+            }
+            // End mail
+            $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
+            if (!empty($smsTemplate)) {
+                $SettingModel = SettingModel::first();
+                if (!empty($companyId)) {
+                    $SettingModel = SettingModel::find($companyId);
                 }
-             
+
+                $name = $request->first_name;
+                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                $company_link = $webUrl ? $webUrl : '';
+                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
+
+                // Remove HTML tags and decode HTML entities
+                $message = htmlspecialchars_decode(strip_tags($html));
+
+                // Remove unwanted '&nbsp;' text
+                $message = str_replace('&nbsp;', ' ', $message);
+
+                $to = '+18777804236';
+                $twilioService = new TwilioService();
+                try {
+                    $twilioService->sendSMS($to, $message);
+                } catch (Exception $e) {
+                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                    echo "Failed to send SMS: " . $e->getMessage();
+                }
+            }
+
             // End sms
-          
+
 
             // try {
             //     Mail::send('user.email.welcome', ['user' => $userRegister, 'first_name' => $request->first_name], function ($message) use ($request) {
@@ -710,7 +711,7 @@ public function sendSMS(Request $request, TwilioService $twilioService)
             //     Log::error('UsrController::Store => ' . $e->getMessage());
             // }
 
-             $userRegister->save();
+            $userRegister->save();
             $message = "Registration Successfully!";
 
             return redirect()->route('user.login')->with('success', $message);
@@ -740,34 +741,33 @@ public function sendSMS(Request $request, TwilioService $twilioService)
 
     public function submitForgetPassword(Request $request)
     {
-       
-        
-        //    try {
+
+
+        try {
             $companyId = Helper::getCompanyId();
 
             $userEmail = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type', '4')->first();
-           
+
             if (empty($userEmail)) {
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
             }
 
             $token = Str::random(64);
-            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type','forgot_password')->first();
-            $html="";
-            $webUrl="";
-            $submit= route('user.confirmPassword', $token);
+            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
+            $html = "";
+            $webUrl = "";
+            $submit = route('user.confirmPassword', $token);
             $currentUrl = URL::current();
-            $webUrlGetHost = $request->getHost();  
+            $webUrlGetHost = $request->getHost();
             if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
                 // URL is under HTTPS
-                $webUrl=  'https://'.$webUrlGetHost;
+                $webUrl =  'https://' . $webUrlGetHost;
             } else {
                 // URL is under HTTP
-                $webUrl=  'http://'.$webUrlGetHost;
+                $webUrl =  'http://' . $webUrlGetHost;
             }
-            if(!empty($mailTemplate)){
-                $html =$mailTemplate->template_html;
-               
+            if (!empty($mailTemplate)) {
+                $html = $mailTemplate->template_html;
             }
             DB::table('password_resets')->insert([
                 'email' => $request->email,
@@ -790,58 +790,47 @@ public function sendSMS(Request $request, TwilioService $twilioService)
                 Log::error('UsrController:: => ' . $e->getMessage());
                 return redirect()->back()->with('error', "Something went wrong!");
             }
-            // //Start sms
-            //         $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type','forgot_password')->first();   
-                       
-            //         if(!empty($smsTemplate)){                    
-            //         //sms code
-            //                 $to = '+1'.$userEmail->contact_number;
-            //                 $message = $smsTemplate->template_html_sms;
-            //                 $twilioService=new twilioService();
-            //                 try {
-            //                     $twilioService->sendSMS($to, $message);
-                            
-            //                 } catch (Exception $e) {
-            //                     Log::error('Failed to send SMS: ' . $e->getMessage());
-            //                     echo "Failed to send SMS: " . $e->getMessage();
-            //                 }
-            //             }
-            // // End Sms   
-             //Start sms
-                $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type','forgot_password')->first(); 
-                         
-                if (!empty($smsTemplate)) {
-                    $SettingModel = SettingModel::first();
-                    if (!empty($companyId)) {
-                        $SettingModel = SettingModel::find($companyId);
-                    }                
-                    $name = $userEmail->first_name;
-                    $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio'; 
-                    $company_link = $webUrl ? $webUrl : '';
-                    $submit= route('user.confirmPassword', $token);
-                    $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]" , "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
-                    $message = htmlspecialchars_decode(strip_tags($html));
-             
-                    // Remove unwanted '&nbsp;' text
-                    $message = str_replace('&nbsp;', ' ', $message);
-                
-                    $to = '+18777804236'; 
-                    $twilioService = new TwilioService();
-                     try {
-                        $twilioService->sendSMS($to, $message);
-                     } catch (Exception $e) {
-                         Log::error('Failed to send SMS: ' . $e->getMessage());
-                         echo "Failed to send SMS: " . $e->getMessage();
-                  }
-                }    
-        //End sms
+            Log::error('UsrController:: mail send');
+            //Start sms
+            $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
+
+            if (!empty($smsTemplate)) {
+                Log::error('UsrController:: check for sms');
+
+                $SettingModel = SettingModel::first();
+                if (!empty($companyId)) {
+                    $SettingModel = SettingModel::find($companyId);
+                }
+                $name = $userEmail->first_name;
+                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                $company_link = $webUrl ? $webUrl : '';
+                $submit = route('user.confirmPassword', $token);
+                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
+                $message = htmlspecialchars_decode(strip_tags($html));
+
+                // Remove unwanted '&nbsp;' text
+                $message = str_replace('&nbsp;', ' ', $message);
+
+                $to = '+18777804236';
+                $twilioService = new TwilioService();
+                Log::error('UsrController:: going to send sms');
+
+                try {
+                    $twilioService->sendSMS($to, $message);
+                    Log::error('UsrController:: sms send');
+                } catch (Exception $e) {
+                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                    echo "Failed to send SMS: " . $e->getMessage();
+                }
+            }
+            //End sms
 
 
             return back()->with('message', 'We have e-mailed your password reset link!');
-        // } catch (Exception $e) {
-        //     Log::error('UsrController::SubmitForgetPassword => ' . $e->getMessage());
-        //     return redirect()->back()->with('error', "Error : " . $e->getMessage());
-        // }
+        } catch (Exception $e) {
+            Log::error('UsrController::SubmitForgetPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function confirmPassword($token)
@@ -859,7 +848,7 @@ public function sendSMS(Request $request, TwilioService $twilioService)
     }
 
     public function submitResetPassword(Request $request)
-    {       
+    {
         try {
             $companyId = Helper::getCompanyId();
 
@@ -879,68 +868,66 @@ public function sendSMS(Request $request, TwilioService $twilioService)
 
             DB::table('password_resets')->where(['email' => $request->email])->delete();
             $currentUrl = URL::current();
-            $webUrlGetHost = $request->getHost();  
+            $webUrlGetHost = $request->getHost();
             if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
                 // URL is under HTTPS
-                $webUrl=  'https://'.$webUrlGetHost;
+                $webUrl =  'https://' . $webUrlGetHost;
             } else {
                 // URL is under HTTP
-                $webUrl=  'http://'.$webUrlGetHost;
+                $webUrl =  'http://' . $webUrlGetHost;
             }
-            if(!empty($mailTemplate)){
-                $html =$mailTemplate->template_html;
-               
+            if (!empty($mailTemplate)) {
+                $html = $mailTemplate->template_html;
             }
             try {
-                $user = User::where('email', $request->email)->where('company_id',$companyId)->first();
+                $user = User::where('email', $request->email)->where('company_id', $companyId)->first();
                 // dd($user );
-                $SettingValue = SettingModel::where('id',$companyId)->first();
-                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type','change_pass')->first();
-               
+                $SettingValue = SettingModel::where('id', $companyId)->first();
+                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
+
                 $userName  = $user->first_name . ' ' . $user->last_name;
                 $to = $request->email;
-                // $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');   
-                  
-                $message = '';  
-                $type=  "user";     
-                $html=  $mailTemplate->template_html;     
-                
-                    Mail::send('user.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => $companyId ,'template'=>$html,'webUrl'=>$webUrl], function ($message) use ($request) {
-                        $message->to($request->email);
-                        $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject :'Your New Password Is Set');
-                    });
-                
-             } catch (Exception $e) {
-                 Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
-             }
-              //Start sms
-              $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type','change_pass')->first(); 
-                         
-              if (!empty($smsTemplate)) {
-                  $SettingModel = SettingModel::first();
-                  if (!empty($companyId)) {
-                      $SettingModel = SettingModel::find($companyId);
-                  }                
-                  $name = $user->first_name;
-                  $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio'; 
-                  $company_link = $webUrl ? $webUrl : '';
-                
-                  $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]" ], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
-                 $message = htmlspecialchars_decode(strip_tags($html));
-             
-                    // Remove unwanted '&nbsp;' text
-                    $message = str_replace('&nbsp;', ' ', $message);
-              
-                  $to = '+18777804236'; 
-                  $twilioService = new TwilioService();
-                  try {
-                      $twilioService->sendSMS($to, $message);
-                   } catch (Exception $e) {
-                       Log::error('Failed to send SMS: ' . $e->getMessage());
-                       echo "Failed to send SMS: " . $e->getMessage();
-                   }
-              }    
-        //End sms
+                // $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
+
+                $message = '';
+                $type =  "user";
+                $html =  $mailTemplate->template_html;
+
+                Mail::send('user.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($request) {
+                    $message->to($request->email);
+                    $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Your New Password Is Set');
+                });
+            } catch (Exception $e) {
+                Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
+            }
+            //Start sms
+            $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
+
+            if (!empty($smsTemplate)) {
+                $SettingModel = SettingModel::first();
+                if (!empty($companyId)) {
+                    $SettingModel = SettingModel::find($companyId);
+                }
+                $name = $user->first_name;
+                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                $company_link = $webUrl ? $webUrl : '';
+
+                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
+                $message = htmlspecialchars_decode(strip_tags($html));
+
+                // Remove unwanted '&nbsp;' text
+                $message = str_replace('&nbsp;', ' ', $message);
+
+                $to = '+18777804236';
+                $twilioService = new TwilioService();
+                try {
+                    $twilioService->sendSMS($to, $message);
+                } catch (Exception $e) {
+                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                    echo "Failed to send SMS: " . $e->getMessage();
+                }
+            }
+            //End sms
             return redirect()->route('user.login')->with('success', 'Your password has been changed!');
         } catch (Exception $e) {
             Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
@@ -948,46 +935,46 @@ public function sendSMS(Request $request, TwilioService $twilioService)
         }
     }
     public function addTaskRating(Request $request)
-    {              
-            $user = Auth::user();
-            $companyId = null; // Initialize companyId to null
-            
-            // Get the domain and company ID
-            $host = $request->getHost();
-            $domain = explode('.', $host);
-            $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($domain['0']);
-            
-            if ($exitDomain) {
-                $companyId = $exitDomain->user_id;
-            } else {
-                throw new \Exception("Domain not found");
-            }
-    
-            // Check if the user has already rated the campaign
-            $existingRating = ratings::where('user_id', $user->id)
-                                    ->where('company_id', $companyId)
-                                    ->where('campaign_id', $request->campaign_id)
-                                    ->first();
-    
-            if (!empty($existingRating)) {
-                // Update the existing rating
-                $existingRating->no_of_rating = $request->no_of_rating;
-                $existingRating->comments = $request->comments;
-                $existingRating->save();
-            } else {               
-                // Create a new rating
-                $ratings = new ratings();
-                $ratings->user_id = $user->id;
-                $ratings->company_id = $companyId;
-                $ratings->campaign_id = $request->campaign_id;
-                $ratings->no_of_rating = $request->no_of_rating;
-                $ratings->comments = $request->comments;
-                $ratings->save();
-            }
-         
-            return response()->json(['success' => true]);
-            
+    {
+        $user = Auth::user();
+        $companyId = null; // Initialize companyId to null
+
+        // Get the domain and company ID
+        $host = $request->getHost();
+        $domain = explode('.', $host);
+        $CompanyModel = new CompanyModel();
+        $exitDomain = $CompanyModel->checkDmain($domain['0']);
+
+        if ($exitDomain) {
+            $companyId = $exitDomain->user_id;
+        } else {
+            throw new \Exception("Domain not found");
+        }
+
+        // Check if the user has already rated the campaign
+        $existingRating = ratings::where('user_id', $user->id)
+            ->where('company_id', $companyId)
+            ->where('campaign_id', $request->campaign_id)
+            ->first();
+
+        if (!empty($existingRating)) {
+            // Update the existing rating
+            $existingRating->no_of_rating = $request->no_of_rating;
+            $existingRating->comments = $request->comments;
+            $existingRating->save();
+        } else {
+            // Create a new rating
+            $ratings = new ratings();
+            $ratings->user_id = $user->id;
+            $ratings->company_id = $companyId;
+            $ratings->campaign_id = $request->campaign_id;
+            $ratings->no_of_rating = $request->no_of_rating;
+            $ratings->comments = $request->comments;
+            $ratings->save();
+        }
+
+        return response()->json(['success' => true]);
+
         // } catch (\Exception $e) {
         //     Log::error('UsrController::addTaskRating => ' . $e->getMessage());
         //     return response()->json(['success' => false, 'error' => "Error: " . $e->getMessage()]);
@@ -997,47 +984,47 @@ public function sendSMS(Request $request, TwilioService $twilioService)
 
     public function addTaskFeedback(Request $request)
     {
-                  
-            $user = Auth::user();
-            $companyId = null; // Initialize companyId to null
-            
-            // Get the domain and company ID
-            $host = $request->getHost();
-            $domain = explode('.', $host);
-            $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($domain['0']);
-            
-            if ($exitDomain) {
-                $companyId = $exitDomain->user_id;
-            } else {
-                throw new \Exception("Domain not found");
-            }
-    
-            // Check if the user has already rated the campaign
-            $existingRating = Feedback::where('user_id', $user->id)
-                                    ->where('company_id', $companyId)
-                                    ->where('campaign_id', $request->campaign_id)
-                                    ->first();
-    
-            if (!empty($existingRating)) {
-                // Update the existing rating
-                $existingRating->no_of_rating = $request->no_of_rating;
-                $existingRating->comments = $request->comments;
-                $existingRating->save();
-            } else {
-               
-                // Create a new rating
-                $ratings = new Feedback();
-                $ratings->user_id = $user->id;
-                $ratings->company_id = $companyId; 
-                $ratings->campaign_id = $request->campaign_id;
-                $ratings->no_of_rating = $request->no_of_rating;
-                $ratings->comments = $request->comments;
-                $ratings->save();
-            }
-         
-            return response()->json(['success' => true]);
-            
+
+        $user = Auth::user();
+        $companyId = null; // Initialize companyId to null
+
+        // Get the domain and company ID
+        $host = $request->getHost();
+        $domain = explode('.', $host);
+        $CompanyModel = new CompanyModel();
+        $exitDomain = $CompanyModel->checkDmain($domain['0']);
+
+        if ($exitDomain) {
+            $companyId = $exitDomain->user_id;
+        } else {
+            throw new \Exception("Domain not found");
+        }
+
+        // Check if the user has already rated the campaign
+        $existingRating = Feedback::where('user_id', $user->id)
+            ->where('company_id', $companyId)
+            ->where('campaign_id', $request->campaign_id)
+            ->first();
+
+        if (!empty($existingRating)) {
+            // Update the existing rating
+            $existingRating->no_of_rating = $request->no_of_rating;
+            $existingRating->comments = $request->comments;
+            $existingRating->save();
+        } else {
+
+            // Create a new rating
+            $ratings = new Feedback();
+            $ratings->user_id = $user->id;
+            $ratings->company_id = $companyId;
+            $ratings->campaign_id = $request->campaign_id;
+            $ratings->no_of_rating = $request->no_of_rating;
+            $ratings->comments = $request->comments;
+            $ratings->save();
+        }
+
+        return response()->json(['success' => true]);
+
         // } catch (\Exception $e) {
         //     Log::error('UsrController::addTaskRating => ' . $e->getMessage());
         //     return response()->json(['success' => false, 'error' => "Error: " . $e->getMessage()]);

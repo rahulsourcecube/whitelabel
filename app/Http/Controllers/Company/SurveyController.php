@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\Survey;
 use App\Models\SurveyForm;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,50 +24,54 @@ class SurveyController extends Controller
     {
 
         try {
-        $companyId = Helper::getCompanyId(); // Assuming Helper is properly defined
+            $companyId = Helper::getCompanyId(); // Assuming Helper is properly defined
 
-        $columns = ['id', 'title'];
-        $totalData = SurveyForm::where('company_id', $companyId)->count();
-        $start = $request->input('start');
-        $length = $request->input('length');
-        $order = $request->input('order.0.column');
-        $dir = $request->input('order.0.dir');
-        $list = [];
-        $searchColumns = ['title'];
-        $query = SurveyForm::orderBy($columns[$order], $dir)->where('company_id', $companyId);
+            $columns = ['id', 'title'];
+            $totalData = SurveyForm::where('company_id', $companyId)->count();
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $order = $request->input('order.0.column');
+            $dir = $request->input('order.0.dir');
+            $list = [];
+            $searchColumns = ['title'];
+            $query = SurveyForm::orderBy($columns[$order], $dir)->where('company_id', $companyId);
 
-        // Server-side search
-        if ($request->has('search') && $request->input('search.value') !== '') {
-            $search = $request->input('search.value');
-            $query->where(function ($query) use ($search, $searchColumns) {
-                foreach ($searchColumns as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
-                }
-            });
-            // Count total records after applying search criteria
-            $totalData = $query->count();
-        }
+            // Server-side search
+            if ($request->has('search') && $request->input('search.value') !== '') {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumns) {
+                    foreach ($searchColumns as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+                // Count total records after applying search criteria
+                $totalData = $query->count();
+            }
 
-        $results = $query
-            ->skip($start)
-            ->take($length)
-            ->get();
+            $results = $query
+                ->skip($start)
+                ->take($length)
+                ->get();
 
 
-        foreach ($results as $result) {
-            $list[] = [
-                $result->id,
-                $result->title
-                // Add more fields as needed
-            ];
-        }
+            foreach ($results as $result) {
+                $surveyDatas = "0";
+                $surveyDatas = Survey::where('form_id', $result->id)->count();
+                $list[] = [
+                    $result->id,
+                    $result->slug,
+                    $result->title,
+                    $surveyDatas
+                    // Add more fields as needed
+                ];
+            }
 
-        return response()->json([
-            'draw' => intval($request->input('draw')),
-            'recordsTotal' => $totalData,
-            'recordsFiltered' => $totalData,
-            'data' => $list
-        ]);
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalData,
+                'recordsFiltered' => $totalData,
+                'data' => $list
+            ]);
         } catch (\Exception $e) {
             Log::error('SurveyController::formList ' . $e->getMessage());
             return response()->json([
@@ -96,12 +101,11 @@ class SurveyController extends Controller
     public function formView(Request $request, $id)
     {
         try {
-
             $surveyFiled = SurveyForm::find($id);
-          
             $fields = json_decode($surveyFiled->fields, true);
-           
-            return view('company.survey.form.view', compact('surveyFiled', 'fields'));
+            $surveyDatas = Survey::where('form_id', $id)->paginate(5);
+
+            return view('company.survey.form.view', compact('surveyFiled', 'fields', 'surveyDatas'));
         } catch (Exception $e) {
             Log::error('SurveyController::formView => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -122,7 +126,7 @@ class SurveyController extends Controller
             Log::error('SurveyController::formEdit => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
-    }   
+    }
 
 
     public function getAdditionalFields(Request $request)
@@ -138,18 +142,18 @@ class SurveyController extends Controller
             case 'select':
                 $additionalFields = ' <div class="form-group row">
                 <div class="col-sm-2">
-                    <label for="label"  class="col-form-label">Option Name</label>
-                        <input type="text" class="form-control" name="select[' . $addCount . '][]" id="label" placeholder="Enter Name">
+                    <label for="label"  class="col-form-label">Value</label>
+                        <input type="text" class="form-control" name="select[' . $addCount . '][]" id="label" placeholder="Enter Value" required>
                     </div>';
                 if ($add == 'addrequest') {
                     $additionalFields .= '
                     <div class="col-sm-1 mt-4 float-right">
-                        <span class="btn btn-primary" onclick="addFiledType(' . $addCount . ', \'select\')" data-typeCount="' . $addCount . '">Add</span>
+                        <span class="btn btn-primary  btn-sm" onclick="addFiledType(' . $addCount . ', \'select\')" data-typeCount="' . $addCount . '">Add</span>
                     </div>';
                 } else {
                     $additionalFields .= '
                     <div class="col-sm-1 mt-4 float-right">
-                        <span class="btn btn-danger" onclick="removeFiledType(' . $addCount . ')"><i class="fa fa-trash"></i></span>
+                        <span class="btn btn-danger  btn-sm" onclick="removeFiledType(' . $addCount . ')"><i class="fa fa-trash"></i></span>
                     </div>';
                 }
                 $additionalFields .= '</div>';
@@ -158,18 +162,18 @@ class SurveyController extends Controller
                 $additionalFields = '
                 <div class="form-group row">
                     <div class="col-sm-2">
-                        <label for="label"  class="col-form-label">Radio Name</label>
-                            <input type="text" class="form-control" name="radio[' . $addCount . '][]" id="label" placeholder="Enter Name">
+                        <label for="label"  class="col-form-label">Value</label>
+                            <input type="text" class="form-control" name="radio[' . $addCount . '][]" id="label" placeholder="Enter Value" required>
                         </div>';
                 if (!empty($add) && $add == 'addrequest') {
                     $additionalFields .= '
                             <div class="col-sm-1 mt-4 float-right">
-                                <span class="btn btn-primary" onclick="addFiledType(' . $addCount . ', \'radio\')" data-typeCount="' . $addCount . '">Add</span>
+                                <span class="btn btn-primary  btn-sm" onclick="addFiledType(' . $addCount . ', \'radio\')" data-typeCount="' . $addCount . '">Add</span>
                             </div>';
                 } else {
                     $additionalFields .= '
                             <div class="col-sm-1 mt-4 float-right">
-                                <span class="btn btn-danger" onclick="removeFiledType(' . $addCount . ')"><i class="fa fa-trash"></i></span>
+                                <span class="btn btn-danger  btn-sm" onclick="removeFiledType(' . $addCount . ')"><i class="fa fa-trash"></i></span>
                             </div>';
                 }
                 $additionalFields .= '</div>';
@@ -179,18 +183,18 @@ class SurveyController extends Controller
             case 'checkbox':
                 $additionalFields = ' <div class="form-group row">
                 <div class="col-sm-2">
-                    <label for="label"  class="col-form-label">Checkbox Name</label>
-                        <input type="text" class="form-control" name="checkbox[' . $addCount . '][]" id="label" placeholder="Enter Name">
+                    <label for="label"  class="col-form-label">Value</label>
+                        <input type="text" class="form-control"  name="checkbox[' . $addCount . '][]" id="label" placeholder="Enter Value" required >
                     </div>';
                 if ($add == 'addrequest') {
                     $additionalFields .= '
                                 <div class="col-sm-1 mt-4 float-right">
-                                    <span class="btn btn-primary" onclick="addFiledType(' . $addCount . ', \'checkbox\')" data-typeCount="' . $addCount . '">Add</span>
+                                    <span class="btn btn-primary  btn-sm" onclick="addFiledType(' . $addCount . ', \'checkbox\')" data-typeCount="' . $addCount . '">Add</span>
                                 </div>';
                 } else {
                     $additionalFields .= '
                                 <div class="col-sm-1 mt-4 float-right">
-                                    <span class="btn btn-danger" onclick="removeFiledType(' . $addCount . ')"><i class="fa fa-trash"></i></span>
+                                    <span class="btn btn-danger  btn-sm" onclick="removeFiledType(' . $addCount . ')"><i class="fa fa-trash"></i></span>
                                 </div>';
                 }
                 $additionalFields .= '</div>';
@@ -201,8 +205,8 @@ class SurveyController extends Controller
                 <span class="btn btn-danger float-right addFiledRemove btn-sm" onclick="addFiledRemove(this)" data-removeCount="' . $addCount . '"><i class="fa fa-trash"></i></span>
                 <div class="form-group row ">
                     <div class="col-md-6">
-                    <label for="type" class=" col-form-label">Type</label>
-                <select id="type" data-count="' . $addCount . '" onchange="onchangeType(this,' . $addCount . ')" name="type[]" class="form-control templateType type" required>
+                    <label for="type_' . $addCount . '" class=" col-form-label">Type</label>
+                <select data-count="' . $addCount . '" onchange="onchangeType(this,' . $addCount . ')" name="type[]" class="form-control templateType type" id="type_' . $addCount . '" required>
                <option value="">Select Type</option>
                         <option value="text">Text</option>
                         <option value="number">Number</option>
@@ -217,8 +221,15 @@ class SurveyController extends Controller
                     <input type="text" class="form-control" name="label[]" id="label" placeholder="Enter Label" required>
                 </div>
                 <div class="col-sm-6">
-                    <label for="placeholder" class=" col-form-label">Placeholder</label>
+                    <label class=" col-form-label">Placeholder</label>
                     <input type="text" class="form-control" name="placeholder[]" id="placeholder" placeholder="Enter Placeholder">
+                </div>
+                <div class="col-md-6">
+                    <label for="required" class="col-form-label">Required</label>
+                        <select id="required" name="required[]" class="form-control ">
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
                 </div>
 
                 <!-- Add more fields as needed -->
@@ -247,16 +258,17 @@ class SurveyController extends Controller
             $SurveyForm = new SurveyForm;
             $SurveyForm->company_id = $companyId;
             $SurveyForm->title = $request->input('survey_title');
+            $SurveyForm->slug = $request->input('slug');
 
             $fields = [];
             $types = $request->input('type');
             $labels = $request->input('label');
             $placeholders = $request->input('placeholder');
+            $required = $request->input('required');
 
             // Loop through each field and create an array for each field
             foreach ($types as $key => $type) {
                 $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
-
                 $fields[] = [
                     'type' => $type,
                     'inputName' => $inputNames,
@@ -264,10 +276,11 @@ class SurveyController extends Controller
                     'idname' => $inputNames,
                     'class' => $inputNames,
                     'placeholder' => $placeholders[$key],
-                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key] ) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
+                    'required' => $required[$key],
+                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
                 ];
             }
-           
+
             // Convert fields array to JSON and save it in the SurveyForm model
             $SurveyForm->fields = json_encode($fields);
 
@@ -283,19 +296,21 @@ class SurveyController extends Controller
     }
     public function formUpdate(Request $request, $id)
     {
-         try {
+        try {
             $companyId = Helper::getCompanyId();
             $SurveyForm = SurveyForm::find($id);
             $inputFields = $request->all();
 
             $SurveyForm->company_id = $companyId;
             $SurveyForm->title = $request->input('survey_title');
+            $SurveyForm->slug = $request->input('slug');
 
             $fields = [];
             $types = $request->input('type');
             $labels = $request->input('label');
             $placeholders = $request->input('placeholder');
-           
+            $required = $request->input('required');
+
             // Loop through each field and create an array for each field
             foreach ($types as $key => $type) {
                 $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
@@ -306,11 +321,12 @@ class SurveyController extends Controller
                     'idname' => $inputNames,
                     'class' => $inputNames,
                     'placeholder' => $placeholders[$key],
-                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key] ) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
-                ];             
+                    'required' => $required[$key],
+                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
+                ];
             }
-           
-            
+
+
             // Convert fields array to JSON and save it in the SurveyForm model
             $SurveyForm->fields = json_encode($fields);
 
@@ -334,6 +350,29 @@ class SurveyController extends Controller
         } catch (Exception $e) {
             Log::error('SurveyController::formDelete ' . $e->getMessage());
             return response()->json(['success' => 'error', 'message' => "Error: " . $e->getMessage()]);
+        }
+    }
+    function checkSlug(Request $request)
+    {
+        try {
+            $companyId = Helper::getCompanyId();
+            $checkSlug = SurveyForm::where('company_id', $companyId)->where('slug', '=', $request->slug);
+
+            if (!empty($request->id)) {
+                $checkSlug->where('id', '!=', $request->id);
+            }
+
+            $exist = $checkSlug->first();
+
+            if ($exist) {
+                return 'false';
+            } else {
+                return 'true';
+            }
+        } catch (Exception $e) {
+            Log::error('SurveyController::checkSlug ' . $e->getMessage());
+            // Return true in case of any error
+            return 'true';
         }
     }
 }

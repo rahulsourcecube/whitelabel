@@ -88,7 +88,7 @@ class SettingController extends Controller
                 $SettingModel->facebook_link = $request->flink;
                 $SettingModel->twitter_link = $request->t_link;
                 $SettingModel->linkedin_link = $request->l_link;
-//Mail Credentials
+                //Mail Credentials
                 $SettingModel->mail_mailer = $request->mail_mailer;
                 $SettingModel->mail_host = $request->mail_host;
                 $SettingModel->mail_port = $request->mail_port;
@@ -96,7 +96,7 @@ class SettingController extends Controller
                 $SettingModel->mail_password = $request->mail_password;
                 $SettingModel->mail_encryption = $request->mail_encryption;
                 $SettingModel->mail_address = $request->mail_address;
- //Stripe Credentials
+                //Stripe Credentials
                 $SettingModel->stripe_key = $request->stripe_key;
                 $SettingModel->stripe_secret = $request->stripe_secret;
                 //Sms
@@ -173,9 +173,13 @@ class SettingController extends Controller
                 $SettingModel->mail_password = $request->mail_password;
                 $SettingModel->mail_encryption = $request->mail_encryption;
                 $SettingModel->mail_address = $request->mail_address;
- //Stripe Credentials
+                //Stripe Credentials
                 $SettingModel->stripe_key = $request->stripe_key;
                 $SettingModel->stripe_secret = $request->stripe_secret;
+                // sms Credentials
+                $SettingModel->sms_account_sid = $request->sms_account_sid;
+                $SettingModel->sms_account_token = $request->sms_account_token;
+                $SettingModel->sms_account_number = $request->sms_account_number;
                 $SettingModel->save();
             }
             return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');
