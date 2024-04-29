@@ -10,13 +10,15 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 
 class TemplateController extends Controller
 {
     function index()
     {
         try {
-           
+
 
             return view('admin.mailTemplate.list');
         } catch (Exception $e) {
@@ -27,12 +29,12 @@ class TemplateController extends Controller
     public function list(Request $request)
     {
         try {
-           
+
             $companyId = auth()->user()->id;
-            
+
             $columns = ['id'];
             $totalData = MailTemplate::where('company_id', $companyId)->count();
-            
+
             $start = $request->input('start');
             $length = $request->input('length');
             $order = $request->input('order.0.column');
@@ -114,21 +116,27 @@ class TemplateController extends Controller
     public function store(Request $request)
     {
         try {
+            $request->validate([
+                'subject' => 'required',
+                'tempHtml' => 'required',
+
+            ]);
+
             $companyId = auth()->user()->id;
             $mailTemplate = MailTemplate::where('company_id', $companyId)
                 ->where('template_type', $request->type)
                 ->first();
-              
-            
+
+
             if (empty($mailTemplate) || empty($request->id)) {
-               
+
                 $existingTemplate = MailTemplate::where('company_id', $companyId)
-                ->where('template_type', $request->type)
-                ->first();
+                    ->where('template_type', $request->type)
+                    ->first();
                 if (!empty($existingTemplate)) {
-                    return redirect()->back()->with('error', 'Template already exit ' . $request->type );
+                    return redirect()->back()->withInput()->with('error', 'Template already exit ' . $request->type);
                 }
-                
+
                 $mailTemplate = new MailTemplate;
                 $mailTemplate->template_type = $request->type;
             }

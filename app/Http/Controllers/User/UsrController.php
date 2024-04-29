@@ -583,7 +583,6 @@ class UsrController extends Controller
     public function store(Request $request)
     {
         try {
-
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
@@ -677,25 +676,26 @@ class UsrController extends Controller
                 if (!empty($companyId)) {
                     $SettingModel = SettingModel::find($companyId);
                 }
+                if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                    $name = $request->first_name;
+                    $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                    $company_link = $webUrl ? $webUrl : '';
+                    $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
 
-                $name = $request->first_name;
-                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                $company_link = $webUrl ? $webUrl : '';
-                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
+                    // Remove HTML tags and decode HTML entities
+                    $message = htmlspecialchars_decode(strip_tags($html));
 
-                // Remove HTML tags and decode HTML entities
-                $message = htmlspecialchars_decode(strip_tags($html));
+                    // Remove unwanted '&nbsp;' text
+                    $message = str_replace('&nbsp;', ' ', $message);
 
-                // Remove unwanted '&nbsp;' text
-                $message = str_replace('&nbsp;', ' ', $message);
-
-                $to = '+18777804236';
-                $twilioService = new TwilioService();
-                try {
-                    $twilioService->sendSMS($to, $message);
-                } catch (Exception $e) {
-                    Log::error('Failed to send SMS: ' . $e->getMessage());
-                    echo "Failed to send SMS: " . $e->getMessage();
+                    $to = $SettingModel->type == "2" ? $request->contact_number : $SettingModel->sms_account_to_number;
+                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                    try {
+                        $twilioService->sendSMS($to, $message);
+                    } catch (Exception $e) {
+                        Log::error('Failed to send SMS: ' . $e->getMessage());
+                        echo "Failed to send SMS: " . $e->getMessage();
+                    }
                 }
             }
 
@@ -801,26 +801,28 @@ class UsrController extends Controller
                 if (!empty($companyId)) {
                     $SettingModel = SettingModel::find($companyId);
                 }
-                $name = $userEmail->first_name;
-                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                $company_link = $webUrl ? $webUrl : '';
-                $submit = route('user.confirmPassword', $token);
-                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
-                $message = htmlspecialchars_decode(strip_tags($html));
+                if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                    $name = $userEmail->first_name;
+                    $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                    $company_link = $webUrl ? $webUrl : '';
+                    $submit = route('user.confirmPassword', $token);
+                    $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
+                    $message = htmlspecialchars_decode(strip_tags($html));
 
-                // Remove unwanted '&nbsp;' text
-                $message = str_replace('&nbsp;', ' ', $message);
+                    // Remove unwanted '&nbsp;' text
+                    $message = str_replace('&nbsp;', ' ', $message);
 
-                $to = '+18777804236';
-                $twilioService = new TwilioService();
-                Log::error('UsrController:: going to send sms');
 
-                try {
-                    $twilioService->sendSMS($to, $message);
-                    Log::error('UsrController:: sms send');
-                } catch (Exception $e) {
-                    Log::error('Failed to send SMS: ' . $e->getMessage());
-                    echo "Failed to send SMS: " . $e->getMessage();
+                    try {
+                        $to = $SettingModel->type == "2" ? $userEmail->contact_number : $SettingModel->sms_account_to_number;
+                        $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                        Log::error('UsrController:: going to send sms');
+                        $twilioService->sendSMS($to, $message);
+                        Log::error('UsrController:: sms send');
+                    } catch (Exception $e) {
+                        Log::error('Failed to send SMS: ' . $e->getMessage());
+                        echo "Failed to send SMS: " . $e->getMessage();
+                    }
                 }
             }
             //End sms
@@ -881,7 +883,7 @@ class UsrController extends Controller
             }
             try {
                 $user = User::where('email', $request->email)->where('company_id', $companyId)->first();
-                // dd($user );
+
                 $SettingValue = SettingModel::where('id', $companyId)->first();
                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
 
@@ -908,23 +910,25 @@ class UsrController extends Controller
                 if (!empty($companyId)) {
                     $SettingModel = SettingModel::find($companyId);
                 }
-                $name = $user->first_name;
-                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                $company_link = $webUrl ? $webUrl : '';
+                if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                    $name = $user->first_name;
+                    $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                    $company_link = $webUrl ? $webUrl : '';
 
-                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
-                $message = htmlspecialchars_decode(strip_tags($html));
+                    $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
+                    $message = htmlspecialchars_decode(strip_tags($html));
 
-                // Remove unwanted '&nbsp;' text
-                $message = str_replace('&nbsp;', ' ', $message);
+                    // Remove unwanted '&nbsp;' text
+                    $message = str_replace('&nbsp;', ' ', $message);
 
-                $to = '+18777804236';
-                $twilioService = new TwilioService();
-                try {
-                    $twilioService->sendSMS($to, $message);
-                } catch (Exception $e) {
-                    Log::error('Failed to send SMS: ' . $e->getMessage());
-                    echo "Failed to send SMS: " . $e->getMessage();
+                    $to = $SettingModel->type == "2" ? $user->contact_number : $SettingModel->sms_account_to_number;
+                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                    try {
+                        $twilioService->sendSMS($to, $message);
+                    } catch (Exception $e) {
+                        Log::error('Failed to send SMS: ' . $e->getMessage());
+                        echo "Failed to send SMS: " . $e->getMessage();
+                    }
                 }
             }
             //End sms

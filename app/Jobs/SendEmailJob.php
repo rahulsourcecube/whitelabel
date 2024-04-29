@@ -65,7 +65,7 @@ class SendEmailJob implements ShouldQueue
             } else {
 
                 Mail::to($this->to)->send(new CompanyWelcomeMail($this->subject, $this->userName, $this->data));
-                // Mail::send('company.email.company_welcome', $this->data, function ($message) {
+                // Mail::send('company.email.company_welcome', $this->userName, $this->data, function ($message) {
                 //     $message->to($this->to);
                 //     $message->subject($this->subject);
                 // });

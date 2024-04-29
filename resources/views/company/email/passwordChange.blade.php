@@ -1,6 +1,9 @@
 <?php
 use App\Models\SettingModel;
-$mail = SettingModel::first();
+use App\Models\User;
+
+$userMail = User::where('user_type', '1')->first();
+$mail = SettingModel::where('user_id', $userMail->id)->first();
 
 ?>
 @if (!empty($template))

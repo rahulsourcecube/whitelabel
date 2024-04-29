@@ -124,18 +124,26 @@ class Helper
     public static function getCompanyId()
     {
         $getdomain = Helper::getdomain();
-
-        if (!empty($getdomain) && $getdomain != config('app.pr_name')) {
+        Log::info('Domain : ' . $getdomain);
+        if (!empty($getdomain) && $getdomain != config('app.pr_name')) { //Company Domain logic
             $CompanyModel = new CompanyModel();
             $exitDomain = $CompanyModel->checkDmain($getdomain);
             $companyId = $exitDomain ? $exitDomain->user_id : false;
         } else {
-            if (auth()->user()->user_type == '2' || auth()->user()->user_type == '1') {
-                $companyId = Auth::user()->id;
+            Log::info('Is Any Company/Admin Login? : ' . json_encode(auth()->user()));
+            if (!empty(auth()->user())) {
+                if (auth()->user()->user_type == '2') { // Company
+                    $companyId = Auth::user()->id;
+                } elseif (auth()->user()->user_type == '3' || auth()->user()->user_type == '4') { //User and Staff
+                    $companyId = Auth::user()->company_id;
+                } else {  // admin
+                    $companyId = null;
+                }
             } else {
-                $companyId = Auth::user()->company_id;
+                $companyId = null;
             }
         }
+        Log::info('Company ID : ' . $companyId);
         return $companyId;
     }
     public static function isInactivePackage()

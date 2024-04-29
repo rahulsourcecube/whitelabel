@@ -110,21 +110,24 @@ class MailtemplateController extends Controller
     public function store(Request $request)
     {
         try {
+            $request->validate([
+                'tempHtml' => 'required',
+            ]);
             $companyId = Helper::getCompanyId();
             $mailTemplate = MailTemplate::where('company_id', $companyId)
                 ->where('template_type', $request->type)
                 ->first();
-              
-            
+
+
             if (empty($mailTemplate) || empty($request->id)) {
-               
+
                 $existingTemplate = MailTemplate::where('company_id', $companyId)
-                ->where('template_type', $request->type)
-                ->first();
+                    ->where('template_type', $request->type)
+                    ->first();
                 if (!empty($existingTemplate)) {
-                    return redirect()->back()->with('error', 'Template already exit ' . $request->type );
+                    return redirect()->back()->withInput()->with('error', 'Template already exit ' . $request->type);
                 }
-                
+
                 $mailTemplate = new MailTemplate;
                 $mailTemplate->template_type = $request->type;
             }

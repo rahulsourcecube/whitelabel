@@ -1,6 +1,7 @@
 @extends('admin.layouts.master')
 @section('title', 'Add Employee')
 @section('main-content')
+    {{-- {{ !empty(old('subject')) ?? dd(123) }} --}}
     <div class="main-content">
         @include('company.includes.message')
         <div class="page-header">
@@ -29,13 +30,17 @@
                                     <option value="">Selcet Type
                                     </option>
                                     <option value="forgot_password"
-                                        {{ !empty($mailTemplate) && $mailTemplate->template_type == 'forgot_password' ? 'selected' : '' }}>
-                                        Forgot Password</option>
+                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'forgot_password') || (!empty(old('type')) && old('type') == 'forgot_password') ? 'selected' : '' }}>
+                                        Forgot Password
+                                    </option>
+
                                     <option value="welcome"
-                                        {{ !empty($mailTemplate) && $mailTemplate->template_type == 'welcome' ? 'selected' : '' }}>
+                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'welcome') || (!empty(old('type')) && old('type') == 'welcome') ? 'selected' : '' }}>
                                         Welcome
+                                    </option>
+
                                     <option value="change_pass"
-                                        {{ !empty($mailTemplate) && $mailTemplate->template_type == 'change_pass' ? 'selected' : '' }}>
+                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'change_pass') || (!empty(old('type')) && old('type') == 'change_pass') ? 'selected' : '' }}>
                                         Change password
                                     </option>
                                 </select>
@@ -52,11 +57,14 @@
                             <div class="form-group col-md-4">
                                 <label for="tempHtml">Subject</label>
                                 <input type="text" class="form-control" id="subject" name="subject"
-                                    value="{{ !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '' }}"
-                                    placeholder="Subject" maxlength="150" value="{{ old('subject') }}">
+                                    value="{{ !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : old('subject') }}"
+                                    placeholder="Subject" maxlength="150">
+                                @error('subject')
+                                    <label id="subject-error" class="error" for="reward">{{ $message }}</label>
+                                @enderror
                             </div>
 
-                            <div class="form-group col-md-8 mt-2 htmltemplateClass">
+                            <div class="form-group col-md-8 mt-2 htmltemplateClass ">
                                 <div class="alert-s alert-success" role="alert">
                                     <b>
                                         <p class="alert-heading usedPoint"> </p>
@@ -67,8 +75,10 @@
                             <div class="form-group col-md-8">
                                 <label for="tempHtml">Html</label>
                                 {{-- <textarea type="text" class="form-control" id="tempHtml" name="tempHtml" placeholder="Html" >{{ !empty($mailTemplate) && !empty($mailTemplate->template_html)  ? $mailTemplate->template_html : '' }}</textarea> --}}
-                                <textarea class="form-control ckeditor" id="tempHtml" name="tempHtml" placeholder="Html">{{ !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : '' }}</textarea>
-
+                                <textarea class="form-control ckeditor" id="tempHtml" name="tempHtml" placeholder="Html" required>{{ !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : '' }}</textarea>
+                                @error('tempHtml')
+                                    <label id="tempHtml-error" class="error" for="reward">{{ $message }}</label>
+                                @enderror
                             </div>
 
 
@@ -90,9 +100,7 @@
     <script>
         $(document).ready(function() {
 
-            if (!CKEDITOR.instances['tempHtml']) {
-                CKEDITOR.replace("tempHtml");
-            }
+
             // Add custom validation method for CKEditor textarea
             jQuery.validator.addMethod("ckeditorContent", function(value, element) {
                 // Get CKEditor instance
@@ -108,32 +116,33 @@
                     type: {
                         required: true
                     },
-                    subject: {
-                        required: true
-                    },
+                    // subject: {
+                    //     required: true
+                    // },
                     tempHtml: {
                         ckeditorContent: true // Use custom validation method for CKEditor
                     }
+
                 },
                 messages: {
                     type: {
                         required: "Please select template type"
                     },
-                    subject: {
-                        required: "Please select template subject"
-                    },
+                    // subject: {
+                    //     required: "Please select template subject"
+                    // },
                     tempHtml: {
                         ckeditorContent: "Please enter HTML" // Custom error message for CKEditor
                     }
+
                 },
-                // Optional: Highlight and unhighlight fields
-                highlight: function(element) {
-                    $(element).closest('.form-group').addClass('has-error');
-                },
-                unhighlight: function(element) {
-                    $(element).closest('.form-group').removeClass('has-error');
-                }
+
+
             });
+            console.log("CKEditor Instance:", CKEDITOR.instances['tempHtml']);
+            if (!CKEDITOR.instances['tempHtml']) {
+                CKEDITOR.replace("tempHtml");
+            }
         });
     </script>
     <script>
