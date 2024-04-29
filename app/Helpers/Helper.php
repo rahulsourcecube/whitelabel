@@ -23,7 +23,7 @@ class Helper
 {
     public static function getSiteSetting()
     {
-      try {
+        try {
             $companyId = Helper::getCompanyId();
             $generalSetting = SettingModel::where('user_id', $companyId)->first();
             return $generalSetting;
@@ -35,7 +35,7 @@ class Helper
 
     public static function getdomain()
     {
-               $host = request()->getHttpHost();
+        $host = request()->getHttpHost();
         $domain = explode('.', $host);
         $domainName = $domain['0'] ? $domain['0'] : null;
         return $domainName;
@@ -43,7 +43,7 @@ class Helper
     public static function mainDomain()
     {
         $url = request()->getHttpHost();
-    
+
         // Parse the URL
         $parsedUrl = $url;
         // Check if 'host' key exists in the parsed URL array
@@ -55,20 +55,20 @@ class Helper
             if (filter_var($host, FILTER_VALIDATE_IP)) {
                 return $host;
             }
-        
+
             // If the host is in the format "subdomain.domain.tld",
             // return the last two parts as the main domain
             $parts = explode('.', $host);
             if (count($parts) >= 2) {
                 return $parts[count($parts) - 2] . '.' . $parts[count($parts) - 1];
             }
-        
-    
+
+
             // If the host doesn't match any of the above conditions,
             // return it as is (assuming it's already the main domain)
             return $host;
         }
-    
+
         // Return a default value or handle the error as needed
         return 'Unknown';
     }
@@ -95,27 +95,30 @@ class Helper
         $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->exists();
         return $checkPackage;
     }
-    public static function get_domaininfo($url) {
+    public static function get_domaininfo($url)
+    {
         // regex can be replaced with parse_url
-        preg_match("/^(https|http|ftp):\/\/(.*?)\//", "$url/" , $matches);
+        preg_match("/^(https|http|ftp):\/\/(.*?)\//", "$url/", $matches);
         $parts = explode(".", $matches[2]);
         $tld = array_pop($parts);
         $host = array_pop($parts);
-        if ( strlen($tld) == 2 && strlen($host) <= 3 ) {
+        if (strlen($tld) == 2 && strlen($host) <= 3) {
             $tld = "$host.$tld";
             $host = array_pop($parts);
         }
-        dd([
-            'protocol' => $matches[1],
-            'subdomain' => implode(".", $parts),
-            'domain' => "$host.$tld",
-            'host'=>$host,'tld'=>$tld]
+        dd(
+            [
+                'protocol' => $matches[1],
+                'subdomain' => implode(".", $parts),
+                'domain' => "$host.$tld",
+                'host' => $host, 'tld' => $tld
+            ]
         );
         return array(
             'protocol' => $matches[1],
             'subdomain' => implode(".", $parts),
             'domain' => "$host.$tld",
-            'host'=>$host,'tld'=>$tld
+            'host' => $host, 'tld' => $tld
         );
     }
     public static function getCompanyId()
@@ -125,7 +128,7 @@ class Helper
         if (!empty($getdomain) && $getdomain != config('app.pr_name')) {
             $CompanyModel = new CompanyModel();
             $exitDomain = $CompanyModel->checkDmain($getdomain);
-            $companyId = $exitDomain->user_id;
+            $companyId = $exitDomain ? $exitDomain->user_id : false;
         } else {
             if (auth()->user()->user_type == '2' || auth()->user()->user_type == '1') {
                 $companyId = Auth::user()->id;
@@ -197,26 +200,26 @@ class Helper
 
         $packageData = CompanyPackage::where('company_id', $companyId)
             ->where('status', CompanyPackage::STATUS['ACTIVE'])
-            ->where('end_date', '>=', now()->toDateString()) 
+            ->where('end_date', '>=', now()->toDateString())
             ->where('end_date', '<=', $sevenDaysLater)
             ->first();
 
         $changeStatusStart = CompanyPackage::where('company_id', $companyId)
-            //  ->where('id', '!=',  $packageData->id)      
-            ->where('start_date', '>',  now()->toDateString()) 
+            //  ->where('id', '!=',  $packageData->id)
+            ->where('start_date', '>',  now()->toDateString())
             ->orderBy('start_date', 'asc')
             ->first();
 
         $changeStatusEnd = CompanyPackage::where('company_id', $companyId)
             ->where('status', CompanyPackage::STATUS['ACTIVE'])
-            ->where('end_date', '<',  now()->toDateString()) 
+            ->where('end_date', '<',  now()->toDateString())
             ->orderBy('end_date', 'desc')
             ->first();
 
         $remainingDays = null;
-        
+
         if ($packageData != null) {
-           
+
             $end_date = new DateTime($packageData->end_date);
             // Add 24 hours to the end date
             $end_date->add(new DateInterval('PT24H'));
@@ -231,15 +234,14 @@ class Helper
             if ($timeDifference->format('%a') == 0) {
                 $hours = $timeDifference->format('%h') . ' hours';
             }
-          if(empty($changeStatusStart)){
-           
-            $remainingDays = "Your package going to be expires in " . $days . " " . $hours;
+            if (empty($changeStatusStart)) {
 
-            if ($packageData->end_date  ==  now()->toDateString()) {
-                $remainingDays  =   "Today ".$remainingDays;
+                $remainingDays = "Your package going to be expires in " . $days . " " . $hours;
+
+                if ($packageData->end_date  ==  now()->toDateString()) {
+                    $remainingDays  =   "Today " . $remainingDays;
+                }
             }
-        }
-             
         } else {
 
             if (!empty($changeStatusEnd)) {
@@ -251,7 +253,7 @@ class Helper
                 $changeStatusStart->status = '1';
                 $changeStatusStart->save();
             }
-        }       
+        }
 
         return $remainingDays;
     }
@@ -392,16 +394,16 @@ class Helper
     {
         $admin = User::where('user_type', '1')->first();; // Fetching the first mail configuration
         $mailConfig = SettingModel::where('user_id', $admin->id)
-        ->select('stripe_key', 'stripe_secret')
-        ->first();       
+            ->select('stripe_key', 'stripe_secret')
+            ->first();
         return $mailConfig;
     }
     public static function smsMessage()
     {
         $admin = User::where('user_type', '1')->first();; // Fetching the first mail configuration
         $mailConfig = SettingModel::where('user_id', $admin->id)
-        ->select('stripe_key', 'stripe_secret')
-        ->first();       
+            ->select('stripe_key', 'stripe_secret')
+            ->first();
         return $mailConfig;
     }
 }
