@@ -87,8 +87,8 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="placeholder" class=" col-form-label">Placeholder</label>
-                                        <input type="text" class="form-control" name="placeholder[]" id="placeholder"
-                                            placeholder="Enter Placeholder" value="<?= $field['placeholder'] ?>">
+                                        <input type="text" class="form-control" name="placeholder[]" id="placeholder" placeholder="Enter Placeholder"
+                                            value="<?= $field['placeholder'] ?>">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="required" class="col-form-label">Required</label>

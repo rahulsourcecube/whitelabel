@@ -217,7 +217,7 @@ class UsrController extends Controller
                 'last_name' => 'required|string|max:255',
                 'email' => 'required|email',
                 'contact_number' => 'required|numeric|digits:10',
-                'profile_image' => 'file|mimes:jpeg,png,jpg|max:2048',
+                // 'profile_image' => 'file|mimes:jpeg,png,jpg|max:2048',
             ]);
 
             if ($validator->fails()) {

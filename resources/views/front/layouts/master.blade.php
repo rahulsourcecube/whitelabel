@@ -7,14 +7,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>@yield('title') ||
         {{ !empty($siteSetting) && !empty($siteSetting->title) ? $siteSetting->title : env('APP_NAME') }}</title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href=" @if (
-            !empty($siteSetting) &&
-                !empty($siteSetting->favicon) &&
-                base_path(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href=" @if (!empty($siteSetting) && !empty($siteSetting->favicon) && base_path(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
 
@@ -23,8 +21,7 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <!-- Core css -->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
 
@@ -38,8 +35,7 @@
             <!-- Header END -->
 
             <!-- Page Container START -->
-            <div class=" p-h-0 p-v-20 bg full-height d-flex"
-                style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
+            <div class=" p-h-0 p-v-20 bg full-height d-flex" style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
                 <div class="page-container">
                     @include('front.includes.message')
                     <!-- Content Wrapper START -->
