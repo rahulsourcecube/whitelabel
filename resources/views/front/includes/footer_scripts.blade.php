@@ -9,11 +9,10 @@
 <script src="{{ asset('assets/js/app.min.js') }}"></script>
 {{-- JS CDNs --}}
 <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script src="{{ asset('assets/vendors/jquery-validation/jquery.validate.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
-
+<script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
 
 <script>
     $(document).ready(function() {
@@ -84,16 +83,48 @@
 <script>
     $(document).ready(function($) {
 
+
+        var country_id = $('#country').val();
+
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            url: "{{ route('front.campaign.getStates') }}",
+            type: 'POST',
+            data: {
+                country_id: country_id,
+                _token: CSRF_TOKEN
+            },
+            success: function(response) {
+                $("#city").empty().append("<option value=''>Select City</option>");
+                $("#state").empty().append(response);
+            }
+        });
+        var state_id = $('#state').val();
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            url: "{{ route('front.campaign.getCity') }}",
+            type: 'POST',
+            data: {
+                state_id: state_id,
+                _token: CSRF_TOKEN // Include CSRF token in the request data
+            },
+            success: function(response) {
+                $("#city").empty().append(response);
+            }
+        });
+
         $('#country').on('change', function() {
             var country_id = $(this).val();
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
             $.ajax({
-                url: "{{ route('company.user.get_states') }}",
+                url: "{{ route('front.campaign.getStates') }}",
                 type: 'POST',
                 data: {
                     country_id: country_id,
-                    _token: CSRF_TOKEN // Include CSRF token in the request data
+                    _token: CSRF_TOKEN
                 },
                 success: function(response) {
                     $("#city").empty().append("<option value=''>Select City</option>");
@@ -102,12 +133,13 @@
             });
         });
 
+
         $('#state').on('change', function() {
             var state_id = $(this).val();
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
             $.ajax({
-                url: "{{ route('company.user.get_city') }}",
+                url: "{{ route('front.campaign.getCity') }}",
                 type: 'POST',
                 data: {
                     state_id: state_id,
@@ -118,6 +150,32 @@
                 }
             });
         });
+
+        // $('#search_dtt').on('click', function() {
+
+        //     var country_id = $('#country').val(); // Corrected selector syntax
+        //     var state_id = $('#state').val(); // Corrected selector syntax
+        //     var city_id = $('#city').val(); // Corrected selector syntax
+
+
+        //     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+        //     $.ajax({
+        //         type: 'post',
+        //         url: "{{ route('front.campaign.search') }}",
+        //         data: {
+        //             'country_id': country_id,
+        //             'state_id': state_id,
+        //             'city_id': city_id,
+        //             _token: CSRF_TOKEN
+        //         },
+        //         success: function(data) {
+        //             console.log("success");
+        //             // $('tbody').html(data);
+        //         }
+        //     });
+        // });
+
     });
 </script>
 @yield('js')
