@@ -109,6 +109,7 @@ class UsrController extends Controller
 
     public function login(Request $request)
     {
+
         try {
             $host = $request->getHost();
             $domain = explode('.', $host);
@@ -137,6 +138,11 @@ class UsrController extends Controller
                     $user_plan = UserCampaignHistoryModel::where('referral_link', $lastSegment->value)->first();
                     $id = base64_encode($user_plan->campaign_id);
                     return redirect()->route('user.campaign.view', $id);
+                }
+                if (Session('join_link') != null) {
+                    $join_link = Session('join_link');
+
+                    return redirect()->route('user.campaign.view', $join_link);
                 }
                 return redirect()->route('user.dashboard');
             } else {
@@ -621,6 +627,7 @@ class UsrController extends Controller
             } else {
                 !empty($referrer_user) ? $user_id = $referrer_user->id : null;
             }
+
 
             $userRegister = new User();
             $userRegister->first_name = $request->first_name;

@@ -83,6 +83,7 @@ class User extends Authenticatable
         return $this->belongsTo(CountryModel::class);
     }
 
+
     public function state()
     {
         return $this->belongsTo(StateModel::class);
@@ -91,5 +92,12 @@ class User extends Authenticatable
     public function city()
     {
         return $this->belongsTo(CityModel::class);
+    }
+    public function getContactNoAttribute()
+    {
+        $contact_number = $this->contact_number;
+        $code = $this->country->phonecode;
+        $number = $code . $contact_number;
+        return '+' . $number;
     }
 }

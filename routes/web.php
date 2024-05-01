@@ -220,6 +220,7 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('/getCity', [FrontCampaignController::class, 'getCity'])->name('getCity');
                 Route::post('/search', [FrontCampaignController::class, 'search'])->name('search');
             });
+            Route::get('/join-now/{join_link}', [FrontCampaignController::class, 'joinNow'])->name('campaign.Join');
 
             Route::get('/success-202', [ForntHomeController::class, 'success'])->name('success.page');
         });
@@ -277,6 +278,7 @@ Route::group(['middleware' => 'check.session'], function () {
         });
 
         Route::get('/campaign/{referral_link}', [UserCampaignController::class, 'referral'])->name('campaign.referral');
+
         Route::post('request/referral-user-detail', [UserCampaignController::class, 'GetReferralUserDetail'])->name('GetReferralUserDetail');
 
         Route::prefix('user/campaign/')->name('user.campaign.')->group(function () {

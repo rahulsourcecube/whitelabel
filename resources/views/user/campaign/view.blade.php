@@ -1,22 +1,22 @@
 @extends('user.layouts.master')
 @section('title', 'Campaign List')
 @section('main-content')
-<style>
-    .rating {
-    font-size: 24px;
-}
+    <style>
+        .rating {
+            font-size: 24px;
+        }
 
-.rating i {
-    cursor: pointer;
-}
+        .rating i {
+            cursor: pointer;
+        }
 
-.rating i.hover {
-    color: orange;
-}
+        .rating i.hover {
+            color: orange;
+        }
 
-.rating i.selected {
-    color: gold;
-}
+        .rating i.selected {
+            color: gold;
+        }
     </style>
     <?php use Illuminate\Support\Facades\URL; ?>
     <!-- Content Wrapper START -->
@@ -25,38 +25,45 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('user.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('user.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <a class="breadcrumb-item" href="#">Campaign</a>
                     <span class="breadcrumb-item active">Campaign View</span>
                 </nav>
             </div>
         </div>
-        <input type="hidden" class="user_Campaign" value="{{ !empty($user_Campaign->id) ? base64_encode($user_Campaign->id) : null }}">
+        <input type="hidden" class="user_Campaign"
+            value="{{ !empty($user_Campaign->id) ? base64_encode($user_Campaign->id) : null }}">
         <div class="container1">
             <div class="row">
                 <div class="col-md-3">
                     <div class="card">
                         <div class="card-content">
-                            @if (isset($campagin_detail) && $campagin_detail->image != '' && file_exists(base_path() . '/uploads/company/campaign/' . $campagin_detail->image))
-                                <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $campagin_detail->image) }}" class="w-100 img-responsive">
+                            @if (isset($campagin_detail) &&
+                                    $campagin_detail->image != '' &&
+                                    file_exists(base_path() . '/uploads/company/campaign/' . $campagin_detail->image))
+                                <img class="card-img-top"
+                                    src="{{ asset('uploads/company/campaign/' . $campagin_detail->image) }}"
+                                    class="w-100 img-responsive">
                             @else
-                                <img src="{{ asset('assets/images/others/No_image_available.png') }}" class="w-100 img-responsive">
+                                <img src="{{ asset('assets/images/others/No_image_available.png') }}"
+                                    class="w-100 img-responsive">
                             @endif
                         </div>
                         <div class="card-footer">
                             <input type="hidden" name="campagin_id" value="{{ $campagin_detail->id ?? '' }}">
                             @if (!empty($campagin_detail->task_type) && $campagin_detail->task_type == 'Social')
                                 <div class="text-center m-t-15">
-                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" target="_blank"
-                                        class="m-r-5 btn btn-icon btn-hover btn-rounded">
+                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}"
+                                        target="_blank" class="m-r-5 btn btn-icon btn-hover btn-rounded">
                                         <i class="anticon anticon-facebook"></i>
                                     </a>
                                     <a href="https://www.twitter.com/share?u={{ url()->current() }}" target="_blank"
                                         class="m-r-5 btn btn-icon btn-hover btn-rounded">
                                         <i class="anticon anticon-twitter"></i>
                                     </a>
-                                    <a href="https://www.instagram.com//sharer/sharer.php?u={{ url()->current() }}" target="_blank"
-                                        class="m-r-5 btn btn-icon btn-hover btn-rounded">
+                                    <a href="https://www.instagram.com//sharer/sharer.php?u={{ url()->current() }}"
+                                        target="_blank" class="m-r-5 btn btn-icon btn-hover btn-rounded">
                                         <i class="anticon anticon-instagram"></i>
                                     </a>
                                 </div>
@@ -82,11 +89,12 @@ Status: <strong
                                             text-danger \"> Rejected</strong>
                                     @endif
                                     @if (isset($user_Campaign->status) && $user_Campaign->status == 3)
-                                        Status: <strong class=" text-success  \" >Completed</strong>
+                                        Status: <strong
+                                            class=" text-success  \" >Completed</strong>
 @endif
 @else
-<a onclick="showSuccessAlert()" href="#"
-                                            data-id="" class="btn btn-primary btn-tone" id="btnJoined">
+<a onclick="showSuccessAlert()"
+                                            href="#" data-id="" class="btn btn-primary btn-tone" id="btnJoined">
                                             <span class="m-l-5">Join</span>
                                             </a>
                                     @endif
@@ -103,7 +111,8 @@ Status: <strong
                             <h4 class="m-b-10">{{ isset($campagin_detail->title) ? $campagin_detail->title : '' }}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">
                                 <div class="m-l-0">
-                                    <span class="text-gray">{{ isset($campagin_detail->task_type) ? $campagin_detail->task_type : '' }}</span>
+                                    <span
+                                        class="text-gray">{{ isset($campagin_detail->task_type) ? $campagin_detail->task_type : '' }}</span>
                                     @if (isset($campagin_detail->type) && $campagin_detail->type == '1')
                                         <span class="m-h-5 text-gray">|</span>
                                         <span class="text-gray"> No of referral users:
@@ -115,7 +124,8 @@ Status: <strong
                                     <p class="text-gray font-weight-semibold">Reward:
                                         <b>{{ $campagin_detail->text_reward ? $campagin_detail->text_reward : (isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '0') }}</b>
                                         <span class="m-h-5 text-gray">|</span>
-                                        <span class="text-gray">{{ App\Helpers\Helper::Dateformat($campagin_detail->expiry_date) ?? '' }}</span>
+                                        <span
+                                            class="text-gray">{{ App\Helpers\Helper::Dateformat($campagin_detail->expiry_date) ?? '' }}</span>
                                     <p class="text-gray font-weight-semibold">
                                         @if ($campagin_detail->priority == 1)
                                             <span class="badge badge-pill badge-danger"> High </span>
@@ -172,7 +182,8 @@ Status: <strong
                                                     <i class="anticon anticon-facebook"></i>
                                                 </button>
                                             </a>
-                                            <a href="https://www.twitter.com/share?u={{ route('campaign.referral', $user_Campaign->referral_link) }}">
+                                            <a
+                                                href="https://www.twitter.com/share?u={{ route('campaign.referral', $user_Campaign->referral_link) }}">
                                                 <button class="m-r-5 btn btn-icon btn-hover btn-rounded">
                                                     <i class="anticon anticon-twitter"></i>
                                                 </button>
@@ -184,11 +195,18 @@ Status: <strong
                                                 </button>
                                             </a>
                                             @php
-                                               
-                                                $customUrl=!empty($campagin_detail)&& !empty($campagin_detail->referral_url_segment)?"?".$campagin_detail->referral_url_segment: "";
+
+                                                $customUrl =
+                                                    !empty($campagin_detail) &&
+                                                    !empty($campagin_detail->referral_url_segment)
+                                                        ? '?' . $campagin_detail->referral_url_segment
+                                                        : '';
                                             @endphp
-                                            <p id="referral_code_copy" style="display:none">{{ route('campaign.referral',$user_Campaign->referral_link.$customUrl) }}</p>
-                                            <button onclick="copyToClipboard('#referral_code_copy')" class="btn btn-primary btn-tone">
+                                            <p id="referral_code_copy" style="display:none">
+                                                {{ route('campaign.referral', $user_Campaign->referral_link . $customUrl) }}
+                                            </p>
+                                            <button onclick="copyToClipboard('#referral_code_copy')"
+                                                class="btn btn-primary btn-tone">
                                                 <i class="anticon anticon-copy"></i>
                                                 <span class="m-l-5">Copy referral link</span>
                                             </button>
@@ -222,7 +240,7 @@ Status: <strong
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="col-md-4">
-                                        <h5>                                                                                                                                                                                                                                                                         Users</h5>
+                                        <h5> Users</h5>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="alert alert-warning alert-dismissible alert-live show w-max-content">
@@ -273,137 +291,145 @@ Status: <strong
                         </div>
                     </div>
                     @if (isset($user_Campaign->status) && $user_Campaign->status == '3')
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="container mt-5">
-                            <form id="ratingForm" method="POST"> 
-                                @csrf                             
-                                <h2>Add Reivews</h2>
-                              @php
-                                    $se='';
-                                    $th='';
-                                    $for='';
-                                    $fiv='';
-                                  $selectRating =!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1";
-                                  if($selectRating == '2'){                            
-                                        $se='selected';
-                                  }elseif($selectRating == '3'){
-                                    $se='selected';
-                                    $th='selected';
-                                  }elseif($selectRating == '4'){
-                                    $se='selected';
-                                    $th='selected';
-                                    $for='selected';
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="container mt-5">
+                                    <form id="ratingForm" method="POST">
+                                        @csrf
+                                        <h2>Add Reivews</h2>
+                                        @php
+                                            $se = '';
+                                            $th = '';
+                                            $for = '';
+                                            $fiv = '';
+                                            $selectRating =
+                                                !empty($ratings) && $ratings->no_of_rating
+                                                    ? $ratings->no_of_rating
+                                                    : '1';
+                                            if ($selectRating == '2') {
+                                                $se = 'selected';
+                                            } elseif ($selectRating == '3') {
+                                                $se = 'selected';
+                                                $th = 'selected';
+                                            } elseif ($selectRating == '4') {
+                                                $se = 'selected';
+                                                $th = 'selected';
+                                                $for = 'selected';
+                                            } elseif ($selectRating == '5') {
+                                                $se = 'selected';
+                                                $th = 'selected';
+                                                $for = 'selected';
+                                                $fiv = 'selected';
+                                            }
 
-                                  }elseif($selectRating == '5'){
-                                   
-                                    $se='selected';
-                                    $th='selected';
-                                    $for='selected';
-                                    $fiv='selected';
-                                    
-                                  }
+                                        @endphp
+                                        <div class="rating reivews form-group center">
+                                            <!-- Rating stars -->
+                                            <div class="rating">
+                                                <i class="bi bi-star selected"></i>
+                                                <i class="bi bi-star {{ $se }}"></i>
+                                                <i class="bi bi-star {{ $th }}"></i>
+                                                <i class="bi bi-star {{ $for }}"></i>
+                                                <i class="bi bi-star {{ $fiv }}"></i>
+                                            </div>
+                                            <div id="selected-rating">
+                                                Selected Star:
+                                                {{ !empty($ratings) && $ratings->no_of_rating ? $ratings->no_of_rating : '1' }}
+                                            </div>
 
-                              @endphp
-                                    <div class="rating reivews form-group center">
-                                        <!-- Rating stars -->
-                                        <div class="rating">
-                                            <i class="bi bi-star selected"></i>
-                                            <i class="bi bi-star {{$se}}"></i>
-                                            <i class="bi bi-star {{$th}}"></i>
-                                            <i class="bi bi-star {{$for}}"></i>
-                                            <i class="bi bi-star {{$fiv}}"></i>
                                         </div>
-                                        <div id="selected-rating">
-                                            Selected Star: {{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}
-                                        </div>
-                                       
-                                    </div>
-                                   
-                                    <input type="hidden" name="no_of_rating" class="valRarting" value="{{!empty($ratings) && $ratings->no_of_rating ?$ratings->no_of_rating:"1"}}">
-                                    <input type="hidden" name="campaign_id" value="{{ $campagin_detail->id ?? '' }}">
-                                    <div class="form-group">
-                                        <label for="inputype"><b>Comment </b><span class="error"></span></label>
-                                        <textarea class="form-control" id="comment" name="comments" rows="3" placeholder="Please Enter Comment..">{{!empty($ratings) && $ratings->comments ?$ratings->comments:""}}</textarea>
-                                        <label id="comment-error" class="error" for="comment"></label>
-                                    </div>
-                                    <div class="mt-3 form-group">
-                                        <!-- Submit button -->
-                                        <button id="submitRating" class="btn btn-primary">{{!empty($ratings)?'Update':'Send'}}</button>
-                                    </div>
-                                
-                            </form>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="container mt-5">
-                            <form id="feedbackForm" method="POST">     
-                                @csrf                          
-                                <h2>Add Feedback</h2>
-                              @php
-                                    $fse='';
-                                    $fth='';
-                                    $ffor='';
-                                    $ffiv='';
-                                  $feedbackSelectRating =!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1";
-                                  if($feedbackSelectRating == '2'){                            
-                                        $se='selected';
-                                  }elseif($feedbackSelectRating == '3'){
-                                    $fse='selected';
-                                    $fth='selected';
-                                  }elseif($feedbackSelectRating == '4'){
-                                    $fse='selected';
-                                    $fth='selected';
-                                    $ffor='selected';
 
-                                  }elseif($feedbackSelectRating == '5'){
-                                   
-                                    $fse='selected';
-                                    $fth='selected';
-                                    $ffor='selected';
-                                    $ffiv='selected';
-                                    
-                                  }
-
-                              @endphp
-                              @if($campagin_detail->feedback_type =='rating' || $campagin_detail->feedback_type =='both')
-                                    <div class="rating form-group center">
-                                        <!-- Rating stars -->
-                                        <div class="rating feedback ">
-                                            <i class="bi bi-star selected"></i>
-                                            <i class="bi bi-star {{$fse}}"></i>
-                                            <i class="bi bi-star {{$fth}}"></i>
-                                            <i class="bi bi-star {{$ffor}}"></i>
-                                            <i class="bi bi-star {{$ffiv}}"></i>
-                                        </div>
-                                        <div id="feedback-selected-rating">
-                                            Selected Star: {{!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1"}}
-                                        </div>
-                                       
-                                    </div>
-                                    <input type="hidden" name="no_of_rating" class="valRetingFeedback" value="{{!empty($feedback) && $feedback->no_of_rating ?$feedback->no_of_rating:"1"}}">
-                                    @endif
-                                   
-                                    <input type="hidden" name="campaign_id" value="{{ $campagin_detail->id ?? '' }}">
-                                    @if(($campagin_detail->feedback_type =='description'  || $campagin_detail->feedback_type =='both')  )
+                                        <input type="hidden" name="no_of_rating" class="valRarting"
+                                            value="{{ !empty($ratings) && $ratings->no_of_rating ? $ratings->no_of_rating : '1' }}">
+                                        <input type="hidden" name="campaign_id"
+                                            value="{{ $campagin_detail->id ?? '' }}">
                                         <div class="form-group">
-                                            <label for="comment"><b>Description </b></label>
-                                            <textarea class="form-control" id="comment" name="comments" rows="3" placeholder="Please Enter Comment..">{{!empty($feedback) && $feedback->comments ?$feedback->comments:""}}</textarea>
+                                            <label for="inputype"><b>Comment </b><span class="error"></span></label>
+                                            <textarea class="form-control" id="comment" name="comments" rows="3" placeholder="Please Enter Comment..">{{ !empty($ratings) && $ratings->comments ? $ratings->comments : '' }}</textarea>
                                             <label id="comment-error" class="error" for="comment"></label>
                                         </div>
-                                    @endif
-                                    <div class="mt-3 form-group">
-                                        <!-- Submit button -->
-                                        <button id="submitRating" class="btn btn-primary">{{!empty($feedback)?'Update':'Send'}}</button>
-                                    </div>
-                                
-                            </form>
+                                        <div class="mt-3 form-group">
+                                            <!-- Submit button -->
+                                            <button id="submitRating"
+                                                class="btn btn-primary">{{ !empty($ratings) ? 'Update' : 'Send' }}</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
                         </div>
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="container mt-5">
+                                    <form id="feedbackForm" method="POST">
+                                        @csrf
+                                        <h2>Add Feedback</h2>
+                                        @php
+                                            $fse = '';
+                                            $fth = '';
+                                            $ffor = '';
+                                            $ffiv = '';
+                                            $feedbackSelectRating =
+                                                !empty($feedback) && $feedback->no_of_rating
+                                                    ? $feedback->no_of_rating
+                                                    : '1';
+                                            if ($feedbackSelectRating == '2') {
+                                                $se = 'selected';
+                                            } elseif ($feedbackSelectRating == '3') {
+                                                $fse = 'selected';
+                                                $fth = 'selected';
+                                            } elseif ($feedbackSelectRating == '4') {
+                                                $fse = 'selected';
+                                                $fth = 'selected';
+                                                $ffor = 'selected';
+                                            } elseif ($feedbackSelectRating == '5') {
+                                                $fse = 'selected';
+                                                $fth = 'selected';
+                                                $ffor = 'selected';
+                                                $ffiv = 'selected';
+                                            }
+
+                                        @endphp
+                                        @if ($campagin_detail->feedback_type == 'rating' || $campagin_detail->feedback_type == 'both')
+                                            <div class="rating form-group center">
+                                                <!-- Rating stars -->
+                                                <div class="rating feedback ">
+                                                    <i class="bi bi-star selected"></i>
+                                                    <i class="bi bi-star {{ $fse }}"></i>
+                                                    <i class="bi bi-star {{ $fth }}"></i>
+                                                    <i class="bi bi-star {{ $ffor }}"></i>
+                                                    <i class="bi bi-star {{ $ffiv }}"></i>
+                                                </div>
+                                                <div id="feedback-selected-rating">
+                                                    Selected Star:
+                                                    {{ !empty($feedback) && $feedback->no_of_rating ? $feedback->no_of_rating : '1' }}
+                                                </div>
+
+                                            </div>
+                                            <input type="hidden" name="no_of_rating" class="valRetingFeedback"
+                                                value="{{ !empty($feedback) && $feedback->no_of_rating ? $feedback->no_of_rating : '1' }}">
+                                        @endif
+
+                                        <input type="hidden" name="campaign_id"
+                                            value="{{ $campagin_detail->id ?? '' }}">
+                                        @if ($campagin_detail->feedback_type == 'description' || $campagin_detail->feedback_type == 'both')
+                                            <div class="form-group">
+                                                <label for="comment"><b>Description </b></label>
+                                                <textarea class="form-control" id="comment" name="comments" rows="3" placeholder="Please Enter Comment..">{{ !empty($feedback) && $feedback->comments ? $feedback->comments : '' }}</textarea>
+                                                <label id="comment-error" class="error" for="comment"></label>
+                                            </div>
+                                        @endif
+                                        <div class="mt-3 form-group">
+                                            <!-- Submit button -->
+                                            <button id="submitRating"
+                                                class="btn btn-primary">{{ !empty($feedback) ? 'Update' : 'Send' }}</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
                 @endif
             </div>
         </div>
@@ -411,7 +437,10 @@ Status: <strong
         @php
             $showConversationBox = false;
             if ($user_Campaign != null && $user_Campaign->getCampaign->type == '1') {
-                if ($user_Campaign->getCampaign->task_expired != 'Completed' || $ReferralCount <= $user_Campaign->no_of_referral_users) {
+                if (
+                    $user_Campaign->getCampaign->task_expired != 'Completed' ||
+                    $ReferralCount <= $user_Campaign->no_of_referral_users
+                ) {
                     $showConversationBox = true;
                 }
             } else {
@@ -437,8 +466,8 @@ Status: <strong
                         <div class="conversation">
                             <div class="conversation-wrapper">
 
-                                <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif" style="overflow-y: auto; "
-                                    id="style-4">
+                                <div class="conversation-body scrollbar @if (!empty($chats) && $chats->count() == 0) empty-chat @endif"
+                                    style="overflow-y: auto; " id="style-4">
                                     @if (!empty($chats) && $chats->count() != 0)
 
                                         @foreach ($chats as $item)
@@ -458,7 +487,8 @@ Status: <strong
                                                         @else
                                                             <div class="m-r-10">
                                                                 <div class="avatar avatar-image">
-                                                                    <img src="{{ asset('assets/images/profile_image.jpg') }}">
+                                                                    <img
+                                                                        src="{{ asset('assets/images/profile_image.jpg') }}">
                                                                 </div>
                                                             </div>
                                                         @endif
@@ -467,7 +497,8 @@ Status: <strong
                                             @if (isset($item) && !empty($item->document) && file_exists(base_path('public/' . $item->document)))
                                                 <div class="bubble">
                                                     <div class="bubble-wrapper p-5" style="max-width: 220px;">
-                                                        <img src="{{ asset('public/' . $item->document) }}" alt="{{ asset('public/' . $item->document) }}"
+                                                        <img src="{{ asset('public/' . $item->document) }}"
+                                                            alt="{{ asset('public/' . $item->document) }}"
                                                             style="inline-size: -webkit-fill-available;">
                                                     </div>
                                                 </div>
@@ -475,7 +506,8 @@ Status: <strong
                                                 <div class="bubble">
                                                     <div class="bubble-wrapper">
                                                         <span> {!! $item->message ?? '' !!} <br>
-                                                            <p style="font-size: x-small;color: black;  margin-bottom:0px;">
+                                                            <p
+                                                                style="font-size: x-small;color: black;  margin-bottom:0px;">
                                                                 {{ $item->created_at->format('Y-m-d H:i A') }} </p>
                                                         </span>
                                                     </div>
@@ -498,8 +530,8 @@ Status: <strong
         <textarea class="chat-input chat-style" type="text" placeholder="Type a message..." maxlength="255" required></textarea>
         <ul class="list-inline d-flex align-items-center m-b-0">
             <li class="list-inline-item m-r-15">
-                <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);" title="Attachment" data-toggle="modal"
-                    data-target="#exampleModal">
+                <a class="text-gray font-size-20 img_file_remove" href="javascript:void(0);" title="Attachment"
+                    data-toggle="modal" data-target="#exampleModal">
                     <i class="anticon anticon-paper-clip"></i>
                 </a>
             </li>
@@ -515,11 +547,14 @@ Status: <strong
                 </a>
             </li>
 
-            @if (($user_Campaign != null && $ReferralCount >= $user_Campaign->no_of_referral_users && $user_Campaign->status == 1) || $user_Campaign->status == 4)
+            @if (
+                ($user_Campaign != null && $ReferralCount >= $user_Campaign->no_of_referral_users && $user_Campaign->status == 1) ||
+                    $user_Campaign->status == 4)
 
                 @if ($user_Campaign->status != 4)
                     <li class="list-inline-item">
-                        <button onclick="requestSuccessAlert()" class="d-none d-md-block btn btn-primary custom-button" id="done"><span class="m-r-10">Send
+                        <button onclick="requestSuccessAlert()" class="d-none d-md-block btn btn-primary custom-button"
+                            id="done"><span class="m-r-10">Send
                                 For Approval</span>
                         </button>
                         <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
@@ -528,8 +563,8 @@ Status: <strong
                     </li>
                 @else
                     <li class="list-inline-item">
-                        <button onclick="reopenSuccessAlert()" class="d-none d-md-block btn btn-danger custom-button" id="Reopen"><span
-                                class="m-r-10">Reopen</span>
+                        <button onclick="reopenSuccessAlert()" class="d-none d-md-block btn btn-danger custom-button"
+                            id="Reopen"><span class="m-r-10">Reopen</span>
                         </button>
                         <a href="javascript:void(0);" class="text-gray font-size-20 d-md-none d-block">
                             <i class="far fa-paper-plane"></i>
@@ -601,149 +636,149 @@ Status: <strong
           });
     </script> --}}
     {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
-<script>
-    $(document).ready(function(){
-        // Initially, no star is selected
-        var selectedRating = 0;
+    <script>
+        $(document).ready(function() {
+            // Initially, no star is selected
+            var selectedRating = 0;
 
-        // Highlight stars on hover
-        $(".rating i").hover(function() {
-            $(this).prevAll().addBack().addClass("hover");
-        }, function() {
-            $(this).prevAll().addBack().removeClass("hover");
-        });
-
-        // Set rating on click
-        $(".reivews i").click(function() {
-            selectedRating = $(this).index() + 1;
-            $(".reivews i").removeClass("selected");
-            $(this).prevAll().addBack().addClass("selected");
-            $("#selected-rating").text("Selected rating: " + selectedRating);
-            $(".valRarting").val(selectedRating);
-        });
-
-        $(".feedback i").click(function() {
-            selectedRating = $(this).index() + 1;
-            $(".feedback i").removeClass("selected");
-            $(this).prevAll().addBack().addClass("selected");
-            $(" #feedback-selected-rating").text("Selected rating: " + selectedRating);
-            $(".valRetingFeedback").val(selectedRating);
-        });
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        // Add validation rules
-        var ratingTask = "";
-        $("#ratingForm").validate({
-            rules: {
-                // Define rules for each form field
-                comments: {
-                    required: true,
-                    minlength: 10  // Example: Minimum length of 10 characters
-                }
-            },
-            messages: {
-                // Define custom error messages
-                comment: {
-                    required: "Please enter your comment.",
-                    minlength: "Your comment must be at least {0} characters long."
-                }
-            },
-            // Specify where to display error messages
-            errorPlacement: function(error, element) {
-                error.appendTo(element.parent().next());
-            },
-            submitHandler: function(form,e) {
-            e.preventDefault();
-            console.log('Form submitted');
-            $.ajax({
-                url:'{{ route('user.store.rating.task') }}',
-                type: 'POST',
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                },
-                data: $('#ratingForm').serialize(),
-                success: function(result) {
-                    $("#btnJoined").hide();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'Thankyou for given rating',
-                        confirmButtonColor: '#3085D6',
-                        confirmButtonText: 'OK'
-                    }).then(function() {
-                        // Reload the page
-                        location.reload();
-                    });
-                },
-                error : function(error) {
-
-                }
+            // Highlight stars on hover
+            $(".rating i").hover(function() {
+                $(this).prevAll().addBack().addClass("hover");
+            }, function() {
+                $(this).prevAll().addBack().removeClass("hover");
             });
-            return false;
-        }
-   
-        });
-    });
-</script>
- {{-- feedback Form --}}
- <script>
-    $(document).ready(function() {
-        // Add validation rules
-        var ratingTask = "";
-        $("#feedbackForm").validate({
-            rules: {
-                // Define rules for each form field
-                comments: {
-                    required: true,
-                    minlength: 10  // Example: Minimum length of 10 characters
-                }
-            },
-            messages: {
-                // Define custom error messages
-                comment: {
-                    required: "Please enter your comment.",
-                    minlength: "Your comment must be at least {0} characters long."
-                }
-            },
-            // Specify where to display error messages
-            errorPlacement: function(error, element) {
-                error.appendTo(element.parent().next());
-            },
-            submitHandler: function(form,e) {
-            e.preventDefault();
-            console.log('Form submitted');
-            $.ajax({
-                url:'{{ route('user.store.feedback.task') }}',
-                type: 'POST',
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                },
-                data: $('#feedbackForm').serialize(),
-                success: function(result) {
-                    $("#btnJoined").hide();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'Thankyou for given feedback',
-                        confirmButtonColor: '#3085D6',
-                        confirmButtonText: 'OK'
-                    }).then(function() {
-                        // Reload the page
-                        location.reload();
-                    });
-                },
-                error : function(error) {
 
-                }
+            // Set rating on click
+            $(".reivews i").click(function() {
+                selectedRating = $(this).index() + 1;
+                $(".reivews i").removeClass("selected");
+                $(this).prevAll().addBack().addClass("selected");
+                $("#selected-rating").text("Selected rating: " + selectedRating);
+                $(".valRarting").val(selectedRating);
             });
-            return false;
-        }
-   
+
+            $(".feedback i").click(function() {
+                selectedRating = $(this).index() + 1;
+                $(".feedback i").removeClass("selected");
+                $(this).prevAll().addBack().addClass("selected");
+                $(" #feedback-selected-rating").text("Selected rating: " + selectedRating);
+                $(".valRetingFeedback").val(selectedRating);
+            });
         });
-    });
-</script>
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Add validation rules
+            var ratingTask = "";
+            $("#ratingForm").validate({
+                rules: {
+                    // Define rules for each form field
+                    comments: {
+                        required: true,
+                        minlength: 10 // Example: Minimum length of 10 characters
+                    }
+                },
+                messages: {
+                    // Define custom error messages
+                    comment: {
+                        required: "Please enter your comment.",
+                        minlength: "Your comment must be at least {0} characters long."
+                    }
+                },
+                // Specify where to display error messages
+                errorPlacement: function(error, element) {
+                    error.appendTo(element.parent().next());
+                },
+                submitHandler: function(form, e) {
+                    e.preventDefault();
+                    console.log('Form submitted');
+                    $.ajax({
+                        url: '{{ route('user.store.rating.task') }}',
+                        type: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        data: $('#ratingForm').serialize(),
+                        success: function(result) {
+                            $("#btnJoined").hide();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Thankyou for given rating',
+                                confirmButtonColor: '#3085D6',
+                                confirmButtonText: 'OK'
+                            }).then(function() {
+                                // Reload the page
+                                location.reload();
+                            });
+                        },
+                        error: function(error) {
+
+                        }
+                    });
+                    return false;
+                }
+
+            });
+        });
+    </script>
+    {{-- feedback Form --}}
+    <script>
+        $(document).ready(function() {
+            // Add validation rules
+            var ratingTask = "";
+            $("#feedbackForm").validate({
+                rules: {
+                    // Define rules for each form field
+                    comments: {
+                        required: true,
+                        minlength: 10 // Example: Minimum length of 10 characters
+                    }
+                },
+                messages: {
+                    // Define custom error messages
+                    comment: {
+                        required: "Please enter your comment.",
+                        minlength: "Your comment must be at least {0} characters long."
+                    }
+                },
+                // Specify where to display error messages
+                errorPlacement: function(error, element) {
+                    error.appendTo(element.parent().next());
+                },
+                submitHandler: function(form, e) {
+                    e.preventDefault();
+                    console.log('Form submitted');
+                    $.ajax({
+                        url: '{{ route('user.store.feedback.task') }}',
+                        type: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                        },
+                        data: $('#feedbackForm').serialize(),
+                        success: function(result) {
+                            $("#btnJoined").hide();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Thankyou for given feedback',
+                                confirmButtonColor: '#3085D6',
+                                confirmButtonText: 'OK'
+                            }).then(function() {
+                                // Reload the page
+                                location.reload();
+                            });
+                        },
+                        error: function(error) {
+
+                        }
+                    });
+                    return false;
+                }
+
+            });
+        });
+    </script>
     <script>
         function showSuccessAlert() {
             var ID = "{{ base64_encode($campagin_detail->id) }}";

@@ -31,15 +31,14 @@
 </head>
 
 <body>
-    <div class="app">
+    <div class="app survey-app">
         <div class="layout">
             <!-- Header START -->
             @include('front.includes.header')
             <!-- Header END -->
 
             <!-- Page Container START -->
-            <div class=" p-h-0 p-v-20 bg full-height"
-                style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
+            <div class=" p-h-0 p-v-20 bg full-height">
                 <div class="page-containers">
                     @include('front.includes.message')
                     <!-- Content Wrapper START -->

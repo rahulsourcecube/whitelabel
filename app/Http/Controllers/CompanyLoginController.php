@@ -63,8 +63,11 @@ class CompanyLoginController extends Controller
             // Get the current month and year
             $currentMonth = Carbon::now()->month;
             $currentYear = Carbon::now()->year;
+            if (Helper::getCompanyId() != $companyId = Auth::user()->id) {
+                Auth::logout();
+                return redirect()->route('company.signin');
+            }
 
-            $companyId = Helper::getCompanyId();
 
             $data = [];
 
