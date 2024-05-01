@@ -38,9 +38,9 @@
             <!-- Header END -->
 
             <!-- Page Container START -->
-            <div class=" p-h-0 p-v-20 bg full-height d-flex"
+            <div class=" p-h-0 p-v-20 bg full-height"
                 style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
-                <div class="page-container">
+                <div class="page-containers">
                     @include('front.includes.message')
                     <!-- Content Wrapper START -->
                     @yield('main-content')

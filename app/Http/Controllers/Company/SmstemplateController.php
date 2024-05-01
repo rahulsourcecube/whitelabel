@@ -61,6 +61,10 @@ class SmstemplateController extends Controller
                     $type = 'Forgot Password';
                 } elseif ($result->template_type == 'change_pass') {
                     $type = 'Change Password';
+                } elseif ($result->template_type == 'new_task') {
+                    $type = 'New Task';
+                } elseif ($result->template_type == 'earn_reward') {
+                    $type = 'Earn Reward';
                 } else {
                     $type = '';
                 }
@@ -68,6 +72,7 @@ class SmstemplateController extends Controller
                 $list[] = [
                     base64_encode($result->id),
                     $type,
+
 
                 ];
             }

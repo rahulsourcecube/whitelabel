@@ -38,6 +38,14 @@
                                         {{ !empty($SmsTemplate) && $SmsTemplate->template_type == 'change_pass' ? 'selected' : '' }}>
                                         Change password
                                     </option>
+                                    <option value="new_task"
+                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'new_task') || (!empty(old('type')) && old('type') == 'new_task') ? 'selected' : '' }}>
+                                        New task
+                                    </option>
+                                    <option value="earn_reward"
+                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'earn_reward') || (!empty(old('type')) && old('type') == 'earn_reward') ? 'selected' : '' }}>
+                                        Earn reward
+                                    </option>
                                 </select>
 
                                 @if (!empty($SmsTemplate) && !empty($SmsTemplate->template_type))
@@ -140,6 +148,15 @@
                 } else if (type == 'change_pass') {
                     html = "[user_name]  [company_title] [company_web_link] ";
                     $('.htmltemplateClass').show();
+                } else if (type == 'new_task') {
+                    html =
+                        "[user_name] [company_title] [company_web_link] [campaign_title] [campaign_price] [campaign_join_link]  ";
+                    $('.htmltemplateClass').show();
+                } else if (type == 'earn_reward') {
+                    html =
+                        "[user_name] [company_title] [company_web_link] [campaign_title] [campaign_price]";
+                    $('.htmltemplateClass').show();
+
                 } else {
                     $('.htmltemplateClass').hide();
                 }

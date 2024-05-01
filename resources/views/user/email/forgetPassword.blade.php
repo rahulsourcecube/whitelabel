@@ -20,7 +20,7 @@ if (!empty($company_id)) {
     }
     
     // Perform the replacement
-    $html = str_replace(['[user_name]', '[company_logo]', '[company_title]', '[change_password_link]', "['company_web_link']", '[another_tab]'], [$name, $logo, $company_title, $submit, $company_link, $another_tab], $template);
+    $html = str_replace(['[user_name]', '[company_logo]', '[company_title]', '[change_password_link]', '[company_web_link]', '[another_tab]'], [$name, $logo, $company_title, $submit, $company_link, $another_tab], $template);
     
     // Output the modified HTML
     echo $html;

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MailTemplate;
 use App\Models\SmsTemplate;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -74,6 +75,7 @@ class TemplateController extends Controller
                 $list[] = [
                     base64_encode($result->id),
                     $type,
+                    $result->subject
 
                 ];
             }
@@ -157,7 +159,7 @@ class TemplateController extends Controller
     function smsIndex()
     {
         try {
-            $companyId = Helper::getCompanyId();
+
 
             return view('admin.smsTemplate.list');
         } catch (Exception $e) {
@@ -168,7 +170,7 @@ class TemplateController extends Controller
     public function smsList(Request $request)
     {
         try {
-            $companyId = Helper::getCompanyId();
+            $companyId = auth()->user()->id;
             $columns = ['id'];
             $totalData = SmsTemplate::where('company_id', $companyId)->count();
             $start = $request->input('start');
@@ -242,7 +244,7 @@ class TemplateController extends Controller
     function smsEdit($id)
     {
         try {
-            $companyId = Helper::getCompanyId();
+            $companyId = auth()->user()->id;
             $SmsTemplate = SmsTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
             return view('admin.smsTemplate.create', compact('SmsTemplate'));
         } catch (Exception $e) {
@@ -254,10 +256,11 @@ class TemplateController extends Controller
     {
 
         try {
-            $companyId = Helper::getCompanyId();
+            $companyId = auth()->user()->id;
             $SmsTemplate = SmsTemplate::where('company_id', $companyId)
                 ->where('template_type', $request->type)
                 ->first();
+
 
 
             if (empty($SmsTemplate) || empty($request->id)) {

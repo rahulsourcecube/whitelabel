@@ -9,16 +9,20 @@ use App\Models\CampaignModel;
 use App\Models\CityModel;
 use App\Models\CountryModel;
 use App\Models\Feedback;
+use App\Models\MailTemplate;
 use App\Models\Notification;
+use App\Models\NotificationsQue;
 use App\Models\ratings;
 use App\Models\Referral;
 use App\Models\SettingModel;
+use App\Models\SmsTemplate;
 use App\Models\StateModel;
 use App\Models\TaskEvidence;
 use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
+use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -28,7 +32,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\URL;
 use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Support\Facades\Mail;
+
 
 class CampaignController extends Controller
 {
@@ -111,7 +118,9 @@ class CampaignController extends Controller
                     $result->task_status,
                     $result->campaignUSerHistoryData->count() == 0,
                     $priority, // Priority value
-                    $public // Public value 
+                    $public, // Public value
+                    $result->Notifications ?? "-",
+
                 ];
             }
 
@@ -177,6 +186,7 @@ class CampaignController extends Controller
                     Helper::Dateformat($result->created_at)  ?? "-",
                     $result->TaskStatus ?? "-",
                     base64_encode($result->user_id) ?? "-",
+                    $result->notifications_type ?? "-",
 
                 ];
             }
@@ -202,6 +212,7 @@ class CampaignController extends Controller
     {
         try {
             //Check  Active Package Access
+            $companyId = Helper::getCompanyId();
             $isActivePackageAccess = Helper::isActivePackageAccess();
 
             if (!$isActivePackageAccess) {
@@ -210,7 +221,10 @@ class CampaignController extends Controller
             $country_data = CountryModel::all();
             $typeInText = $type;
             $type = CampaignModel::TYPE[strtoupper($type)];
-            return view('company.campaign.create', compact('type', 'typeInText','country_data'));
+            $mail = SettingModel::where('id', $companyId)->first();
+            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'new_task')->first();
+            $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
+            return view('company.campaign.create', compact('type', 'typeInText', 'country_data', 'mail', 'mailTemplate', 'smsTemplate'));
         } catch (Exception $e) {
             Log::error('CampaignController::Create => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -270,8 +284,43 @@ class CampaignController extends Controller
             $Campaign->country_id = $request->country;
             $Campaign->state_id = $request->state;
             $Campaign->city_id = $request->city;
+            // Notifications type
+            $Campaign->notifications_type = $request->notifications_type;
 
             $Campaign->save();
+            if (!empty($Campaign) && !empty($Campaign->notifications_type)) {
+                $userDatas = User::where('user_type', User::USER_TYPE['USER'])
+                    ->where('status', '1')
+                    ->where('company_id', $companyId)
+                    ->cursor();
+
+                if (!$userDatas->isEmpty()) {
+                    $notificationsQueBatch = [];
+
+                    foreach ($userDatas as $userData) {
+                        $notificationsQueBatch[] = [
+                            'company_id' => $companyId,
+                            'user_id' => $userData->id,
+                            'campaign_id' => $Campaign->id,
+                            'notifications_type' => $Campaign->notifications_type,
+                            'created_at' => now(),
+                        ];
+
+                        // Check if the batch size exceeds a certain limit (e.g., 1000 records)
+                        if (count($notificationsQueBatch) >= 1000) {
+                            NotificationsQue::insert($notificationsQueBatch);
+                            $notificationsQueBatch = []; // Reset the batch array
+                        }
+                    }
+
+                    // Insert any remaining records
+                    if (!empty($notificationsQueBatch)) {
+                        NotificationsQue::insert($notificationsQueBatch);
+                    }
+                }
+            }
+
+
             $taskType = Helper::taskType($request->type);
             return redirect()->route('company.campaign.list', $taskType)->with('success', 'Task added successfuly.');
         } catch (Exception $e) {
@@ -327,7 +376,7 @@ class CampaignController extends Controller
             $Campaign->status = !empty($request->status) ? '1' : '0';
             $Campaign->feedback_type = $request->feedback_type;
             $Campaign->referral_url_segment = $request->referral_url;
-            
+
             $Campaign->country_id = $request->country;
             $Campaign->state_id = $request->state;
             $Campaign->city_id = $request->city;
@@ -436,7 +485,7 @@ class CampaignController extends Controller
     public function view($type, $id)
     {
         try {
-         
+
             $companyId = Helper::getCompanyId();
 
             $type = CampaignModel::TYPE[strtoupper($type)];
@@ -468,12 +517,12 @@ class CampaignController extends Controller
             $taskId = base64_decode($id);
             $task = CampaignModel::where('id', $taskId)->where('company_id', $companyId)->where('type', $type)->first();
             $country_data = CountryModel::all();
-            $state_data = StateModel::where('country_id',$task->country_id)->get();
-            $city_data = CityModel::where('state_id',$task->state_id)->get();
+            $state_data = StateModel::where('country_id', $task->country_id)->get();
+            $city_data = CityModel::where('state_id', $task->state_id)->get();
             if (empty($task)) {
                 return back()->with('error', 'Task not found');
             }
-            return view('company.campaign.edit', compact('type', 'taskId', 'task','country_data','state_data','city_data'));
+            return view('company.campaign.edit', compact('type', 'taskId', 'task', 'country_data', 'state_data', 'city_data'));
         } catch (Exception $e) {
             Log::error('CampaignController::Edit => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -491,6 +540,7 @@ class CampaignController extends Controller
                     unlink($oldImagePath);
                 }
             }
+            // $Notifications=NotificationsQue::insert($notificationsQueBatch);
             $campaignModel = CampaignModel::where('id', $id)->where('company_id', $companyId)->delete();
             return response()->json(['success' => true, 'message' => 'Task deleted successfully']);
         } catch (Exception $e) {
@@ -507,34 +557,113 @@ class CampaignController extends Controller
             $Notification = new Notification();
 
             if ($request->action == '3') {
-                
+
+
                 $action->status = '3';
                 $action->save();
-                if(!empty($action)) {
-                    $batch=UserCampaignHistoryModel::where('user_id', $action->user_id)->where('status', 3)->get()->count(); 
-                 
-                    $progression=[];
-                    if(!empty($batch)){
-                        $progression = TaskProgression::where('company_id',$companyId)->where('no_of_task',$batch)->first(); 
-                        $taskProgressionUserHistory = taskProgressionUserHistory::where('company_id',$companyId)->where('user_id', $action->user_id)->where('no_of_task',$batch)->first(); 
-                       if(!empty($progression) && empty($taskProgressionUserHistory)){
-                            $taskProgressionUserHistoryStore= new taskProgressionUserHistory();
+                if (!empty($action)) {
+                    $batch = UserCampaignHistoryModel::where('user_id', $action->user_id)->where('status', 3)->get()->count();
+
+                    $progression = [];
+                    if (!empty($batch)) {
+                        $progression = TaskProgression::where('company_id', $companyId)->where('no_of_task', $batch)->first();
+                        $taskProgressionUserHistory = taskProgressionUserHistory::where('company_id', $companyId)->where('user_id', $action->user_id)->where('no_of_task', $batch)->first();
+                        if (!empty($progression) && empty($taskProgressionUserHistory)) {
+                            $taskProgressionUserHistoryStore = new taskProgressionUserHistory();
                             $taskProgressionUserHistoryStore->company_id = $companyId;
                             $taskProgressionUserHistoryStore->user_id = $action->user_id;
-                            $taskProgressionUserHistoryStore->no_of_task = $progression->no_of_task; 
-                            $taskProgressionUserHistoryStore->progression_id = $progression->id; 
-                    $taskProgressionUserHistoryStore->save();
-
-                       }
+                            $taskProgressionUserHistoryStore->no_of_task = $progression->no_of_task;
+                            $taskProgressionUserHistoryStore->progression_id = $progression->id;
+                            $taskProgressionUserHistoryStore->save();
+                        }
                     }
                 }
                 if (isset($action)) {
+
                     $Notification->user_id =  $action->user_id;
                     $Notification->company_id =  $action->campaign_id;
                     $Notification->title =  " Campaign approved ";
                     $Notification->message =  $action->getCampaign->title . " approved.";
                     $Notification->type =  "1";
                     $Notification->save();
+
+                    $webUrlGetHost = $request->getHost();
+                    $currentUrl = URL::current();
+                    if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+                        // URL is under HTTPS
+                        $webUrl =  'https://' . $webUrlGetHost;
+                    } else {
+                        // URL is under HTTP
+                        $webUrl =  'http://' . $webUrlGetHost;
+                    }
+
+                    //Start Mail
+
+                    try {
+
+                        $SettingValue = SettingModel::where('id', $companyId)->first();
+                        $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
+                        $userDetails = User::where('id', $action->user_id)->where('company_id', $companyId)->first();
+                        if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
+                            $userName  = $userDetails->FullName;
+                            $campaign_title  = $action->getCampaign->title;
+                            $campaign_price = $action->text_reward ? 'text_reward' : $action->reward;
+                            $to = $userDetails->email;
+                            $message = '';
+
+                            $html =  $mailTemplate->template_html;
+
+                            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'earn_reward';
+                            Mail::send('user.email.earnReward', [
+                                'name' => $userName,
+                                'company_id' => $companyId,
+                                'template' => $html,
+                                'webUrl' => $webUrl,
+                                'campaign_title' => $campaign_title,
+                                'campaign_price' => $campaign_price,
+                            ], function ($message) use ($to, $mailTemplateSubject) {
+                                $message->to($to);
+                                $message->subject($mailTemplateSubject);
+                            });
+                        }
+                    } catch (Exception $e) {
+                        Log::error('CampaignController::Action => ' . $e->getMessage());
+                    }
+                    // // End mail
+
+                    $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
+
+                    if (!empty($smsTemplate)) {
+                        $SettingModel = SettingModel::first();
+                        if (!empty($companyId)) {
+                            $SettingModel = SettingModel::find($companyId);
+                        }
+                        if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                            $name =  $userDetails->FullName;
+                            $contact_number =  $userDetails->contact_number;
+                            $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                            $company_link = $webUrl ? $webUrl : '';
+                            $campaign_title = $action->getCampaign->title;
+                            $campaign_price = !empty($action->text_reward) ? $action->text_reward : $action->reward;
+                            $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[campaign_title]", "[campaign_price]"], [$name, $company_title, $company_link, $campaign_title, $campaign_price], $smsTemplate->template_html_sms);
+
+                            // Remove HTML tags and decode HTML entities
+                            $message = htmlspecialchars_decode(strip_tags($html));
+
+                            // Remove unwanted '&nbsp;' text
+                            $message = str_replace('&nbsp;', ' ', $message);
+
+                            $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                            $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                            try {
+                                $twilioService->sendSMS($to, $message);
+                            } catch (Exception $e) {
+                                Log::error('Failed to send SMS: ' . $e->getMessage());
+                                echo "Failed to send SMS: " . $e->getMessage();
+                            }
+                        }
+                    }
+                    // End sms
                 }
 
                 return response()->json(['success' => 'success', 'messages' => ' Task approved successfully']);
@@ -570,7 +699,7 @@ class CampaignController extends Controller
     }
     public function userDetails(Request $request, $id)
     {
-     
+
         try {
             $id = base64_decode($id);
             $companyId = Helper::getCompanyId();
@@ -586,7 +715,7 @@ class CampaignController extends Controller
                 return redirect()->back()->with('error', 'User not found');
             }
             $chats = TaskEvidence::where('campaign_id', $id)->where('company_id', $companyId)->get();
-            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id','ratings','feedback'));
+            return view('company.campaign.user-details', compact('chats', 'setting', 'user', 'camphistory', 'referral_user_detail', 'id', 'ratings', 'feedback'));
         } catch (Exception $e) {
             Log::error('CampaignController::UserDetails => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());

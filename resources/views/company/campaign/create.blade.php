@@ -179,10 +179,6 @@
                                 @enderror
                             </div>
                             @if (isset($typeInText) && $typeInText == 'Referral')
-                                {{-- <div class="form-group col-md-6">
-
-
-                         </div> --}}
                                 <div class="form-group col-md-6">
                                     <label for="referral_url">URl Setting <span class="error">*</span></label>
                                     <div class="input-group mb-3">
@@ -205,17 +201,80 @@
                             </div>
                         </div>
                         <hr>
-                        <h4>Feedback Management</h4>
-                        <div class="form-group col-md-3">
-                            <label for="feedback_type">Feedback Type <span class="error">*</span></label>
-                            <select id="feedback_type" name="feedback_type" class="form-control type">
-                                <option value="rating">Rating
-                                </option>
-                                <option selected value="description">Description
-                                </option>
-                                <option value="both">Both
-                                </option>
-                            </select>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <h4>Feedback Management</h4>
+                                <label for="feedback_type">Feedback Type <span class="error">*</span></label>
+                                <select id="feedback_type" name="feedback_type" class="form-control type">
+                                    <option value="rating">Rating
+                                    </option>
+                                    <option selected value="description">Description
+                                    </option>
+                                    <option value="both">Both
+                                    </option>
+                                </select>
+                            </div>
+
+
+                            @if (
+                                (!empty($mail) &&
+                                    !empty($smsTemplate) &&
+                                    !empty($smsTemplate->template_html_sms) &&
+                                    !empty($mail->sms_account_sid) &&
+                                    !empty($mail->sms_account_token) &&
+                                    !empty($mail->sms_account_number)) ||
+                                    (!empty($mail) &&
+                                        !empty($mailTemplate) &&
+                                        !empty($mailTemplate->template_html) &&
+                                        !empty($mail->mail_username) &&
+                                        !empty($mail->mail_host) &&
+                                        !empty($mail->mail_password)))
+                                <div class="form-group col-md-6">
+                                    <h4>Real-Time Task Notifications</h4>
+                                    <label for="notifications_type">Notifications Type <span
+                                            class="error"></span></label>
+                                    <select id="notifications_type" name="notifications_type" class="form-control type">
+                                        <option value="">Select Type
+                                        </option>
+                                        @if (
+                                            !empty($mail) &&
+                                                !empty($mailTemplate) &&
+                                                !empty($mailTemplate->template_html) &&
+                                                !empty($mail->mail_username) &&
+                                                !empty($mail->mail_host) &&
+                                                !empty($mail->mail_password))
+                                            <option value="1">Mail
+                                            </option>
+                                        @endif
+                                        @if (
+                                            !empty($mail) &&
+                                                !empty($smsTemplate) &&
+                                                !empty($smsTemplate->template_html_sms) &&
+                                                !empty($mail->sms_account_sid) &&
+                                                !empty($mail->sms_account_token) &&
+                                                !empty($mail->sms_account_number))
+                                            <option value="2">SMS
+                                            </option>
+                                        @endif
+                                        @if (
+                                            !empty($mail) &&
+                                                !empty($smsTemplate) &&
+                                                !empty($smsTemplate->template_html_sms) &&
+                                                !empty($mail->sms_account_sid) &&
+                                                !empty($mail->sms_account_token) &&
+                                                !empty($mail->sms_account_number) &&
+                                                (!empty($mail) &&
+                                                    !empty($mailTemplate) &&
+                                                    !empty($mailTemplate->template_html) &&
+                                                    !empty($mail->mail_username) &&
+                                                    !empty($mail->mail_host) &&
+                                                    !empty($mail->mail_password)))
+                                            <option value="3">Both (Mail and SMS)
+                                            </option>
+                                        @endif
+                                    </select>
+                                </div>
+                            @endif
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>

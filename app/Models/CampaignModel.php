@@ -15,6 +15,11 @@ class CampaignModel extends Model
         'SOCIAL' => 2,
         'CUSTOM' => 3,
     ];
+    const NOTIFICATIONS = [
+        'MAIL' => 1,
+        'SMS' => 2,
+        'BOTH (MAIL & SMSM)' => 3,
+    ];
     protected $table = 'campaign';
     protected $fillable = [
         'company_id',
@@ -66,6 +71,19 @@ class CampaignModel extends Model
             $string = 'Deactive';
         }
         return $string;
+    }
+    public function getNotificationsAttribute()
+    {
+
+        $type = '-';
+        if ($this->notifications_type == CampaignModel::NOTIFICATIONS['MAIL']) {
+            $type = 'Mail';
+        } elseif ($this->notifications_type == CampaignModel::NOTIFICATIONS['MAIL']) {
+            $type = 'SMS';
+        } elseif ($this->notifications_type == CampaignModel::NOTIFICATIONS['MAIL']) {
+            $type = 'Both (Mail & SMS)';
+        }
+        return $type;
     }
 
 

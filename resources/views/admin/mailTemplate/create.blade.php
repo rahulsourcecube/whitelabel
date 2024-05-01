@@ -116,9 +116,9 @@
                     type: {
                         required: true
                     },
-                    // subject: {
-                    //     required: true
-                    // },
+                    subject: {
+                        required: true
+                    },
                     tempHtml: {
                         ckeditorContent: true // Use custom validation method for CKEditor
                     }
@@ -128,9 +128,9 @@
                     type: {
                         required: "Please select template type"
                     },
-                    // subject: {
-                    //     required: "Please select template subject"
-                    // },
+                    subject: {
+                        required: "Please select template subject"
+                    },
                     tempHtml: {
                         ckeditorContent: "Please enter HTML" // Custom error message for CKEditor
                     }

@@ -9,6 +9,8 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 
 class MailtemplateController extends Controller
 {
@@ -61,6 +63,10 @@ class MailtemplateController extends Controller
                     $type = 'Forgot Password';
                 } elseif ($result->template_type == 'change_pass') {
                     $type = 'Change Password';
+                } elseif ($result->template_type == 'new_task') {
+                    $type = 'New Task';
+                } elseif ($result->template_type == 'earn_reward') {
+                    $type = 'Earn Reward';
                 } else {
                     $type = '';
                 }
@@ -68,6 +74,7 @@ class MailtemplateController extends Controller
                 $list[] = [
                     base64_encode($result->id),
                     $type,
+                    $result->subject,
 
                 ];
             }
@@ -110,9 +117,14 @@ class MailtemplateController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'tempHtml' => 'required',
+
             ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
             $companyId = Helper::getCompanyId();
             $mailTemplate = MailTemplate::where('company_id', $companyId)
                 ->where('template_type', $request->type)

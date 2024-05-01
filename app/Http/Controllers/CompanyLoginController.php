@@ -273,10 +273,12 @@ class CompanyLoginController extends Controller
                 Log::error('UsrController::Store => ' . $e->getMessage());
             }
 
-
-            $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
+            $userMail = User::where('user_type', '1')->first();
+            $smsTemplate = SmsTemplate::where('company_id', $userMail->id)->where('template_type', 'welcome')->first();
             if (!empty($smsTemplate)) {
-                $SettingModel = SettingModel::first();
+                // $SettingModel = SettingModel::first();
+
+                $SettingModel = SettingModel::where('user_id', $userMail->id)->first();
 
                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                     $name = $request->fname;
