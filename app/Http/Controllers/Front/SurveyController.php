@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Fornt;
+namespace App\Http\Controllers\Front;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;

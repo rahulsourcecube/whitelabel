@@ -21,9 +21,9 @@ use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\SmstemplateController;
 use App\Http\Controllers\Company\SurveyController;
 use App\Http\Controllers\Company\UserController;
-use App\Http\Controllers\Fornt\CampaignController as ForntCampaignController;
-use App\Http\Controllers\Fornt\HomeController as ForntHomeController;
-use App\Http\Controllers\Fornt\SurveyController as ForntSurveyController;
+use App\Http\Controllers\Front\CampaignController as FrontCampaignController;
+use App\Http\Controllers\Front\HomeController as ForntHomeController;
+use App\Http\Controllers\Front\SurveyController as ForntSurveyController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
 
@@ -214,7 +214,11 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('/store', [ForntSurveyController::class, 'store'])->name('store');
             });
             Route::prefix('campaign')->name('campaign.')->group(function () {
-                Route::get('/', [ForntCampaignController::class, 'publicCampaign'])->name('public.view');
+                Route::get('/', [FrontCampaignController::class, 'list'])->name('list');
+                Route::get('detail/{id}', [FrontCampaignController::class, 'detail'])->name('public.detail');
+                Route::post('/getStates', [FrontCampaignController::class, 'getStates'])->name('getStates');
+                Route::post('/getCity', [FrontCampaignController::class, 'getCity'])->name('getCity');
+                Route::post('/search', [FrontCampaignController::class, 'search'])->name('search');
             });
 
             Route::get('/success-202', [ForntHomeController::class, 'success'])->name('success.page');

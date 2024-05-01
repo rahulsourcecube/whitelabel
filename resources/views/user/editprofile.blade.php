@@ -99,11 +99,15 @@
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="country">Country:</label>
                                         <select name="country" id="country" class="form-control">
+                                            <option value="">Select Country</option>
 
                                             @if ($country_data)
                                                 @foreach ($country_data as $country)
+                                                    {{-- @if ($country->id == $userData->country_id) --}}
+                                                    {{-- Assuming India's country ID is 1 --}}
                                                     <option value="{{ $country->id }}" {{ $userData->country_id == $country->id ? 'selected' : '' }}>
                                                         {{ $country->name }}</option>
+                                                    {{-- @endif --}}
                                                 @endforeach
 
                                             @endif
@@ -113,10 +117,13 @@
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="state">State:</label>
                                         <select name="state" id="state" class="form-control">
+                                            <option value="">Select State</option>
                                             @if ($state_data)
                                                 @foreach ($state_data as $state)
-                                                    <option value="{{ $state->id }}" {{ $userData->state_id == $state->id ? 'selected' : '' }}>
-                                                        {{ $state->name }}</option>
+                                                    @if ($state->country_id == $userData->country_id)
+                                                        <option value="{{ $state->id }}" {{ $userData->state_id == $state->id ? 'selected' : '' }}>
+                                                            {{ $state->name }}</option>
+                                                    @endif
                                                 @endforeach
                                             @endif
                                         </select>
@@ -125,10 +132,13 @@
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="city">City:</label>
                                         <select name="city" id="city" class="form-control">
-                                            @if ($state_data)
+                                            <option value="">Select City</option>
+                                            @if ($city_data)
                                                 @foreach ($city_data as $city)
-                                                    <option value="{{ $city->id }}" {{ $userData->city_id == $city->id ? 'selected' : '' }}>
-                                                        {{ $city->name }}</option>
+                                                    @if ($city->state_id == $userData->state_id)
+                                                        <option value="{{ $city->id }}" {{ $userData->city_id == $city->id ? 'selected' : '' }}>
+                                                            {{ $city->name }}</option>
+                                                    @endif
                                                 @endforeach
                                             @endif
                                         </select>
@@ -372,15 +382,15 @@
                         required: true,
                         digits: true
                     },
-                    profile_image: {
-                        required: function(element) {
-                            if ($(".hidden_profile_image").val() != '') {
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        }
-                    },
+                    // profile_image: {
+                    //     required: function(element) {
+                    //         if ($(".hidden_profile_image").val() != '') {
+                    //             return false;
+                    //         } else {
+                    //             return true;
+                    //         }
+                    //     }
+                    // },
                 },
                 messages: {
                     first_name: {
@@ -397,15 +407,15 @@
                         required: "Please enter phone number",
                         digits: "Please enter valid contact number"
                     },
-                    profile_image: {
-                        required: function(element) {
-                            if ($(".hidden_profile_image").val() != '') {
-                                return false;
-                            } else {
-                                return "please upload profile image";
-                            }
-                        }
-                    },
+                    // profile_image: {
+                    //     required: function(element) {
+                    //         if ($(".hidden_profile_image").val() != '') {
+                    //             return false;
+                    //         } else {
+                    //             return "please upload profile image";
+                    //         }
+                    //     }
+                    // },
                 },
             });
 
@@ -527,13 +537,13 @@
     </script>
     <script>
         $(document).ready(function($) {
-            
+
             $('#country').on('change', function() {
                 var country_id = $(this).val();
                 var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-    
+
                 $.ajax({
-                    url: "{{route('user.get_states')}}",
+                    url: "{{ route('user.get_states') }}",
                     type: 'POST',
                     data: {
                         country_id: country_id,
@@ -541,17 +551,17 @@
                     },
                     success: function(response) {
                         $("#city").empty().append("<option value=''>Select City</option>");
-                     $("#state").empty().append(response);
+                        $("#state").empty().append(response);
                     }
                 });
             });
-    
+
             $('#state').on('change', function() {
                 var state_id = $(this).val();
                 var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-    
+
                 $.ajax({
-                    url: "{{route('user.get_city')}}",
+                    url: "{{ route('user.get_city') }}",
                     type: 'POST',
                     data: {
                         state_id: state_id,
