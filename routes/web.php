@@ -210,22 +210,22 @@ Route::group(['middleware' => 'check.session'], function () {
             Artisan::call('expire:notification');
             return "Done!";
         });
-        Route::prefix('front')->name('front.')->group(function () {
-            Route::prefix('survey')->name('survey.')->group(function () {
-                Route::get('/{survey}', [ForntSurveyController::class, 'survey'])->name('form');
-                Route::post('/store', [ForntSurveyController::class, 'store'])->name('store');
-            });
-            Route::prefix('campaign')->name('campaign.')->group(function () {
-                Route::get('/', [FrontCampaignController::class, 'list'])->name('list');
-                Route::get('detail/{id}', [FrontCampaignController::class, 'detail'])->name('public.detail');
-                Route::post('/getStates', [FrontCampaignController::class, 'getStates'])->name('getStates');
-                Route::post('/getCity', [FrontCampaignController::class, 'getCity'])->name('getCity');
-                Route::post('/search', [FrontCampaignController::class, 'search'])->name('search');
-            });
-            Route::get('/join-now/{join_link}', [FrontCampaignController::class, 'joinNow'])->name('campaign.Join');
-
-            Route::get('/success-202', [ForntHomeController::class, 'success'])->name('success.page');
+        // Route::prefix('front')->name('front.')->group(function () {
+        Route::prefix('survey')->name('front.survey.')->group(function () {
+            Route::get('/{survey}', [ForntSurveyController::class, 'survey'])->name('form');
+            Route::post('/store', [ForntSurveyController::class, 'store'])->name('store');
         });
+        Route::prefix('campaign')->name('front.campaign.')->group(function () {
+            Route::get('/', [FrontCampaignController::class, 'list'])->name('list');
+            Route::get('detail/{id}', [FrontCampaignController::class, 'detail'])->name('public.detail');
+            Route::post('/getStates', [FrontCampaignController::class, 'getStates'])->name('getStates');
+            Route::post('/getCity', [FrontCampaignController::class, 'getCity'])->name('getCity');
+            Route::post('/search', [FrontCampaignController::class, 'search'])->name('search');
+        });
+        Route::get('/join-now/{join_link}', [FrontCampaignController::class, 'joinNow'])->name('front.campaign.Join');
+
+        Route::get('/success-202', [ForntHomeController::class, 'success'])->name('front.success.page');
+        // });
 
         Route::get('community/{type?}', [CommunityController::class, 'community'])->name('community');
 
@@ -289,7 +289,7 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('/bank-details', [UsrController::class, 'bankDetail'])->name('bankDetail');
                 Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
                 //Rating
-                Route::post('/rating/store', [UsrController::class, 'addTaskRating'])->name('store.rating.task');
+                Route::post('/reivews/store', [UsrController::class, 'addTaskRating'])->name('store.reivews');
                 //end Rating
 
                 //Feedback

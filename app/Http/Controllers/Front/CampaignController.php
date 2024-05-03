@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Helpers\Helper;
 use Illuminate\Pagination\Paginator;
 
 use App\Http\Controllers\Controller;
@@ -23,8 +24,8 @@ class CampaignController extends Controller
         $states = StateModel::where('country_id', $request->input('country'))->get();
         $citys = CityModel::where('state_id', $request->input('state'))->get();
 
-
-        $task_data = CampaignModel::where('public', 1);
+        $companyId = Helper::getCompanyId();
+        $task_data = CampaignModel::where('public', 1)->where('company_id', $companyId);
         // $task_data = CampaignModel::where('public', 1)->where('status', 1);
 
         if (!empty($request->country) && $request->has('country')) {

@@ -140,7 +140,7 @@ class SettingController extends Controller
             $dir = $request->input('order.0.dir');
             $list = [];
             $searchColumn = ['first_name', 'last_name', 'email', 'full_name'];
-            $query = TaskProgression::orderBy($columns[0], $dir);
+            $query = TaskProgression::where('company_id', Auth::user()->id)->orderBy($columns[0], $dir);
 
             if ($request->has('search') && !empty($request->input('search.value'))) {
                 $search = $request->input('search.value');

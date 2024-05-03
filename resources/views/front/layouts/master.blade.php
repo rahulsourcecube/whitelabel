@@ -40,7 +40,6 @@
             <!-- Page Container START -->
             <div class=" p-h-0 p-v-20 bg full-height">
                 <div class="page-containers">
-                    @include('front.includes.message')
                     <!-- Content Wrapper START -->
                     @yield('main-content')
                     <!-- Content Wrapper END -->

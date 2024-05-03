@@ -89,34 +89,34 @@ class ChannelsController extends Controller
             $existingChannel = Channels::where('title', $title)->where('company_id', $companyId)->first();
 
             if (!empty($existingChannel)) {
-                // If ID provided and the existing channel ID is not the same, then it's a conflict
+                // If ID provided and the existing Category ID is not the same, then it's a conflict
 
                 if (!empty($request->id) && $existingChannel->id != base64_decode($request->id)) {
-                    return redirect()->back()->with('error', 'Channel title already exists');
+                    return redirect()->back()->with('error', 'title already exists');
                 }
                 if (empty($request->id)) {
-                    return redirect()->back()->with('error', 'Channel title already exists');
+                    return redirect()->back()->with('error', 'title already exists');
                 }
             }
 
-            // If ID provided, update channel
+            // If ID provided, update Category
             if (!empty($request->id)) {
                 $channel = Channels::find(base64_decode($request->id));
                 if (!$channel) {
-                    return redirect()->back()->with('error', 'Channel not found');
+                    return redirect()->back()->with('error', 'Category not found');
                 }
                 $channel->title = $title;
                 $channel->save();
-                return redirect()->route('company.channel.index')->with('success', 'Channel updated successfully');
+                return redirect()->route('company.channel.index')->with('success', 'Category updated successfully');
             }
 
-            // Create new channel
+            // Create new Category
             $channel = Channels::create([
                 'title' => $title,
                 'company_id' => $companyId,
             ]);
 
-            return redirect()->route('company.channel.index')->with('success', 'Channel added successfully');
+            return redirect()->route('company.channel.index')->with('success', 'Category added successfully');
         } catch (Exception $e) {
             Log::error('ChannelController::store ' . $e->getMessage());
             return response()->json(['success' => 'error', 'message' => "Error: " . $e->getMessage()]);
@@ -143,7 +143,7 @@ class ChannelsController extends Controller
 
             $channels->delete();
 
-            return response()->json(['success' => 'success', 'message' => 'Channel deleted successfully']);
+            return response()->json(['success' => 'success', 'message' => 'Category deleted successfully']);
         } catch (Exception $e) {
             Log::error('ChannelController::delete ' . $e->getMessage());
             return response()->json(['success' => 'error', 'message' => "Error: " . $e->getMessage()]);

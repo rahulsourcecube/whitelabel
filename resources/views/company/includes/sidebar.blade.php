@@ -185,47 +185,49 @@
                         </ul>
                     </li>
                 @endif
+
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="javascript:void(0);">
+                        <span class="icon-holder">
+                            <i class="anticon anticon-setting"></i>
+                        </span>
+                        <span class="title">Survey Setting</span>
+                        <span class="arrow">
+                            <i class="arrow-icon"></i>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li @if (request()->segment(2) == 'survey') class='active' @endif>
+                            <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
+                        </li>
+                        {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                        <a href="{{ route('company.setting.index') }}">Survey list</a>
+                    </li> --}}
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="javascript:void(0);">
+                        <span class="icon-holder">
+                            <i class="anticon anticon-setting"></i>
+                        </span>
+                        <span class="title">Community</span>
+                        <span class="arrow">
+                            <i class="arrow-icon"></i>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li @if (request()->segment(2) == 'channel') class='active' @endif>
+                            <a href="{{ route('company.channel.index') }}">Category</a>
+                        </li>
+                        {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                        <a href="{{ route('company.setting.index') }}">Survey list</a>
+                    </li> --}}
+                    </ul>
+                </li>
             @endif
-            <li class="nav-item dropdown">
-                <a class="dropdown-toggle" href="javascript:void(0);">
-                    <span class="icon-holder">
-                        <i class="anticon anticon-setting"></i>
-                    </span>
-                    <span class="title">Survey Setting</span>
-                    <span class="arrow">
-                        <i class="arrow-icon"></i>
-                    </span>
-                </a>
-                <ul class="dropdown-menu">
 
-                    <li @if (request()->segment(2) == 'survey') class='active' @endif>
-                        <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
-                    </li>
-                    {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
-                        <a href="{{ route('company.setting.index') }}">Survey list</a>
-                    </li> --}}
-                </ul>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="dropdown-toggle" href="javascript:void(0);">
-                    <span class="icon-holder">
-                        <i class="anticon anticon-setting"></i>
-                    </span>
-                    <span class="title">Community</span>
-                    <span class="arrow">
-                        <i class="arrow-icon"></i>
-                    </span>
-                </a>
-                <ul class="dropdown-menu">
-
-                    <li @if (request()->segment(2) == 'channel') class='active' @endif>
-                        <a href="{{ route('company.channel.index') }}">Category</a>
-                    </li>
-                    {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
-                        <a href="{{ route('company.setting.index') }}">Survey list</a>
-                    </li> --}}
-                </ul>
-            </li>
             @can('notification-list')
                 <li class="nav-item dropdown open @if (request()->segment(2) == 'notification') active @endif">
                     <a class="dropdown-toggle" href="{{ route('company.notification.list') }}">
