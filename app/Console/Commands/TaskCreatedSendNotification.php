@@ -53,6 +53,9 @@ class TaskCreatedSendNotification extends Command
 
                 $companyDatas = NotificationsQue::where('company_id', $notificationsQue->company_id)->where('status', '0')->take(10)->get();
                 foreach ($companyDatas as $companyData) {
+
+
+
                     $userDetails = User::where('user_type', "4")->where('status', "1")->where('company_id', $companyData->company_id)->first();
 
                     $webUrl =  'http://' . $notificationsQue->getCompany->subdomain . config('app.domain');
@@ -121,6 +124,12 @@ class TaskCreatedSendNotification extends Command
                         }
                     }
                     // End sms
+
+                    if (!empty($userDetails)) {
+
+                        $companyData->status = '1';
+                        $companyData->save();
+                    }
                 }
             }
         }

@@ -3,6 +3,8 @@
 namespace App\Helpers;
 
 use App\Models\CampaignModel;
+use App\Models\Channels;
+use App\Models\Community;
 use App\Models\CompanyModel;
 use App\Models\CompanyPackage;
 use App\Models\SettingModel;
@@ -95,32 +97,7 @@ class Helper
         $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->exists();
         return $checkPackage;
     }
-    public static function get_domaininfo($url)
-    {
-        // regex can be replaced with parse_url
-        preg_match("/^(https|http|ftp):\/\/(.*?)\//", "$url/", $matches);
-        $parts = explode(".", $matches[2]);
-        $tld = array_pop($parts);
-        $host = array_pop($parts);
-        if (strlen($tld) == 2 && strlen($host) <= 3) {
-            $tld = "$host.$tld";
-            $host = array_pop($parts);
-        }
-        dd(
-            [
-                'protocol' => $matches[1],
-                'subdomain' => implode(".", $parts),
-                'domain' => "$host.$tld",
-                'host' => $host, 'tld' => $tld
-            ]
-        );
-        return array(
-            'protocol' => $matches[1],
-            'subdomain' => implode(".", $parts),
-            'domain' => "$host.$tld",
-            'host' => $host, 'tld' => $tld
-        );
-    }
+
     public static function getCompanyId()
     {
         $getdomain = Helper::getdomain();
@@ -413,5 +390,12 @@ class Helper
             ->select('stripe_key', 'stripe_secret')
             ->first();
         return $mailConfig;
+    }
+    public  static function getChannels()
+    {
+        $companyId = Helper::getCompanyId();
+        $channels = Channels::where('company_id', $companyId)->get();
+
+        return $channels;
     }
 }

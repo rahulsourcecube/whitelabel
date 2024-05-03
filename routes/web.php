@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TemplateController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
+use App\Http\Controllers\Company\ChannelsController;
 use App\Http\Controllers\Company\EmployeeController;
 use App\Http\Controllers\Company\MailtemplateController;
 use App\Http\Controllers\Company\Notification;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Company\SmstemplateController;
 use App\Http\Controllers\Company\SurveyController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\Front\CampaignController as FrontCampaignController;
+use App\Http\Controllers\Front\CommunityController;
 use App\Http\Controllers\Front\HomeController as ForntHomeController;
 use App\Http\Controllers\Front\SurveyController as ForntSurveyController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
@@ -225,8 +227,29 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::get('/success-202', [ForntHomeController::class, 'success'])->name('success.page');
         });
 
+        Route::get('community/{type?}', [CommunityController::class, 'community'])->name('community');
+
+        Route::prefix('community')->name('community.')->group(function () {
+            // Route::get('{type?}', [CommunityController::class, 'type'])->name('type');
+            Route::get('ss', [CommunityController::class, 'index'])->name('index');
+            Route::post('store', [CommunityController::class, 'store'])->name('store');
+            Route::get('discuss', [CommunityController::class, 'discuss'])->name('discuss');
+            Route::get('show/{id}', [CommunityController::class, 'show'])->name('show');
+            Route::post('reply/{id}', [CommunityController::class, 'reply'])->name('reply.store');
+            Route::prefix('questions')->name('questions.')->group(function () {
+                Route::get('create', [CommunityController::class, 'create'])->name('create');
+                Route::delete('delete/{answer}', [CommunityController::class, 'delete'])->name('delete');
+            });
+        });
+
 
         Route::prefix('user')->name('user.')->group(function () {
+
+            Route::prefix('community')->name('community.')->group(function () {
+                Route::get('/{survey}', [CommunityController::class, 'index'])->name('index');
+                Route::get('/
+                /{id}', [CommunityController::class, 'channel'])->name('channel');
+            });
             // Route::get('/', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
             Route::get('/login', [UsrController::class, 'index'])->name('login')->middleware('checkNotLoggedIn');
             Route::get('/signup/{referral_code?}', [UsrController::class, 'signup'])->name('signup')->middleware('checkNotLoggedIn');
@@ -411,6 +434,18 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('form/addfield', [SurveyController::class, 'getAdditionalFields'])->name('form.addfield');
                 });
                 //Survey end
+                // Channels Controller Start
+                Route::prefix('category')->name('channel.')->group(function () {
+                    Route::get('', [ChannelsController::class, 'index'])->name('index');
+                    Route::get('create', [ChannelsController::class, 'create'])->name('create');
+                    Route::post('store', [ChannelsController::class, 'store'])->name('store');
+                    Route::get('list', [ChannelsController::class, 'list'])->name('list');
+                    Route::get('edit/{id}', [ChannelsController::class, 'edit'])->name('edit');
+                    Route::delete('delete/{id}', [ChannelsController::class, 'delete'])->name('delete');
+                });
+
+                //End Category
+
                 //Task Progression
                 Route::prefix('progression')->name('progression.')->group(function () {
                     Route::get('progression', [CompanySettingController::class, 'progressionIndex'])->name('index');

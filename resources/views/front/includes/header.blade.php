@@ -5,6 +5,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" href="{{ route('front.campaign.list') }}">Task</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ route('community') }}">Comminty</a>
+                </li>
             </ul>
             @if (!Auth::user())
                 <ul class="navbar-nav d-flex  order-5">
