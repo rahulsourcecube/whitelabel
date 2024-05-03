@@ -109,7 +109,6 @@ class UsrController extends Controller
 
     public function login(Request $request)
     {
-
         try {
             $host = $request->getHost();
             $domain = explode('.', $host);
@@ -141,8 +140,10 @@ class UsrController extends Controller
                 }
                 if (Session('join_link') != null) {
                     $join_link = Session('join_link');
-
                     return redirect()->route('user.campaign.view', $join_link);
+                }
+                if (Session('questions_create') != null) {
+                    return redirect()->route('community.questions.create');
                 }
                 return redirect()->route('user.dashboard');
             } else {
