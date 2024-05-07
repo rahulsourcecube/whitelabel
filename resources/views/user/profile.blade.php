@@ -79,7 +79,7 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-8">
+                <div class=" {{ count($progressions) > 0 ? 'col-lg-8' : 'col-lg-12' }}">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -140,7 +140,7 @@
                         </div>
                     </div>
                 </div>
-                @if (!empty($progressions))
+                @if (count($progressions) > 0)
                     <div class="col-lg-4">
                         <style>
                             .avatar {
@@ -175,8 +175,8 @@
                                                                         src="{{ asset('uploads/company/progression/' . $progression->taskProgression->image) }}"
                                                                         alt="Image Preview">
                                                                 @else
-                                                                    <img
-                                                                        src="{{ asset('assets/images/profile_image.jpg') }}">
+                                                                    <img src="{{ asset('assets/images/profile_image.jpg') }}"
+                                                                        style="object-fit: cover; width: 100%; height: 100%">
                                                                 @endif
                                                             </div>
                                                             <div class="media-body">

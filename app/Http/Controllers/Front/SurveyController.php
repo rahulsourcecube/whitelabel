@@ -12,15 +12,17 @@ use Illuminate\Support\Facades\Log;
 
 class SurveyController extends Controller
 {
-    public function survey(Request $request, $slug)
+    public function survey(Request $request, SurveyForm $surveyForm)
     {
-
         $companyId = Helper::getCompanyId();
-        $surveyFiled = SurveyForm::where('slug', $slug)->where('company_id', $companyId)->first();
 
-        $fields = json_decode($surveyFiled->fields, true);
+        if ($surveyForm->company_id !=  $companyId) {
+            return redirect()->back()->with('error', "Not Found Campaign ");
+        }
 
-        return view('front.surveyForm', compact('surveyFiled', 'fields'));
+        $fields = json_decode($surveyForm->fields, true);
+
+        return view('front.surveyForm', compact('surveyForm', 'fields'));
     }
 
     public function Store(Request $request)

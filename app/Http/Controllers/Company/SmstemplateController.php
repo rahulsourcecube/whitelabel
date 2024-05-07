@@ -106,6 +106,9 @@ class SmstemplateController extends Controller
         try {
             $companyId = Helper::getCompanyId();
             $SmsTemplate = SmsTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
+            if (empty($SmsTemplate)) {
+                return redirect()->back()->with('error', 'No Found SMS Template ')->withInput();
+            }
             return view('company.smsTemplate.create', compact('SmsTemplate'));
         } catch (Exception $e) {
             Log::error('SmstemplateController::Create => ' . $e->getMessage());

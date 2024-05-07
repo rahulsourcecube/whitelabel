@@ -178,8 +178,8 @@ class CompanyLoginController extends Controller
             }
             $user = user::where('user_type', '1')->first();
             $siteSetting = SettingModel::where('user_id', $user->id)->first();
-
-            return view('company.signup', compact('siteSetting'));
+            $countrys = CountryModel::all();
+            return view('company.signup', compact('siteSetting', 'countrys'));
         } catch (Exception $e) {
             Log::error('CompanyLoginController::Signup => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -213,6 +213,9 @@ class CompanyLoginController extends Controller
             $user->password = hash::make($request->password);
             $user->view_password = $request->password;
             $user->contact_number = $request->ccontact;
+            $user->country_id = $request->country;
+            $user->state_id = $request->state;
+            $user->city_id = $request->city;
             $user->user_type = '2';
             $user->save();
             if (isset($user)) {
@@ -294,8 +297,8 @@ class CompanyLoginController extends Controller
 
                     // Remove unwanted '&nbsp;' text
                     $message = str_replace('&nbsp;', ' ', $message);
-
-                    $to = $SettingModel->type == "2" ? $request->ccontact : $SettingModel->sms_account_to_number;
+                    $contact_number = Helper::getReqestPhoneCode($request->ccontact, $request->country);
+                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                     $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                     try {
                         $twilioService->sendSMS($to, $message);
@@ -405,8 +408,8 @@ class CompanyLoginController extends Controller
 
                 // Remove unwanted '&nbsp;' text
                 $message = str_replace('&nbsp;', ' ', $message);
-
-                $to = $SettingModel->type == "2" ? $userEmail->contact_number : $SettingModel->sms_account_to_number;
+                $contact_number = Helper::getReqestPhoneCode($userEmail->contact_number, $userEmail->country_id);
+                $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                 $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                 try {
                     $twilioService->sendSMS($to, $message);
@@ -521,8 +524,9 @@ class CompanyLoginController extends Controller
 
                     // Remove unwanted '&nbsp;' text
                     $message = str_replace('&nbsp;', ' ', $message);
+                    $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
 
-                    $to = $SettingModel->type == "2" ? $user->contact_number : $SettingModel->sms_account_to_number;
+                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                     $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                     try {
                         $twilioService->sendSMS($to, $message);
@@ -565,8 +569,14 @@ class CompanyLoginController extends Controller
         try {
             $editprofiledetail = User::where('id', Auth::user()->id)->first();
             $country_data = CountryModel::all();
-            $state_data = StateModel::all();
-            $city_data = CityModel::all();
+
+            $state_data = "";
+            $city_data = "";
+            $state_data = StateModel::where('country_id', $editprofiledetail->country_id)->get();
+
+            $city_data = CityModel::where('state_id', $editprofiledetail->state_id)->get();
+
+
 
             return view('company.editprofile', compact('editprofiledetail',  'country_data', 'state_data', 'city_data'));
         } catch (Exception $e) {
@@ -582,10 +592,9 @@ class CompanyLoginController extends Controller
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
             $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
-            $updateprofiledetail['country_id'] = isset($request->country) ? $request->country : '';
-            $updateprofiledetail['state_id'] = isset($request->state) ? $request->state : '';
-            $updateprofiledetail['city_id'] = isset($request->city) ? $request->city : '';
-
+            $updateprofiledetail['country_id'] =  $request->country;
+            $updateprofiledetail['state_id'] = $request->state;
+            $updateprofiledetail['city_id'] =  $request->city;
             if ($request->hasFile('profile_image')) {
                 if ($updateprofiledetail->profile_image && file_exists(base_path() . '/uploads/user-profile/') . $updateprofiledetail->profile_image) {
                     unlink(base_path() . '/uploads/user-profile/' . $updateprofiledetail->profile_image);
@@ -663,5 +672,33 @@ class CompanyLoginController extends Controller
     {
         Auth::logout();
         return redirect()->route('company.signin');
+    }
+    public function get_states(Request $request)
+    {
+        $country_id = $request->input('country_id');
+
+        $states = StateModel::where('country_id', $country_id)->get();
+
+        $options = '';
+        $options .= "<option value=''>Select state</option>";
+        foreach ($states as $state) {
+            $options .= "<option value='" . $state->id . "'>" . $state->name . "</option>";
+        }
+        // Return the options as JSON response
+        return response()->json($options);
+    }
+
+
+    public function get_city(Request $request)
+    {
+        $state_id = $request->input('state_id');
+
+        $citys = CityModel::where('state_id', $state_id)->get();
+        $options = '';
+        $options .= "<option value=''>Select City</option>";
+        foreach ($citys as $city) {
+            $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
+        }
+        return response()->json($options);
     }
 }

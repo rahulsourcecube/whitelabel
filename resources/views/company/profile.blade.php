@@ -5,7 +5,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">Profile</span>
                 </nav>
             </div>
@@ -21,12 +22,14 @@
                                         @if (isset($profiledetail) && $profiledetail->profile_image == '')
                                             <img src="{{ asset('assets/images/default-company.jpg') }}" alt="">
                                         @else
-                                            <img src="{{ asset('uploads/user-profile/' . $profiledetail->profile_image) }}" alt="">
+                                            <img src="{{ asset('uploads/user-profile/' . $profiledetail->profile_image) }}"
+                                                alt="">
                                         @endif
                                     </div>
                                 </div>
                                 <div class="text-center text-sm-left m-v-15 p-l-30 col-md-4">
-                                    <h2 class="m-b-5">{{ isset($profiledetail->first_name) ? $profiledetail->first_name : '-' }}
+                                    <h2 class="m-b-5">
+                                        {{ isset($profiledetail->first_name) ? $profiledetail->first_name : '-' }}
                                         {{ isset($profiledetail->last_name) ? $profiledetail->last_name : '-' }}</h2>
                                     <div class="row">
                                         <div class="d-md-block d-none border-left col-1"></div>
@@ -78,9 +81,11 @@
                                 <div class="text-center text-sm-left col-md-2">
                                     <div class="">
                                         @if (!empty($companydetail->logo) && file_exists('uploads/setting/' . $companydetail->logo))
-                                            <img src="{{ asset('uploads/setting/' . $companydetail->logo) }}" alt="" class="w-100">
+                                            <img src="{{ asset('uploads/setting/' . $companydetail->logo) }}"
+                                                alt="" class="w-100">
                                         @else
-                                            <img src="{{ asset('assets/images/logo/logo.png') }}" alt="">
+                                            <img src="{{ asset('assets/images/logo/logo.png') }}" alt=""
+                                                class="w-100">
                                         @endif
                                     </div>
                                 </div>

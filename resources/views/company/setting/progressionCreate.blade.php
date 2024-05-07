@@ -28,7 +28,7 @@
                                     placeholder="Title" maxlength="150" value="{{ old('title') }}">
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="no_of_task"><span class="error">*</span>Number of task</label>
+                                <label for="no_of_task">Number of task<span class="error">*</span></label>
                                 <input type="text" class="form-control" id="no_of_task" name="no_of_task"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                     value="{{ !empty($progression) && !empty($progression->no_of_task) ? $progression->no_of_task : '' }}"

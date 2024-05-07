@@ -195,7 +195,7 @@ class SettingController extends Controller
             }
             $companyId = Helper::getCompanyId();
 
-            return view('company.setting.progressioncreate');
+            return view('company.setting.progressionCreate');
         } catch (Exception $e) {
             Log::error('SettingController::progressionCreate => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -212,12 +212,13 @@ class SettingController extends Controller
                 'no_of_task' => 'required|string|max:255'
 
             ]);
-            $progressionNoOfTask = TaskProgression::where('id', '!=', base64_decode($request->id))->where('no_of_task', $request->no_of_task)->first();
+            $progressionNoOfTask = TaskProgression::where('company_id', $companyId)->where('id', '!=', base64_decode($request->id))->where('no_of_task', $request->no_of_task)->first();
             $progression = TaskProgression::where('id', base64_decode($request->id))->first();
             if ($progressionNoOfTask) {
 
                 return redirect()->back()->with('error', 'No of task is already added')->withInput();
             }
+
             if (!empty($progression)) {
 
                 if ($request->hasFile('image')) {
@@ -278,9 +279,12 @@ class SettingController extends Controller
                 return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
             $companyId = Helper::getCompanyId();
-            $progression = TaskProgression::where('id', base64_decode($id))->first();
+            $progression = TaskProgression::where('id', base64_decode($id))->where('company_id', $companyId)->first();
+            if (empty($progression)) {
+                return redirect()->back()->with('error', 'No Found progression ')->withInput();
+            }
 
-            return view('company.setting.progressioncreate', compact('progression'));
+            return view('company.setting.progressionCreate', compact('progression'));
         } catch (Exception $e) {
             Log::error('SettingController::progressionCreate => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());

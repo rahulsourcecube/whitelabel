@@ -25,8 +25,8 @@ class CampaignController extends Controller
         $citys = CityModel::where('state_id', $request->input('state'))->get();
 
         $companyId = Helper::getCompanyId();
-        $task_data = CampaignModel::where('public', 1)->where('company_id', $companyId);
-        // $task_data = CampaignModel::where('public', 1)->where('status', 1);
+        $task_data = CampaignModel::where('public', 1)->where('status', '1')->where('company_id', $companyId);
+
 
         if (!empty($request->country) && $request->has('country')) {
             $task_data->where('country_id', $request->country);
@@ -57,8 +57,17 @@ class CampaignController extends Controller
 
     public function detail($id)
     {
-        $campagin_detail = CampaignModel::find($id);
-        return view('front.campaign.detail', compact('campagin_detail'));
+        try {
+            $companyId = Helper::getCompanyId();
+            $campagin_detail = CampaignModel::Where('company_id', $companyId)->where('status', '1')->Where('id', base64_decode($id))->first();
+            if (!$campagin_detail) {
+                return redirect()->back()->with('error', "Not Found Campaign ");
+            }
+            return view('front.campaign.detail', compact('campagin_detail'));
+        } catch (Exception $e) {
+            Log::error('Front CampaignController::Referral => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function getStates(Request $request)

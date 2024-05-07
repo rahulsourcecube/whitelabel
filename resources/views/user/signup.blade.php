@@ -109,14 +109,26 @@
                                                 </select>
 
                                             </div>
+                                            <div class="form-group col-md-4">
+                                                {{-- <label class="font-weight-semibold" for="city">City:</label> --}}
+                                                <input type="hidden" class="form-control" id="phone_code_val"
+                                                    name="phone_code_val" placeholder="Phone Code" name="phone_code">
+
+                                            </div>
 
                                             <div class="form-group col-md-12">
                                                 <label class="font-weight-semibold" for="contact">Contact
                                                     Number:</label>
-                                                <input type="text" class="form-control" id="contact"
-                                                    placeholder="Contact Number" maxlength="10" name="contact_number"
-                                                    value="{{ old('contact_number') }}"
-                                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                <div class="input-group mb-3">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text " id="phone_code"></span>
+                                                    </div>
+                                                    <input type="text" class="form-control" id="contact"
+                                                        placeholder="Contact Number" maxlength="10"
+                                                        name="contact_number" value="{{ old('contact_number') }}"
+                                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                </div>
+                                                <label id="contact-error" class="error" for="contact"></label>
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="password">Password:</label>
@@ -200,6 +212,12 @@
                         minlength: '10',
                         digits: true
                     },
+                    country: {
+                        required: true,
+                    },
+                    phone_code_val: {
+                        required: true,
+                    },
                     password: {
                         required: true,
                     },
@@ -225,6 +243,12 @@
                         minlength: "Your phone number must be 10 digits.",
                         digits: "Please enter valid contact number"
                     },
+                    country: {
+                        required: "Please select country",
+                    },
+                    phone_code_val: {
+                        required: "Please valid  country phone code is required ",
+                    },
                     password: {
                         required: "Please enter password",
                     },
@@ -246,6 +270,20 @@
             $('#country').on('change', function() {
                 var country_id = $(this).val();
                 var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    url: "{{ route('user.phone.code') }}",
+
+                    type: 'GET',
+                    data: {
+                        country_id: country_id
+                    },
+                    success: function(response) {
+                        // Clear previous options and append new ones
+                        $("#phone_code").empty().append(response);
+                        $("#phone_code_val").empty().val(response);
+
+                    }
+                });
 
                 $.ajax({
                     url: '/user/get_states',

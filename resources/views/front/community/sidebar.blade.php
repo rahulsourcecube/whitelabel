@@ -55,7 +55,10 @@
                         </a>
                     </li>
                 @endforeach
-
+            @else
+                <li class="nav-item">
+                    <h6 class="nav-link text-danger">Not found categories</h6>
+                </li>
             @endif
 
         </ul>

@@ -113,7 +113,7 @@ class UsrController extends Controller
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $exitDomain = $CompanyModel->checkDomain($domain['0']);
             $companyId = $exitDomain->user_id;
             $companyActive = User::where('id', $companyId)->where('user_type', '2')->where('status', '1')->first();
             if (empty($companyActive)) {
@@ -555,6 +555,19 @@ class UsrController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
+    public function phoneCode(Request $request)
+    {
+        $country_id = $request->input('country_id');
+
+        $country = CountryModel::where('id', $country_id)->first();
+
+
+        $code = '';
+        $code = !empty($country) && !empty($country->phonecode) ?  $country->phonecode : "";
+
+        // Return the options as JSON response
+        return response()->json($code);
+    }
 
     public function get_states(Request $request)
     {
@@ -590,10 +603,12 @@ class UsrController extends Controller
     public function store(Request $request)
     {
         try {
+
+
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $exitDomain = $CompanyModel->checkDomain($domain['0']);
             $companyId = $exitDomain->user_id;
 
             $userEmail = User::where('user_type', 4)->where('email', $request->email)->where('company_id', $companyId)->first();
@@ -611,7 +626,7 @@ class UsrController extends Controller
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $exitDomain = $CompanyModel->checkDomain($domain['0']);
             $companyId = $exitDomain->user_id;
             $ActivePackageData = Helper::GetActivePackageData($companyId);
 
@@ -695,8 +710,10 @@ class UsrController extends Controller
 
                     // Remove unwanted '&nbsp;' text
                     $message = str_replace('&nbsp;', ' ', $message);
+                    $contact_number = Helper::getReqestPhoneCode($request->contact_number, $request->country);
 
-                    $to = $SettingModel->type == "2" ? $request->contact_number : $SettingModel->sms_account_to_number;
+
+                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                     $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                     try {
                         $twilioService->sendSMS($to, $message);
@@ -822,9 +839,10 @@ class UsrController extends Controller
 
 
                     try {
-                        $to = $SettingModel->type == "2" ? $userEmail->contact_number : $SettingModel->sms_account_to_number;
+                        $contact_number = Helper::getReqestPhoneCode($userEmail->contact_number, $userEmail->country_id);
+                        $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                         $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
-                        Log::error('UsrController:: going to send sms');
+                        Log::error('UsrController:: going to send sms ' . " user contect Number::" . $contact_number);
                         $twilioService->sendSMS($to, $message);
                         Log::error('UsrController:: sms send');
                     } catch (Exception $e) {
@@ -928,8 +946,8 @@ class UsrController extends Controller
 
                     // Remove unwanted '&nbsp;' text
                     $message = str_replace('&nbsp;', ' ', $message);
-
-                    $to = $SettingModel->type == "2" ? $user->contact_number : $SettingModel->sms_account_to_number;
+                    $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
+                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                     $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                     try {
                         $twilioService->sendSMS($to, $message);
@@ -956,7 +974,7 @@ class UsrController extends Controller
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $exitDomain = $CompanyModel->checkDomain($domain['0']);
 
             if ($exitDomain) {
                 $companyId = $exitDomain->user_id;
@@ -1003,7 +1021,7 @@ class UsrController extends Controller
         $host = $request->getHost();
         $domain = explode('.', $host);
         $CompanyModel = new CompanyModel();
-        $exitDomain = $CompanyModel->checkDmain($domain['0']);
+        $exitDomain = $CompanyModel->checkDomain($domain['0']);
 
         if ($exitDomain) {
             $companyId = $exitDomain->user_id;

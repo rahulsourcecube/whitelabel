@@ -108,6 +108,9 @@ class MailtemplateController extends Controller
         try {
             $companyId = Helper::getCompanyId();
             $mailTemplate = MailTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
+            if (empty($mailTemplate)) {
+                return redirect()->back()->with('error', 'No Found Mail Template ')->withInput();
+            }
             return view('company.mailTemplate.create', compact('mailTemplate'));
         } catch (Exception $e) {
             Log::error('MailtemplateController::Create => ' . $e->getMessage());

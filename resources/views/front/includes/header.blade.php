@@ -6,7 +6,7 @@
                     <a class="nav-link active" href="{{ route('front.campaign.list') }}">Task</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('community') }}">Comminty</a>
+                    <a class="nav-link active" href="{{ route('community') }}">Community</a>
                 </li>
             </ul>
             @if (!Auth::user())

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyModel extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $table = 'company';
 
     /*protected $fillable = [
@@ -25,20 +25,20 @@ class CompanyModel extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
-    public function checkDmain($subdomain)
+    public function checkDomain($subdomain)
     {
-        return   $this->where('subdomain',$subdomain)->first();
-
+        return   $this->where('subdomain', $subdomain)->first();
     }
 
-    public  function checkUserLogin($userId, $companyId){
+    public  function checkUserLogin($userId, $companyId)
+    {
 
         $userCount = User::where('company_id', $companyId)->where('id', $userId)->first();
-        if(empty($userCount)){
+        if (empty($userCount)) {
             return false; // not login
-        }else{
+        } else {
             return true; //logged in
         }
     }

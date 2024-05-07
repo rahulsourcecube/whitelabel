@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Channel <span class="error">*</span></label>
+                    <label>Category <span class="error">*</span></label>
 
                     <select name="channel_id" id="channel_id" class="form-control">
                         <option value="">Select Category </span></option>
@@ -90,7 +90,7 @@
                         required: "Please enter a title"
                     },
                     channel_id: {
-                        required: "Please select a channel"
+                        required: "Please select a Category"
                     },
 
                 },

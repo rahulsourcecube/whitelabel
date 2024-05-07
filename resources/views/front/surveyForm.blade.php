@@ -51,7 +51,7 @@
                                             src="@if (!empty($siteSetting) && !empty($siteSetting->logo) && file_exists('uploads/setting/' . $siteSetting->logo)) {{ url('uploads/setting/' . $siteSetting->logo) }} @else {{ asset('assets/images/logo/logo.png') }} @endif "
                                             alt="Logo">
                                         <h2 class="m-b-0 m-l-10">
-                                            {{ !empty($surveyFiled->title) && !empty($surveyFiled) ? $surveyFiled->title : '' }}
+                                            {{ !empty($surveyForm->title) && !empty($surveyForm) ? $surveyForm->title : '' }}
                                         </h2>
                                     </div>
                                     <form id="survey" method="POST" action="{{ route('front.survey.store') }}">
@@ -170,7 +170,7 @@
                                             </div>
                                         </div>
                                         <input type="hidden" name="form_id"
-                                            value="{{ !empty($surveyFiled->id) && !empty($surveyFiled) ? $surveyFiled->id : '' }}">
+                                            value="{{ !empty($surveyForm->id) && !empty($surveyForm) ? $surveyForm->id : '' }}">
                                     </form>
                                     {{-- <label for="checkbox"><span>Already have an account? <a
                                                 href="{{route('company.signin')}}">Login</a></span></label> --}}

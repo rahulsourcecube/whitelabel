@@ -31,7 +31,7 @@ class TemplateController extends Controller
     {
         try {
 
-            $companyId = auth()->user()->id;
+            $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
 
             $columns = ['id'];
             $totalData = MailTemplate::where('company_id', $companyId)->count();
@@ -107,8 +107,11 @@ class TemplateController extends Controller
     function edit($id)
     {
         try {
-            $companyId = auth()->user()->id;
+            $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
             $mailTemplate = MailTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
+            if (empty($mailTemplate)) {
+                return redirect()->back()->with('error', 'No Found Mail Template ')->withInput();
+            }
             return view('admin.mailTemplate.create', compact('mailTemplate'));
         } catch (Exception $e) {
             Log::error('MailtemplateController::Create => ' . $e->getMessage());
@@ -124,7 +127,7 @@ class TemplateController extends Controller
 
             ]);
 
-            $companyId = auth()->user()->id;
+            $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
             $mailTemplate = MailTemplate::where('company_id', $companyId)
                 ->where('template_type', $request->type)
                 ->first();
@@ -170,7 +173,7 @@ class TemplateController extends Controller
     public function smsList(Request $request)
     {
         try {
-            $companyId = auth()->user()->id;
+            $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
             $columns = ['id'];
             $totalData = SmsTemplate::where('company_id', $companyId)->count();
             $start = $request->input('start');
@@ -244,8 +247,11 @@ class TemplateController extends Controller
     function smsEdit($id)
     {
         try {
-            $companyId = auth()->user()->id;
+            $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
             $SmsTemplate = SmsTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
+            if (empty($SmsTemplate)) {
+                return redirect()->back()->with('error', 'No Found SMS Template ')->withInput();
+            }
             return view('admin.smsTemplate.create', compact('SmsTemplate'));
         } catch (Exception $e) {
             Log::error('SmstemplateController::Create => ' . $e->getMessage());
@@ -256,12 +262,10 @@ class TemplateController extends Controller
     {
 
         try {
-            $companyId = auth()->user()->id;
+            $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
             $SmsTemplate = SmsTemplate::where('company_id', $companyId)
                 ->where('template_type', $request->type)
                 ->first();
-
-
 
             if (empty($SmsTemplate) || empty($request->id)) {
 

@@ -22,23 +22,27 @@
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="name">Name <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" value="{{old('name')}}" placeholder="Country" maxlength="150">
+                                <input type="text" class="form-control" id="name" name="name"
+                                    value="{{ old('name') }}" placeholder="Country" maxlength="150">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="name">Short Name<span class="error"></span></label>
-                                <input type="text" class="form-control" id="short_name" name="short_name"  value="{{old('short_name')}}" placeholder="IND" maxlength="150">
+                                <input type="text" class="form-control" id="short_name" name="short_name"
+                                    value="{{ old('short_name') }}" placeholder="IND" maxlength="150">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="name">Phone Code <span class="error"></span></label>
-                                <input type="text" class="form-control" id="code" name="code" placeholder="+91" value="{{!empty(old('code')) ? old('code') :""}}" maxlength="150">
+                                <input type="text" class="form-control" id="code" name="code" placeholder="+91"
+                                    value="{{ !empty(old('code')) ? old('code') : '' }}" maxlength="150">
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-3" style="max-height: 200px;">
-                                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 100%; max-height: 80%;display: none;">
-                                <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2" style="display: none;" onclick="deleteImage()"><i
-                                        class="fa fa-trash"></i></button>
+                                <img id="imagePreview" src="#" alt="Image Preview"
+                                    style="max-width: 100%; max-height: 80%;display: none;">
+                                <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
+                                    style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -54,14 +58,20 @@
                 rules: {
                     name: {
                         required: true
+                    },
+                    code: {
+                        required: true
                     }
-                   
+
                 },
                 messages: {
                     name: {
                         required: "Please enter country name"
+                    },
+                    code: {
+                        required: "Please enter Phone code"
                     }
-                    
+
                 }
             });
 

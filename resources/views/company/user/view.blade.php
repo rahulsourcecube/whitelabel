@@ -102,7 +102,7 @@
             </div>
 
             <div class="row col-md-12">
-                <div class=" col-md-8">
+                <div class=" {{ count($progressions) > 0 ? 'col-lg-8' : 'col-lg-12' }}">
                     <div class="card">
                         <div class="card-body">
                             <h2>Payout Detail:</h2>
@@ -137,47 +137,11 @@
                         </div>
                     </div>
                 </div>
-                @if (!empty($progressions))
-                    {{-- <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="m-b-0">Task progression</h5>
-                                </div>
-                                <div class="m-t-5">
-                                    <div class="overflow-y-auto scrollable relative"
-                                        style="max-height: 300px; margin: 0 auto;">
-                                        <ul class="timeline p-t-5 p-l-5">
-                                            @foreach ($progressions as $key => $progression)
-                                                <li class="timeline-item">
-                                                    <div class="m-b-10 p-b-10 border-bottom">
-                                                        <div class="media align-items-center m-b-15">
-                                                            <div class="avatar avatar-image"
-                                                                style="width: 150px; height: 100px;">
-                                                                <img src="{{ asset('uploads/company/progression/' . $progression->taskProgressionHistory[$key]->image) }}"
-                                                                    alt="">
-                                                            </div>
-                                                            <div class="media-body m-l-20">
-                                                                <b>
-                                                                    Tiitle:- <a href="#"
-                                                                        class="text-dark">{{ !empty($progression->taskProgressionHistory[$key]->title) ? $progression->taskProgressionHistory[$key]->title : '' }}</a>
-                                                                </b>
-                                                                <b>Task:- <a href="#"
-                                                                        class="text-dark">{{ !empty($progression->no_of_task) ? $progression->no_of_task : '' }}</a></b>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
+                @if (count($progressions) > 0)
+
                     <div class="col-lg-4">
                         <style>
-                            .avatar {
+                            .avatars {
                                 width: 70px;
                                 height: 70px;
                             }
@@ -199,7 +163,7 @@
                                                     <div class="m-b-10 p-b-10 border-bottom">
 
                                                         <div class="media m-b-15" style="flex-direction: column;">
-                                                            <div class="avatar avatar-image mx-auto mb-3"
+                                                            <div class="avatars avatar-image mx-auto mb-3"
                                                                 style="max-width: 100px; max-height: 100px;">
                                                                 {{-- <img src="{{ asset('uploads/company/progression/' . $progression->taskProgressionHistory[$key]->image) }}"
                                                                     alt=""> --}}

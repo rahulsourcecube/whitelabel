@@ -7,6 +7,7 @@ use App\Models\Channels;
 use App\Models\Community;
 use App\Models\CompanyModel;
 use App\Models\CompanyPackage;
+use App\Models\CountryModel;
 use App\Models\SettingModel;
 use App\Models\User;
 use Carbon\Carbon;
@@ -16,8 +17,10 @@ use Exception;
 // use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\str;
+
 use Illuminate\Http\Request;
 
 
@@ -104,7 +107,7 @@ class Helper
         Log::info('Domain : ' . $getdomain);
         if (!empty($getdomain) && $getdomain != config('app.pr_name')) { //Company Domain logic
             $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($getdomain);
+            $exitDomain = $CompanyModel->checkDomain($getdomain);
             $companyId = $exitDomain ? $exitDomain->user_id : false;
         } else {
             Log::info('Is Any Company/Admin Login? : ' . json_encode(auth()->user()));
@@ -169,10 +172,11 @@ class Helper
     // Change Date format
     public static function Dateformat($date)
     {
+        $formattedDate = "";
         if (gettype($date) == 'string') {
             $date = Carbon::parse($date);
+            $formattedDate = $date->format('Y-M-d');
         }
-        $formattedDate = $date->format('Y-M-d');
 
         return $formattedDate;
     }
@@ -397,5 +401,25 @@ class Helper
         $channels = Channels::where('company_id', $companyId)->get();
 
         return $channels;
+    }
+    public  static function getReqestPhoneCode($number, $country)
+    {
+
+        $country = CountryModel::where('id', $country)->first();
+        $contactNumber = "";
+
+        if (!empty($country) && !empty($country->phonecode)) {
+            if (Str::startsWith($country->phonecode, '+')) {
+
+                $contactNumber = $country->phonecode . $number;
+            } else {
+                $contactNumber = '+' . $country->phonecode . $number;
+            }
+        } else {
+            $contactNumber = $number;
+        }
+
+
+        return $contactNumber;
     }
 }

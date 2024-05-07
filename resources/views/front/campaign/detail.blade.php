@@ -1,5 +1,5 @@
 @extends('front.layouts.master')
-@section('title', 'Task')
+@section('title', 'Details')
 @section('main-content')
 
 
@@ -9,6 +9,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
+                    @include('front.includes.message')
                     <div class="card-content w-40 m-auto">
                         @if (isset($campagin_detail) &&
                                 $campagin_detail->image != '' &&
@@ -42,7 +43,7 @@
 
 
 
-                            <a href="{{ route('front.campaign.Join', base64_encode($campagin_detail->id)) }}"
+                            <a href="{{ route('front.campaign.Join', base64_encode(!empty($campagin_detail) ? $campagin_detail->id : '')) }}"
                                 class="btn btn-primary btn-tone" id="btnJoined">
                                 <span class="m-l-5">Join Now</span>
                             </a>
@@ -70,28 +71,28 @@
                                 <span class="text-gray">Expire on
                                     {{ isset($campagin_detail->expiry_date) ? App\Helpers\Helper::Dateformat($campagin_detail->expiry_date) : '' }}</span>
                                 <p class="text-gray font-weight-semibold">Reward:
-                                    <b>{{ $campagin_detail->text_reward ? $campagin_detail->text_reward : (isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '0') }}</b>
+                                    <b>{{ !empty($campagin_detail->text_reward) ? $campagin_detail->text_reward : (isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '0') }}</b>
                                     <span class="m-h-5 text-gray">|</span>
                                     <span
-                                        class="text-gray">{{ App\Helpers\Helper::Dateformat($campagin_detail->expiry_date) ?? '' }}</span>
+                                        class="text-gray">{{ App\Helpers\Helper::Dateformat(!empty($campagin_detail->expiry_date)) ? $campagin_detail->expiry_date : '' }}</span>
                                 <p class="text-gray font-weight-semibold">
-                                    @if ($campagin_detail->priority == 1)
+                                    @if (!empty($campagin_detail) && $campagin_detail->priority == 1)
                                         <span class="badge badge-pill badge-danger"> High </span>
-                                    @elseif($campagin_detail->priority == 2)
+                                    @elseif(!empty($campagin_detail) && $campagin_detail->priority == 2)
                                         <span class="badge badge-pill badge-info"> Medium </span>
-                                    @elseif($campagin_detail->priority == 3)
+                                    @elseif(!empty($campagin_detail) && $campagin_detail->priority == 3)
                                         <span class="badge badge-pill badge-success"> Low </span>
                                     @else
                                         {{-- Handle other cases if needed --}}
                                     @endif
                                     Reward:
-                                    <b>{{ $campagin_detail->text_reward ? $campagin_detail->text_reward : (isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '0') }}</b>
+                                    <b>{{ !empty(!empty($campagin_detail)) && $campagin_detail->text_reward ? $campagin_detail->text_reward : (isset($campagin_detail->reward) ? \App\Helpers\Helper::getcurrency() . $campagin_detail->reward : '0') }}</b>
 
                                     <span class="m-h-5 text-gray">|</span>
                                     <span class="text-gray"><b>Public: </b>
-                                        @if ($campagin_detail->public == 1)
+                                        @if (!empty(!empty($campagin_detail)) && $campagin_detail->public == 1)
                                             Yes
-                                        @elseif($campagin_detail->public == 0)
+                                        @elseif(!empty(!empty($campagin_detail)) && $campagin_detail->public == 0)
                                             No
                                         @else
                                             NA

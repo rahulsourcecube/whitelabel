@@ -10,8 +10,8 @@
     <div class="d-flex flex-column justify-content-between w-100">
 
         <div class="container h-100 mt-4">
-            <div class="row">
 
+            <div class="row">
 
                 <div class="col-lg-11 mx-auto">
                     <form action="{{ route('front.campaign.list') }}" method="get">
@@ -57,13 +57,17 @@
                                 <button id="search_dtt" type="submit" value=""
                                     class="btn btn-primary">Search</button>
                             </div>
-                            <div class="col-md-1">
-                                <a href="{{ route('front.campaign.list') }}" value="" class="btn btn-danger">Clear</a>
-                            </div>
+                            @if (isset($_GET['country']) && !empty($_GET['country']))
+                                <div class="col-md-1">
+                                    <a href="{{ route('front.campaign.list') }}" value=""
+                                        class="btn btn-danger">Clear</a>
+                                </div>
+                            @endif
                         </div>
 
                         @csrf
                     </form>
+                    @include('front.includes.message')
                     <div class="row">
                         @if (!empty($task_data) && count($task_data) > 0)
 
@@ -107,7 +111,7 @@
                                                 href="{{ route('front.campaign.Join', base64_encode($data->id)) }}">Join
                                                 Now</a>
                                             <a class="btn-primary btn  btn-hover gap-2"
-                                                href="{{ url('front/campaign/detail', ['id' => $data->id]) }}">Read
+                                                href="{{ route('front.campaign.detail', base64_encode($data->id)) }} ">Read
                                                 More</a>
                                         </div>
 

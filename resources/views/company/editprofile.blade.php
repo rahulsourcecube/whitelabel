@@ -6,7 +6,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">Edit Profile</span>
                 </nav>
             </div>
@@ -15,7 +16,8 @@
             <div class="tab-content m-t-15">
                 @include('company.includes.message')
                 <div class="tab-pane fade show active" id="tab-account">
-                    <form action="{{ route('company.update_profile', $editprofiledetail->id) }}" method="post" enctype="multipart/form-data" id="profile-update">
+                    <form action="{{ route('company.update_profile', $editprofiledetail->id) }}" method="post"
+                        enctype="multipart/form-data" id="profile-update">
                         @csrf
                         <div class="card">
                             <div class="card-header">
@@ -25,16 +27,19 @@
                                 <div class="media align-items-center">
                                     <div class="avatar avatar-image  m-h-10 m-r-15" style="height: 80px; width: 80px">
                                         @if (isset($editprofiledetail) && $editprofiledetail->profile_image == '')
-                                            <img src="{{ asset('assets/images/default-company.jpg') }}" class="imagePreviews">
+                                            <img src="{{ asset('assets/images/default-company.jpg') }}"
+                                                class="imagePreviews">
                                         @else
-                                            <img src="{{ asset('uploads/user-profile/' . $editprofiledetail->profile_image) }}" class="imagePreviews">
+                                            <img src="{{ asset('uploads/user-profile/' . $editprofiledetail->profile_image) }}"
+                                                class="imagePreviews">
                                         @endif
                                     </div>
                                     <!-- <button class="btn btn-tone btn-primary" onclick="getimage()">Upload</button> -->
                                     <div class="m-l-20 m-r-20">
                                         <h5 class="m-b-5 font-size-18">
                                             {{ isset($editprofiledetail->first_name) ? $editprofiledetail->first_name : '' }}
-                                            {{ isset($editprofiledetail->last_name) ? $editprofiledetail->last_name : '' }}</h5>
+                                            {{ isset($editprofiledetail->last_name) ? $editprofiledetail->last_name : '' }}
+                                        </h5>
                                     </div>
                                     <!-- <button class="btn btn-primary">Upload</button> -->
                                     <div class="image">
@@ -45,31 +50,37 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="firstname">First Name:</label>
-                                        <input type="text" class="form-control" name="first_name" id="firstname" placeholder="First Name"
+                                        <input type="text" class="form-control" name="first_name" id="firstname"
+                                            placeholder="First Name"
                                             value="{{ isset($editprofiledetail->first_name) ? $editprofiledetail->first_name : '' }}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="last_name">Last Name:</label>
-                                        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name"
+                                        <input type="text" class="form-control" name="last_name" id="last_name"
+                                            placeholder="Last Name"
                                             value="{{ isset($editprofiledetail->last_name) ? $editprofiledetail->last_name : '' }}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="email">Email:</label>
-                                        <input type="email" class="form-control" name="email" id="email" placeholder="email"
+                                        <input type="email" class="form-control" name="email" id="email"
+                                            placeholder="email"
                                             value="{{ isset($editprofiledetail->email) ? $editprofiledetail->email : '' }}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="phoneNumber">Phone Number:</label>
-                                        <input type="number" class="form-control" name="contact_number" id="phoneNumber" placeholder="Phone Number"
+                                        <input type="number" class="form-control" name="contact_number" id="phoneNumber"
+                                            placeholder="Phone Number"
                                             value="{{ isset($editprofiledetail->contact_number) ? $editprofiledetail->contact_number : '' }}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="country">Country:</label>
                                         <select name="country" id="country" class="form-control">
-
+                                            <option value="">Select Country</option>
                                             @if ($country_data)
+
                                                 @foreach ($country_data as $country)
-                                                    <option value="{{ $country->id }}" {{ $editprofiledetail->country_id == $country->id ? 'selected' : '' }}>
+                                                    <option value="{{ $country->id }}"
+                                                        {{ $editprofiledetail->country_id == $country->id ? 'selected' : '' }}>
                                                         {{ $country->name }}</option>
                                                 @endforeach
 
@@ -80,9 +91,11 @@
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="state">State:</label>
                                         <select name="state" id="state" class="form-control">
-                                            @if ($state_data)
+                                            <option value="">Select State</option>
+                                            @if (!empty($state_data))
                                                 @foreach ($state_data as $state)
-                                                    <option value="{{ $state->id }}" {{ $editprofiledetail->state_id == $state->id ? 'selected' : '' }}>
+                                                    <option value="{{ $state->id }}"
+                                                        {{ $editprofiledetail->state_id == $state->id ? 'selected' : '' }}>
                                                         {{ $state->name }}</option>
                                                 @endforeach
                                             @endif
@@ -92,9 +105,11 @@
                                     <div class="form-group col-md-6">
                                         <label class="font-weight-semibold" for="city">City:</label>
                                         <select name="city" id="city" class="form-control">
-                                            @if ($state_data)
+                                            <option value="">Select City</option>
+                                            @if (!empty($city_data))
                                                 @foreach ($city_data as $city)
-                                                    <option value="{{ $city->id }}" {{ $editprofiledetail->city_id == $city->id ? 'selected' : '' }}>
+                                                    <option value="{{ $city->id }}"
+                                                        {{ $editprofiledetail->city_id == $city->id ? 'selected' : '' }}>
                                                         {{ $city->name }}</option>
                                                 @endforeach
                                             @endif
@@ -117,11 +132,14 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-3">
                                         <label class="font-weight-semibold" for="newPassword">New Password:</label>
-                                        <input type="password" class="form-control" name="newPassword" id="newPassword" placeholder="New Password">
+                                        <input type="password" class="form-control" name="newPassword" id="newPassword"
+                                            placeholder="New Password">
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label class="font-weight-semibold" for="confirmPassword">Confirm Password:</label>
-                                        <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password">
+                                        <label class="font-weight-semibold" for="confirmPassword">Confirm
+                                            Password:</label>
+                                        <input type="password" class="form-control" name="confirmPassword"
+                                            id="confirmPassword" placeholder="Confirm Password">
                                     </div>
                                     <div class="form-group col-md-3">
                                         <button type="submit" class="btn btn-primary m-t-30">Change</button>
@@ -227,53 +245,7 @@
             });
 
 
-            $('#country').on('change', function() {
-                var country_id = $(this).val();
-                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
-                $.ajax({
-                    url: '/user/get_states',
-                    type: 'POST',
-                    data: {
-                        country_id: country_id,
-                        _token: CSRF_TOKEN // Include CSRF token in the request data
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        var len = response.length;
-                        $("#state").empty();
-                        for (var i = 0; i < len; i++) {
-                            var id = response[i]['id'];
-                            var name = response[i]['name'];
-                            $("#state").append("<option value='" + id + "'>" + name + "</option>");
-                        }
-                    }
-                });
-            });
-
-            $('#state').on('change', function() {
-                var state_id = $(this).val();
-                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-
-                $.ajax({
-                    url: '/user/get_city',
-                    type: 'POST',
-                    data: {
-                        state_id: state_id,
-                        _token: CSRF_TOKEN // Include CSRF token in the request data
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        var len = response.length;
-                        $("#city").empty();
-                        for (var i = 0; i < len; i++) {
-                            var id = response[i]['id'];
-                            var name = response[i]['name'];
-                            $("#city").append("<option value='" + id + "'>" + name + "</option>");
-                        }
-                    }
-                });
-            });
         });
     </script>
 @endsection

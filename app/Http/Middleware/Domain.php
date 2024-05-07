@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Middleware;
+
 use App\Models\CompanyModel;
 use Closure;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class Domain
 {
     /**
@@ -21,7 +24,7 @@ class Domain
         $domain = explode('.', $host);
         $CompanyModel = new CompanyModel();
         if ($domain['0'] != config('app.pr_name')) {
-            $exitDomain = $CompanyModel->checkDmain($domain['0']);
+            $exitDomain = $CompanyModel->checkDomain($domain['0']);
         }
         if (!empty($exitDomain) && !empty(auth()->user()) && (auth()->user()->user_type == 4 || auth()->user()->user_type == 3)) {
             $isUserValidLoginOrNot = $CompanyModel->checkUserLogin(auth()->user()->id, $exitDomain->user_id);
@@ -40,19 +43,18 @@ class Domain
         ) {
             return $next($request);
         } elseif ($domain['0'] != config('app.pr_name')  && !empty($exitDomain)) {
-	
-            if (empty(auth()->user())) {				
+
+            if (empty(auth()->user())) {
                 return $next($request);
-            } else if (!empty(auth()->user()) && auth()->user()->id == $exitDomain->user_id ) {				
-				return $next($request);
-            }  else if (!empty(auth()->user()) && (auth()->user()->user_type == 4 || auth()->user()->user_type == 3 )) {
-				
-			
-			 return $next($request);
-				}
-				 else {
-				
-				Session::flush();
+            } else if (!empty(auth()->user()) && auth()->user()->id == $exitDomain->user_id) {
+                return $next($request);
+            } else if (!empty(auth()->user()) && (auth()->user()->user_type == 4 || auth()->user()->user_type == 3)) {
+
+
+                return $next($request);
+            } else {
+
+                Session::flush();
                 Auth::logout();
                 return redirect()->route('user.login');
             }

@@ -212,12 +212,12 @@ Route::group(['middleware' => 'check.session'], function () {
         });
         // Route::prefix('front')->name('front.')->group(function () {
         Route::prefix('survey')->name('front.survey.')->group(function () {
-            Route::get('/{survey}', [ForntSurveyController::class, 'survey'])->name('form');
+            Route::get('/{survey_form:slug}', [ForntSurveyController::class, 'survey'])->name('form');
             Route::post('/store', [ForntSurveyController::class, 'store'])->name('store');
         });
         Route::prefix('campaign')->name('front.campaign.')->group(function () {
             Route::get('/', [FrontCampaignController::class, 'list'])->name('list');
-            Route::get('detail/{id}', [FrontCampaignController::class, 'detail'])->name('public.detail');
+            Route::get('detail/{id}', [FrontCampaignController::class, 'detail'])->name('detail');
             Route::post('/getStates', [FrontCampaignController::class, 'getStates'])->name('getStates');
             Route::post('/getCity', [FrontCampaignController::class, 'getCity'])->name('getCity');
             Route::post('/search', [FrontCampaignController::class, 'search'])->name('search');
@@ -259,6 +259,7 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::post('/forget-password', [UsrController::class, 'submitForgetPassword'])->name('forget-password');
             Route::get('/confirm/password/{token}', [UsrController::class, 'confirmPassword'])->name('confirmPassword');
             Route::post('/reset-password', [UsrController::class, 'submitResetPassword'])->name('reset-password');
+            Route::get('/phone/code', [UsrController::class, 'phoneCode'])->name('phone.code');
             Route::post('/get_states', [UsrController::class, 'get_states'])->name('get_states');
             Route::post('/get_city', [UsrController::class, 'get_city'])->name('get_city');
 
@@ -331,6 +332,9 @@ Route::group(['middleware' => 'check.session'], function () {
 
             Route::get('/chenge/password/{id}', [CompanyLoginController::class, 'confirmPassword'])->name('confirmPassword')->middleware('checkNotLoggedIn');
             Route::put('/changePassword/{id}', [CompanyLoginController::class, 'changePassword'])->name('change.password');
+            Route::get('/get_states', [UserController::class, 'get_states'])->name('get_states');
+            Route::get('/get_city', [UserController::class, 'get_city'])->name('get_city');
+            Route::get('/phone/code', [UsrController::class, 'phoneCode'])->name('phone.code');
         });
 
         Route::get('verifyemail/{id}', [CompanyLoginController::class, 'verifyemail'])->name('user.verifyemail');
@@ -359,6 +363,7 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::get('/list', [UserController::class, 'dtList'])->name('dtlist');
                 Route::post('/get_states', [UserController::class, 'get_states'])->name('get_states');
                 Route::post('/get_city', [UserController::class, 'get_city'])->name('get_city');
+                Route::get('/export', [UserController::class, 'export'])->name('export');
             });
             Route::prefix('package')->name('package.')->group(function () {
                 Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
@@ -502,6 +507,7 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('edit/{id}', [EmployeeController::class, 'edit'])->name('edit');
                     Route::delete('delete/{id}', [EmployeeController::class, 'delete'])->name('delete');
                     Route::post('/update/{id}', [EmployeeController::class, 'update'])->name('update');
+                    Route::get('export', [EmployeeController::class, 'export'])->name('export');
                 });
                 Route::prefix('notification')->name('notification.')->group(function () {
                     Route::get('', [Notification::class, 'index'])->name('list');
