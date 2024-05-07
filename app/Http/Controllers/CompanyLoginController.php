@@ -673,32 +673,4 @@ class CompanyLoginController extends Controller
         Auth::logout();
         return redirect()->route('company.signin');
     }
-    public function get_states(Request $request)
-    {
-        $country_id = $request->input('country_id');
-
-        $states = StateModel::where('country_id', $country_id)->get();
-
-        $options = '';
-        $options .= "<option value=''>Select state</option>";
-        foreach ($states as $state) {
-            $options .= "<option value='" . $state->id . "'>" . $state->name . "</option>";
-        }
-        // Return the options as JSON response
-        return response()->json($options);
-    }
-
-
-    public function get_city(Request $request)
-    {
-        $state_id = $request->input('state_id');
-
-        $citys = CityModel::where('state_id', $state_id)->get();
-        $options = '';
-        $options .= "<option value=''>Select City</option>";
-        foreach ($citys as $city) {
-            $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
-        }
-        return response()->json($options);
-    }
 }

@@ -12,7 +12,7 @@ class CompanyModel extends Model
     protected $table = 'company';
 
     /*protected $fillable = [
-        'user_id',
+        'user_id',~
         'company_name',
         'company_description',
         'contact_email',
