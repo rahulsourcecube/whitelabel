@@ -38,6 +38,10 @@
                                         {{ !empty($SmsTemplate) && $SmsTemplate->template_type == 'change_pass' ? 'selected' : '' }}>
                                         Change password
                                     </option>
+                                    <option value="custom"
+                                        {{ !empty($SmsTemplate) && $SmsTemplate->template_type == 'custom' ? 'selected' : '' }}>
+                                        Custom
+                                    </option>
                                 </select>
 
                                 @if (!empty($SmsTemplate) && !empty($SmsTemplate->template_type))
@@ -132,6 +136,10 @@
                 } else if (type == 'change_pass') {
                     html = "[user_name]  [company_title] [company_web_link] ";
                     $('.htmltemplateClass').show();
+                } else if (type == 'custom') {
+                    html = "[user_name]  [company_title] [company_web_link] ";
+                    $('.htmltemplateClass').show();
+
                 } else {
                     $('.htmltemplateClass').hide();
                 }
@@ -142,23 +150,5 @@
         });
     </script>
 
-    {{-- <script>
-        $(document).ready(function() {
-            // Define the variable
-            var $name = "test";
 
-            // Function to find and replace text
-            function findAndReplaceText() {
-                // Select the elements containing the text "user_name" and replace it with the value of $name
-                $("body").find("*").contents().filter(function() {
-                    return this.nodeType === 3;
-                }).each(function() {
-                    $(this).replaceWith($(this).text().replace(/user_name/g, $name));
-                });
-            }
-
-            // Call the function to perform the replacement
-            findAndReplaceText();
-        });
-    </script> --}}
 @endsection

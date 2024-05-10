@@ -17,18 +17,23 @@
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href="@if (
+            !empty($siteSetting) &&
+                isset($siteSetting->favicon) &&
+                file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
     <!-- Core css -->
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css"
+        rel="stylesheet">
 
 </head>
 
@@ -46,13 +51,15 @@
                 <div class="container notification">
                     @if ($remainingDays && $remainingDays != null)
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <strong> {{ $remainingDays }}</strong>. <a href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            <strong> {{ $remainingDays }}</strong>. <a
+                                href="{{ route('company.package.list', 'Free') }}">Click</a>
                             here to buy package.
                         </div>
                     @endif
                     @if ($GetActivePackageData == null)
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Please purchase package</strong>. <a href="{{ route('company.package.list', 'Free') }}">Click</a>
+                            <strong>Please purchase package</strong>. <a
+                                href="{{ route('company.package.list', 'Free') }}">Click</a>
                             here to buy package.
                         </div>
                     @endif

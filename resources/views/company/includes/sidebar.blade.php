@@ -221,6 +221,9 @@
                         <li @if (request()->segment(2) == 'channel') class='active' @endif>
                             <a href="{{ route('company.channel.index') }}">Category</a>
                         </li>
+                        <li @if (request()->segment(2) == 'reply') class='active' @endif>
+                            <a href="{{ route('company.reply.index') }}">Reply</a>
+                        </li>
                         {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
                         <a href="{{ route('company.setting.index') }}">Survey list</a>
                     </li> --}}

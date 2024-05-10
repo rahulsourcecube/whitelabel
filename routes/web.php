@@ -17,6 +17,7 @@ use App\Http\Controllers\Company\EmployeeController;
 use App\Http\Controllers\Company\MailtemplateController;
 use App\Http\Controllers\Company\Notification;
 use App\Http\Controllers\Company\PackageController as CompanyPackageController;
+use App\Http\Controllers\Company\ReplyController;
 use App\Http\Controllers\Company\RolesController;
 use App\Http\Controllers\Company\SettingController as CompanySettingController;
 use App\Http\Controllers\Company\SmstemplateController;
@@ -185,6 +186,8 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::post('template/store', [TemplateController::class, 'store'])->name('template.store');
             Route::get('edit/{id}', [TemplateController::class, 'edit'])->name('template.edit');
             Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+            Route::post('send/mail', [TemplateController::class, 'sendMail'])->name('sendMail');
+            Route::post('send/all/mail', [TemplateController::class, 'sendAllMail'])->name('send.all');
         });
         Route::prefix('sms')->name('sms.')->group(function () {
             Route::get('template', [TemplateController::class, 'smsIndex'])->name('index');
@@ -192,6 +195,8 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::get('template/list', [TemplateController::class, 'smsList'])->name('template.list');
             Route::post('template/store', [TemplateController::class, 'smsStore'])->name('template.store');
             Route::get('edit/{id}', [TemplateController::class, 'smsEdit'])->name('template.edit');
+            Route::post('send/sms', [TemplateController::class, 'sendSms'])->name('sendSms');
+            Route::post('send/all/sms', [TemplateController::class, 'sendAllSms'])->name('send.all');
         });
     });
 
@@ -230,15 +235,18 @@ Route::group(['middleware' => 'check.session'], function () {
         Route::get('community/{type?}', [CommunityController::class, 'community'])->name('community');
 
         Route::prefix('community')->name('community.')->group(function () {
-            // Route::get('{type?}', [CommunityController::class, 'type'])->name('type');
-            Route::get('ss', [CommunityController::class, 'index'])->name('index');
+            // Route::get('{type?}', [CommunityController::class, 'type'])->name('type
             Route::post('store', [CommunityController::class, 'store'])->name('store');
             Route::get('discuss', [CommunityController::class, 'discuss'])->name('discuss');
             Route::get('show/{id}', [CommunityController::class, 'show'])->name('show');
+            Route::post('status/change', [CommunityController::class, 'status'])->name('status.change');
             Route::post('reply/{id}', [CommunityController::class, 'reply'])->name('reply.store');
+            Route::post('reply/status/change', [CommunityController::class, 'replyStatus'])->name('reply.status.change');
+            Route::delete('reply/delete/{answer}', [CommunityController::class, 'replyDelete'])->name('reply.delete');
+
             Route::prefix('questions')->name('questions.')->group(function () {
                 Route::get('create', [CommunityController::class, 'create'])->name('create');
-                Route::delete('delete/{answer}', [CommunityController::class, 'delete'])->name('delete');
+                Route::delete('delete/{questions}', [CommunityController::class, 'delete'])->name('delete');
             });
         });
 
@@ -277,6 +285,9 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::get('progress/reward', [UsrController::class, 'progressreward'])->name('progress.reward');
                 Route::post('/user/progress/search', [UsrController::class, 'searchProgress'])->name('progress.search');
                 Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
+                Route::get('/setting/notification', [UsrController::class, 'notificationSetting'])->name('notification.setting');
+                Route::post('setting/notification/change', [UsrController::class, 'changeNotification'])->name('notification.change');
+
 
                 Route::post('/reopen/{reopen}', [UsrController::class, 'reopen'])->name('progress.reopen');
 
@@ -430,6 +441,9 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('form/edit/{survey}', [SurveyController::class, 'formEdit'])->name('form.edit');
                     Route::get('form/edit_form/{survey}', [SurveyController::class, 'formEditFrom'])->name('form.edit_form');
                     Route::post('/slug/check', [SurveyController::class, 'checkSlug'])->name('checkSlug');
+                    Route::post('/sendSms', [SurveyController::class, 'sendSms'])->name('sendSms');
+                    Route::post('/sendMail', [SurveyController::class, 'sendMail'])->name('sendMail');
+
 
 
                     Route::post('form/update/{survey}', [SurveyController::class, 'formUpdate'])->name('form.update');
@@ -448,8 +462,15 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('edit/{id}', [ChannelsController::class, 'edit'])->name('edit');
                     Route::delete('delete/{id}', [ChannelsController::class, 'delete'])->name('delete');
                 });
-
                 //End Category
+                Route::prefix('reply')->name('reply.')->group(function () {
+                    Route::get('', [ReplyController::class, 'index'])->name('index');
+                    Route::get('list', [ReplyController::class, 'list'])->name('list');
+                    Route::post('store', [ChannelsController::class, 'store'])->name('store');
+                    Route::get('edit/{id}', [ReplyController::class, 'view'])->name('view');
+                    Route::delete('delete/{id}', [ReplyController::class, 'delete'])->name('delete');
+                });
+
 
                 //Task Progression
                 Route::prefix('progression')->name('progression.')->group(function () {
@@ -466,7 +487,9 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('template/list', [MailtemplateController::class, 'list'])->name('template.list');
                     Route::post('template/store', [MailtemplateController::class, 'store'])->name('template.store');
                     Route::get('edit/{id}', [MailtemplateController::class, 'edit'])->name('template.edit');
-                    Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+                    // Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
+                    Route::post('send/mail', [MailtemplateController::class, 'sendMail'])->name('sendMail');
+                    Route::post('send/all/mail', [MailtemplateController::class, 'sendAllMail'])->name('send.all');
                 });
                 Route::prefix('sms')->name('sms.')->group(function () {
                     Route::get('template', [SmstemplateController::class, 'index'])->name('index');
@@ -474,6 +497,8 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('template/list', [SmstemplateController::class, 'list'])->name('template.list');
                     Route::post('template/store', [SmstemplateController::class, 'store'])->name('template.store');
                     Route::get('edit/{id}', [SmstemplateController::class, 'edit'])->name('template.edit');
+                    Route::post('send/sms', [SmstemplateController::class, 'sendSms'])->name('sendSms');
+                    Route::post('send/all/sms', [SmstemplateController::class, 'sendAllSms'])->name('send.all');
                 });
                 // Route::prefix('mail')->name('mail.')->group(function () {
                 //     Route::get('template', [MailtemplateController::class, 'index'])->name('index');

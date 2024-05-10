@@ -9,6 +9,7 @@ use App\Models\CompanyModel;
 use App\Models\CompanyPackage;
 use App\Models\CountryModel;
 use App\Models\SettingModel;
+use App\Models\SurveyForm;
 use App\Models\User;
 use Carbon\Carbon;
 use DateInterval;
@@ -421,5 +422,21 @@ class Helper
 
 
         return $contactNumber;
+    }
+    public  static function companyAdmin()
+    {
+        $companyId = Helper::getCompanyId();
+        $restult = false;
+        if ($companyId == auth::user()->id) {
+            $restult = true;
+        }
+        return $restult;
+    }
+    public  static function getSurveyFrom($id)
+    {
+        $companyId = Helper::getCompanyId();
+        $survey = "";
+        $survey = SurveyForm::where('id', base64_decode($id))->where('company_id', $companyId)->first();
+        return $survey;
     }
 }

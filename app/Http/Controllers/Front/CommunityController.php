@@ -23,6 +23,10 @@ class CommunityController extends Controller
         $companyId = Helper::getCompanyId();
         // $discussions = Community::orderby('created_at', 'desc')->paginate(2);
         $questions = Community::where('company_id', $companyId)->orderBy('created_at', 'desc');
+        $companyAdmin = Helper::companyAdmin();
+        if ($companyAdmin == false) {
+            $questions->where('status', Reply::STATUS['ACTIVE']);
+        }
 
         if (!empty($type) && $type == 'my' && !empty(Auth::user())) {
             $questions->where('user_id', auth()->user()->id);
@@ -36,7 +40,7 @@ class CommunityController extends Controller
 
 
         $channels = Channels::where('company_id', $companyId)->get();
-        return view('front.community.index', compact('channels', 'questions'));
+        return view('front.community.index', compact('channels', 'questions', 'companyAdmin'));
     }
 
     public function index()
@@ -125,10 +129,20 @@ class CommunityController extends Controller
         try {
 
             $companyId = Helper::getCompanyId();
-            $questions = Community::where('company_id', $companyId)->where('id', base64_decode($id))->first();
-            $questionsReplys = Reply::where('company_id', $companyId)->where('community_id', $questions->id)->orderBy('created_at', 'desc')->paginate(5);
+            $companyAdmin = Helper::companyAdmin();
 
-            return view('front.community.show', compact('questions', 'questionsReplys'));
+            $questions = Community::where('company_id', $companyId)->where('id', base64_decode($id))->first();
+            if (empty($questions)) {
+                return redirect()->back()->with('error', 'Questions not found');
+            }
+            $questionsReply = Reply::where('company_id', $companyId)->where('community_id', $questions->id)->orderBy('created_at', 'desc');
+            if ($companyAdmin == false) {
+
+                $questionsReply->where('status', Reply::STATUS['ACTIVE']);
+            }
+            $questionsReplys = $questionsReply->paginate(5);
+
+            return view('front.community.show', compact('questions', 'questionsReplys', 'companyAdmin'));
         } catch (Exception $e) {
             Log::error('CommunityController::show => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -163,16 +177,68 @@ class CommunityController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
-    public function delete($id)
+    public function Delete($id)
+    {
+        try {
+
+
+            $companyId = Helper::getCompanyId();
+            $questions = Community::where('company_id', $companyId)->where('id', base64_decode($id));
+            $questions->delete();
+            return response()->json(["status" => 200, "message" => "Questions Deleted"]);
+        } catch (\Exception $e) {
+            Log::error('CommunityController::delete ' . $e->getMessage());
+            return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
+        }
+    }
+    public function replyDelete($id)
+    {
+        try {
+
+
+            $companyId = Helper::getCompanyId();
+            $reply = Reply::where('company_id', $companyId)->where('id', base64_decode($id));
+            $reply->delete();
+            return response()->json(["status" => 200, "message" => "Your Reply Deleted"]);
+        } catch (\Exception $e) {
+            Log::error('CommunityController::delete ' . $e->getMessage());
+            return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
+        }
+    }
+    public function status(Request $request)
+    {
+        try {
+
+
+
+            $companyId = Helper::getCompanyId();
+            // Ensure that the community belongs to the current company
+            $community = Community::where('company_id', $companyId)->findOrFail(base64_decode($request->id));
+            $community->update([
+                'status' => $request->status,
+            ]);
+
+
+            return response()->json(["status" => 200, "message" => "Updated successfully"]);
+        } catch (\Exception $e) {
+            Log::error('CommunityController::status ' . $e->getMessage());
+            return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
+        }
+    }
+    public function replyStatus(Request $request)
     {
         try {
 
             $companyId = Helper::getCompanyId();
-            $package = Reply::where('company_id', $companyId)->where('id', $id);
-            $package->delete();
-            return response()->json(["status" => 200, "message" => "Your Reply Deleted"]);
+            $reply = Reply::where('company_id', $companyId)->findOrFail(base64_decode($request->id));
+
+            $reply->update([
+                'status' => $request->status,
+            ]);
+
+            return response()->json(["status" => 200, "message" => "Updated successfully"]);
         } catch (\Exception $e) {
-            Log::error('CommunityController::delete ' . $e->getMessage());
+            Log::error('CommunityController::status ' . $e->getMessage());
             return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
         }
     }

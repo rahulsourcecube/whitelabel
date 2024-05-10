@@ -49,13 +49,13 @@ class TaskCreatedSendNotification extends Command
 
                 $SettingValue = SettingModel::where('user_id', $notificationsQue->company_id)->first();
                 $mailTemplate = MailTemplate::where('company_id', $notificationsQue->company_id)->where('template_type', 'new_task')->first();
-                $smsTemplate = SmsTemplate::where('company_id', $notificationsQue->company_id)->where('template_type', 'earn_reward')->first();
+                $smsTemplate = SmsTemplate::where('company_id', $notificationsQue->company_id)->where('template_type', 'new_task')->first();
 
                 $companyDatas = NotificationsQue::where('company_id', $notificationsQue->company_id)->where('status', '0')->take(10)->get();
                 foreach ($companyDatas as $companyData) {
                     $userDetails = User::where('user_type', "4")->where('status', "1")->where('company_id', $companyData->company_id)->first();
 
-                    $webUrl =  'http://' . $notificationsQue->getCompany->subdomain . config('app.domain');
+                    $webUrl =  'https://' . $notificationsQue->getCompany->subdomain . config('app.domain');
 
                     //Start Mail
                     try {

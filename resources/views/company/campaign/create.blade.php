@@ -180,7 +180,7 @@
                             </div>
                             @if (isset($typeInText) && $typeInText == 'Referral')
                                 <div class="form-group col-md-6">
-                                    <label for="referral_url">URl Setting <span class="error">*</span></label>
+                                    <label for="referral_url">URl Setting <span class="error"></span></label>
                                     <div class="input-group mb-3">
                                         <div class="input-group-append">
                                             <span class="input-group-text"

@@ -4,13 +4,19 @@ namespace App\Http\Controllers\Company;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\CampaignModel;
+use App\Models\SettingModel;
+use App\Models\SmsTemplate;
 use App\Models\Survey;
 use App\Models\SurveyForm;
+use App\Models\User;
+use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class SurveyController extends Controller
 {
@@ -58,7 +64,7 @@ class SurveyController extends Controller
                 $surveyDatas = "0";
                 $surveyDatas = Survey::where('form_id', $result->id)->count();
                 $list[] = [
-                    $result->id,
+                    base64_encode($result->id),
                     $result->slug,
                     $result->title,
                     $surveyDatas
@@ -101,6 +107,7 @@ class SurveyController extends Controller
     public function formView(Request $request, $id)
     {
         try {
+            $id = base64_decode($id);
             $surveyFiled = SurveyForm::find($id);
             $fields = json_decode($surveyFiled->fields, true);
             $surveyDatas = Survey::where('form_id', $id)->paginate(5);
@@ -116,6 +123,7 @@ class SurveyController extends Controller
     public function formEdit(Request $request, $id)
     {
         try {
+            $id = base64_decode($id);
             $companyId = Helper::getCompanyId();
             $surveyFiled = SurveyForm::find($id);
 
@@ -201,7 +209,7 @@ class SurveyController extends Controller
                 // Add HTML for checkbox additional fields
                 break;
             case 'addMore':
-                $additionalFields = '<hr class="border">
+                $additionalFields = '<hr class="border hr-' . $addCount . '">
                 <span class="btn btn-danger float-right addFiledRemove btn-sm" onclick="addFiledRemove(this)" data-removeCount="' . $addCount . '"><i class="fa fa-trash"></i></span>
                 <div class="form-group row ">
                     <div class="col-md-6">
@@ -217,12 +225,8 @@ class SurveyController extends Controller
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="label" class="col-form-label">Label</label>
-                    <input type="text" class="form-control" name="label[]" id="label" placeholder="Enter Label" required>
-                </div>
-                <div class="col-sm-6">
-                    <label class=" col-form-label">Placeholder</label>
-                    <input type="text" class="form-control" name="placeholder[]" id="placeholder" placeholder="Enter Placeholder">
+                    <label for="question" class="col-form-label">Question</label>
+                    <input type="text" class="form-control" name="question[]" id="label" placeholder="Enter Question" required>
                 </div>
                 <div class="col-md-6">
                     <label for="required" class="col-form-label">Required</label>
@@ -259,11 +263,12 @@ class SurveyController extends Controller
             $SurveyForm->company_id = $companyId;
             $SurveyForm->title = $request->input('survey_title');
             $SurveyForm->slug = $request->input('slug');
+            $SurveyForm->description = $request->input('description');
 
             $fields = [];
             $types = $request->input('type');
-            $labels = $request->input('label');
-            $placeholders = $request->input('placeholder');
+            $question = $request->input('question');
+
             $required = $request->input('required');
 
             // Loop through each field and create an array for each field
@@ -272,10 +277,9 @@ class SurveyController extends Controller
                 $fields[] = [
                     'type' => $type,
                     'inputName' => $inputNames,
-                    'label' => $labels[$key],
+                    'label' => $question[$key],
                     'idname' => $inputNames,
                     'class' => $inputNames,
-                    'placeholder' => $placeholders[$key],
                     'required' => $required[$key],
                     $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
                 ];
@@ -296,54 +300,56 @@ class SurveyController extends Controller
     }
     public function formUpdate(Request $request, $id)
     {
-        try {
-            $companyId = Helper::getCompanyId();
-            $SurveyForm = SurveyForm::find($id);
-            $inputFields = $request->all();
+        // try {
+        $companyId = Helper::getCompanyId();
+        $SurveyForm = SurveyForm::find($id);
+        $inputFields = $request->all();
 
-            $SurveyForm->company_id = $companyId;
-            $SurveyForm->title = $request->input('survey_title');
-            $SurveyForm->slug = $request->input('slug');
+        $SurveyForm->company_id = $companyId;
+        $SurveyForm->title = $request->input('survey_title');
+        $SurveyForm->slug = $request->input('slug');
+        $SurveyForm->description = $request->input('description');
 
-            $fields = [];
-            $types = $request->input('type');
-            $labels = $request->input('label');
-            $placeholders = $request->input('placeholder');
-            $required = $request->input('required');
+        $fields = [];
+        $types = $request->input('type');
+        $question = $request->input('question');
 
-            // Loop through each field and create an array for each field
-            foreach ($types as $key => $type) {
-                $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
-                $fields[] = [
-                    'type' => $type,
-                    'inputName' => $inputNames,
-                    'label' => $labels[$key],
-                    'idname' => $inputNames,
-                    'class' => $inputNames,
-                    'placeholder' => $placeholders[$key],
-                    'required' => $required[$key],
-                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
-                ];
-            }
+        $required = $request->input('required');
 
+        // Loop through each field and create an array for each field
+        foreach ($types as $key => $type) {
+            $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
+            $fields[] = [
+                'type' => $type,
+                'inputName' => $inputNames,
+                'label' => $question[$key],
+                'idname' => $inputNames,
+                'class' => $inputNames,
 
-            // Convert fields array to JSON and save it in the SurveyForm model
-            $SurveyForm->fields = json_encode($fields);
-
-            // Save the SurveyForm instance
-            $SurveyForm->save();
-
-            return redirect()->route('company.survey.form.index', ['survey' => $SurveyForm->id])
-                ->with('success', 'Survey updated successfully');
-        } catch (Exception $e) {
-            Log::error('SurveyController::formUpdate => ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+                'required' => $required[$key],
+                $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
+            ];
         }
+
+
+        // Convert fields array to JSON and save it in the SurveyForm model
+        $SurveyForm->fields = json_encode($fields);
+
+        // Save the SurveyForm instance
+        $SurveyForm->save();
+
+        return redirect()->route('company.survey.form.index', ['survey' => $SurveyForm->id])
+            ->with('success', 'Survey updated successfully');
+        // } catch (Exception $e) {
+        //     Log::error('SurveyController::formUpdate => ' . $e->getMessage());
+        //     return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        // }
     }
     public function formDelete($id)
     {
 
         try {
+            $id = base64_decode($id);
             $form_id = $id;
             $form_id = SurveyForm::where('id', $form_id)->delete();
             return response()->json(['success' => 'success', 'message' => 'Form deleted successfully']);
@@ -374,5 +380,145 @@ class SurveyController extends Controller
             // Return true in case of any error
             return 'true';
         }
+    }
+    function sendSms(Request $request)
+    {
+
+        $companyId = Helper::getCompanyId();
+
+        $webUrlGetHost = $request->getHost();
+        $currentUrl = URL::current();
+        $webUrl = "";
+        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+            // URL is under HTTPS
+            $webUrl =  'https://' . $webUrlGetHost;
+        } else {
+            // URL is under HTTP
+            $webUrl =  'http://' . $webUrlGetHost;
+        }
+
+        // $SettingModel = SettingModel::first();
+        // if (!empty($companyId)) {
+        // }
+        $SettingModel = SettingModel::find($companyId);
+
+        if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+            return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Cridntioal"]);
+        }
+        $notFoundNumber = [];
+        if ($request->contact_number != '') {
+
+            foreach ($request->contact_number as $number) {
+
+
+                $SettingValue = SettingModel::where('user_id', $companyId)->first();
+
+
+
+                $companyData =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
+
+
+                if (!empty($request->smsHtml)) {
+                    if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
+
+
+                        //set survey shortcut
+                        $template = $request->smsHtml;
+
+                        $pattern = '/\[survey\[(.*?)\]\]/';
+                        preg_match_all($pattern, $template, $matches);
+                        if (!empty($matches[1])) {
+                            foreach ($matches[1] as $surveyValue) {
+                                $surveyFrom = Helper::getSurveyFrom($surveyValue);
+                                $survey_link = $webUrl . '/survey' . '/' . $surveyFrom->slug;
+
+                                $template = str_replace('[survey[' . $surveyValue . ']]', $survey_link, $template);
+                            }
+                        }
+                        $html = $template;
+
+                        // Remove HTML tags and decode HTML entities
+                        $message = htmlspecialchars_decode(strip_tags($html));
+
+                        // Remove unwanted '&nbsp;' text
+                        $message = str_replace('&nbsp;', ' ', $message);
+
+                        $to = $SettingValue->type == "2" ? $number : $SettingValue->sms_account_to_number;
+                        $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
+                        try {
+                            $twilioService->sendSMS($to, $message);
+                        } catch (Exception $e) {
+                            Log::error('Notifications >> Que SMS Fail => ' . $e->getMessage());
+                        }
+                    }
+                }
+            }
+
+
+
+
+            return redirect()->route('company.survey.form.index')->with([
+                'success' => 'SMS sent successfully',
+
+            ]);
+        }
+    }
+    public function sendMail(Request $request)
+    {
+
+        $companyId = Helper::getCompanyId();
+
+        $webUrlGetHost = $request->getHost();
+        $currentUrl = URL::current();
+        $webUrl = "";
+        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+            // URL is under HTTPS
+            $webUrl =  'https://' . $webUrlGetHost;
+        } else {
+            // URL is under HTTP
+            $webUrl =  'http://' . $webUrlGetHost;
+        }
+
+        // $SettingModel = SettingModel::first();
+        // if (!empty($companyId)) {
+        // }
+        $SettingModel = SettingModel::find($companyId);
+
+        foreach ($request->mail as $mail) {
+
+
+            // try {
+
+
+
+            $to = $mail;
+            $message = '';
+
+            $html =  $request->tempHtml;
+
+            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'custom';
+            Mail::send('user.email.surveyEmail', [
+                'name' => "",
+                'company_id' => "",
+                'template' => $html,
+                'webUrl' => "$webUrl",
+                'campaign_title' => "",
+                'campaign_price' => "",
+                'campaign_price' => "",
+                'campaign_join_link' => ""
+            ], function ($message) use ($to, $mailTemplateSubject) {
+                $message->to($to);
+                $message->subject($mailTemplateSubject);
+            });
+            // } catch (Exception $e) {
+            //     Log::error('CampaignController::Action => ' . $e->getMessage());
+            // }
+        }
+
+
+        return redirect()->route('company.survey.form.index')->with([
+            'success' => 'Mail sent successfully',
+
+        ]);
     }
 }

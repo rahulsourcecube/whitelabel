@@ -13,13 +13,11 @@
                 </nav>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h4>Add Survey Form</h4>
-
-                <div class="m-t-50" style="">
-                    <form id="surveyForm" method="POST" action="{{ route('company.survey.form.store') }}"
-                        data-parsley-validate="">
+        <form id="questionForm" method="POST" action="{{ route('company.survey.form.store') }}" data-parsley-validate="">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Add Survey </h4>
+                    <div class="m-t-50" style="">
                         @csrf
                         <div class="row">
                             <div class=" form-group col-md-6">
@@ -34,9 +32,31 @@
 
                             </div>
                         </div>
+                        <div class="row">
+                            <div class=" form-group col-md-12">
+                                <label for="description" class="col-sm-3 col-form-label">Description</label>
+                                <textarea type="text" class="form-control" name="description" id="description" placeholder="Enter description"
+                                    required></textarea>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h4>Add Question </h4>
+                    <div>
                         <input type="hidden" class="addMoreCount" value="0">
                         <div class="form-group row ">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
+                                <label for="question" class=" col-form-label">Question </label>
+                                <input type="text" class="form-control" name="question[]" id="question"
+                                    placeholder="Enter Question">
+                            </div>
+                            <div class="col-md-3">
                                 <label for="type" class="col-form-label">Type</label>
                                 <select id="type" name="type[]" class="form-control templateType type"
                                     onchange="onchangeType(this)" data-count="0">
@@ -49,18 +69,14 @@
                                     <option value="checkbox">Checkbox</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="label" class=" col-form-label">Label</label>
-                                <input type="text" class="form-control" name="label[]" id="label"
-                                    placeholder="Enter Label">
-                            </div>
 
-                            <div class="col-sm-6">
+
+                            {{-- <div class="col-sm-6">
                                 <label for="placeholder" class=" col-form-label">Placeholder</label>
                                 <input type="text" class="form-control" name="placeholder[]" id="placeholder"
                                     placeholder="Enter Placeholder">
-                            </div>
-                            <div class="col-md-6">
+                            </div> --}}
+                            <div class="col-md-3">
                                 <label for="required" class="col-form-label">Required</label>
                                 <select id="required" name="required[]" class="form-control ">
                                     <option value="yes">Yes</option>
@@ -78,15 +94,20 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <span class="btn btn-info addFiledMore">+ Add More Field</span>
-
-                                <button type="submit" id="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
-                    </form>
-
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div class="form-group row">
+                <div class="col-md-2">
+                    <button type="submit" id="submit" class="btn btn-primary w-100">Submit</button>
+                </div>
+            </div>
+
+        </form>
+
     </div>
 
 @endsection
@@ -190,13 +211,13 @@
 
             $('#submit').click(function() {
 
-                $('#surveyForm').validate({
+                $('#questionForm').validate({
                     rules: {
                         survey_title: 'required',
                         'type[]': {
                             required: true
                         },
-                        'label[]': {
+                        'question[]': {
                             required: true
                         },
                         'inputName[]': {
@@ -217,7 +238,7 @@
                     messages: {
                         survey_title: 'Please enter a survey title',
                         'type[]': 'Please select at least one type',
-                        'label[]': 'Please enter a label',
+                        'question[]': 'Please enter a label',
                         'inputName[]': 'Please enter a name',
                         slug: {
                             required: "Please enter a slug",

@@ -50,6 +50,10 @@
                                         {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'earn_reward') || (!empty(old('type')) && old('type') == 'earn_reward') ? 'selected' : '' }}>
                                         Earn reward
                                     </option>
+                                    <option value="custom"
+                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'custom') || (!empty(old('type')) && old('type') == 'custom') ? 'selected' : '' }}>
+                                        Custom
+                                    </option>
                                 </select>
 
                                 @if (!empty($mailTemplate) && !empty($mailTemplate->template_type))
@@ -178,6 +182,10 @@
                 } else if (type == 'earn_reward') {
                     html =
                         "[user_name] [company_logo] [company_title] [company_web_link] [campaign_title] [campaign_price]";
+                    $('.htmltemplateClass').show();
+                } else if (type == 'custom') {
+                    html =
+                        "[user_name] [company_logo] [company_title] [company_web_link] [campaign_title] [campaign_price] [campaign_join_link]";
                     $('.htmltemplateClass').show();
                 } else {
                     $('.htmltemplateClass').hide();

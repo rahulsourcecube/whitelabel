@@ -39,12 +39,16 @@
                                         Change password
                                     </option>
                                     <option value="new_task"
-                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'new_task') || (!empty(old('type')) && old('type') == 'new_task') ? 'selected' : '' }}>
+                                        {{ (!empty($SmsTemplate) && $SmsTemplate->template_type == 'new_task') || (!empty(old('type')) && old('type') == 'new_task') ? 'selected' : '' }}>
                                         New task
                                     </option>
                                     <option value="earn_reward"
-                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'earn_reward') || (!empty(old('type')) && old('type') == 'earn_reward') ? 'selected' : '' }}>
+                                        {{ (!empty($SmsTemplate) && $SmsTemplate->template_type == 'earn_reward') || (!empty(old('type')) && old('type') == 'earn_reward') ? 'selected' : '' }}>
                                         Earn reward
+                                    </option>
+                                    <option value="custom"
+                                        {{ (!empty($SmsTemplate) && $SmsTemplate->template_type == 'custom') || (!empty(old('type')) && old('type') == 'custom') ? 'selected' : '' }}>
+                                        Custom
                                     </option>
                                 </select>
 
@@ -155,6 +159,10 @@
                 } else if (type == 'earn_reward') {
                     html =
                         "[user_name] [company_title] [company_web_link] [campaign_title] [campaign_price]";
+                    $('.htmltemplateClass').show();
+                } else if (type == 'custom') {
+                    html =
+                        "[user_name] [company_title] [company_web_link] [campaign_title] [campaign_price] [campaign_join_link]";
                     $('.htmltemplateClass').show();
 
                 } else {

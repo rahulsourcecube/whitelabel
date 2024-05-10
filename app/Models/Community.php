@@ -17,10 +17,12 @@ class Community extends Model
         'slug',
         'content',
         'image',
+        'status',
     ];
-    // public function channel(){
-    //     return $this->belongsTo('App\Channel');
-    // }
+    public function category()
+    {
+        return $this->belongsTo(Channels::class, 'channel_id');
+    }
 
     public function users()
     {

@@ -313,4 +313,7 @@ class SettingController extends Controller
             return response()->json(['success' => false, 'message' => 'Error : ' . $e->getMessage()]);
         }
     }
+    public function sendMail()
+    {
+    }
 }

@@ -604,7 +604,6 @@ class UsrController extends Controller
     {
         try {
 
-
             $host = $request->getHost();
             $domain = explode('.', $host);
             $CompanyModel = new CompanyModel();
@@ -683,7 +682,7 @@ class UsrController extends Controller
 
                 $message = '';
                 $type =  "user";
-                $html =  $mailTemplate->template_html;
+                $html =  !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : "";
 
                 $data =  ['user' => $userRegister, 'first_name' => $request->first_name, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl];
                 if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
@@ -904,9 +903,8 @@ class UsrController extends Controller
                 // URL is under HTTP
                 $webUrl =  'http://' . $webUrlGetHost;
             }
-            if (!empty($mailTemplate)) {
-                $html = $mailTemplate->template_html;
-            }
+            $html = "";
+
             try {
                 $user = User::where('email', $request->email)->where('company_id', $companyId)->first();
 
@@ -1073,5 +1071,51 @@ class UsrController extends Controller
             Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
+    }
+    public function notificationSetting()
+    {
+        try {
+            $userData = Auth::user();
+            return view('user.notificationSetting', compact('userData'));
+        } catch (Exception $e) {
+            Log::error('UsrController::notificationSetting => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+    }
+    public function changeNotification(Request $request)
+    {
+        // try {
+        if (!empty($request->filed) && $request->filed == "sms") {
+
+            if ($request->type == "new_task") {
+
+                User::findOrFail(Auth::user()->id)->update([
+                    'sms_new_task_notification' => $request->status,
+                ]);
+            }
+            if ($request->type == "custom") {
+                User::findOrFail(Auth::user()->id)->update([
+                    'sms_custom_notification' => $request->status,
+                ]);
+            }
+        } else {
+
+            if ($request->type == "new_task") {
+
+                User::findOrFail(Auth::user()->id)->update([
+                    'mail_new_task_notification' => $request->status,
+                ]);
+            }
+            if ($request->type == "custom") {
+                User::findOrFail(Auth::user()->id)->update([
+                    'mail_custom_notification' => $request->status,
+                ]);
+            }
+        }
+        return response()->json(["status" => 200, "message" => "Updated successfully"]);
+        // } catch (Exception $e) {
+        //     Log::error('UsrController::notificationSetting => ' . $e->getMessage());
+        //     return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
+        // }
     }
 }

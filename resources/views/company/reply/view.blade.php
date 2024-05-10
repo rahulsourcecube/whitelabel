@@ -1,15 +1,19 @@
-@extends('front.layouts.master')
-@section('title', 'Community Show')
+@extends('company.layouts.master')
+@section('title', 'Reply VIew')
 @section('main-content')
-
-
-
-
-
-
-
-    <div class="mail-wrapper  p-h-20 p-v-20 bg full-height">
-        @include('front.community.sidebar')
+    <!-- Content Wrapper START -->
+    <div class="main-content">
+        @include('company.includes.message')
+        <div class="page-header">
+            <div class="header-sub-title">
+                <nav class="breadcrumb breadcrumb-dash">
+                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <span class="breadcrumb-item">Reply</span>
+                    <span class="breadcrumb-item active">VIew </span>
+                </nav>
+            </div>
+        </div>
         <div class="container">
             <div class="card">
                 <div class="card-body">
@@ -29,8 +33,10 @@
                                 @endif
                             </div>
                             <div class="m-l-15">
-                                <a href="javascript:void(0);" class="text-dark m-b-0 font-weight-semibold">Riley Newman</a>
-                                <p class="m-b-0 text-muted font-size-13">{{ $questions->created_at->diffForhumans() }}</p>
+                                <a href="javascript:void(0);" class="text-dark m-b-0 font-weight-semibold">Riley
+                                    Newman</a>
+                                <p class="m-b-0 text-muted font-size-13">{{ $questions->created_at->diffForhumans() }}
+                                </p>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center " style="align-content: center">
@@ -68,7 +74,7 @@
                                                 @if (!empty(Auth::check()) && $companyAdmin == true)
                                                     <button href="#" type="button" id="handleClickActive"
                                                         class="btn {{ !empty($reply) && $reply->status == '1' ? 'btn-danger' : 'btn-success' }} btn-sm  "
-                                                        onclick="handleClickActive(this,'{{ !empty($reply) && $reply->id ? base64_encode($reply->id) : '' }}')">{{ !empty($reply) && $reply->status == '1' ? 'Inactive' : 'Active' }}</button>
+                                                        onclick="handleClickActive(this,{{ !empty($reply) && $reply->id ? $reply->id : '' }})">{{ !empty($reply) && $reply->status == '1' ? 'Inactive' : 'Active' }}</button>
                                                 @endif
                                                 @if (
                                                     (!empty(Auth::check()) &&
@@ -132,53 +138,13 @@
                     </div>
                 </div>
             </div>
-
-
-            <div class="card card-default">
-                <div class="card-body">
-
-                    @if (Auth::check())
-                        <form id="replyForm" action="{{ route('community.reply.store', ['id' => $questions->id]) }}"
-                            method="POST">
-                            {{ csrf_field() }}
-
-                            <div class="form-group">
-                                <label>Reply to this Questions</label>
-                                <!-- Add a textarea with a specific ID for CKEditor to replace -->
-                                <textarea id="editor" name="content" class="form-control" cols="20" rows="5"></textarea>
-                                @error('content')
-                                    <label id="content-error" class="error" for="reward">The Reply field is required.
-                                    </label>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <input type="submit" name="submit" value="Save" class="btn btn-primary">
-                            </div>
-                        </form>
-                    @else
-                        <div class="text-center ">
-                            <h1>You need to login to leave a reply</h1>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-
         </div>
     </div>
 
+    <!-- return '<button class="btn btn-success  btn-sm" data-action="accept" onclick="Accept(\'' + actionUrl + '\',\'3\',\'' + id + '\')">Accept</button>' + -->
 
 
-
-
-
-
-
-
-
-
-
+@endsection
 @section('js')
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
     <script>
@@ -303,5 +269,4 @@
             });
         }
     </script>
-@endsection
 @endsection

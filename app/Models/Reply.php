@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class Reply extends Model
 {
+    const STATUS = [
+        'ACTIVE' => '0',
+        'INACTIVE' => '1',
+
+    ];
     use HasFactory;
     protected  $table = "replies";
     protected $fillable = [
@@ -16,11 +21,12 @@ class Reply extends Model
         'community_id',
         'company_id',
         'user_id',
+        'status',
     ];
 
-    public function discussion()
+    public function community()
     {
-        return $this->belongsTo('App\Community');
+        return $this->belongsTo(Community::class, 'community_id');
     }
 
     public function users()

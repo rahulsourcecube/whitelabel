@@ -37,14 +37,14 @@
             @endif
 
         </ul>
-        <ul class="menu nav flex-column m-t-25">
+        <ul class="menu nav flex-column m-t-15">
 
             <li class="nav-item">
                 <h6 class="nav-link d-inline-block">Categories</h6>
             </li>
             @if (!empty($getChannel))
                 @foreach ($getChannel as $channel)
-                    <li class="nav-item">
+                    <li class="nav-item ">
                         <a href="{{ route('community', base64_encode($channel->id)) }}"
                             class="nav-link @if (request()->segment(2) == base64_encode($channel->id)) active @endif">
                             <div class="d-flex align-items-center m-r-10">

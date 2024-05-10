@@ -43,6 +43,10 @@
                                         {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'change_pass') || (!empty(old('type')) && old('type') == 'change_pass') ? 'selected' : '' }}>
                                         Change password
                                     </option>
+                                    <option value="custom"
+                                        {{ (!empty($mailTemplate) && $mailTemplate->template_type == 'custom') || (!empty(old('type')) && old('type') == 'custom') ? 'selected' : '' }}>
+                                        Custom
+                                    </option>
                                 </select>
 
                                 @if (!empty($mailTemplate) && !empty($mailTemplate->template_type))
@@ -167,6 +171,9 @@
                     html = "[user_name] [company_logo] [company_title] [company_web_link] [change_password_link] ";
                     $('.htmltemplateClass').show();
                 } else if (type == 'change_pass') {
+                    html = "[user_name] [company_logo] [company_title] [company_web_link]";
+                    $('.htmltemplateClass').show();
+                } else if (type == 'custom') {
                     html = "[user_name] [company_logo] [company_title] [company_web_link]";
                     $('.htmltemplateClass').show();
                 } else {

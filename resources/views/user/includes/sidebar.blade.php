@@ -4,7 +4,8 @@
 $user = Auth::user();
 // $notificationCount = Notification::where('user_id', $user->id)->where('is_read','0')->get();
 use App\Models\Notification;
-$notificationCount = Notification::where('user_id', $user->id)->where('type', '1')
+$notificationCount = Notification::where('user_id', $user->id)
+    ->where('type', '1')
     ->where('is_read', '0')
     ->get();
 ?>
@@ -12,7 +13,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
 <div class="side-nav">
     <div class="side-nav-inner">
         <ul class="side-nav-menu scrollable">
-            <li class="nav-item dropdown open @if(request()->segment(2) == 'dashboard') active @endif ">
+            <li class="nav-item dropdown open @if (request()->segment(2) == 'dashboard') active @endif ">
                 <a class="dropdown-toggle" href="{{ route('user.dashboard') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-dashboard"></i>
@@ -20,7 +21,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                     <span class="title">Dashboard</span>
                 </a>
             </li>
-            <li class="nav-item dropdown open @if(request()->segment(2) == 'campaign' && request()->segment(3) == '') active @endif ">
+            <li class="nav-item dropdown open @if (request()->segment(2) == 'campaign' && request()->segment(3) == '') active @endif ">
                 <a class="dropdown-toggle" href="{{ route('user.campaign.list') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-safety-certificate"></i>
@@ -28,7 +29,7 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                     <span class="title">Campaign</span>
                 </a>
             </li>
-            <li class="nav-item dropdown open @if(request()->segment(2) == 'analytics') active @endif">
+            <li class="nav-item dropdown open @if (request()->segment(2) == 'analytics') active @endif">
                 <a class="dropdown-toggle" href="{{ route('user.analytics') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-build"></i>
@@ -81,19 +82,22 @@ $notificationCount = Notification::where('user_id', $user->id)->where('type', '1
                     <li @if (request()->segment(2) == 'edit_profile') class='active' @endif>
                         <a href="{{ route('user.edit_profile') }}">Edit Profile</a>
                     </li>
+                    <li @if (request()->segment(3) == 'notification') class='active' @endif>
+                        <a href="{{ route('user.notification.setting') }}">Notification</a>
+                    </li>
                 </ul>
 
             </li>
-            <li class="nav-item dropdown open @if(request()->segment(2) == 'notification') active @endif">
+            <li class="nav-item dropdown open @if (request()->segment(2) == 'notification') active @endif">
                 <a class="dropdown-toggle" href="{{ route('user.notification') }}">
                     <span class="icon-holder">
                         <i class="anticon anticon-bell"></i>
                     </span>
                     <span class="title">Notification </span>
                     @if ($notificationCount->count() != 0)
-                            <span  class="badge badge-pill badge-danger">
-                                {{ isset($notificationCount) ? $notificationCount->count() : 0 }}
-                            </span>
+                        <span class="badge badge-pill badge-danger">
+                            {{ isset($notificationCount) ? $notificationCount->count() : 0 }}
+                        </span>
                     @endif
                 </a>
             </li>

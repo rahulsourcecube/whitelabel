@@ -35,9 +35,220 @@
             </div>
         </div>
     </div>
+    <div class="modal fade send-mail-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title h4">Send mail</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="anticon anticon-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <input type="hidden" class="form-control " name="add_more_count" id="add-more-count" value="0"
+                            placeholder="">
+                        <form id="sendMail" method="POST" action="{{ route('admin.mail.sendMail') }}"
+                            data-parsley-validate="">
+                            @csrf
+                            <div class="row mb-3">
+                                <div class="col-md-10">
+                                    <label for="title" class=" col-form-label">Email addres</label>
+                                    <input type="email" class="form-control" name="mail[]" id="" value=""
+                                        placeholder="Enter mail">
+                                </div>
+                                <div class=" col-md-2">
+                                    <label for="title" class="col-form-label"></label>
+
+                                    <button type="button" onclick="addMore(this)" class="btn btn-primary"
+                                        style="margin-top:35px">Add</button>
+                                </div>
+                            </div>
+                            <div class="add-more">
+
+                            </div>
+                            <div class="row mb-2">
+                                <input type="hidden" class="" name="template_id" id="template_id" value="">
+                                <input type="hidden" class="" name="template_type" id="" value="">
+                                <div class="col-md-12">
+                                    <button type="submit" id="submit" class="btn btn-primary mr-2">Submit</button>
+                                    {{-- <button type="button" class="btn btn-primary all-mail-send d-none"
+                                        onclick="sendAllMail(this)">All</button> --}}
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ asset('assets/js/parsley.min.js?v=' . time()) }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <script>
         $(document).ready(function() {
+
+            $('#submit').click(function() {
+
+                $('#sendMail').validate({
+                    rules: {
+
+                        'mail[]': {
+                            required: true
+                        }
+                    },
+                    messages: {
+
+                        'mail[]': {
+                            required: "Please enter a email",
+                        }
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+
+            $('#submit').click(function() {
+
+                $('#sendMail').validate({
+                    rules: {
+
+                        'mail[]': {
+                            required: true
+                        }
+                    },
+                    messages: {
+
+                        'mail[]': {
+                            required: "Please enter a email",
+                        }
+                    }
+                });
+            });
+        });
+
+        function addMore(e) {
+            count = 1;
+            oldCount = $('#add-more-count').val()
+            nc = parseInt(oldCount) + 1
+
+            newCount = $('#add-more-count').val(nc)
+
+
+            html = `<div  class="row mb-3 remove-div">
+                    <div class="col-md-10">
+                        <label for="" class=" col-form-label">Email addres</label>
+                        <input type="email" class="form-control" name="mail[]" id="email` + nc + `" value=""
+                            placeholder="Enter mail" required >
+                    </div>
+                    <div class=" col-md-2">
+                        <label for="title" class="col-form-label"></label>
+
+                        <button type="button" onclick="removeMore(this)" class="btn btn-danger"
+                            style="margin-top:35px"><li class="fa fa-trash"></li></button>
+                    </div>
+                </div>`;
+            $('.add-more').append(html);
+
+
+        }
+
+        function removeMore(e) {
+            $(e).parent().parent().remove()
+        }
+
+        function openModels(id, type) {
+
+
+            $('.remove-div').remove()
+            $('input[type="email"]').val("");
+            $('input[name="template_type"]').val(type);
+            $('input[name="template_id"]').val(id);
+            $('.send-mail-modal').modal('show');
+            if (type === 'custom') {
+
+                $(".all-mail-send").removeClass("d-none");
+
+            } else {
+                $(".all-mail-send").addClass("d-none");
+            }
+
+        }
+
+        function sendAllMail(e) {
+
+
+            var message = 'Send mail'
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to ' + message + ', right?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, ' + message + ' !'
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+                    var type = $('input[name="template_type"]').val();
+
+                    var user_id = $('input[name="template_id"]').val();
+
+                    $.ajax({
+                        url: "{{ route('admin.mail.send.all') }}",
+                        type: 'POST',
+                        data: {
+                            id: user_id,
+                            type: type,
+                            filed: 'sms',
+                            _token: "{{ csrf_token() }}"
+                        },
+                        success: (response) => {
+
+                            if (!response.success) {
+                                // Handle error case
+                                Swal.fire({
+                                    text: response.message,
+                                    icon: "error",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            } else {
+
+                                // Handle success case
+                                Swal.fire({
+                                    text: response.message,
+                                    icon: "success",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: (xhr, status, error) => {
+                            // Handle AJAX request error
+                            console.error(xhr.responseText);
+                            Swal.fire({
+                                text: 'An error occurred while processing your request.',
+                                icon: "error",
+                                button: "Ok",
+                            });
+                        }
+
+                    });
+                }
+            });
+
+        }
+        $(document).ready(function() {
+
+
+
             var table = $('#mailtemplate').DataTable({
                 // Processing indicator
                 "processing": false,
@@ -84,7 +295,9 @@
                             // deleteUrl = deleteUrl.replace(':del', row[0]);
                             return '<a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
-                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a>  ';
+                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openModels(\'' +
+                                row[0] + '\',\'' + row[3] +
+                                '\')"    role=" button "  title="sms ">Send Mail</a> ';
 
                         },
                     }

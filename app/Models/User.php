@@ -41,6 +41,10 @@ class User extends Authenticatable
         'stripe_id',
         'paypal_id',
         'token',
+        'mail_new_task_notification',
+        'sms_new_task_notification',
+        'mail_custom_notification',
+        'sms_custom_notification',
     ];
 
     /**
