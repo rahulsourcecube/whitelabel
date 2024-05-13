@@ -122,7 +122,8 @@
                                     <label for="contact_number" class=" col-form-label">Contact Number</label>
                                     <input type="text" class="form-control" id="contact"
                                         placeholder="Contact Number" maxlength="20" name="contact_number[]"
-                                        value="" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                        value=""
+                                        oninput="this.value = this.value.replace(/[^0-9\-+]+/g, '').replace(/(\..*)\./g, '$1');"">
                                 </div>
                                 <div class=" col-md-2">
                                     <label for="title" class="col-form-label"></label>
@@ -290,13 +291,13 @@
                                 view +
                                 '" role="button"  title="View"><i class="fa fa-eye"></i></a>  <a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
-                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn  btn-sm" role="button" href="' +
+                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-primary btn-sm" role="button" href="' +
                                 facebookUrl +
-                                '"   title="facebook"> <i class="fab fa-facebook-square"></i></a><a class="btn   btn-sm" role="button" href="' +
+                                '"   title="facebook"> <i class="fab fa-facebook-square"></i></a><a class="btn btn-sm btn-danger  btn-sm" role="button" href="' +
                                 instagramUrl +
-                                '"   title="instagram"><i class="fab fa-instagram-square"></i></a><a class="btn  btn-sm" role="button"  href="' +
+                                '"   title="instagram"><i class="fab fa-instagram-square"></i></a><a class="btn  btn-sm btn-primary" role="button"  href="' +
                                 twitterUrl +
-                                '"   title="twitter"><i class="fab fa-twitter-square"></i></a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openSmsModels(\'' +
+                                '"   title="twitter"><i class="fab fa-twitter-square "></i></a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openSmsModels(\'' +
                                 shortcut +
                                 '\')" role=" button "  title="sms ">Send SMS</a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openMailModels(\'' +
                                 shortcut +

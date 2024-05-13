@@ -24,9 +24,10 @@
                                 <div class="form-group row">
                                     <label for="title" class="col-sm-3 col-form-label">Title</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="survey_title" id="title" value="{{ $surveyFiled->title }}"
-                                            placeholder="Enter Title">
-                                        <input type="hidden" class="form-" name="id" id="id" value="{{ $surveyFiled->id }}">
+                                        <input type="text" class="form-control" name="survey_title" id="title"
+                                            value="{{ $surveyFiled->title }}" placeholder="Enter Title">
+                                        <input type="hidden" class="form-" name="id" id="id"
+                                            value="{{ $surveyFiled->id }}">
                                     </div>
                                 </div>
                             </div>
@@ -43,7 +44,7 @@
                                             <option value="">Select Type</option>
                                             <option value="text">Text</option>
                                             <option value="number">Number</option>
-                                            <option value="textarea">Textarea</option>
+                                            {{-- <option value="textarea">Textarea</option> --}}
                                             <option value="select">Select</option>
                                             <option value="radio">Radio</option>
                                             <option value="checkbox">Checkbox</option>
@@ -53,13 +54,15 @@
                                 <div class="form-group row">
                                     <label for="label" class="col-sm-3 col-form-label">Label</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="label" id="label" placeholder="Enter Label">
+                                        <input type="text" class="form-control" name="label" id="label"
+                                            placeholder="Enter Label">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="inputName" class="col-sm-3 col-form-label">Name</label>
                                     <div class="col-md-6">
-                                        <input type="text" class="form-control" name="inputName" id="inputName" placeholder="Enter Name">
+                                        <input type="text" class="form-control" name="inputName" id="inputName"
+                                            placeholder="Enter Name">
                                     </div>
                                 </div>
                                 <!-- Add more fields as needed -->
@@ -69,19 +72,22 @@
                                 <div class="form-group row">
                                     <label for="idname" class="col-sm-3 col-form-label">Id Name</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="idname" id="idname" placeholder="Enter ID Name">
+                                        <input type="text" class="form-control" name="idname" id="idname"
+                                            placeholder="Enter ID Name">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="class" class="col-sm-3 col-form-label">Class Name</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="class" id="class" placeholder="Enter Class Name">
+                                        <input type="text" class="form-control" name="class" id="class"
+                                            placeholder="Enter Class Name">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="placeholder" class="col-sm-3 col-form-label">Placeholder</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" name="placeholder" id="placeholder" placeholder="Enter Placeholder">
+                                        <input type="text" class="form-control" name="placeholder" id="placeholder"
+                                            placeholder="Enter Placeholder">
                                     </div>
                                 </div>
                                 <!-- Add more fields as needed -->
@@ -107,6 +113,12 @@
 @section('js')
 
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+
+    <script>
+        if (!CKEDITOR.instances['ckeditor']) {
+            CKEDITOR.replace("ckeditor");
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script>
         $(document).ready(function() {

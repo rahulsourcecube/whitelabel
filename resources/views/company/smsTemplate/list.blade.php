@@ -65,7 +65,7 @@
                                     <label for="contact_number" class=" col-form-label">Contact Number</label>
                                     <input type="text" class="form-control" id="contact" placeholder="Contact Number"
                                         maxlength="10" name="contact_number[]" value=""
-                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                        oninput="this.value = this.value.replace(/[^0-9\-]+/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class=" col-md-2">
                                     <label for="title" class="col-form-label"></label>

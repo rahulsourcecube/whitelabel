@@ -300,50 +300,50 @@ class SurveyController extends Controller
     }
     public function formUpdate(Request $request, $id)
     {
-        // try {
-        $companyId = Helper::getCompanyId();
-        $SurveyForm = SurveyForm::find($id);
-        $inputFields = $request->all();
+        try {
+            $companyId = Helper::getCompanyId();
+            $SurveyForm = SurveyForm::find($id);
+            $inputFields = $request->all();
 
-        $SurveyForm->company_id = $companyId;
-        $SurveyForm->title = $request->input('survey_title');
-        $SurveyForm->slug = $request->input('slug');
-        $SurveyForm->description = $request->input('description');
+            $SurveyForm->company_id = $companyId;
+            $SurveyForm->title = $request->input('survey_title');
+            $SurveyForm->slug = $request->input('slug');
+            $SurveyForm->description = $request->input('description');
 
-        $fields = [];
-        $types = $request->input('type');
-        $question = $request->input('question');
+            $fields = [];
+            $types = $request->input('type');
+            $question = $request->input('question');
 
-        $required = $request->input('required');
+            $required = $request->input('required');
 
-        // Loop through each field and create an array for each field
-        foreach ($types as $key => $type) {
-            $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
-            $fields[] = [
-                'type' => $type,
-                'inputName' => $inputNames,
-                'label' => $question[$key],
-                'idname' => $inputNames,
-                'class' => $inputNames,
+            // Loop through each field and create an array for each field
+            foreach ($types as $key => $type) {
+                $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
+                $fields[] = [
+                    'type' => $type,
+                    'inputName' => $inputNames,
+                    'label' => $question[$key],
+                    'idname' => $inputNames,
+                    'class' => $inputNames,
 
-                'required' => $required[$key],
-                $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
-            ];
+                    'required' => $required[$key],
+                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
+                ];
+            }
+
+
+            // Convert fields array to JSON and save it in the SurveyForm model
+            $SurveyForm->fields = json_encode($fields);
+
+            // Save the SurveyForm instance
+            $SurveyForm->save();
+
+            return redirect()->route('company.survey.form.index', ['survey' => $SurveyForm->id])
+                ->with('success', 'Survey updated successfully');
+        } catch (Exception $e) {
+            Log::error('SurveyController::formUpdate => ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
-
-
-        // Convert fields array to JSON and save it in the SurveyForm model
-        $SurveyForm->fields = json_encode($fields);
-
-        // Save the SurveyForm instance
-        $SurveyForm->save();
-
-        return redirect()->route('company.survey.form.index', ['survey' => $SurveyForm->id])
-            ->with('success', 'Survey updated successfully');
-        // } catch (Exception $e) {
-        //     Log::error('SurveyController::formUpdate => ' . $e->getMessage());
-        //     return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
-        // }
     }
     public function formDelete($id)
     {
@@ -383,142 +383,138 @@ class SurveyController extends Controller
     }
     function sendSms(Request $request)
     {
+        try {
 
-        $companyId = Helper::getCompanyId();
+            $companyId = Helper::getCompanyId();
 
-        $webUrlGetHost = $request->getHost();
-        $currentUrl = URL::current();
-        $webUrl = "";
-        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-            // URL is under HTTPS
-            $webUrl =  'https://' . $webUrlGetHost;
-        } else {
-            // URL is under HTTP
-            $webUrl =  'http://' . $webUrlGetHost;
-        }
+            $webUrlGetHost = $request->getHost();
+            $currentUrl = URL::current();
+            $webUrl = "";
+            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+                // URL is under HTTPS
+                $webUrl =  'https://' . $webUrlGetHost;
+            } else {
+                // URL is under HTTP
+                $webUrl =  'http://' . $webUrlGetHost;
+            }
 
-        // $SettingModel = SettingModel::first();
-        // if (!empty($companyId)) {
-        // }
-        $SettingModel = SettingModel::find($companyId);
+            // $SettingModel = SettingModel::first();
+            // if (!empty($companyId)) {
+            // }
+            $SettingModel = SettingModel::find($companyId);
 
-        if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
-            return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Cridntioal"]);
-        }
-        $notFoundNumber = [];
-        if ($request->contact_number != '') {
+            if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+                return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Cridntioal"]);
+            }
 
-            foreach ($request->contact_number as $number) {
+            if ($request->contact_number != '') {
 
-
-                $SettingValue = SettingModel::where('user_id', $companyId)->first();
+                foreach ($request->contact_number as $number) {
 
 
+                    $SettingValue = SettingModel::where('user_id', $companyId)->first();
 
-                $companyData =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
-
-
-                if (!empty($request->smsHtml)) {
-                    if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
+                    if (!empty($request->smsHtml)) {
+                        if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
 
 
-                        //set survey shortcut
-                        $template = $request->smsHtml;
+                            //set survey shortcut
+                            $template = $request->smsHtml;
 
-                        $pattern = '/\[survey\[(.*?)\]\]/';
-                        preg_match_all($pattern, $template, $matches);
-                        if (!empty($matches[1])) {
-                            foreach ($matches[1] as $surveyValue) {
-                                $surveyFrom = Helper::getSurveyFrom($surveyValue);
-                                $survey_link = $webUrl . '/survey' . '/' . $surveyFrom->slug;
+                            $pattern = '/\[survey\[(.*?)\]\]/';
+                            preg_match_all($pattern, $template, $matches);
+                            if (!empty($matches[1])) {
+                                foreach ($matches[1] as $surveyValue) {
+                                    $surveyFrom = Helper::getSurveyFrom($surveyValue);
+                                    $survey_link = $webUrl . '/survey' . '/' . $surveyFrom->slug;
 
-                                $template = str_replace('[survey[' . $surveyValue . ']]', $survey_link, $template);
+                                    $template = str_replace('[survey[' . $surveyValue . ']]', $survey_link, $template);
+                                }
                             }
-                        }
-                        $html = $template;
+                            $html = $template;
 
-                        // Remove HTML tags and decode HTML entities
-                        $message = htmlspecialchars_decode(strip_tags($html));
+                            // Remove HTML tags and decode HTML entities
+                            $message = htmlspecialchars_decode(strip_tags($html));
 
-                        // Remove unwanted '&nbsp;' text
-                        $message = str_replace('&nbsp;', ' ', $message);
+                            // Remove unwanted '&nbsp;' text
+                            $message = str_replace('&nbsp;', ' ', $message);
 
-                        $to = $SettingValue->type == "2" ? $number : $SettingValue->sms_account_to_number;
-                        $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
-                        try {
-                            $twilioService->sendSMS($to, $message);
-                        } catch (Exception $e) {
-                            Log::error('Notifications >> Que SMS Fail => ' . $e->getMessage());
+                            $to = $SettingValue->type == "2" ? $number : $SettingValue->sms_account_to_number;
+                            $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
+                            try {
+                                $twilioService->sendSMS($to, $message);
+                            } catch (Exception $e) {
+                                Log::error('Notifications >> Que SMS Fail => ' . $e->getMessage());
+                            }
                         }
                     }
                 }
+
+                return redirect()->route('company.survey.form.index')->with([
+                    'success' => 'SMS sent successfully',
+
+                ]);
             }
-
-
-
-
-            return redirect()->route('company.survey.form.index')->with([
-                'success' => 'SMS sent successfully',
-
-            ]);
+        } catch (Exception $e) {
+            Log::error('SurveyController::sendSms => ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
     public function sendMail(Request $request)
     {
+        try {
 
-        $companyId = Helper::getCompanyId();
+            $companyId = Helper::getCompanyId();
 
-        $webUrlGetHost = $request->getHost();
-        $currentUrl = URL::current();
-        $webUrl = "";
-        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-            // URL is under HTTPS
-            $webUrl =  'https://' . $webUrlGetHost;
-        } else {
-            // URL is under HTTP
-            $webUrl =  'http://' . $webUrlGetHost;
-        }
+            $webUrlGetHost = $request->getHost();
+            $currentUrl = URL::current();
+            $webUrl = "";
+            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+                // URL is under HTTPS
+                $webUrl =  'https://' . $webUrlGetHost;
+            } else {
+                // URL is under HTTP
+                $webUrl =  'http://' . $webUrlGetHost;
+            }
 
-        // $SettingModel = SettingModel::first();
-        // if (!empty($companyId)) {
-        // }
-        $SettingModel = SettingModel::find($companyId);
-
-        foreach ($request->mail as $mail) {
-
-
-            // try {
-
-
-
-            $to = $mail;
-            $message = '';
-
-            $html =  $request->tempHtml;
-
-            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'custom';
-            Mail::send('user.email.surveyEmail', [
-                'name' => "",
-                'company_id' => "",
-                'template' => $html,
-                'webUrl' => "$webUrl",
-                'campaign_title' => "",
-                'campaign_price' => "",
-                'campaign_price' => "",
-                'campaign_join_link' => ""
-            ], function ($message) use ($to, $mailTemplateSubject) {
-                $message->to($to);
-                $message->subject($mailTemplateSubject);
-            });
-            // } catch (Exception $e) {
-            //     Log::error('CampaignController::Action => ' . $e->getMessage());
+            // $SettingModel = SettingModel::first();
+            // if (!empty($companyId)) {
             // }
+            $SettingModel = SettingModel::find($companyId);
+
+            foreach ($request->mail as $mail) {
+                try {
+                    $to = $mail;
+                    $message = '';
+
+                    $html =  $request->tempHtml;
+
+                    $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'custom';
+                    Mail::send('user.email.surveyEmail', [
+                        'name' => "",
+                        'company_id' => "",
+                        'template' => $html,
+                        'webUrl' => "$webUrl",
+                        'campaign_title' => "",
+                        'campaign_price' => "",
+                        'campaign_price' => "",
+                        'campaign_join_link' => ""
+                    ], function ($message) use ($to, $mailTemplateSubject) {
+                        $message->to($to);
+                        $message->subject($mailTemplateSubject);
+                    });
+                } catch (Exception $e) {
+                    Log::error('CampaignController::Action => ' . $e->getMessage());
+                }
+            }
+
+
+            return redirect()->route('company.survey.form.index')->with([
+                'success' => 'Mail sent successfully',
+            ]);
+        } catch (Exception $e) {
+            Log::error('SurveyController::sendMail => ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
-
-
-        return redirect()->route('company.survey.form.index')->with([
-            'success' => 'Mail sent successfully',
-
-        ]);
     }
 }

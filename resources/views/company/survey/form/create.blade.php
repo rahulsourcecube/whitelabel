@@ -35,8 +35,7 @@
                         <div class="row">
                             <div class=" form-group col-md-12">
                                 <label for="description" class="col-sm-3 col-form-label">Description</label>
-                                <textarea type="text" class="form-control" name="description" id="description" placeholder="Enter description"
-                                    required></textarea>
+                                <textarea class="form-control ckeditor" name="description" id="description" placeholder="Enter description" required></textarea>
                             </div>
 
                         </div>
@@ -63,7 +62,7 @@
                                     <option value="">Select Type</option>
                                     <option value="text">Text</option>
                                     <option value="number">Number</option>
-                                    <option value="textarea">Textarea</option>
+                                    {{-- <option value="textarea">Textarea</option> --}}
                                     <option value="select">Select</option>
                                     <option value="radio">Radio</option>
                                     <option value="checkbox">Checkbox</option>
@@ -114,7 +113,12 @@
 
 @section('js')
     <script src="{{ asset('assets/js/parsley.min.js?v=' . time()) }}"></script>
-
+    <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+    <script>
+        if (!CKEDITOR.instances['ckeditor']) {
+            CKEDITOR.replace("ckeditor");
+        }
+    </script>
     <script>
         function onchangeType(selectElement) {
             var oldCount = $('.addMoreCount').val();

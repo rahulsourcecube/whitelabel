@@ -100,8 +100,8 @@ class TaskCreatedSendNotification extends Command
                                 $contact_number =  $userDetails->contact_number;
                                 $company_title = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : 'Referdio';
                                 $company_link = $webUrl ? $webUrl : '';
-                                $campaign_title = $companyData->getCampaign->title;
-                                $campaign_price = !empty($companyData->getCampaign->text_reward) ? $companyData->getCampaign->text_reward : $companyData->getCampaign->reward;
+                                $campaign_title = $companyData->getCampaign->title ?? "";
+                                $campaign_price = !empty($companyData->getCampaign->text_reward) ? $companyData->getCampaign->text_reward : $companyData->getCampaign->reward ?? "";
                                 $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[campaign_title]", "[campaign_price]"], [$name, $company_title, $company_link, $campaign_title, $campaign_price], $smsTemplate->template_html_sms);
 
                                 // Remove HTML tags and decode HTML entities

@@ -53,208 +53,219 @@
                         <div class="col-md-2 "></div>
                         <div class="col-md-8 col-lg-8 m-w-auto">
                             <div class="card shadow-lg">
-                                <div class="card-body  m-w-auto">
-                                    <div class="d-flex align-items-center justify-content-between m-b-30">
+                                <div class="card-body  m-w-auto row">
+                                    <div class="col-md-2 d-flex   ">
                                         <img style="width: 130px ; hight:50px"
                                             src="@if (!empty($siteSetting) && !empty($siteSetting->logo) && file_exists('uploads/setting/' . $siteSetting->logo)) {{ url('uploads/setting/' . $siteSetting->logo) }} @else {{ asset('assets/images/logo/logo.png') }} @endif "
                                             alt="Logo">
-                                        <h2 class="m-b-0 m-l-10">
+                                    </div>
+                                    <div class="col-md-8 m-t-30 ">
+                                        <h2 class="m-b-0  text-left">
                                             {{ !empty($surveyForm->title) && !empty($surveyForm) ? $surveyForm->title : '' }}
                                         </h2>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                    </div>
 
-                                    {{-- <label for="checkbox"><span>Already have an account? <a
-                                                href="{{route('company.signin')}}">Login</a></span></label> --}}
+                                    <div class=" col-md-8 m-b-0 ">
+                                        @if (!empty($surveyForm->description) && $surveyForm)
+                                            {!! htmlspecialchars_decode(strip_tags($surveyForm->description)) !!}
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row align-items-center  ">
-                        <div class="col-md-2 "></div>
-                        <div class="col-md-8 col-lg-8 m-w-auto">
-                            <div class="card shadow-lg">
-                                <div class="card-body  m-w-auto">
+                </div>
+                <div class="row align-items-center  ">
+                    <div class="col-md-4 "></div>
 
-                                    <form id="survey" method="POST" action="{{ route('front.survey.store') }}">
-                                        @csrf
-                                        <div class="form-row">
-                                            @if (!empty($fields))
-                                                @php
-                                                    $count = Count($fields);
-                                                @endphp
-                                                <div class="step step-0 active" id="step-0" data-key="0">
-                                                    <div class="form-group col-md-12">
-                                                        <label class="font-weight-semibold" for="email">Email
-                                                            Address:</label>
-                                                        <input type="email" class="form-control" required
-                                                            id="" placeholder="Enter Email" name="user_email"
-                                                            value="" maxlength="50">
-                                                        <label id="user_email-error" class="error"
-                                                            for="user_email"></label>
-                                                    </div>
-                                                    <div class="form-group col-md-12">
-                                                        <label class="font-weight-semibold" for="userName">Username
-                                                        </label>
-                                                        <input type="text" class="form-control" required
-                                                            id="" placeholder="Enter Username"
-                                                            name="user_username" value="" maxlength="50">
-                                                    </div>
+                    <div class="col-md-4 col-lg-4 m-w-auto">
+                        <div class="card shadow-lg">
+                            <div class="card-body  m-w-auto">
 
-                                                    <button type="submit"
-                                                        class="start-btn btn btn-success check-validation"
-                                                        data-type="text" data-name1="user_email" data-name2="User name"
-                                                        data-required="1">Start</button>
+                                <form id="survey" method="POST" action="{{ route('front.survey.store') }}">
+                                    @csrf
+                                    <div class="">
+                                        @if (!empty($fields))
+                                            @php
+                                                $count = Count($fields);
+                                            @endphp
+                                            <div class="step step-0 active" id="step-0" data-key="0">
+                                                <div class="form-group col-md-12">
+                                                    <label class="font-weight-semibold" for="email">Email
+                                                        Address:</label>
+                                                    <input type="email" class="form-control" required id=""
+                                                        placeholder="Enter Email" name="user_email" value=""
+                                                        maxlength="50">
+                                                    <label id="user_email-error" class="error"
+                                                        for="user_email"></label>
                                                 </div>
-                                                @foreach ($fields as $key => $field)
-                                                    <div class="step step-{{ $key + 1 }}  "
-                                                        id="step-{{ $key + 1 }}" data-key="{{ $key + 1 }}">
-                                                        <?php  if($field['type'] == 'text'){ ?>
+                                                <div class="form-group col-md-12">
+                                                    <label class="font-weight-semibold" for="userName">Username
+                                                    </label>
+                                                    <input type="text" class="form-control" required id=""
+                                                        placeholder="Enter Username" name="user_username" value=""
+                                                        maxlength="50">
+                                                </div>
 
-                                                        <div class="form-group col-md-12">
-                                                            <label
-                                                                for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}</label>
-                                                            <input type="text" class="form-control"
-                                                                id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
-                                                                name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
-                                                                id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}"
-                                                                maxlength="150" value="">
-                                                        </div>
+                                                <button type="submit"
+                                                    class="start-btn btn btn-success check-validation" data-type="text"
+                                                    data-name1="user_email" data-name2="User name"
+                                                    data-required="1">Start</button>
+                                            </div>
+                                            @foreach ($fields as $key => $field)
+                                                <div class="step step-{{ $key + 1 }}  "
+                                                    id="step-{{ $key + 1 }}" data-key="{{ $key + 1 }}">
+                                                    <?php  if($field['type'] == 'text'){ ?>
 
-                                                        <?php }elseif($field['type']=='number'){ ?>
-                                                        <div class="form-group col-md-12">
-                                                            <label
-                                                                for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
-                                                                <span class="error"></span></label>
-                                                            <input type="text" class="form-control"
-                                                                id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}"
-                                                                {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
-                                                                name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
-                                                                maxlength="150" value=""
-                                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                                                        </div>
-                                                        <?php }elseif($field['type']=='textarea'){ ?>
-                                                        <div class="form-group col-md-12">
-                                                            <label
-                                                                for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
-                                                                    class="error"></span></label>
-                                                            <textarea {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
-                                                                name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
-                                                                id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}" class="form-control"
-                                                                cols="30" rows="10" maxlength="250"></textarea>
-                                                        </div>
-                                                        <?php }elseif($field['type']=='select'){ ?>
-                                                        <div class="form-group col-md-12">
-                                                            <label
-                                                                for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
-                                                                <span class="error"></span></label>
-                                                            <select
-                                                                {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
-                                                                name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                data-placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
-                                                                id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}"
-                                                                class="form-control">
-                                                                <option value="">Select
-                                                                    {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
-                                                                </option>
-                                                                @if (!empty($field['select']))
-                                                                    @foreach ($field['select'] as $item)
-                                                                        <option
-                                                                            value="{{ !empty($item) ? $item : '' }}">
-                                                                            {{ !empty($item) ? $item : '' }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                @endif
-                                                            </select>
-                                                        </div>
-                                                        <?php }elseif($field['type']=='radio'){ ?>
-                                                        <div class="form-group col-md-12">
-                                                            <label>{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
-                                                                    class="error"></span></label><br>
-                                                            @if (!empty($field['radio']))
-                                                                @foreach ($field['radio'] as $item)
-                                                                    <input type="radio" id=""
-                                                                        {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
-                                                                        name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                        value="{{ !empty($item) ? $item : '' }}">
-                                                                    <label
-                                                                        for="">{{ !empty($item) ? $item : '' }}</label><br>
+                                                    <div class="form-group col-md-12">
+                                                        <label
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}</label>
+                                                        <input type="text" class="form-control"
+                                                            id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                            {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
+                                                            name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                            placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
+                                                            id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}"
+                                                            maxlength="150" value="">
+                                                    </div>
+
+                                                    <?php }elseif($field['type']=='number'){ ?>
+                                                    <div class="form-group col-md-12">
+                                                        <label
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
+                                                            <span class="error"></span></label>
+                                                        <input type="text" class="form-control"
+                                                            id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}"
+                                                            {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
+                                                            name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                            placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
+                                                            maxlength="150" value=""
+                                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                    </div>
+                                                    <?php }elseif($field['type']=='textarea'){ ?>
+                                                    <div class="form-group col-md-12">
+                                                        <label
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
+                                                                class="error"></span></label>
+                                                        <textarea {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
+                                                            name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                            placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
+                                                            id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}" class="form-control"
+                                                            cols="30" rows="10" maxlength="250"></textarea>
+                                                    </div>
+                                                    <?php }elseif($field['type']=='select'){ ?>
+                                                    <div class="form-group col-md-12">
+                                                        <label
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
+                                                            <span class="error"></span></label>
+                                                        <select
+                                                            {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
+                                                            name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                            data-placeholder="{{ !empty($field) && !empty($field['placeholder']) ? $field['placeholder'] : '' }}"
+                                                            id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}"
+                                                            class="form-control">
+                                                            <option value="">Select
+                                                                {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
+                                                            </option>
+                                                            @if (!empty($field['select']))
+                                                                @foreach ($field['select'] as $item)
+                                                                    <option value="{{ !empty($item) ? $item : '' }}">
+                                                                        {{ !empty($item) ? $item : '' }}
+                                                                    </option>
                                                                 @endforeach
+                                                            @endif
+                                                        </select>
+                                                    </div>
+                                                    <?php }elseif($field['type']=='radio'){ ?>
+                                                    <div class="form-group col-md-12">
+                                                        <label>{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
+                                                                class="error"></span></label><br>
+                                                        @if (!empty($field['radio']))
+                                                            @foreach ($field['radio'] as $item)
+                                                                <input type="radio" id=""
+                                                                    {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
+                                                                    name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                                    value="{{ !empty($item) ? $item : '' }}">
                                                                 <label
-                                                                    id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}-error"
-                                                                    class="error"
-                                                                    for="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"></label>
-                                                            @endif
-                                                        </div>
-                                                        <?php }elseif($field['type']=='checkbox'){ ?>
-                                                        <div class="form-group col-md-12">
-                                                            <label>{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
-                                                                    class="error"></span></label><br>
-                                                            @if (!empty($field['checkbox']))
-                                                                @foreach ($field['checkbox'] as $item)
-                                                                    <input type="checkbox"
-                                                                        {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
-                                                                        name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}[]"
-                                                                        value="{{ !empty($item) ? $item : '' }}">
-                                                                    <label
-                                                                        for="">{{ !empty($item) ? $item : '' }}</label><br>
-                                                                @endforeach
-                                                                <label
-                                                                    id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}[]-error"
-                                                                    class="error"
-                                                                    for="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}[]"></label>
-                                                            @endif
-                                                        </div>
-
-
-                                                        <?php } ?>
-                                                        @if ($key + 1 == '1')
-                                                            <button type="submit"
-                                                                class="next-btn btn btn-success check-validation"
-                                                                data-type="{{ $field['type'] }}"
-                                                                data-name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                data-required="{{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? '1' : '' }}">Next</button>
-                                                        @elseif($key != $count)
-                                                            <button type="button"
-                                                                class="previous-btn btn btn-danger">Prev</button>
-
-                                                            @if ($key + 1 === $count)
-                                                                <button type="submit"
-                                                                    class="btn btn-primary submitform check-validation">Submit</button>
-                                                            @else
-                                                                <button type="submit"
-                                                                    class=" btn btn-success next-btn check-validation"
-                                                                    data-type="{{ $field['type'] }}"
-                                                                    data-name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
-                                                                    data-required="{{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? '1' : '' }}">Next
-                                                                </button>
-                                                            @endif
+                                                                    for="">{{ !empty($item) ? $item : '' }}</label><br>
+                                                            @endforeach
+                                                            <label
+                                                                id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}-error"
+                                                                class="error"
+                                                                for="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"></label>
                                                         @endif
                                                     </div>
-                                                @endforeach
+                                                    <?php }elseif($field['type']=='checkbox'){ ?>
+                                                    <div class="form-group col-md-12">
+                                                        <label>{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
+                                                                class="error"></span></label><br>
+                                                        @if (!empty($field['checkbox']))
+                                                            @foreach ($field['checkbox'] as $item)
+                                                                <input type="checkbox"
+                                                                    {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
+                                                                    name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}[]"
+                                                                    value="{{ !empty($item) ? $item : '' }}">
+                                                                <label
+                                                                    for="">{{ !empty($item) ? $item : '' }}</label><br>
+                                                            @endforeach
+                                                            <label
+                                                                id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}[]-error"
+                                                                class="error"
+                                                                for="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}[]"></label>
+                                                        @endif
+                                                    </div>
 
-                                            @endif
-                                        </div>
 
-                                        <input type="hidden" name="form_id"
-                                            value="{{ !empty($surveyForm->id) && !empty($surveyForm) ? $surveyForm->id : '' }}">
-                                    </form>
-                                    {{-- <label for="checkbox"><span>Already have an account? <a
+                                                    <?php } ?>
+                                                    @if ($key + 1 == '1')
+                                                        <button type="button"
+                                                            class="next-btn btn btn-success check-validation"
+                                                            data-type="{{ $field['type'] }}"
+                                                            data-name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                            data-required="{{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? '1' : '' }}">Next</button>
+                                                    @elseif($key != $count)
+                                                        <button type="button"
+                                                            class="previous-btn btn btn-danger">Prev</button>
+
+                                                        @if ($key + 1 === $count)
+                                                            <button type="submit"
+                                                                class="btn btn-primary submitform check-validation">Submit</button>
+                                                        @else
+                                                            <button type="submit"
+                                                                class=" btn btn-success next-btn check-validation"
+                                                                data-type="{{ $field['type'] }}"
+                                                                data-name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                                data-required="{{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? '1' : '' }}">Next
+                                                            </button>
+                                                        @endif
+                                                    @endif
+                                                </div>
+                                            @endforeach
+
+                                        @endif
+                                    </div>
+
+                                    <input type="hidden" name="form_id"
+                                        value="{{ !empty($surveyForm->id) && !empty($surveyForm) ? $surveyForm->id : '' }}">
+                                </form>
+                                {{-- <label for="checkbox"><span>Already have an account? <a
                                                 href="{{route('company.signin')}}">Login</a></span></label> --}}
 
-                                </div>
                             </div>
                         </div>
                     </div>
-
-
+                    <div class="col-md-4 "></div>
                 </div>
+
+
             </div>
-            <!-- Page Container END -->
         </div>
+        <!-- Page Container END -->
+    </div>
     </div>
 
     <!--  Footer Scripts -->
@@ -306,6 +317,7 @@
                 var required = $(this).data('required');
 
                 if (required) {
+
                     if (input_type == 'radio') {
                         var val = $("input[name='" + input_name + "']").is(':checked');
                     } else if (input_type == 'checkbox') {
@@ -320,7 +332,7 @@
                         $("#" + currentStep).removeClass("active");
                         $("#" + currentStep).next().addClass("active");
                     } else {
-
+                        $('#survey').validate()
                     }
                 } else {
                     $("#" + currentStep).removeClass("active");

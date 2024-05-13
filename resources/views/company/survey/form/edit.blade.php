@@ -44,8 +44,7 @@
                                 <label for="survey_title" class="col-sm-3 col-form-label">Description</label>
                                 <div class=" form-group col-md-12">
                                     <label for="description" class="col-sm-3 col-form-label">Description</label>
-                                    <textarea type="text" class="form-control" name="description" id="description" placeholder="Enter description"
-                                        required>{{ !empty($surveyFiled) && !empty($surveyFiled->description) ? $surveyFiled->description : '' }}</textarea>
+                                    <textarea class="form-control ckeditor" name="description" id="description" placeholder="Enter description" required>{{ !empty($surveyFiled) && !empty($surveyFiled->description) ? $surveyFiled->description : '' }}</textarea>
                                 </div>
                             </div>
 
@@ -86,9 +85,7 @@
                                             <option value="number" <?php if (!empty($field['type']) && $field['type'] == 'number') {
                                                 echo 'selected';
                                             } ?>>Number</option>
-                                            <option value="textarea" <?php if (!empty($field['type']) && $field['type'] == 'textarea') {
-                                                echo 'selected';
-                                            } ?>>Textarea</option>
+
                                             <option value="select" <?php if (!empty($field['type']) && $field['type'] == 'select') {
                                                 echo 'selected';
                                             } ?>>Select</option>
@@ -194,6 +191,12 @@
 @endsection
 
 @section('js')
+    <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+    <script>
+        if (!CKEDITOR.instances['ckeditor']) {
+            CKEDITOR.replace("ckeditor");
+        }
+    </script>
     <script src="{{ asset('assets/js/parsley.min.js?v=' . time()) }}"></script>
     <script>
         function addFiledType(typecount, type) {

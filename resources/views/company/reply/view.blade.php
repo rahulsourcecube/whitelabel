@@ -20,6 +20,17 @@
                     <div class="container">
                         <h2 class="font-weight-normal m-b-10">
                             {{ !empty($questions) && $questions->title ? $questions->title : '' }}</h2>
+                        <div class="m-t-20 text-right">
+                            <div class=" text-right top">
+                                <button href="#" type="button" id="handleClickActive"
+                                    class="btn  {{ $questions->status == '1' ? 'btn-danger' : 'btn-success' }} btn-sm  "onclick="questionHandleClickActive(this,'{{ $questions->id ? base64_encode($questions->id) : '' }}')">{{ $questions->status == '1' ? 'Inactive' : 'Active' }}</button>
+                                <a href="javascript:void(0)"
+                                    onclick="sweetAlertAjaxQuestions('{{ route('community.questions.delete', !empty($questions->id) ? base64_encode($questions->id) : '') }}')"
+                                    class="
+                                        text-right btn btn-danger btn-sm "
+                                    href="javascript:void(0)"><i class="fa fa-trash"></i></a>
+                            </div>
+                        </div>
                         <div class="d-flex m-b-30">
                             <div class="avatar avatar-cyan avatar-img">
 
@@ -37,8 +48,10 @@
                                     Newman</a>
                                 <p class="m-b-0 text-muted font-size-13">{{ $questions->created_at->diffForhumans() }}
                                 </p>
+
                             </div>
                         </div>
+
                         <div class="d-flex justify-content-center " style="align-content: center">
 
                             @if (isset($questions) &&
@@ -264,6 +277,106 @@
                             _token: "{{ csrf_token() }}"
                         }
 
+                    });
+                }
+            });
+        }
+
+        function questionHandleClickActive(element, community_id) {
+            var buttonText = $(element).text();
+            var isChecked = buttonText === "Inactive";
+            var message = isChecked ? 'make it Active' : 'make it Inactive';
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to ' + message + ', right?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, ' + message + '!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    if (buttonText === "Active") {
+                        $(element).text("Inactive");
+                        $(element).removeClass("btn-success").addClass(
+                            "btn-danger");
+                        var val = "1";
+                    } else {
+                        $(element).text("Active");
+                        $(element).removeClass("btn-danger").addClass(
+                            "btn-success");
+                        var val = "0";
+                    }
+                    $.ajax({
+                        url: "{{ route('community.status.change') }}",
+                        type: 'POST',
+                        data: {
+                            id: community_id,
+                            status: val,
+                            _token: "{{ csrf_token() }}"
+                        }
+
+                    });
+                }
+            });
+        }
+
+        function sweetAlertAjaxQuestions(deleteUrl) {
+            // Use SweetAlert for confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, proceed with AJAX deletion
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'DELETE',
+                        data: {
+                            "_token": "{{ csrf_token() }}"
+                        },
+                        success: (response) => {
+
+                            if (response.success == 'error') {
+                                // Handle error case
+                                Swal.fire({
+                                    text: response.message,
+                                    icon: "error",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    location.reload();
+                                });
+                            } else {
+
+                                // Handle success case
+                                Swal.fire({
+                                    text: response.message,
+                                    icon: "success",
+                                    button: "Ok",
+                                }).then(() => {
+                                    // Reload the page or take appropriate action
+                                    window.location.href =
+                                        '{{ route('company.reply.index') }}';
+                                });
+                            }
+                        },
+                        error: (xhr, status, error) => {
+                            // Handle AJAX request error
+                            console.error(xhr.responseText);
+                            Swal.fire({
+                                text: 'An error occurred while processing your request.',
+                                icon: "error",
+                                button: "Ok",
+                            });
+                        }
                     });
                 }
             });

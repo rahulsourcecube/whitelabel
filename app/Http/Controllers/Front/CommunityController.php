@@ -180,12 +180,10 @@ class CommunityController extends Controller
     public function Delete($id)
     {
         try {
-
-
             $companyId = Helper::getCompanyId();
             $questions = Community::where('company_id', $companyId)->where('id', base64_decode($id));
             $questions->delete();
-            return response()->json(["status" => 200, "message" => "Questions Deleted"]);
+            return response()->json(["type" => 'company', "status" => 200, "message" => "Questions Deleted"]);
         } catch (\Exception $e) {
             Log::error('CommunityController::delete ' . $e->getMessage());
             return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
