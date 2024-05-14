@@ -29,8 +29,6 @@ class CampaignController extends Controller
     function campaign()
     {
         $compact['countrys'] = CountryModel::all();
-        $compact['states'] = StateModel::all();
-        $compact['citys'] = CityModel::all();
         return view('user.campaign.list', $compact);
     }
     function dtlist(Request $request)

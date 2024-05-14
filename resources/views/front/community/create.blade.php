@@ -48,14 +48,12 @@
                     <label for="file">Image <span class="error"></span></label>
                     <input type="file" class="form-control" name="image" id="file" accept=".png, .jpg, .jpeg"
                         onchange="previewImage()">
-                    {{-- @error('image')
-                        <label id="image-error" class="error" for="image">{{ $message }}</label>
-                    @enderror --}}
+
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-3" style="max-height: 200px;">
                         <img id="imagePreview" src="#" alt="Image Preview"
-                            style="max-width: 100%; max-height: 80%;dipslay: none;">
+                            style="max-width: 100%; max-height: 80%;display: none;">
                         <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
                             style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
                     </div>

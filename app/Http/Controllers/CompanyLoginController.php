@@ -234,7 +234,7 @@ class CompanyLoginController extends Controller
                 $user->assignRole([$role->id]);
 
                 $userAdmin = user::where('user_type', '1')->first();
-                $SettingValue = SettingModel::where('id', $userAdmin->id)->first();
+                $SettingValue = SettingModel::where('user_id', $userAdmin->id)->first();
 
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
@@ -573,7 +573,6 @@ class CompanyLoginController extends Controller
             $state_data = "";
             $city_data = "";
             $state_data = StateModel::where('country_id', $editprofiledetail->country_id)->get();
-
             $city_data = CityModel::where('state_id', $editprofiledetail->state_id)->get();
 
 

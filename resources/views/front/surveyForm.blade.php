@@ -69,7 +69,7 @@
                                     <div class="col-md-2">
                                     </div>
 
-                                    <div class=" col-md-8 m-b-0 ">
+                                    <div class=" col-md-8 mb-3 ">
                                         @if (!empty($surveyForm->description) && $surveyForm)
                                             {!! htmlspecialchars_decode(strip_tags($surveyForm->description)) !!}
                                         @endif

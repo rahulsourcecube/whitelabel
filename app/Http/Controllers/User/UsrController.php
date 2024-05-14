@@ -203,8 +203,10 @@ class UsrController extends Controller
         try {
             $userData = Auth::user();
             $country_data = CountryModel::all();
-            $state_data = StateModel::all();
-            $city_data = CityModel::all();
+            $state_data = "";
+            $city_data = "";
+            $state_data = StateModel::where('country_id', $userData->country_id)->get();
+            $city_data = CityModel::where('state_id', $userData->state_id)->get();
 
             return view('user.editprofile', compact('userData', 'country_data', 'state_data', 'city_data'));
         } catch (Exception $e) {
@@ -671,7 +673,7 @@ class UsrController extends Controller
 
             try {
 
-                $SettingValue = SettingModel::where('id', $companyId)->first();
+                $SettingValue = SettingModel::where('user_id', $companyId)->first();
                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
@@ -696,7 +698,7 @@ class UsrController extends Controller
             if (!empty($smsTemplate)) {
                 $SettingModel = SettingModel::first();
                 if (!empty($companyId)) {
-                    $SettingModel = SettingModel::find($companyId);
+                    $SettingModel = SettingModel::where('user_id', $companyId)->first();
                 }
                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                     $name = $request->first_name;
@@ -823,7 +825,7 @@ class UsrController extends Controller
 
                 $SettingModel = SettingModel::first();
                 if (!empty($companyId)) {
-                    $SettingModel = SettingModel::find($companyId);
+                    $SettingModel = SettingModel::where('user_id', $companyId)->first();
                 }
                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                     $name = $userEmail->first_name;
@@ -908,7 +910,7 @@ class UsrController extends Controller
             try {
                 $user = User::where('email', $request->email)->where('company_id', $companyId)->first();
 
-                $SettingValue = SettingModel::where('id', $companyId)->first();
+                $SettingValue = SettingModel::where('user_id', $companyId)->first();
                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
 
                 $userName  = $user->first_name . ' ' . $user->last_name;
@@ -932,7 +934,7 @@ class UsrController extends Controller
             if (!empty($smsTemplate)) {
                 $SettingModel = SettingModel::first();
                 if (!empty($companyId)) {
-                    $SettingModel = SettingModel::find($companyId);
+                    $SettingModel = SettingModel::where('user_id', $companyId)->first();
                 }
                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                     $name = $user->first_name;

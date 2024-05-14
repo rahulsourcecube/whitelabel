@@ -322,7 +322,7 @@ class TemplateController extends Controller
             // URL is under HTTP
             $webUrl =  'http://' . $webUrlGetHost;
         }
-        $SettingModel = SettingModel::find($companyId);
+        $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
         if (
             empty($SettingModel) &&
@@ -566,7 +566,7 @@ class TemplateController extends Controller
         $SettingModel = SettingModel::find($adminId);
 
         if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
-            return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Cridntioal"]);
+            return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
         }
         $notFoundNumber = [];
         if ($request->template_type == 'welcome') {

@@ -3,7 +3,7 @@
 use App\Models\SettingModel;
 $mail = SettingModel::first();
 if (!empty($company_id)) {
-    $mail = SettingModel::where('id', $company_id)->first();
+    $mail = SettingModel::where('user_id', $company_id)->first();
 }
 ?>
 

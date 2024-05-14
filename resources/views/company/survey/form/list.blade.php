@@ -170,7 +170,7 @@
                         'contact_number[]': {
                             required: true,
                             minlength: '10',
-                            digits: true
+
                         }
                     },
                     messages: {
@@ -275,8 +275,8 @@
                             var facebookUrl = "https://www.facebook.com/sharer/sharer.php?u=" +
                                 copy;
 
-                            var instagramUrl = "https://www.twitter.com/share?u=" + copy;
-                            var twitterUrl = "https://www.instagram.com//sharer/sharer.php?u=" +
+                            var twitterUrl = "https://www.twitter.com/share?u=" + copy;
+                            var instagramUrl = "https://www.instagram.com//sharer/sharer.php?u=" +
                                 copy;
 
                             var shortcut = '[survey[' + row[0] + ']]'
@@ -293,15 +293,15 @@
                                 editUrl +
                                 '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-primary btn-sm" role="button" href="' +
                                 facebookUrl +
-                                '"   title="facebook"> <i class="fab fa-facebook-square"></i></a><a class="btn btn-sm btn-danger  btn-sm" role="button" href="' +
+                                '"   title="Facebook"> <i class="fab fa-facebook-square"></i></a><a class="btn btn-sm btn-danger  btn-sm" role="button" href="' +
                                 instagramUrl +
-                                '"   title="instagram"><i class="fab fa-instagram-square"></i></a><a class="btn  btn-sm btn-primary" role="button"  href="' +
+                                '"   title="Instagram"><i class="fab fa-instagram-square"></i></a><a class="btn  btn-sm btn-primary" role="button"  href="' +
                                 twitterUrl +
-                                '"   title="twitter"><i class="fab fa-twitter-square "></i></a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openSmsModels(\'' +
+                                '"   title="Twitter"><i class="fab fa-twitter-square "></i></a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openSmsModels(\'' +
                                 shortcut +
-                                '\')" role=" button "  title="sms ">Send SMS</a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openMailModels(\'' +
+                                '\')" role=" button "  title="SMS ">Send SMS</a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openMailModels(\'' +
                                 shortcut +
-                                '\')"    role=" button "  title="sms ">Send Mail</a><a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                                '\')"    role=" button "  title="Mail ">Send Mail</a><a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
                                 deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> ';
                         },
                     }

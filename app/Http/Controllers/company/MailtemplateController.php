@@ -190,7 +190,7 @@ class MailtemplateController extends Controller
                 // URL is under HTTP
                 $webUrl =  'http://' . $webUrlGetHost;
             }
-            $SettingModel = SettingModel::find($companyId);
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (
                 empty($SettingModel) &&
@@ -209,7 +209,7 @@ class MailtemplateController extends Controller
                         $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
                         if (!empty($user)) {
                             try {
-                                $SettingValue = SettingModel::where('id', $companyId)->first();
+                                $SettingValue = SettingModel::where('user_id', $companyId)->first();
                                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
                                 $userName  = $user->fname . ' ' . $user->lname;
                                 $to = $user->email;
@@ -304,7 +304,7 @@ class MailtemplateController extends Controller
                             try {
                                 // $user = User::where('email', $request->email)->where('company_id', $companyId)->first();
 
-                                $SettingValue = SettingModel::where('id', $companyId)->first();
+                                $SettingValue = SettingModel::where('user_id', $companyId)->first();
                                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
 
                                 $userName  = $user->first_name . ' ' . $user->last_name;
@@ -400,7 +400,7 @@ class MailtemplateController extends Controller
                         if (!empty($user)) {
                             try {
                                 $reward = UserCampaignHistoryModel::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
-                                $SettingValue = SettingModel::where('id', $companyId)->first();
+                                $SettingValue = SettingModel::where('user_id', $companyId)->first();
                                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
                                 $userDetails = User::where('id', $reward->user_id)->where('company_id', $companyId)->first();
                                 if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
@@ -448,7 +448,7 @@ class MailtemplateController extends Controller
 
                                 try {
                                     $cmpaign =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
-                                    $SettingValue = SettingModel::where('id', $companyId)->first();
+                                    $SettingValue = SettingModel::where('user_id', $companyId)->first();
                                     $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
                                     $userDetails = User::where('id', $user->id)->where('company_id', $companyId)->first();
                                     if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {

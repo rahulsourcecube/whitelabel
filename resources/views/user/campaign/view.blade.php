@@ -360,7 +360,8 @@ Status: <strong
                             </div>
                         </div>
                     </div>
-                    @if (isset($user_Campaign->status) && $user_Campaign->status == '2')
+                    @if (isset($user_Campaign->status) &&
+                            ($user_Campaign->status == '2' || $user_Campaign->status == '3' || $user_Campaign->status == '4'))
                         <div class="col-lg-12">
                             <div class="card">
                                 <div class="container mt-5">

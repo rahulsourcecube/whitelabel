@@ -221,7 +221,7 @@ class CampaignController extends Controller
             $country_data = CountryModel::all();
             $typeInText = $type;
             $type = CampaignModel::TYPE[strtoupper($type)];
-            $mail = SettingModel::where('id', $companyId)->first();
+            $mail = SettingModel::where('user_id', $companyId)->first();
             $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'new_task')->first();
             $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
             return view('company.campaign.create', compact('type', 'typeInText', 'country_data', 'mail', 'mailTemplate', 'smsTemplate'));
@@ -509,9 +509,10 @@ class CampaignController extends Controller
             if (!$isActivePackageAccess) {
                 return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
-            $country_data = CountryModel::all();
-            $state_data = StateModel::all();
-            $city_data = CityModel::all();
+
+            $state_data = "";
+            $city_data = "";
+
             $companyId = Helper::getCompanyId();
             $type = CampaignModel::TYPE[strtoupper($type)];
             $taskId = base64_decode($id);
@@ -601,7 +602,7 @@ class CampaignController extends Controller
 
                     try {
 
-                        $SettingValue = SettingModel::where('id', $companyId)->first();
+                        $SettingValue = SettingModel::where('user_id', $companyId)->first();
                         $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
                         $userDetails = User::where('id', $action->user_id)->where('company_id', $companyId)->first();
                         if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
@@ -636,7 +637,7 @@ class CampaignController extends Controller
                     if (!empty($smsTemplate)) {
                         $SettingModel = SettingModel::first();
                         if (!empty($companyId)) {
-                            $SettingModel = SettingModel::find($companyId);
+                            $SettingModel = SettingModel::where('user_id', $companyId)->first();
                         }
                         if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                             $name =  $userDetails->FullName;

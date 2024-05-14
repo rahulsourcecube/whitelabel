@@ -4,7 +4,7 @@ use App\Models\SettingModel;
 use App\Helpers\Helper;
 ?>
 
-<?php $mail = SettingModel::where('id', $company_id)->first(); ?>
+<?php $mail = SettingModel::where('user_id', $company_id)->first(); ?>
 @if (!empty($template))
     <?php
     
