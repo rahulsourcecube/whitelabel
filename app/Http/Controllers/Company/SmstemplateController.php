@@ -183,10 +183,10 @@ class SmstemplateController extends Controller
             }
 
 
-            $SettingModel = SettingModel::find($companyId);
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
-                return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Cridntioal"]);
+                return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Credential"]);
             }
             $notFoundNumber = [];
             if ($request->template_type == 'welcome') {
@@ -199,7 +199,7 @@ class SmstemplateController extends Controller
                             if (!empty($smsTemplate)) {
                                 $SettingModel = SettingModel::first();
                                 if (!empty($companyId)) {
-                                    $SettingModel = SettingModel::find($companyId);
+                                    $SettingModel = SettingModel::where('user_id', $companyId)->first();
                                 }
                                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                                     $name = $user->first_name;
@@ -250,7 +250,7 @@ class SmstemplateController extends Controller
 
                                 $SettingModel = SettingModel::first();
                                 if (!empty($companyId)) {
-                                    $SettingModel = SettingModel::find($companyId);
+                                    $SettingModel = SettingModel::where('user_id', $companyId)->first();
                                 }
                                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                                     $name = $user->first_name;
@@ -301,7 +301,7 @@ class SmstemplateController extends Controller
                             if (!empty($smsTemplate)) {
                                 $SettingModel = SettingModel::first();
                                 if (!empty($companyId)) {
-                                    $SettingModel = SettingModel::find($companyId);
+                                    $SettingModel = SettingModel::where('user_id', $companyId)->first();
                                 }
                                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                                     $name = $user->first_name;
@@ -402,7 +402,7 @@ class SmstemplateController extends Controller
                             if (!empty($smsTemplate)) {
                                 $SettingModel = SettingModel::first();
                                 if (!empty($companyId)) {
-                                    $SettingModel = SettingModel::find($companyId);
+                                    $SettingModel = SettingModel::where('user_id', $companyId)->first();
                                 }
                                 if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
                                     $name =  $user->FullName;

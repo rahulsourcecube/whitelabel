@@ -218,7 +218,6 @@ class SurveyController extends Controller
                <option value="">Select Type</option>
                         <option value="text">Text</option>
                         <option value="number">Number</option>
-                        <option value="textarea">Textarea</option>
                         <option value="select">Select</option>
                         <option value="radio">Radio</option>
                         <option value="checkbox">Checkbox</option>
@@ -401,10 +400,10 @@ class SurveyController extends Controller
             // $SettingModel = SettingModel::first();
             // if (!empty($companyId)) {
             // }
-            $SettingModel = SettingModel::find($companyId);
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
-                return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Cridntioal"]);
+                return redirect()->route('company.survey.form.index')->with(['error' => "Please enter SMS Credential "]);
             }
 
             if ($request->contact_number != '') {
@@ -480,8 +479,12 @@ class SurveyController extends Controller
             // $SettingModel = SettingModel::first();
             // if (!empty($companyId)) {
             // }
-            $SettingModel = SettingModel::find($companyId);
 
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
+
+            if (empty($SettingModel) && empty($SettingModel->mail_address) && empty($SettingModel->mail_address)) {
+                return redirect()->route('company.survey.form.index')->with(['error' => "Please enter mail credential "]);
+            }
             foreach ($request->mail as $mail) {
                 try {
                     $to = $mail;
