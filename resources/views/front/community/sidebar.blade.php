@@ -18,7 +18,7 @@
         {{-- <h6 class="center">Question</h6> --}}
         <ul class="menu nav flex-column">
             <li class="nav-item">
-                <h6 class="nav-link d-inline-block">Question</h6>
+                <h4 class="nav-link d-inline-block">Question</h4>
             </li>
             <li class="nav-item">
                 <a href="{{ route('community') }}" class="nav-link @if (request()->segment(1) == 'community' && request()->segment(2) == '') active @endif">
@@ -40,7 +40,7 @@
         <ul class="menu nav flex-column m-t-15">
 
             <li class="nav-item">
-                <h6 class="nav-link d-inline-block">Categories</h6>
+                <h4 class="nav-link d-inline-block">Categories</h4>
             </li>
             @if (!empty($getChannel))
                 @foreach ($getChannel as $channel)
@@ -48,8 +48,7 @@
                         <a href="{{ route('community', base64_encode($channel->id)) }}"
                             class="nav-link @if (request()->segment(2) == base64_encode($channel->id)) active @endif">
                             <div class="d-flex align-items-center m-r-10">
-                                <span class="badge badge-success  m-r-10"></span>
-                                <span
+                                <span class="mb-0"
                                     data-id="{{ $channel ? $channel->id : '' }}">{{ $channel && $channel->title ? $channel->title : '' }}</span>
                             </div>
                         </a>

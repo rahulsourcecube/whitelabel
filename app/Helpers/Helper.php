@@ -174,7 +174,12 @@ class Helper
     public static function Dateformat($date)
     {
         $formattedDate = "";
-        if (gettype($date) == 'string') {
+
+        if (gettype($date) === 'string') {
+            $date = Carbon::parse($date);
+            $formattedDate = $date->format('Y-M-d');
+        } else {
+            $date = "";
             $date = Carbon::parse($date);
             $formattedDate = $date->format('Y-M-d');
         }
@@ -427,7 +432,7 @@ class Helper
     {
         $companyId = Helper::getCompanyId();
         $restult = false;
-        if ($companyId == auth::user()->id) {
+        if (!empty(auth::user()) && $companyId == auth::user()->id) {
             $restult = true;
         }
         return $restult;

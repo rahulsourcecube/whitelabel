@@ -150,8 +150,16 @@
                                 </div>
                             </div>
                         </div>
+                        <label for="expiry_date">Public</label>
+                        <div class="form-group align-items-center">
+                            <div class="switch m-r-10">
+                                <input type="checkbox" id="public-1" data-toggle="switch" name="public"
+                                    value="true" onclick='handleClickpublic(this)';>
+                                <label for="public-1"></label>
+                            </div>
+                        </div>
                         <h4>SMS Credentials</h4>
-                        <div class="m-t-50" style="">
+                        <div class="m-t-10" style="">
                             <div class="form-row">
                                 <div class="form-group col-md-4">
                                     <label for="sms_account_sid">Account SID<span class="error">*</span> </label>

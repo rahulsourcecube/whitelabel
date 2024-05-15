@@ -325,10 +325,7 @@ class TemplateController extends Controller
         $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
         if (
-            empty($SettingModel) &&
-            empty($SettingModel->mail_username) &&
-            empty($SettingModel->mail_host) &&
-            empty($SettingModel->mail_password)
+            empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
         ) {
             return redirect()->route('admin.mail.index')->with(['error' => "Please enter mail Cridntioal"]);
         }
@@ -509,6 +506,13 @@ class TemplateController extends Controller
                 ->where('status', '1')
 
                 ->get();
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
+
+            if (
+                empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
+            ) {
+                return response()->json(['success' => false, 'message' => "Error: Please enter mail Cridntioal "]);
+            }
 
             if (!$userDatas->isEmpty()) {
                 $notificationsQueBatch = [];
@@ -563,7 +567,7 @@ class TemplateController extends Controller
         // $SettingModel = SettingModel::first();
         // if (!empty($companyId)) {
         // }
-        $SettingModel = SettingModel::find($adminId);
+        $SettingModel = SettingModel::where('user_id', $adminId)->first();
 
         if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
             return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
@@ -574,7 +578,7 @@ class TemplateController extends Controller
                 $user = User::where('contact_number', $number)->where('user_type', '2')->first();
 
                 if (!empty($user)) {
-                    $smsTemplate = SmsTemplate::where('company_id', $user->id)->where('template_type', 'welcome')->first();
+                    $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
                     if (!empty($smsTemplate)) {
                         // $SettingModel = SettingModel::first();
 
@@ -747,7 +751,7 @@ class TemplateController extends Controller
     public function sendAllSms(Request $request)
     {
         try {
-            $companyId = auth::user()->id;
+            $adminId = auth::user()->id;
 
 
             // $notificationsQue=new NotificationsQue()
@@ -755,12 +759,18 @@ class TemplateController extends Controller
                 ->where('status', '1')
                 ->get();
 
+            $SettingModel = SettingModel::where('user_id', $adminId)->first();
+            if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+                // return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
+                return response()->json(['success' => false, 'message' => "Error: Please enter SMS Credential"]);
+            }
+
             if (!$userDatas->isEmpty()) {
                 $notificationsQueBatch = [];
 
                 foreach ($userDatas as $userData) {
                     $notificationsQueBatch[] = [
-                        'company_id' => $companyId,
+                        'company_id' => $adminId,
                         'user_id' => $userData->id,
 
                         'notifications_type' => "2",

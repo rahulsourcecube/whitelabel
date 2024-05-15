@@ -1,5 +1,12 @@
 @extends('company.layouts.master')
-@section('title', 'Add Employee')
+@section('title')
+    @if (!empty($progression))
+        Edit
+    @else
+        Add
+    @endif
+    Progression
+@endsection
 @section('main-content')
     <div class="main-content">
         @include('company.includes.message')
@@ -8,8 +15,8 @@
                 <nav class="breadcrumb breadcrumb-dash">
                     <a href="{{ route('company.dashboard') }}" class="breadcrumb-item">
                         <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                    <a href="{{ route('company.employee.list') }}" class="breadcrumb-item">Employee</a>
-                    <span class="breadcrumb-item active">Add</span>
+                    <a href="{{ route('company.employee.list') }}" class="breadcrumb-item">Progression</a>
+                    <span class="breadcrumb-item active">{{ !empty($progression) ? 'Edit' : 'Add' }}</span>
                 </nav>
             </div>
         </div>
@@ -74,7 +81,6 @@
         </div>
     </div>
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
-
 @endsection
 
 @section('js')

@@ -119,11 +119,13 @@
                                             @foreach ($fields as $key => $field)
                                                 <div class="step step-{{ $key + 1 }}  "
                                                     id="step-{{ $key + 1 }}" data-key="{{ $key + 1 }}">
+
                                                     <?php  if($field['type'] == 'text'){ ?>
 
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}</label>
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}</label>
                                                         <input type="text" class="form-control"
                                                             id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
                                                             {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
@@ -136,7 +138,8 @@
                                                     <?php }elseif($field['type']=='number'){ ?>
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
                                                             <span class="error"></span></label>
                                                         <input type="text" class="form-control"
                                                             id="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}"
@@ -149,7 +152,8 @@
                                                     <?php }elseif($field['type']=='textarea'){ ?>
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
                                                                 class="error"></span></label>
                                                         <textarea {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
                                                             name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
@@ -160,7 +164,8 @@
                                                     <?php }elseif($field['type']=='select'){ ?>
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
                                                             <span class="error"></span></label>
                                                         <select
                                                             {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
@@ -182,7 +187,8 @@
                                                     </div>
                                                     <?php }elseif($field['type']=='radio'){ ?>
                                                     <div class="form-group col-md-12">
-                                                        <label>{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
+                                                        <label>Q.{{ $key + 1 }}
+                                                            {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
                                                                 class="error"></span></label><br>
                                                         @if (!empty($field['radio']))
                                                             @foreach ($field['radio'] as $item)
@@ -201,7 +207,8 @@
                                                     </div>
                                                     <?php }elseif($field['type']=='checkbox'){ ?>
                                                     <div class="form-group col-md-12">
-                                                        <label>{{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
+                                                        <label>Q.{{ $key + 1 }}
+                                                            {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
                                                                 class="error"></span></label><br>
                                                         @if (!empty($field['checkbox']))
                                                             @foreach ($field['checkbox'] as $item)
@@ -284,11 +291,6 @@
         });
 
         $(document).ready(function() {
-            // $('input[name="input_0_89247"]').on('click', function() {
-            //     alert($(this).val());
-            //     // Set the selected property to true
-            //     $(this).prop('', true);
-            // });
             $(".start-btn").click(function() {
                 var currentStep = $(this).closest(".step").attr("id");
 

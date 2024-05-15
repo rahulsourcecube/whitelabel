@@ -7,7 +7,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item">Campaign</span>
                     <span class="breadcrumb-item active">VIew </span>
                 </nav>
@@ -19,9 +20,11 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if (isset($task) && $task->image != '' && file_exists(base_path('uploads/company/campaign/' . $task->image)))
-                                <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}" class="w-100 img-responsive">
+                                <img class="card-img-top" src="{{ asset('uploads/company/campaign/' . $task->image) }}"
+                                    class="w-100 img-responsive">
                             @else
-                                <img src="{{ asset('assets/images/others/No_image_available.png') }}" class="w-100 img-responsive">
+                                <img src="{{ asset('assets/images/others/No_image_available.png') }}"
+                                    class="w-100 img-responsive">
                             @endif
                         </div>
                         <div class="col-md-8">
@@ -39,10 +42,12 @@
                                     </span>
                                     @if ($task->type == '1')
                                         <span class="m-h-5 text-gray">|</span>
-                                        <span class="text-gray"> <b>No of referral users: </b>{{ $task->no_of_referral_users ?? '' }}</span>
+                                        <span class="text-gray"> <b>No of referral users:
+                                            </b>{{ $task->no_of_referral_users ?? '' }}</span>
                                     @endif
                                     <span class="m-h-5 text-gray">|</span>
-                                    <span class="text-gray">{{ App\Helpers\Helper::Dateformat($task->expiry_date) ?? '' }}</span>
+                                    <span
+                                        class="text-gray">{{ App\Helpers\Helper::Dateformat($task->expiry_date) ?? '' }}</span>
 
                                     <p class="text-gray font-weight-semibold">
                                         @if ($task->priority == 1)
@@ -84,24 +89,24 @@
                         <div class="m-t-25">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                 <li class="nav-item my-table-tab" data-status="1">
-                                    <a class="nav-link active" id="user-tab" data-toggle="pill" href="#Joined_user" role="tab" aria-controls="user"
-                                        aria-selected="true">Recently Joined User </a>
+                                    <a class="nav-link active" id="user-tab" data-toggle="pill" href="#Joined_user"
+                                        role="tab" aria-controls="user" aria-selected="true">Recently Joined User </a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="2">
-                                    <a class="nav-link" id="request-tab" data-toggle="pill" href="#request" role="tab" aria-controls="request"
-                                        aria-selected="false">Approval Requset</a>
+                                    <a class="nav-link" id="request-tab" data-toggle="pill" href="#request" role="tab"
+                                        aria-controls="request" aria-selected="false">Approval Request</a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="5">
-                                    <a class="nav-link" id="reopen-tab" data-toggle="pill" href="#reopen" role="tab" aria-controls="reopen"
-                                        aria-selected="false">Reopen</a>
+                                    <a class="nav-link" id="reopen-tab" data-toggle="pill" href="#reopen" role="tab"
+                                        aria-controls="reopen" aria-selected="false">Reopen</a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="3">
-                                    <a class="nav-link" id="accept-tab" data-toggle="pill" href="#accept" role="tab" aria-controls="accept"
-                                        aria-selected="false">Accepted</a>
+                                    <a class="nav-link" id="accept-tab" data-toggle="pill" href="#accept" role="tab"
+                                        aria-controls="accept" aria-selected="false">Accepted</a>
                                 </li>
                                 <li class="nav-item my-table-tab" data-status="4">
-                                    <a class="nav-link" id="reject-tab" data-toggle="pill" href="#reject" role="tab" aria-controls="reject"
-                                        aria-selected="false">Rejected</a>
+                                    <a class="nav-link" id="reject-tab" data-toggle="pill" href="#reject" role="tab"
+                                        aria-controls="reject" aria-selected="false">Rejected</a>
                                 </li>
 
                             </ul>
@@ -212,7 +217,7 @@
             if ($(this).data('status') == '1') {
                 title = 'Recently User Joined List';
             } else if ($(this).data('status') == '2') {
-                title = 'Approval Requset List';
+                title = 'Approval Request List';
             } else if ($(this).data('status') == '5') {
                 title = 'Reopen List';
             } else if ($(this).data('status') == '3') {

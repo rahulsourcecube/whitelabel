@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('title', 'Employee List')
+@section('title', 'Mail Template List')
 @section('main-content')
 
     <div class="main-content">
@@ -297,7 +297,7 @@
                                 editUrl +
                                 '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openModels(\'' +
                                 row[0] + '\',\'' + row[3] +
-                                '\')"    role=" button "  title="sms ">Send Mail</a> ';
+                                '\')"    role=" button "  title="Send Mail">Send Mail</a> ';
 
                         },
                     }

@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('title', 'Country')
+@section('title', 'Add Country')
 @section('main-content')
     <div class="main-content">
         @include('admin.includes.message')

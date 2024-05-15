@@ -84,7 +84,7 @@
                                 ' " role="button"  href="javascript:void(' + row[3] +
                                 ')" onclick="handleClickActive(this,\'' +
                                 row[0] +
-                                '\')"  title="Delete">' + status + '</a>';
+                                '\')"  title="' + status + '">' + status + '</a>';
                         },
 
                     },
@@ -102,7 +102,7 @@
 
                             return '<a class="btn btn-primary btn-sm" href="' +
                                 viewUrl +
-                                '" role="button"  title="Edit"><i class="fa fa-eye"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                                '" role="button"  title="View"><i class="fa fa-eye"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
                                 deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> ';
                         },
                     }

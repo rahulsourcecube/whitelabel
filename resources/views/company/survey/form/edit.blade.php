@@ -1,5 +1,5 @@
 @extends('company.layouts.master')
-@section('title', 'Add Employee')
+@section('title', 'Edit Survey Form')
 @section('main-content')
     <div class="main-content">
         @include('company.includes.message')

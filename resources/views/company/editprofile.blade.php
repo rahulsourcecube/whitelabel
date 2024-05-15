@@ -132,8 +132,8 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-3">
                                         <label class="font-weight-semibold" for="newPassword">New Password:</label>
-                                        <input type="password" class="form-control" name="newPassword" id="newPassword"
-                                            placeholder="New Password">
+                                        <input type="password" class="form-control" minlength="8" name="newPassword"
+                                            id="newPassword" placeholder="New Password">
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label class="font-weight-semibold" for="confirmPassword">Confirm
@@ -235,7 +235,7 @@
                     },
                     newPassword: {
                         required: "Please enter password",
-                        minlength: 'Please enter at least 6 cheracter.',
+                        minlength: 'Please enter at least 8 cheracter.',
                         maxlength: 'Maximum password length 15 character.'
                     },
                     confirmPassword: {

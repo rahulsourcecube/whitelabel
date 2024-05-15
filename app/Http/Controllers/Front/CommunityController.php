@@ -117,7 +117,7 @@ class CommunityController extends Controller
             $questions->save();
 
 
-            return redirect()->route('community')->with('success', 'Thank you for reply  successfully');
+            return redirect()->route('community')->with('success', 'Question added successfully');
         } catch (Exception $e) {
             Log::error('CommunityController::store => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -128,12 +128,22 @@ class CommunityController extends Controller
     {
         try {
 
+
             $companyId = Helper::getCompanyId();
             $companyAdmin = Helper::companyAdmin();
 
-            $questions = Community::where('company_id', $companyId)->where('id', base64_decode($id))->first();
+            $companyAdmin = Helper::companyAdmin();
+
+            $questions = Community::where('company_id', $companyId)->where('status', Reply::STATUS['ACTIVE'])->where('id', base64_decode($id));
+
+            $companyAdmin = Helper::companyAdmin();
+            if ($companyAdmin == false) {
+                $questions->where('status', Reply::STATUS['ACTIVE']);
+            }
+            $questions = $questions->first();
+
             if (empty($questions)) {
-                return redirect()->back()->with('error', 'Questions not found');
+                return redirect()->route('community')->with('error', 'Questions not found');
             }
             $questionsReply = Reply::where('company_id', $companyId)->where('community_id', $questions->id)->orderBy('created_at', 'desc');
             if ($companyAdmin == false) {

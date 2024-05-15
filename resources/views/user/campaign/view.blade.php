@@ -434,7 +434,7 @@ Status: <strong
                                                     ? $feedback->no_of_rating
                                                     : '1';
                                             if ($feedbackSelectRating == '2') {
-                                                $se = 'selected';
+                                                $fse = 'selected';
                                             } elseif ($feedbackSelectRating == '3') {
                                                 $fse = 'selected';
                                                 $fth = 'selected';

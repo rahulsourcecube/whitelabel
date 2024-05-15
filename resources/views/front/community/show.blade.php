@@ -2,12 +2,6 @@
 @section('title', 'Community Show')
 @section('main-content')
 
-
-
-
-
-
-
     <div class="mail-wrapper  p-h-20 p-v-20 bg full-height">
         @include('front.community.sidebar')
         <div class="container">

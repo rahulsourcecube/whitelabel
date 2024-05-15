@@ -8,7 +8,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">City</span>
                 </nav>
             </div>
@@ -17,7 +18,8 @@
             <div class="card-body">
                 <h4>City List</h4>
 
-                <a class="btn btn-primary float-right" href="{{ route('admin.location.city.create') }}" role="button">Add New</a>
+                <a class="btn btn-primary float-right" href="{{ route('admin.location.city.create') }}" role="button">Add
+                    New</a>
                 <div>
                     <table id="city_table" class="table">
                         <thead>
@@ -26,7 +28,7 @@
                                 <th>Country Name</th>
                                 <th>State Name</th>
                                 <th>City Name</th>
-                                <th>Zipcode</th>
+                                {{-- <th>Zipcode</th> --}}
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -74,7 +76,7 @@
                     },
 
                     {
-                        'targets': 5,
+                        'targets': 4,
                         'visible': true,
                         'orderable': false,
                         'class': 'd-flex',

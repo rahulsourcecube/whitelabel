@@ -134,7 +134,7 @@
                                                 <label class="font-weight-semibold" for="password">Password:</label>
                                                 <input type="password" class="form-control" id="password"
                                                     placeholder="Password" name="password"
-                                                    value="{{ old('password') }}" maxlength="50">
+                                                    value="{{ old('password') }}" minlength="8" maxlength="50">
                                             </div>
                                             <div class="form-group col-md-6">
                                                 <label class="font-weight-semibold" for="confirmPassword">Confirm
@@ -220,6 +220,7 @@
                     },
                     password: {
                         required: true,
+
                     },
                     password_confirmation: {
                         required: true,

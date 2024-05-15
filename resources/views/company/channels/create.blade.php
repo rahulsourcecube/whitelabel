@@ -1,5 +1,12 @@
 @extends('company.layouts.master')
-@section('title', 'Add Category')
+@section('title')
+    @if (!empty($channels))
+        Edit
+    @else
+        Add
+    @endif
+    Category
+@endsection
 @section('main-content')
     <div class="main-content">
         @include('company.includes.message')
@@ -44,12 +51,9 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('js')
-
-
     <script>
         $(document).ready(function() {
 

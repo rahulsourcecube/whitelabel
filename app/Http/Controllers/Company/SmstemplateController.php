@@ -360,8 +360,9 @@ class SmstemplateController extends Controller
                                         $company_title = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : 'Referdio';
                                         $company_link = $webUrl ? $webUrl : '';
                                         $campaign_title = $companyData->title;
+                                        $campaign_join_link = route('front.campaign.Join', base64_encode($companyData->id));
                                         $campaign_price = !empty($companyData->text_reward) ? $companyData->text_reward : $companyData->reward;
-                                        $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[campaign_title]", "[campaign_price]"], [$name, $company_title, $company_link, $campaign_title, $campaign_price], $smsTemplate->template_html_sms);
+                                        $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[campaign_title]", "[campaign_price]", "[campaign_join_link]"], [$name, $company_title, $company_link, $campaign_title, $campaign_price, $campaign_join_link], $smsTemplate->template_html_sms);
 
                                         // Remove HTML tags and decode HTML entities
                                         $message = htmlspecialchars_decode(strip_tags($html));
@@ -465,6 +466,7 @@ class SmstemplateController extends Controller
                                         $campaign_price = !empty($companyData->text_reward) ? $companyData->text_reward : $companyData->reward;
 
                                         //set survey shortcut
+                                        $campaign_join_link = route('front.campaign.Join', base64_encode($companyData->id));
                                         $template = $smsTemplate->template_html_sms;
 
                                         $pattern = '/\[survey\[(.*?)\]\]/';
@@ -477,7 +479,7 @@ class SmstemplateController extends Controller
                                                 $template = str_replace('[survey[' . $surveyValue . ']]', $survey_link, $template);
                                             }
                                         }
-                                        $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[campaign_title]", "[campaign_price]"], [$name, $company_title, $company_link, $campaign_title, $campaign_price], $template);
+                                        $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[campaign_title]", "[campaign_price]", "[campaign_join_link]"], [$name, $company_title, $company_link, $campaign_title, $campaign_price, $campaign_join_link], $template);
 
                                         // Remove HTML tags and decode HTML entities
                                         $message = htmlspecialchars_decode(strip_tags($html));
@@ -522,6 +524,11 @@ class SmstemplateController extends Controller
                 ->where('status', '1')
                 ->where('company_id', $companyId)
                 ->get();
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
+
+            if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+                return response()->json(['success' => false, 'message' => "Error: Please enter SMS Credential"]);
+            }
 
             if (!$userDatas->isEmpty()) {
                 $notificationsQueBatch = [];

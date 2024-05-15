@@ -84,7 +84,7 @@
                             <span class="icon-holder">
                                 <i class="anticon anticon-safety-certificate"></i>
                             </span>
-                            <span class="title">Create New task</span>
+                            <span class="title">Create New Task</span>
                             <span class="arrow">
                                 <i class="arrow-icon"></i>
                             </span>
@@ -180,7 +180,7 @@
                                 <a href="{{ route('company.mail.index') }}">Mail Template</a>
                             </li>
                             <li @if (request()->segment(2) == 'sms') class='active' @endif>
-                                <a href="{{ route('company.sms.index') }}">Sms Template</a>
+                                <a href="{{ route('company.sms.index') }}">SMS Template</a>
                             </li>
                         </ul>
                     </li>

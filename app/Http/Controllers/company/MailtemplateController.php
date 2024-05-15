@@ -356,7 +356,7 @@ class MailtemplateController extends Controller
                                         $campaign_title  = $companyData->title;
                                         $campaign_price = $companyData->text_reward ? $companyData->text_reward : $companyData->reward;
                                         $to = $userDetails->email;
-                                        $campaign_join_link = route('user.campaign.getusercampaign', base64_encode($companyData->id));
+                                        $campaign_join_link = route('front.campaign.Join', base64_encode($companyData->id));
 
                                         $message = '';
 
@@ -455,7 +455,7 @@ class MailtemplateController extends Controller
                                         $userName  = $userDetails->FullName;
                                         $campaign_title  = $cmpaign->title;
                                         $campaign_price = $cmpaign->text_reward ? 'text_reward' : $cmpaign->reward;
-                                        $campaign_join_link = route('user.campaign.getusercampaign', base64_encode($cmpaign->id));
+                                        $campaign_join_link = route('front.campaign.Join', base64_encode($cmpaign->id));
                                         $to = $userDetails->email;
                                         $message = '';
 
@@ -509,6 +509,10 @@ class MailtemplateController extends Controller
                 ->where('status', '1')
                 ->where('company_id', $companyId)
                 ->get();
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
+            if (empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)) {
+                return response()->json(['success' => false, 'message' => "Error: Please enter mail Cridntioal "]);
+            }
 
             if (!$userDatas->isEmpty()) {
                 $notificationsQueBatch = [];

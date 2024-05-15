@@ -143,7 +143,7 @@
                                 editUrl +
                                 '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openModels(\'' +
                                 row[3] + '\',\'' + row[2] +
-                                '\')"    role=" button "  title="sms ">Send SMS</a>  ';
+                                '\')"    role=" button "  title="Send SMS">Send SMS</a>  ';
 
                         },
                     }

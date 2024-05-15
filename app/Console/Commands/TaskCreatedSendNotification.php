@@ -66,7 +66,7 @@ class TaskCreatedSendNotification extends Command
                                 $campaign_title  = $companyData->getCampaign->title;
                                 $campaign_price = $companyData->getCampaign->text_reward ? $companyData->getCampaign->text_reward : $companyData->getCampaign->reward;
                                 $to = $userDetails->email;
-                                $campaign_join_link = route('user.campaign.getusercampaign', base64_encode($companyData->getCampaign->id));
+                                $campaign_join_link = route('front.campaign.Join', base64_encode($companyData->getCampaign->id));
 
                                 $message = '';
 

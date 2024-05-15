@@ -1,5 +1,12 @@
 @extends('admin.layouts.master')
-@section('title', 'Add Employee')
+@section('title')
+    @if (!empty($mailTemplate))
+        Edit
+    @else
+        Add
+    @endif
+    Mail Template
+@endsection
 @section('main-content')
     {{-- {{ !empty(old('subject')) ?? dd(123) }} --}}
     <div class="main-content">
@@ -94,11 +101,9 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('js')
-
     <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script>

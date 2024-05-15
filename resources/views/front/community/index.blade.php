@@ -11,7 +11,7 @@
 
 
         <div class="container">
-
+            @include('front.includes.message')
             @if (!empty($questions) && count($questions) > 0)
 
                 @foreach ($questions as $question)
@@ -71,7 +71,7 @@
                     {{ $questions->appends(Request::all())->links() }}
                 </div>
             @else
-                @include('front.error.error')
+                @include('front.error.notFoundQuestions')
 
             @endif
         </div>
