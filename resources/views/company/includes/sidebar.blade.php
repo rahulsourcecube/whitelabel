@@ -11,7 +11,10 @@
     use App\Models\Notification;
 
     $companyId = App\Helpers\Helper::getCompanyId();
-    $notificationCount = Notification::where('company_id', $companyId)->where('is_read', '0')->where('type', '2')->get();
+    $notificationCount = Notification::where('company_id', $companyId)
+        ->where('is_read', '0')
+        ->where('type', '2')
+        ->get();
 
 @endphp
 <div class="side-nav">
@@ -52,19 +55,22 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li @if (request()->segment(2) == 'campaign' && request()->segment(3) == 'list' && request()->segment(4) == 'Referral') class='active' @endif>
-                                <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL'])) }}">Referral
+                                <a
+                                    href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL'])) }}">Referral
                                     Tasks</a>
                             </li>
                             <li @if (request()->segment(2) == 'campaign' &&
                                     request()->segment(3) == 'list' &&
                                     request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) class='active' @endif>
-                                <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) }}">Social
+                                <a
+                                    href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) }}">Social
                                     Tasks</a>
                             </li>
                             <li @if (request()->segment(2) == 'campaign' &&
                                     request()->segment(3) == 'list' &&
                                     request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) class='active' @endif>
-                                <a href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) }}">Custom
+                                <a
+                                    href="{{ route('company.campaign.list', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) }}">Custom
                                     Tasks </a>
                             </li>
                         </ul>
@@ -78,7 +84,7 @@
                             <span class="icon-holder">
                                 <i class="anticon anticon-safety-certificate"></i>
                             </span>
-                            <span class="title">Create New task</span>
+                            <span class="title">Create New Task</span>
                             <span class="arrow">
                                 <i class="arrow-icon"></i>
                             </span>
@@ -87,19 +93,22 @@
                             <li @if (request()->segment(2) == 'campaign' &&
                                     request()->segment(3) == 'create' &&
                                     request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL'])) class='active' @endif>
-                                <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL'])) }}">Referral
+                                <a
+                                    href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL'])) }}">Referral
                                     Task</a>
                             </li>
                             <li @if (request()->segment(2) == 'campaign' &&
                                     request()->segment(3) == 'create' &&
                                     request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) class='active' @endif>
-                                <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) }}">Social
+                                <a
+                                    href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL'])) }}">Social
                                     Task</a>
                             </li>
                             <li @if (request()->segment(2) == 'campaign' &&
                                     request()->segment(3) == 'create' &&
                                     request()->segment(4) == \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) class='active' @endif>
-                                <a href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) }}">Custom
+                                <a
+                                    href="{{ route('company.campaign.create', \App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM'])) }}">Custom
                                     Task </a>
                             </li>
                         </ul>
@@ -171,32 +180,57 @@
                                 <a href="{{ route('company.mail.index') }}">Mail Template</a>
                             </li>
                             <li @if (request()->segment(2) == 'sms') class='active' @endif>
-                                <a href="{{ route('company.sms.index') }}">Sms Template</a>
+                                <a href="{{ route('company.sms.index') }}">SMS Template</a>
                             </li>
                         </ul>
                     </li>
                 @endif
-            @endif
-            <li class="nav-item dropdown">
-                <a class="dropdown-toggle" href="javascript:void(0);">
-                    <span class="icon-holder">
-                        <i class="anticon anticon-setting"></i>
-                    </span>
-                    <span class="title">Survey Setting</span>
-                    <span class="arrow">
-                        <i class="arrow-icon"></i>
-                    </span>
-                </a>
-                <ul class="dropdown-menu">
 
-                    <li @if (request()->segment(2) == 'survey') class='active' @endif>
-                        <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
-                    </li>
-                    {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="javascript:void(0);">
+                        <span class="icon-holder">
+                            <i class="anticon anticon-setting"></i>
+                        </span>
+                        <span class="title">Survey Setting</span>
+                        <span class="arrow">
+                            <i class="arrow-icon"></i>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li @if (request()->segment(2) == 'survey') class='active' @endif>
+                            <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
+                        </li>
+                        {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
                         <a href="{{ route('company.setting.index') }}">Survey list</a>
                     </li> --}}
-                </ul>
-            </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="javascript:void(0);">
+                        <span class="icon-holder">
+                            <i class="anticon anticon-setting"></i>
+                        </span>
+                        <span class="title">Community</span>
+                        <span class="arrow">
+                            <i class="arrow-icon"></i>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li @if (request()->segment(2) == 'channel') class='active' @endif>
+                            <a href="{{ route('company.channel.index') }}">Category</a>
+                        </li>
+                        <li @if (request()->segment(2) == 'reply') class='active' @endif>
+                            <a href="{{ route('company.reply.index') }}">Reply</a>
+                        </li>
+                        {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                        <a href="{{ route('company.setting.index') }}">Survey list</a>
+                    </li> --}}
+                    </ul>
+                </li>
+            @endif
+
             @can('notification-list')
                 <li class="nav-item dropdown open @if (request()->segment(2) == 'notification') active @endif">
                     <a class="dropdown-toggle" href="{{ route('company.notification.list') }}">

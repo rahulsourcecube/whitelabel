@@ -29,13 +29,11 @@ class CampaignController extends Controller
     function campaign()
     {
         $compact['countrys'] = CountryModel::all();
-        $compact['states'] = StateModel::all();
-        $compact['citys'] = CityModel::all();
-        return view('user.campaign.list',$compact);
+        return view('user.campaign.list', $compact);
     }
     function dtlist(Request $request)
     {
-        
+
         try {
             $companyId = Helper::getCompanyId();
             $columns = ['id', 'title'];
@@ -47,41 +45,42 @@ class CampaignController extends Controller
             $list = [];
 
             $searchColumn = ['title', 'reward', 'description'];
-        
+
             $query = CampaignModel::orderByRaw('CASE WHEN priority = 1 THEN 1 WHEN priority = 2 THEN 2 ELSE 3 END ASC')
-            ->orderBy($columns[$order], $dir)            
-            ->where('company_id', $companyId)
-            ->where('status', '1')
-            ->whereNotExists(function ($query) {
-                $query->from('user_campaign_history')
-                    ->whereRaw('campaign.id = user_campaign_history.campaign_id')
-                    ->where('user_campaign_history.user_id', Auth::user()->id);
-            })
-            ->whereDate('expiry_date', '>=', now());
-        
-        // Server-side search
-        if ($request->has('search') && !empty($request->input('search.value'))) {
-            $search = $request->input('search.value');
-            $query->where(function ($query) use ($search, $searchColumn) {
-                foreach ($searchColumn as $column) {
-                    $query->orWhere($column, 'like', "%{$search}%");
-                }
-            });
-        }
-        if (!empty($request->country)) {
-            $query->where('country_id', $request->country);
-        }
-        if (!empty($request->state)) {
-            $query->where('state_id', $request->state);
-        }
-        if (!empty($request->city)) {
-            $query->where('city_id', $request->city);
-        }
-        $totalData = $query->count();
-        $results = $query->skip($start)
-            ->take($length)
-            ->select('campaign.*')
-            ->get();
+                ->orderBy($columns[$order], $dir)
+                ->where('company_id', $companyId)
+                ->where('status', '1')
+                ->whereNotExists(function ($query) {
+                    $query->from('user_campaign_history')
+                        ->whereRaw('campaign.id = user_campaign_history.campaign_id')
+                        ->where('user_campaign_history.user_id', Auth::user()->id);
+                })
+                ->whereDate('expiry_date', '>=', now());
+
+            // Server-side search
+            if ($request->has('search') && !empty($request->input('search.value'))) {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumn) {
+                    foreach ($searchColumn as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+            }
+            if (!empty($request->country)) {
+                $query->where('country_id', $request->country);
+            }
+            if (!empty($request->state)) {
+                $query->where('state_id', $request->state);
+            }
+            if (!empty($request->city)) {
+                $query->where('city_id', $request->city);
+            }
+            $totalData = $query->count();
+
+            $results = $query->skip($start)
+                ->take($length)
+                ->select('campaign.*')
+                ->get();
 
             foreach ($results as $result) {
 
@@ -130,8 +129,8 @@ class CampaignController extends Controller
 
     function campaignview(Request $request)
     {
-        try {         
-          
+        try {
+
             $campagin_id = base64_decode($request->id);
             $companyId = Helper::getCompanyId();
             $data = [];
@@ -158,8 +157,8 @@ class CampaignController extends Controller
             $data['user_Campaign'] = UserCampaignHistoryModel::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
             $data['ratings'] = ratings::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
             $data['feedback'] = Feedback::where('campaign_id', $campagin_id)->where('user_id', Auth::user()->id)->first();
-           
-          
+
+
 
 
             if ($data['user_Campaign'] != null) {

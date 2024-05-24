@@ -8,7 +8,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('user.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('user.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">Campaign </span>
                 </nav>
             </div>
@@ -17,7 +18,8 @@
             <div class="card-body">
                 <h4>Campaign List</h4>
                 <div class="d-flex my-3 align-items-end gap-3">
-                    <form method="get" action="{{ route('user.campaign.list') }}" id="searchForm" onsubmit="return validateForm()">
+                    <form method="get" action="{{ route('user.campaign.list') }}" id="searchForm"
+                        onsubmit="return validateForm()">
                         <div class="row mt-3">
                             <div class="form-group col-md-3">
                                 <label class="font-weight-semibold" for="country">Country:</label>
@@ -54,7 +56,8 @@
                             </div>
                             <div class="form-group col-md-3" style="margin-top: 29px;">
                                 <button type="button" id="filter_button" class="btn btn-success">Search</button>
-                                <a href="{{ route('user.campaign.list') }}" class="btn btn-success ms-2">Refresh</a>
+                                <a href="{{ route('user.campaign.list') }}" id="refresh"
+                                    class="btn btn-success ms-2 d-none">Refresh</a>
                             </div>
                         </div>
                         {{-- <span class="err" style="display: none;color: red;">Please select any one column</span> --}}
@@ -88,6 +91,10 @@
     <script>
         $(document).ready(function() {
             $('#filter_button').on('click', function() {
+
+                if ($('#country').val() != "") {
+                    $('#refresh').removeClass('d-none');
+                }
 
                 // Re-draw the DataTable to apply updated filters
                 table.ajax.reload();
@@ -178,8 +185,10 @@
                             var view = "{{ route('user.campaign.view', ':v_id') }}";
                             view = view.replace(':v_id', row[0]);
 
-                            return '<button type="submit" class="btn btn-primary  btn-sm" onclick="showSuccessAlert(\'' + url + '\',\'' +
-                                type + '\',\'' + view + '\')" role="button" title="View">Join</button>'
+                            return '<button type="submit" class="btn btn-primary  btn-sm" onclick="showSuccessAlert(\'' +
+                                url + '\',\'' +
+                                type + '\',\'' + view +
+                                '\')" role="button" title="View">Join</button>'
 
                         },
                     },

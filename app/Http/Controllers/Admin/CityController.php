@@ -48,8 +48,8 @@ class CityController extends Controller
                         $query->orWhere($column, 'like', "%{$search}%");
                     }
                 });
-               // Count total records after applying search criteria
-               $totalData = $query->count();
+                // Count total records after applying search criteria
+                $totalData = $query->count();
             } else {
                 // Count total records without search criteria
                 $totalData = CityModel::count();
@@ -63,7 +63,7 @@ class CityController extends Controller
                     $result->country_name,
                     $result->state_name,
                     $result->city_name,
-                    $result->zipcode,
+
                 ];
             }
 
@@ -94,13 +94,12 @@ class CityController extends Controller
     public function store(Request $request)
     {
         try {
-            $StateCheckName = CityModel::where(function($query) use ($request) {
+            $StateCheckName = CityModel::where(function ($query) use ($request) {
                 $query->where('name', $request->name)
-                      ->Where('state_id', $request->state);
-                     
+                    ->Where('state_id', $request->state);
             })
-            ->first();
-            
+                ->first();
+
             if (!empty($StateCheckName)) {
                 $errorFields = [];
                 if ($StateCheckName->name === $request->name) {
@@ -109,8 +108,8 @@ class CityController extends Controller
                 if ($StateCheckName->country__id === $request->state) {
                     $errorFields[] = 'State name';
                 }
-               
-                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+
+                return redirect()->back()->with('error', implode(', ', $errorFields) . ' already exists ')->withInput();
             }
             $city = new CityModel();
             $city->state_id = $request->state;
@@ -146,14 +145,13 @@ class CityController extends Controller
     {
         try {
             $StateCheckName = CityModel::where('id', '!=', $id)
-            ->where(function($query) use ($request) {
-                $query->where('name', $request->name)
-                      ->Where('state_id', $request->state)
-                      ->Where('zipcode', $request->zipcode);
-                     
-            })
-            ->first();
-            
+                ->where(function ($query) use ($request) {
+                    $query->where('name', $request->name)
+                        ->Where('state_id', $request->state)
+                        ->Where('zipcode', $request->zipcode);
+                })
+                ->first();
+
             if (!empty($StateCheckName)) {
                 $errorFields = [];
                 if ($StateCheckName->name === $request->name) {
@@ -162,9 +160,9 @@ class CityController extends Controller
                 if ($StateCheckName->state_id === $request->state_id) {
                     $errorFields[] = 'State name';
                 }
-               
-            
-                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+
+
+                return redirect()->back()->with('error', implode(', ', $errorFields) . ' already exists ')->withInput();
             }
 
             $city =   CityModel::find($id);

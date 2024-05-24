@@ -1,12 +1,14 @@
 <div class="header">
-{{-- @dd(if (!empty($siteSetting) && isset($siteSetting->logo) && file_exists(url('uploads/setting/'.$siteSetting->logo)))); --}}
+    {{-- @dd(if (!empty($siteSetting) && isset($siteSetting->logo) && file_exists(url('uploads/setting/'.$siteSetting->logo)))); --}}
     <div class="logo logo-dark">
-        <a href="{{!empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : route('user.dashboard') }} "  {{!empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : "" }}>
-            <img  style="width: 130px ; hight:50px" src="@if (
-                !empty($siteSetting) &&
-                    !empty($siteSetting->logo) &&
-                    file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
-                alt="Logo">          
+        <a href="{{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : route('user.dashboard') }} "
+            {{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : '' }}>
+            <img style="width: 130px ; hight:50px"
+                src="@if (
+                    !empty($siteSetting) &&
+                        !empty($siteSetting->logo) &&
+                        file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->logo }} @else {{ asset('assets/images/logo/logo.png') }} @endif"
+                alt="Logo">
         </a>
     </div>
     <div class="logo logo-white">
@@ -20,14 +22,19 @@
         </ul>
         <ul class="nav-right">
             <li class="dropdown dropdown-animated scale-left">
+                <a href="{{ route('front.campaign.list') }}" title="Home page">
+                    <i class="anticon  anticon-home"></i>
+                </a>
+            </li>
+            <li class="dropdown dropdown-animated scale-left">
                 <div class="pointer" data-toggle="dropdown">
                     <div class="avatar avatar-image  m-h-10 m-r-15">
                         @if (isset(Auth::user()->profile_image) &&
                                 !empty(Auth::user()->profile_image) &&
-                                file_exists(base_path().'/uploads/user/user-profile/' . Auth::user()->profile_image))
+                                file_exists(base_path() . '/uploads/user/user-profile/' . Auth::user()->profile_image))
                             <img src="{{ asset('uploads/user/user-profile/' . Auth::user()->profile_image) }}">
                         @else
-                        <img src="{{asset('assets/images/profile_image.jpg')}}">
+                            <img src="{{ asset('assets/images/profile_image.jpg') }}">
                         @endif
                     </div>
                 </div>
@@ -37,10 +44,10 @@
                             <div class="avatar avatar-lg avatar-image">
                                 @if (isset(Auth::user()->profile_image) &&
                                         !empty(Auth::user()->profile_image) &&
-                                        file_exists(base_path().'/uploads/user/user-profile/' . Auth::user()->profile_image))
+                                        file_exists(base_path() . '/uploads/user/user-profile/' . Auth::user()->profile_image))
                                     <img src="{{ asset('uploads/user/user-profile/' . Auth::user()->profile_image) }}">
                                 @else
-                                <img src="{{asset('assets/images/profile_image.jpg')}}">
+                                    <img src="{{ asset('assets/images/profile_image.jpg') }}">
                                 @endif
                             </div>
                             <div class="m-l-10">

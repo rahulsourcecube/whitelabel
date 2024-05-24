@@ -1,16 +1,21 @@
 <?php
+
 namespace App\Http\Controllers\Company;
+
+use App\Exports\EmployeeExport;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\ModelHasRoles;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
@@ -33,7 +38,10 @@ class EmployeeController extends Controller
         try {
             if ($request->ajax()) {
             } else {
-                return view('company.employee.list');
+                $companyId = Helper::getCompanyId();
+
+                $totalData = User::where('user_type', User::USER_TYPE['STAFF'])->where('company_id', $companyId)->get();
+                return view('company.employee.list', compact('totalData'));
             }
         } catch (Exception $e) {
             Log::error('EmployeeController::Index => ' . $e->getMessage());
@@ -46,7 +54,7 @@ class EmployeeController extends Controller
             $companyId = Helper::getCompanyId();
             $columns = ['id'];
             $totalData = User::where('user_type', User::USER_TYPE['STAFF'])
-            ->where('company_id', Auth::user()->id)->count();
+                ->where('company_id', $companyId)->count();
             $start = $request->input('start');
             $length = $request->input('length');
             $order = $request->input('order.0.column');
@@ -104,10 +112,10 @@ class EmployeeController extends Controller
     function create()
     {
         try {
-            $isActivePackageAccess= Helper::isActivePackageAccess();
+            $isActivePackageAccess = Helper::isActivePackageAccess();
 
-            if(!$isActivePackageAccess){
-                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            if (!$isActivePackageAccess) {
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
             $companyId = Helper::getCompanyId();
 
@@ -135,12 +143,12 @@ class EmployeeController extends Controller
             if ($userCount >= $ActivePackageData->no_of_employee) {
                 return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_employee . ' employees');
             }
-            $useremails = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type' , '3')->first();           
-            $useremail = User::where('id', $companyId)->where('email', $request->email)->where('user_type' , '2')->first();           
+            $useremails = User::where('company_id', $companyId)->where('email', $request->email)->where('user_type', '3')->first();
+            $useremail = User::where('id', $companyId)->where('email', $request->email)->where('user_type', '2')->first();
 
-            if (!empty($useremail) || !empty($useremails) ) {
+            if (!empty($useremail) || !empty($useremails)) {
                 return redirect()->back()->with('error', 'Employee email id already exit.')->withInput();
-            }           
+            }
             $user = new User();
             $user->first_name = $request->fname;
             $user->last_name = $request->lname;
@@ -167,18 +175,18 @@ class EmployeeController extends Controller
     function edit($id)
     {
         try {
-            $isActivePackageAccess= Helper::isActivePackageAccess();
+            $isActivePackageAccess = Helper::isActivePackageAccess();
 
-            if(!$isActivePackageAccess){
-                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();   
+            if (!$isActivePackageAccess) {
+                return redirect()->back()->with('error', 'your package expired. Please buy the package.')->withInput();
             }
-            
+
             $companyId = Helper::getCompanyId();
             $user_id = base64_decode($id);
-            $user = User::where('id', $user_id)->where('company_id', $companyId)->first();         
+            $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
             $roles = Role::where('company_id', $companyId)->get();
             $userRole = $user->roles->pluck('name', 'name')->first();
-          
+
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
@@ -208,14 +216,14 @@ class EmployeeController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $useremails = User::where('company_id', $companyId)->where('id', '!=', $user_id)->where('email', $request->email)->where('user_type' , '3')->first();           
-            $useremail = User::where('id', $companyId)->where('email', $request->email)->where('user_type' , '2')->first();           
+            $useremails = User::where('company_id', $companyId)->where('id', '!=', $user_id)->where('email', $request->email)->where('user_type', '3')->first();
+            $useremail = User::where('id', $companyId)->where('email', $request->email)->where('user_type', '2')->first();
 
-            if (!empty($useremail) || !empty($useremails) ) {
+            if (!empty($useremail) || !empty($useremails)) {
                 return redirect()->back()->with('error', 'Employee email id already exit.')->withInput();
             }
 
-            
+
             $userDetails = [
                 'first_name' => $request->fname,
                 'last_name' => $request->lname,
@@ -243,5 +251,14 @@ class EmployeeController extends Controller
             return response()->json(['success' => false, 'message' => "Error: "  . $e->getMessage()]);
         }
     }
-
+    public function export()
+    {
+        try {
+            $date = Carbon::now()->toDateString();
+            return Excel::download(new EmployeeExport(), ('employee' . '_' . $date . '.xlsx'));
+        } catch (Exception $e) {
+            Log::error('EmployeeController::Export => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+    }
 }

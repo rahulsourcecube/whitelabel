@@ -2,7 +2,7 @@
 use App\Models\SettingModel;
 $mail = SettingModel::first();
 if (!empty($company_id)) {
-    $mail = SettingModel::where('id', $company_id)->first();
+    $mail = SettingModel::where('user_id', $company_id)->first();
 }
 
 ?>
@@ -20,7 +20,7 @@ if (!empty($company_id)) {
     }
     
     // Perform the replacement
-    $html = str_replace(['[user_name]', '[company_logo]', '[company_title]', "['company_web_link']", '[another_tab]'], [$name, $logo, $company_title, $company_link, $another_tab], $template);
+    $html = str_replace(['[user_name]', '[company_logo]', '[company_title]', '[company_web_link]', '[another_tab]'], [$name, $logo, $company_title, $company_link, $another_tab], $template);
     
     // Output the modified HTML
     echo $html;

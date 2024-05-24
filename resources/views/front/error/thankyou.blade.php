@@ -14,7 +14,7 @@
                         <h1 class=" display-1 text-primary lh-1-2"></h1>
                         <h4 class="font-weight-semibold display-4 text-primary lh-6-2">Thank you!</h4>
                         <p class="lead m-b-20">Thank You for submitting survey information.</p>
-                        <a href="#" class="btn btn-primary btn-tone">Go Back</a>
+                        <a href="{{ route('front.campaign.list') }}" class="btn btn-primary btn-tone">Go Back</a>
                     </div>
                 </div>
                 <div class="col-md-6 m-l-auto">

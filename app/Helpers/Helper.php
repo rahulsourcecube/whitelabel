@@ -3,9 +3,13 @@
 namespace App\Helpers;
 
 use App\Models\CampaignModel;
+use App\Models\Channels;
+use App\Models\Community;
 use App\Models\CompanyModel;
 use App\Models\CompanyPackage;
+use App\Models\CountryModel;
 use App\Models\SettingModel;
+use App\Models\SurveyForm;
 use App\Models\User;
 use Carbon\Carbon;
 use DateInterval;
@@ -14,8 +18,10 @@ use Exception;
 // use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\str;
+
 use Illuminate\Http\Request;
 
 
@@ -95,47 +101,30 @@ class Helper
         $checkPackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->orderBy('id', 'desc')->exists();
         return $checkPackage;
     }
-    public static function get_domaininfo($url)
-    {
-        // regex can be replaced with parse_url
-        preg_match("/^(https|http|ftp):\/\/(.*?)\//", "$url/", $matches);
-        $parts = explode(".", $matches[2]);
-        $tld = array_pop($parts);
-        $host = array_pop($parts);
-        if (strlen($tld) == 2 && strlen($host) <= 3) {
-            $tld = "$host.$tld";
-            $host = array_pop($parts);
-        }
-        dd(
-            [
-                'protocol' => $matches[1],
-                'subdomain' => implode(".", $parts),
-                'domain' => "$host.$tld",
-                'host' => $host, 'tld' => $tld
-            ]
-        );
-        return array(
-            'protocol' => $matches[1],
-            'subdomain' => implode(".", $parts),
-            'domain' => "$host.$tld",
-            'host' => $host, 'tld' => $tld
-        );
-    }
+
     public static function getCompanyId()
     {
         $getdomain = Helper::getdomain();
-
-        if (!empty($getdomain) && $getdomain != config('app.pr_name')) {
+        Log::info('Domain : ' . $getdomain);
+        if (!empty($getdomain) && $getdomain != config('app.pr_name')) { //Company Domain logic
             $CompanyModel = new CompanyModel();
-            $exitDomain = $CompanyModel->checkDmain($getdomain);
+            $exitDomain = $CompanyModel->checkDomain($getdomain);
             $companyId = $exitDomain ? $exitDomain->user_id : false;
         } else {
-            if (auth()->user()->user_type == '2' || auth()->user()->user_type == '1') {
-                $companyId = Auth::user()->id;
+            Log::info('Is Any Company/Admin Login? : ' . json_encode(auth()->user()));
+            if (!empty(auth()->user())) {
+                if (auth()->user()->user_type == '2') { // Company
+                    $companyId = Auth::user()->id;
+                } elseif (auth()->user()->user_type == '3' || auth()->user()->user_type == '4') { //User and Staff
+                    $companyId = Auth::user()->company_id;
+                } else {  // admin
+                    $companyId = null;
+                }
             } else {
-                $companyId = Auth::user()->company_id;
+                $companyId = null;
             }
         }
+        Log::info('Company ID : ' . $companyId);
         return $companyId;
     }
     public static function isInactivePackage()
@@ -184,10 +173,16 @@ class Helper
     // Change Date format
     public static function Dateformat($date)
     {
-        if (gettype($date) == 'string') {
+        $formattedDate = "";
+
+        if (gettype($date) === 'string') {
             $date = Carbon::parse($date);
+            $formattedDate = $date->format('Y-M-d');
+        } else {
+            $date = "";
+            $date = Carbon::parse($date);
+            $formattedDate = $date->format('Y-M-d');
         }
-        $formattedDate = $date->format('Y-M-d');
 
         return $formattedDate;
     }
@@ -405,5 +400,48 @@ class Helper
             ->select('stripe_key', 'stripe_secret')
             ->first();
         return $mailConfig;
+    }
+    public  static function getChannels()
+    {
+        $companyId = Helper::getCompanyId();
+        $channels = Channels::where('company_id', $companyId)->get();
+
+        return $channels;
+    }
+    public  static function getReqestPhoneCode($number, $country)
+    {
+
+        $country = CountryModel::where('id', $country)->first();
+        $contactNumber = "";
+
+        if (!empty($country) && !empty($country->phonecode)) {
+            if (Str::startsWith($country->phonecode, '+')) {
+
+                $contactNumber = $country->phonecode . $number;
+            } else {
+                $contactNumber = '+' . $country->phonecode . $number;
+            }
+        } else {
+            $contactNumber = $number;
+        }
+
+
+        return $contactNumber;
+    }
+    public  static function companyAdmin()
+    {
+        $companyId = Helper::getCompanyId();
+        $restult = false;
+        if (!empty(auth::user()) && $companyId == auth::user()->id) {
+            $restult = true;
+        }
+        return $restult;
+    }
+    public  static function getSurveyFrom($id)
+    {
+        $companyId = Helper::getCompanyId();
+        $survey = "";
+        $survey = SurveyForm::where('id', base64_decode($id))->where('company_id', $companyId)->first();
+        return $survey;
     }
 }

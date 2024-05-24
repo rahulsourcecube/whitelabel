@@ -33,18 +33,29 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     { {
             try {
-                $companyId = Helper::getCompanyId();
-                $companymailConfig = SettingModel::where('user_id', $companyId)->first();
-                if (!empty($companymailConfig->mail_username) && !empty($companymailConfig->mail_password)) {
-                    $mailConfig = $companymailConfig;
-                } else {
-                    $user_id = User::where('user_type', '1')->first();
-                    $mailConfig = SettingModel::where('user_id', $user_id)->first();
-                }
-                // dd($mailConfig);
-                Log::error('AppServiceProvider : ' . json_encode($mailConfig));
+                Paginator::useBootstrap();
 
-                if ($mailConfig) {
+                Log::info('AppServiceProvider Check Mail Setting : ');
+
+                $companyId = Helper::getCompanyId();
+                if ($companyId) {
+                    Log::info('AppServiceProvider Check Mail Setting Company: ' . $companyId);
+                    $mailConfig = SettingModel::where('user_id', $companyId)->first();
+
+                    Log::info('user admin: ' . $mailConfig->mail_username);
+                    if (empty($mailConfig->mail_username) && empty($mailConfig->mail_password)) {
+                        $user = User::where('user_type', '1')->first();
+                        $mailConfig = SettingModel::where('user_id', $user->id)->first();
+                    }
+                } else {
+                    $user = User::where('user_type', '1')->first();
+                    $mailConfig = SettingModel::where('user_id', $user->id)->first();
+                }
+
+
+                if (!empty($mailConfig->mail_username) && !empty($mailConfig->mail_password)) {
+                    Log::info('AppServiceProvider Mail : ' . json_encode($mailConfig));
+
                     Config::set('mail.driver', $mailConfig->mail_mailer);
                     Config::set('mail.host', $mailConfig->mail_host);
                     Config::set('mail.port', $mailConfig->mail_port);
@@ -57,8 +68,6 @@ class AppServiceProvider extends ServiceProvider
 
                 Config::set('app.stripe_key', $stripe->stripe_key);
                 Config::set('app.stripe_secret', $stripe->stripe_secret);
-
-                Paginator::useBootstrap();
             } catch (\Throwable $th) {
                 //throw $th;
                 Log::error('Failed to send email to : ' . $th);

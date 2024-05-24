@@ -12,7 +12,10 @@
         {{ !empty($siteSetting) && !empty($siteSetting->title) ? $siteSetting->title : env('APP_NAME') }}</title>
     <!-- Favicon -->
     <link rel="shortcut icon"
-        href=" @if (!empty($siteSetting) && !empty($siteSetting->favicon) && base_path(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href=" @if (
+            !empty($siteSetting) &&
+                !empty($siteSetting->favicon) &&
+                base_path(public_path('uploads/setting/' . $siteSetting->favicon))) {{ asset('uploads/setting/' . $siteSetting->favicon) }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <!-- page css -->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/datatables/dataTables.bootstrap.min.css') }}">
 
@@ -28,16 +31,15 @@
 </head>
 
 <body>
-    <div class="app">
+    <div class="app survey-app">
         <div class="layout">
             <!-- Header START -->
             @include('front.includes.header')
             <!-- Header END -->
 
             <!-- Page Container START -->
-            <div class=" p-h-0 p-v-20 bg full-height d-flex" style="background-image: url('{{ asset('assets/images/others/login-3.png') }}">
-                <div class="page-container">
-                    @include('front.includes.message')
+            <div class=" p-h-0 p-v-20 bg full-height">
+                <div class="page-containers">
                     <!-- Content Wrapper START -->
                     @yield('main-content')
                     <!-- Content Wrapper END -->

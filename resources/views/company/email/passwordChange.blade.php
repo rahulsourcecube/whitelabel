@@ -1,6 +1,9 @@
 <?php
 use App\Models\SettingModel;
-$mail = SettingModel::first();
+use App\Models\User;
+
+$userMail = User::where('user_type', '1')->first();
+$mail = SettingModel::where('user_id', $userMail->id)->first();
 
 ?>
 @if (!empty($template))
@@ -17,7 +20,7 @@ $mail = SettingModel::first();
     }
     
     // Perform the replacement
-    $html = str_replace(['[user_name]', '[company_logo]', '[company_title]', "['company_web_link']", '[another_tab]'], [$name, $logo, $company_title, $company_link, $another_tab], $template);
+    $html = str_replace(['[user_name]', '[company_logo]', '[company_title]', '[company_web_link]', '[another_tab]'], [$name, $logo, $company_title, $company_link, $another_tab], $template);
     
     // Output the modified HTML
     echo $html;

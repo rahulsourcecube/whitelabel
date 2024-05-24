@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Helpers\Helper;
 use Illuminate\Pagination\Paginator;
 
 use App\Http\Controllers\Controller;
@@ -9,19 +10,23 @@ use App\Models\CampaignModel;
 use App\Models\CountryModel;
 use App\Models\StateModel;
 use App\Models\CityModel;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CampaignController extends Controller
 {
     public function list(Request $request)
     {
-        $country = CountryModel::all();
-        $state = StateModel::all();
-        $city = CityModel::all();
+        $countrys = CountryModel::all();
+        $states = StateModel::where('country_id', $request->input('country'))->get();
+        $citys = CityModel::where('state_id', $request->input('state'))->get();
 
-        $task_data = CampaignModel::where('public', 1);
-        // $task_data = CampaignModel::where('public', 1)->where('status', 1);
+        $companyId = Helper::getCompanyId();
+        $task_data = CampaignModel::where('public', 1)->where('status', '1')->where('company_id', $companyId);
+
 
         if (!empty($request->country) && $request->has('country')) {
             $task_data->where('country_id', $request->country);
@@ -34,7 +39,7 @@ class CampaignController extends Controller
         if (!empty($request->city) &&  $request->has('city')) {
             $task_data->where('city_id', $request->city);
         }
-
+        $task_data->whereDate('expiry_date', '>=', now());
         $task_data = $task_data->paginate(6);
 
         // Pass selected country, state, and city IDs to the view
@@ -42,15 +47,27 @@ class CampaignController extends Controller
         $selectedState = $request->input('state');
         $selectedCity = $request->input('city');
 
-        return view('front.campaign.list', compact('task_data', 'country', 'state', 'city', 'selectedCountry', 'selectedState', 'selectedCity'));
+
+
+
+        return view('front.campaign.list', compact('task_data', 'countrys', 'states', 'citys', 'selectedCountry', 'selectedState', 'selectedCity'));
     }
 
 
 
     public function detail($id)
     {
-        $campagin_detail = CampaignModel::find($id);
-        return view('front.campaign.detail', compact('campagin_detail'));
+        try {
+            $companyId = Helper::getCompanyId();
+            $campagin_detail = CampaignModel::Where('company_id', $companyId)->where('status', '1')->Where('id', base64_decode($id))->first();
+            if (!$campagin_detail) {
+                return redirect()->back()->with('error', "Not Found Campaign ");
+            }
+            return view('front.campaign.detail', compact('campagin_detail'));
+        } catch (Exception $e) {
+            Log::error('Front CampaignController::Referral => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 
     public function getStates(Request $request)
@@ -77,5 +94,23 @@ class CampaignController extends Controller
             $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
         }
         return response()->json($options);
+    }
+    //create session join now
+    function joinNow($join_link)
+    {
+        try {
+
+            if (!(Auth::user())) {
+                session()->put('join_link', $join_link);
+
+                return redirect()->route('user.login');
+            }
+            return redirect()->route('user.campaign.view', $join_link);
+
+            return redirect()->route('user.login');
+        } catch (Exception $e) {
+            Log::error('CampaignController::Referral => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
     }
 }

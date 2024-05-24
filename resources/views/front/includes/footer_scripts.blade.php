@@ -84,36 +84,6 @@
     $(document).ready(function($) {
 
 
-        var country_id = $('#country').val();
-
-        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-
-        $.ajax({
-            url: "{{ route('front.campaign.getStates') }}",
-            type: 'POST',
-            data: {
-                country_id: country_id,
-                _token: CSRF_TOKEN
-            },
-            success: function(response) {
-                $("#city").empty().append("<option value=''>Select City</option>");
-                $("#state").empty().append(response);
-            }
-        });
-        var state_id = $('#state').val();
-        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-
-        $.ajax({
-            url: "{{ route('front.campaign.getCity') }}",
-            type: 'POST',
-            data: {
-                state_id: state_id,
-                _token: CSRF_TOKEN // Include CSRF token in the request data
-            },
-            success: function(response) {
-                $("#city").empty().append(response);
-            }
-        });
 
         $('#country').on('change', function() {
             var country_id = $(this).val();

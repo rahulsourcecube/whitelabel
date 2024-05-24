@@ -5,11 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {{-- <title>Login</title> --}}
-    <title>User Login || {{ !empty($siteSetting) && !empty($siteSetting->title) ? Ucfirst($siteSetting->title) : env('APP_NAME') }} </title>
+    <title>User Login ||
+        {{ !empty($siteSetting) && !empty($siteSetting->title) ? Ucfirst($siteSetting->title) : env('APP_NAME') }}
+    </title>
 
     <!-- Favicon -->
     <link rel="shortcut icon"
-    href="@if (!empty($siteSetting) && isset($siteSetting->favicon) && file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{env('ASSET_URL').'/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
+        href="@if (
+            !empty($siteSetting) &&
+                isset($siteSetting->favicon) &&
+                file_exists(base_path('uploads/setting/' . $siteSetting->favicon))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->favicon }} @else{{ asset('assets/images/logo/logo.png') }} @endif">
     <style>
         .error {
             color: red;
@@ -28,11 +33,13 @@
         <div class="container-fluid">
             <div class="d-flex full-height p-v-15 flex-column justify-content-between">
                 <div class="d-none d-md-flex p-h-40">
-                    <a href="{{!empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : "" }} "  {{!empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : "" }}>
-                        <img  style="width: 130px ; hight:50px" src="@if (
-                            !empty($siteSetting) &&
-                                !empty($siteSetting->logo) &&
-                                file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{env('ASSET_URL').'/uploads/setting/'. $siteSetting->logo }} @else {{asset('assets/images/logo/logo.png')}} @endif"
+                    <a href="{{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? $siteSetting->logo_link : '' }} "
+                        {{ !empty($siteSetting) && !empty($siteSetting->logo_link) ? 'target="_blank"' : '' }}>
+                        <img style="width: 130px ; hight:50px"
+                            src="@if (
+                                !empty($siteSetting) &&
+                                    !empty($siteSetting->logo) &&
+                                    file_exists(base_path('uploads/setting/' . $siteSetting->logo))) {{ env('ASSET_URL') . '/uploads/setting/' . $siteSetting->logo }} @else {{ asset('assets/images/logo/logo.png') }} @endif"
                             alt="Logo">
                     </a>
                 </div>
@@ -42,16 +49,18 @@
                             <div class="card">
                                 <div class="card-body">
                                     @if (\Session::has('success'))
-                                    <div class="alert alert-success alert-dismissible fade show error" style="margin-top: 17px;}" role="alert">
-                                        <i class="uil uil-times me-2"></i>
-                                        {!! \Session::get('success') !!}
-                                    </div>
+                                        <div class="alert alert-success alert-dismissible fade show error"
+                                            style="margin-top: 17px;}" role="alert">
+                                            <i class="uil uil-times me-2"></i>
+                                            {!! \Session::get('success') !!}
+                                        </div>
                                     @endif
                                     @if (\Session::has('error'))
-                                    <div class="alert alert-danger alert-dismissible fade show error" style="margin-top: 17px;}" role="alert">
-                                        <i class="uil uil-times me-2"></i>
-                                        {!! \Session::get('error') !!}
-                                    </div>
+                                        <div class="alert alert-danger alert-dismissible fade show error"
+                                            style="margin-top: 17px;}" role="alert">
+                                            <i class="uil uil-times me-2"></i>
+                                            {!! \Session::get('error') !!}
+                                        </div>
                                     @endif
                                     <h2 class="m-t-20">Sign In</h2>
                                     <p class="m-b-30">Enter your credential to get access</p>
@@ -61,12 +70,15 @@
                                             <label class="font-weight-semibold" for="userName">Username:</label>
                                             <div class="input-affix">
                                                 <i class="prefix-icon anticon anticon-user"></i>
-                                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Email">
+                                                <input id="email" type="email"
+                                                    class="form-control @error('email') is-invalid @enderror"
+                                                    name="email" value="{{ old('email') }}" required
+                                                    autocomplete="email" autofocus placeholder="Email">
 
                                                 @error('email')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
                                                 @enderror
                                             </div>
                                             <label id="email-error" class="error" for="email"></label>
@@ -75,15 +87,19 @@
                                             <label class="font-weight-semibold" for="password">Password:</label>
                                             <div class="input-affix m-b-10">
                                                 <i class="prefix-icon anticon anticon-lock"></i>
-                                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" name="password" required autocomplete="current-password">
+                                                <input id="password" type="password"
+                                                    class="form-control @error('password') is-invalid @enderror"
+                                                    placeholder="Password" name="password" required
+                                                    autocomplete="current-password">
                                                 @error('password')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
                                                 @enderror
                                             </div>
                                             <label id="password-error" class="error" for="password"></label>
-                                            <a class="float-right font-size-13 text-muted" href="{{ route('user.forgetpassword') }}">Forget Password?</a>
+                                            <a class="float-right font-size-13 text-muted"
+                                                href="{{ route('user.forgetpassword') }}">Forget Password?</a>
                                         </div>
                                         </br>
                                         <div class="form-group">
@@ -100,7 +116,8 @@
                             </div>
                         </div>
                         <div class="offset-md-1 col-md-6 d-none d-md-block">
-                            <img class="img-fluid" src="{{ asset('assets/images/others/login-2.png') }}" alt="">
+                            <img class="img-fluid" src="{{ asset('assets/images/others/login-2.png') }}"
+                                alt="">
                         </div>
                     </div>
                 </div>
@@ -118,7 +135,9 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js" integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"
+        integrity="sha512-WMEKGZ7L5LWgaPeJtw9MBM4i5w5OSBlSjTjCtSnvFJGSVD26gE5+Td12qN5pvWXhuWaWcVwF++F7aqu9cvqP0A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script>
         jQuery.validator.addMethod("email", function(value, element) {
@@ -143,6 +162,7 @@
                     },
                     password: {
                         required: true,
+                        minlength: '8',
                     },
 
                 },

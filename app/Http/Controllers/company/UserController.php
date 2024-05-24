@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Company;
 
 use App\Helpers\Helper;
+use App\Exports\UsersExport;
 use App\Http\Controllers\Controller;
 use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
@@ -10,7 +11,7 @@ use App\Models\User;
 use App\Models\CountryModel;
 use App\Models\StateModel;
 use App\Models\CityModel;
-
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 use PHPUnit\TextUI\Help;
 
 class UserController extends Controller
@@ -42,7 +44,11 @@ class UserController extends Controller
     {
         if ($request->ajax()) {
         } else {
-            return view('company.user.list');
+            $companyId = Helper::getCompanyId();
+
+            $totalUsers = User::where('company_id', $companyId)->where('user_type', User::USER_TYPE['USER'])->get();
+
+            return view('company.user.list', compact('totalUsers'));
         }
     }
 
@@ -124,6 +130,19 @@ class UserController extends Controller
         return view('company.user.create', compact('country_data'));
     }
 
+    public function phoneCode(Request $request)
+    {
+        $country_id = $request->input('country_id');
+
+        $country = CountryModel::where('id', $country_id)->first();
+
+
+        $code = '';
+        $code = !empty($country) && !empty($country->phonecode) ?  $country->phonecode : "";
+
+        // Return the options as JSON response
+        return response()->json($code);
+    }
 
     public function get_states(Request $request)
     {
@@ -277,7 +296,7 @@ class UserController extends Controller
 
     function View($id)
     {
-         try {
+        try {
             $companyId = Helper::getCompanyId();
             $user_id = base64_decode($id);
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
@@ -285,15 +304,15 @@ class UserController extends Controller
                 return redirect()->back()->with('error', 'User not found');
             }
             $progressions = taskProgressionUserHistory::with('taskProgressionHistory')
-            ->where('user_id', $user_id)
-            ->where('company_id', $companyId)
-            ->orderBy('id', 'desc')
-            ->get();
-            return view('company.user.view', compact('user','progressions'));
+                ->where('user_id', $user_id)
+                ->where('company_id', $companyId)
+                ->orderBy('id', 'desc')
+                ->get();
+            return view('company.user.view', compact('user', 'progressions'));
         } catch (\Exception $e) {
-             Log::error('UserController::View ' . $e->getMessage());
-             return redirect()->back()->with('error', "Error: " . $e->getMessage());
-         }
+            Log::error('UserController::View ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        }
     }
 
     function edit($id)
@@ -310,8 +329,8 @@ class UserController extends Controller
 
             $user = User::where('id', $user_id)->where('company_id', $companyId)->first();
             $country_data = CountryModel::all();
-            $state_data = StateModel::where('country_id',$user->country_id)->get();
-            $city_data = CityModel::where('state_id',$user->state_id)->get();
+            $state_data = StateModel::where('country_id', $user->country_id)->get();
+            $city_data = CityModel::where('state_id', $user->state_id)->get();
             if (empty($user)) {
                 return redirect()->back()->with('error', 'User not found');
             }
@@ -414,6 +433,16 @@ class UserController extends Controller
         } catch (Exception $e) {
             Log::error('UserController::delete ' . $e->getMessage());
             return response()->json(['success' => 'error', 'message' => "Error: " . $e->getMessage()]);
+        }
+    }
+    public function export()
+    {
+        try {
+            $date = Carbon::now()->toDateString();
+            return Excel::download(new UsersExport($date), ('user' . '_' . $date . '.xlsx'));
+        } catch (Exception $e) {
+            Log::error('UserController::Export => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
 }

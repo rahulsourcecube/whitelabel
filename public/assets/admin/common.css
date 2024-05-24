@@ -294,3 +294,16 @@ input[type=number]::-webkit-outer-spin-button {
     margin: 0px 10px;
     z-index: 1;
 }
+.survey-app .footer {
+    position: fixed !important;
+    bottom: 0 !important;
+
+}
+.front-app .footer {
+    position: fixed !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    background-color: #ffffff !important;
+
+}
+

@@ -51,7 +51,7 @@
                                                             <img src="{{ asset('assets/images/default-company.jpg') }}"
                                                                 class="imagePreviews">
                                                         @else
-                                                            <img src="{{base_path().('/uploads/user-profile/' . $editprofiledetail->profile_image) }}"
+                                                            <img src="{{ base_path() . ('/uploads/user-profile/' . $editprofiledetail->profile_image) }}"
                                                                 class="imagePreviews">
                                                         @endif
                                                     </div>
@@ -87,7 +87,8 @@
                                                         <label class="font-weight-semibold" for="email">Email:</label>
                                                         <input type="email" class="form-control" name=""
                                                             id="email" placeholder="email"
-                                                            value="{{ isset($editprofiledetail->email) ? $editprofiledetail->email : '' }}" readonly>
+                                                            value="{{ isset($editprofiledetail->email) ? $editprofiledetail->email : '' }}"
+                                                            readonly>
                                                     </div>
                                                     <div class="form-group col-md-5">
                                                         <label class="font-weight-semibold" for="phoneNumber">Phone
@@ -164,9 +165,9 @@
                                                     </div>
                                                     <div class="form-group col-md-4">
                                                         <label for="cdomainname">Company Domain</label>
-                                                        <input type="text" class="form-control mb-2" name="" 
+                                                        <input type="text" class="form-control mb-2" name=""
                                                             id=""
-                                                            value="{{ !empty($user_company->subdomain) ? $user_company->subdomain : "" }}"
+                                                            value="{{ !empty($user_company->subdomain) ? $user_company->subdomain : '' }}"
                                                             readonly>
                                                     </div>
                                                     <div class="form-group col-md-4">
@@ -329,7 +330,7 @@
                     },
                     newPassword: {
                         required: "Please enter password",
-                        minlength: 'Please enter at least 6 cheracter.',
+                        minlength: 'Please enter at least 8 cheracter.',
                         maxlength: 'Maximum password length 15 character.'
                     },
                     confirmPassword: {

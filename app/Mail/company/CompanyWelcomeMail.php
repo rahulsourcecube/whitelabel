@@ -13,7 +13,7 @@ class CompanyWelcomeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $title, $userName;
+    public $title, $userName, $data;
 
     /**
      * Create a new message instance.
@@ -21,10 +21,11 @@ class CompanyWelcomeMail extends Mailable
      * @return void
      */
 
-    public function __construct($title, $userName)
+    public function __construct($title, $userName, $data)
     {
         $this->title = $title;
         $this->userName = $userName;
+        $this->data = $data;
     }
 
     /**

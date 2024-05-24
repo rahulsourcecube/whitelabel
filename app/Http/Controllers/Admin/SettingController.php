@@ -103,6 +103,8 @@ class SettingController extends Controller
                 $SettingModel->sms_account_sid = $request->sms_account_sid;
                 $SettingModel->sms_account_token = $request->sms_account_token;
                 $SettingModel->sms_account_number = $request->sms_account_number;
+                $SettingModel->sms_account_to_number = $request->sms_account_to_number;
+                $SettingModel->sms_mode = $request->sms_mode;
 
                 $SettingModel->user_id = Auth::user()->id;
                 $SettingModel->save();
@@ -180,6 +182,8 @@ class SettingController extends Controller
                 $SettingModel->sms_account_sid = $request->sms_account_sid;
                 $SettingModel->sms_account_token = $request->sms_account_token;
                 $SettingModel->sms_account_number = $request->sms_account_number;
+                $SettingModel->sms_account_to_number = $request->sms_account_to_number;
+                $SettingModel->sms_mode = $request->sms_mode;
                 $SettingModel->save();
             }
             return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');

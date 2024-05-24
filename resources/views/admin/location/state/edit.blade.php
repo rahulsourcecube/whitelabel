@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('title', 'Edit Country')
+@section('title', 'Edit State')
 @section('main-content')
     <div class="main-content">
         @include('admin.includes.message')
@@ -8,18 +8,18 @@
                 <nav class="breadcrumb breadcrumb-dash">
                     <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item">
                         <i class="anticon anticon-home m-r-5"></i>Dashboard</a>
-                    <a href="{{ route('admin.location.country.list') }}" class="breadcrumb-item">Country</a>
+                    <a href="{{ route('admin.location.state.list') }}" class="breadcrumb-item">State</a>
                     <span class="breadcrumb-item active">Edit</span>
                 </nav>
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                <h4>Edit Country</h4>
+                <h4>Edit State</h4>
                 <div class="m-t-50" style="">
 
-                    <form action="{{ route('admin.location.state.update', ['state' => $state->id]) }}" method="post" enctype="multipart/form-data"
-                        id="state_update">
+                    <form action="{{ route('admin.location.state.update', ['state' => $state->id]) }}" method="post"
+                        enctype="multipart/form-data" id="state_update">
                         @csrf
                         @method('PUT')
 
@@ -31,7 +31,8 @@
 
                                     @if ($country)
                                         @foreach ($country as $data)
-                                            <option value="{{ $data->id }}" {{ $state->country_id == $data->id ? 'selected' : '' }}>
+                                            <option value="{{ $data->id }}"
+                                                {{ $state->country_id == $data->id ? 'selected' : '' }}>
                                                 {{ $data->name }}
                                             </option>
                                         @endforeach
@@ -41,17 +42,18 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="name">State <span class="error">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="State" maxlength="150"
-                                    value="{{ !empty($state->name) ? $state->name : '' }}">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="State"
+                                    maxlength="150" value="{{ !empty($state->name) ? $state->name : '' }}">
                             </div>
 
                         </div>
 
                         <div class="form-row">
                             <div class="form-group col-md-3" style="max-height: 200px;">
-                                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 100%; max-height: 80%;display: none;">
-                                <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2" style="display: none;" onclick="deleteImage()"><i
-                                        class="fa fa-trash"></i></button>
+                                <img id="imagePreview" src="#" alt="Image Preview"
+                                    style="max-width: 100%; max-height: 80%;display: none;">
+                                <button type="button" id="deleteImageButton" class="btn btn-danger btn-sm mt-2"
+                                    style="display: none;" onclick="deleteImage()"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
@@ -60,7 +62,7 @@
             </div>
         </div>
     </div>
-                                                                                                                                                                                                                                -->
+    -->
 
     <script>
         $(document).ready(function() {
@@ -75,7 +77,7 @@
                     name: {
                         required: true
                     }
-                  
+
                 },
                 messages: {
                     country: {
@@ -83,12 +85,10 @@
                     },
                     name: {
                         required: "Please enter state name"
-                    }                 
+                    }
                 }
             });
 
         });
-
-        
     </script>
 @endsection

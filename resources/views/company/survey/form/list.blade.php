@@ -1,5 +1,5 @@
 @extends('company.layouts.master')
-@section('title', 'Employee List')
+@section('title', 'Survey Form List')
 @section('main-content')
 
     <div class="main-content">
@@ -27,6 +27,7 @@
                                 <th></th>
                                 {{-- <th></th> --}}
                                 <th>Title</th>
+                                <th>Shortcuts</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -37,9 +38,171 @@
             </div>
         </div>
     </div>
+    <div class="modal fade send-mail-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title h4">Send mail</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="anticon anticon-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <input type="hidden" class="form-control " name="add_more_count" id="add-more-count" value="0"
+                            placeholder="=">
+                        <form id="mailForm" method="POST" action="{{ route('company.survey.sendMail') }}"
+                            data-parsley-validate="">
+                            @csrf
+                            <div class="row mb-3">
+                                <div class="form-group col-md-12">
+                                    <label for="tempHtml">Html</label>
+                                    {{-- <textarea type="text" class="form-control" id="tempHtml" name="tempHtml" placeholder="Html" >{{ !empty($mailTemplate) && !empty($mailTemplate->template_html)  ? $mailTemplate->template_html : '' }}</textarea> --}}
+                                    <textarea class="form-control ckeditor" id="tempHtml" cols="30" name="tempHtml" placeholder="Html">{{ !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : '' }}</textarea>
+                                    @error('tempHtml')
+                                        <label id="tempHtml-error" class="error" for="reward">The html field is required.
+                                        </label>
+                                    @enderror
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="title" class=" col-form-label">Email addres</label>
+                                    <input type="email" class="form-control" name="mail[]" id="em" value=""
+                                        placeholder="Enter mail">
+                                </div>
+                                <div class=" col-md-2">
+                                    <label for="title" class="col-form-label"></label>
+
+                                    <button type="button" onclick="addMailMore(this)" class="btn btn-primary"
+                                        style="margin-top:35px">Add</button>
+                                </div>
+                            </div>
+                            <div class="add-more">
+
+                            </div>
+                            <div class="row mb-2">
+                                <input type="hidden" class="" name="template_id" id="template_id" value="">
+                                <input type="hidden" class="" name="template_type" id="" value="">
+                                <div class="col-md-12">
+                                    <button type="submit" id="mailSubmit" class="btn btn-primary mr-2">Submit</button>
+
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade send-sms-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title h4">Send SMS</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="anticon anticon-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <input type="hidden" class="form-control " name="add_sms_more_count" id="add-sms-more-count"
+                            value="0" placeholder="=">
+                        <form id="smsForm" method="POST" action="{{ route('company.survey.sendSms') }}"
+                            data-parsley-validate="">
+                            @csrf
+
+                            <div class="row mb-3">
+                                <div class=" col-md-12">
+                                    <label for="tempHtml">Html</label>
+                                    {{-- <textarea type="text" class="form-control" id="tempHtml" name="tempHtml" placeholder="Html" >{{ !empty($mailTemplate) && !empty($mailTemplate->template_html)  ? $mailTemplate->template_html : '' }}</textarea> --}}
+                                    <textarea class="form-control " required id="smsHtml" cols="50" name="smsHtml" placeholder="Html"></textarea>
+
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="contact_number" class=" col-form-label">Contact Number</label>
+                                    <input type="text" class="form-control" id="contact"
+                                        placeholder="Contact Number" maxlength="20" name="contact_number[]"
+                                        value=""
+                                        oninput="this.value = this.value.replace(/[^0-9\-+]+/g, '').replace(/(\..*)\./g, '$1');"">
+                                </div>
+                                <div class=" col-md-2">
+                                    <label for="title" class="col-form-label"></label>
+
+                                    <button type="button" onclick="addSmsMore(this)" class="btn btn-primary"
+                                        style="margin-top:35px">Add</button>
+                                </div>
+                            </div>
+                            <div class="add-more">
+
+                            </div>
+                            <div class="row mb-2">
+                                <input type="hidden" class="" name="template_id" id="template_id"
+                                    value="">
+                                <input type="hidden" class="" name="template_type" id=""
+                                    value="">
+                                <div class="col-md-12">
+                                    <button type="submit" id="smsSubmit" class="btn btn-primary mr-2">Submit</button>
+
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <script>
         $(document).ready(function() {
+
+            $('#smsSubmit').click(function() {
+
+
+                $('#smsForm').validate({
+                    rules: {
+
+                        'contact_number[]': {
+                            required: true,
+                            minlength: '10',
+
+                        }
+                    },
+                    messages: {
+
+                        'contact_number[]': {
+                            required: "Please enter a contact number",
+                        }
+                    }
+                });
+            });
+            $('#mailSubmit').click(function() {
+
+
+                $('#mailForm').validate({
+                    rules: {
+
+                        'mail[]': {
+                            required: true,
+                            email: true
+                        }
+                    },
+                    messages: {
+
+                        'contact_number[]': {
+                            required: "Please enter a Email",
+                        }
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+
             var table = $('#surveyform').DataTable({
                 // Processing indicator
                 "processing": true,
@@ -84,10 +247,18 @@
                                 '" class="chk-row">';
                         },
                     },
+                    {
+                        'targets': 3,
+                        'visible': true,
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            return '[survey[' + row[0] + ']]';
+                        },
+                    },
 
                     // Adjust column indexes based on your data structure
                     {
-                        'targets': 3, // Assuming the second column in your data corresponds to this action column
+                        'targets': 4, // Assuming the second column in your data corresponds to this action column
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
@@ -101,6 +272,14 @@
                             editUrl = editUrl.replace(':survey', row[0]);
                             var deleteUrl = '{{ route('company.survey.form.delete', ':survey') }}';
                             deleteUrl = deleteUrl.replace(':survey', row[0]);
+                            var facebookUrl = "https://www.facebook.com/sharer/sharer.php?u=" +
+                                copy;
+
+                            var twitterUrl = "https://www.twitter.com/share?u=" + copy;
+                            var instagramUrl = "https://www.instagram.com//sharer/sharer.php?u=" +
+                                copy;
+
+                            var shortcut = '[survey[' + row[0] + ']]'
 
                             return '<a class="btn btn-info btn-sm" href="' +
                                 view +
@@ -112,13 +291,125 @@
                                 view +
                                 '" role="button"  title="View"><i class="fa fa-eye"></i></a>  <a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
-                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-primary btn-sm" role="button" href="' +
+                                facebookUrl +
+                                '"   title="Facebook"> <i class="fab fa-facebook-square"></i></a><a class="btn btn-sm btn-danger  btn-sm" role="button" href="' +
+                                instagramUrl +
+                                '"   title="Instagram"><i class="fab fa-instagram-square"></i></a><a class="btn  btn-sm btn-primary" role="button"  href="' +
+                                twitterUrl +
+                                '"   title="Twitter"><i class="fab fa-twitter-square "></i></a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openSmsModels(\'' +
+                                shortcut +
+                                '\')" role=" button "  title="SMS ">Send SMS</a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openMailModels(\'' +
+                                shortcut +
+                                '\')"    role=" button "  title="Mail ">Send Mail</a><a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
                                 deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> ';
                         },
                     }
                 ],
             });
         });
+        //SMS
+        function openSmsModels(shortcut) {
+            console.log(shortcut);
+            $('#smsHtml').val(shortcut)
+
+            $('.remove-div').remove()
+            $('input[id="contact_number"]').val("");
+            $('input[name="template_type"]').val('custom');
+            $('.send-sms-modal').modal('show');
+            if ('custom' === 'custom') {
+
+                $(".all-sms-send").removeClass("d-none");
+
+            } else {
+                $(".all-sms-send").addClass("d-none");
+            }
+
+        }
+
+        function addSmsMore(shortcut) {
+
+            count = 1;
+
+            oldCount = $('#add-sms-more-count').val()
+            nc = parseInt(oldCount) + 1
+            newCount = $('#add-sms-more-count').val(nc)
+
+
+            html = `<div  class="row mb-3 remove-div">
+         <div class="col-md-8">
+             <label for="" class=" col-form-label">Contact Number</label>
+             <input type="text" class="form-control" id="contact` + nc + `"
+                                                     placeholder="Contact Number" maxlength="15"
+                                                     name="contact_number[]" value="" required
+                                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                                     <label id="contact` + nc + `-error" class="error" for="contact` +
+                nc + `" style=""></label>
+         </div>
+         <div class=" col-md-2">
+             <label for="title" class="col-form-label"></label>
+
+             <button type="button" onclick="removeMore(this)" class="btn btn-danger" style="margin-top:35px">
+                 <li class="fa fa-trash"></li>
+             </button>
+         </div>
+     </div>`;
+            $('.add-more').append(html);
+
+
+        }
+
+        //Mail
+        function openMailModels(shortcut) {
+            $('.remove-div').remove()
+            $('input[id="email"]').val("");
+            $('input[name="template_type"]').val('custom');
+            $('.send-mail-modal').modal('show');
+
+
+            CKEDITOR.instances['tempHtml'].setData(shortcut)
+
+
+            if ('custom' === 'custom') {
+
+                $(".all-mail-send").removeClass("d-none");
+
+            }
+
+        }
+
+        function addMailMore(e) {
+            count = 1;
+            oldCount = $('#add-more-count').val()
+            nc = parseInt(oldCount) + 1
+
+            newCount = $('#add-more-count').val(nc)
+
+
+            html = `<div  class="row mb-3 remove-div">
+                <div class="col-md-8">
+                    <label for="" class=" col-form-label">Email addres</label>
+                    <input type="email" class="form-control" name="mail[]" id="email` + nc + `" value=""
+                        placeholder="Enter mail" required >
+                </div>
+                <div class=" col-md-2">
+                    <label for="title" class="col-form-label"></label>
+
+                    <button type="button" onclick="removeMore(this)" class="btn btn-danger"
+                        style="margin-top:35px"><li class="fa fa-trash"></li></button>
+                </div>
+            </div>`;
+            $('.add-more').append(html);
+
+
+        }
+
+
+        //sms
+
+        function removeMore(e) {
+            $(e).parent().parent().remove()
+        }
 
         function sweetAlertAjax(deleteUrl) {
             // Use SweetAlert for confirmation

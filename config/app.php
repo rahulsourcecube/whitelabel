@@ -60,6 +60,7 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     'pr_name' =>  'whitelabel',
+    'domain' =>  'whitelabel.local',
 
     'asset_url' => env('ASSET_URL'),
 

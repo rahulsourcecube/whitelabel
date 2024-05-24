@@ -23,27 +23,27 @@
 
                         <div class="m-t-25">
                             <div class="row">
-								<div class="col-md-3">
-									<div class="form-group col-md-12">
-										<label>Date:</label>
-										<div class="input-affix m-b-10">
-											<i class="prefix-icon anticon anticon-calendar"></i>
-											<input type="text" class="form-control datepicker2 attribute"
-												   placeholder="Pick a date" id="referral_from_date"
-												   value="{{ $startDate }}">
-											<input type="hidden" class="form-control " id="referral_from_date2"
-												   value="{{ $startDate }}-{{ $endDate }}">
+                                <div class="col-md-3">
+                                    <div class="form-group col-md-12">
+                                        <label>Date:</label>
+                                        <div class="input-affix m-b-10">
+                                            <i class="prefix-icon anticon anticon-calendar"></i>
+                                            <input type="text" class="form-control datepicker2 attribute"
+                                                placeholder="Pick a date" id="referral_from_date"
+                                                value="{{ $startDate }}">
+                                            <input type="hidden" class="form-control " id="referral_from_date2"
+                                                value="{{ $startDate }}-{{ $endDate }}">
 
-										</div>
-										<label id="referral_task_date_range">Date: <b>From</b> {{ $startDate }} <b>to</b>
-											{{ $endDate }}</label>
-									</div>
-									<div class="col-md-12">
+                                        </div>
+                                        <label id="referral_task_date_range">Date: <b>From</b> {{ $startDate }} <b>to</b>
+                                            {{ $endDate }}</label>
+                                    </div>
+                                    <div class="col-md-12">
                                         <button id="filterdata" class="btn btn-primary m-t-30" disabled>Filter <span
                                                 class="spinner"></span></button>
 
                                     </div>
-								</div>
+                                </div>
                                 <div class="col-md-9">
                                     <div class="ct-chart" id="simple-line-referral"></div>
                                     {{-- <div class="ct-chart" id="simple-line-referral-filter"></div> --}}
@@ -163,7 +163,7 @@
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <script>
         $('.datepicker').datepicker();
-        var endDate = '{{$startDate}}';
+        var endDate = '{{ $startDate }}';
 
         $(".datepicker2").datepicker({
             endDate: endDate
@@ -219,30 +219,30 @@
         });
 
         $('.attribute').on('change', function() {
-			var fromDate = $("#referral_from_date").val();
+            var fromDate = $("#referral_from_date").val();
 
-			// Split the date string into day, month, and year components
-			var parts = fromDate.split('/');
-			var day = parseInt(parts[1], 10);
-			var month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript
-			var year = parseInt(parts[2], 10);
+            // Split the date string into day, month, and year components
+            var parts = fromDate.split('/');
+            var day = parseInt(parts[1], 10);
+            var month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript
+            var year = parseInt(parts[2], 10);
 
-			// Create a new Date object with the extracted components
-			var fromDateObj = new Date(year, month, day);
+            // Create a new Date object with the extracted components
+            var fromDateObj = new Date(year, month, day);
 
-			// Add 6 days to the date
-			fromDateObj.setDate(fromDateObj.getDate() + 6);
+            // Add 6 days to the date
+            fromDateObj.setDate(fromDateObj.getDate() + 6);
 
-			// Format the resulting date back into the desired format
-			var formattedMonth = String(fromDateObj.getMonth() + 1).padStart(2, '0');
-			var formattedDay = String(fromDateObj.getDate()).padStart(2, '0');
-			var formattedYear = fromDateObj.getFullYear();
+            // Format the resulting date back into the desired format
+            var formattedMonth = String(fromDateObj.getMonth() + 1).padStart(2, '0');
+            var formattedDay = String(fromDateObj.getDate()).padStart(2, '0');
+            var formattedYear = fromDateObj.getFullYear();
 
-			var formattedDate = formattedMonth + '/' + formattedDay + '/' + formattedYear;
+            var formattedDate = formattedMonth + '/' + formattedDay + '/' + formattedYear;
 
-			 $("#referral_from_date2").val(fromDate + '-' + formattedDate);
+            $("#referral_from_date2").val(fromDate + '-' + formattedDate);
 
-			$("#referral_task_date_range").html('Date: <b>From</b> ' + fromDate + ' <b>to</b> ' + formattedDate);
+            $("#referral_task_date_range").html('Date: <b>From</b> ' + fromDate + ' <b>to</b> ' + formattedDate);
             $('#filterdata').removeAttr("disabled");
         });
 
@@ -294,87 +294,6 @@
                             onlyInteger: true
                         }
                     });
-                    // if (data.total_user == "" ) {
-                    //     alert(null);
-                    // //     $('#filterdata').prop('disabled', true);
-                    // // $(".spinner").html('');
-                    // //     var user_total = {!! json_encode($user_total) !!};
-                    // //     user_total = JSON.parse(user_total);
-                    // //     new Chartist.Line('#simple-line-referral', {
-                    // //         labels: user_total.day,
-                    // //         series: [
-                    // //             user_total.total_user,
-                    // //         ],
-                    // //         low: 0
-                    // //     }, {
-                    // //         showArea: true,
-                    // //         fullWidth: true,
-                    // //         chartPadding: {
-                    // //             right: 50
-                    // //         },
-                    // //         low: 0,
-                    // //         axisY: {
-                    // //             labelInterpolationFnc: function(value) {
-                    // //                 return Math.round(value);
-                    // //             },
-                    // //             onlyInteger: true
-                    // //         }
-                    // //     });
-
-                    // // $('#simple-line-referral').remove();
-                    // $(".spinner").html('');
-                    // $('#filterdata').prop('disabled', true);
-
-                    // var user_total = {!! json_encode($user_total) !!};
-                    // user_total = JSON.parse(user_total);
-                    // new Chartist.Line('#simple-line-referral', {
-                    //     labels: user_total.day,
-                    //     series: [
-                    //         user_total.total_user,
-                    //     ]
-                    // }, {
-                    //     showArea: true,
-                    //     fullWidth: true,
-                    //     chartPadding: {
-                    //         right: 50
-                    //     },
-                    //     low: 0,
-                    //     axisY: {
-                    //         labelInterpolationFnc: function(value) {
-                    //             return Math.round(value);
-                    //         },
-                    //         onlyInteger: true
-                    //     }
-                    // });
-
-                    // } else {
-
-
-
-                    // $('#simple-line-referral').remove();
-                    //     $(".spinner").html('');
-                    //     $('#filterdata').prop('disabled', true);
-                    //     var user_total = data;
-                    //     new Chartist.Line('#simple-line-referral-filter', {
-                    //         labels: user_total.day,
-                    //         series: [
-                    //             user_total.total_user,
-                    //         ]
-                    //     }, {
-                    //         showArea: true,
-                    //         fullWidth: true,
-                    //         chartPadding: {
-                    //             right: 50
-                    //         },
-                    //         low: 0,
-                    //         axisY: {
-                    //             labelInterpolationFnc: function(value) {
-                    //                 return Math.round(value);
-                    //             },
-                    //             onlyInteger: true
-                    //         }
-                    //     });
-                    // // }
                 },
                 error: function() {
 

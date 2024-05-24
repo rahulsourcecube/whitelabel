@@ -6,7 +6,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('company.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <span class="breadcrumb-item active">{{ $taskType }} Tasks</span>
                 </nav>
             </div>
@@ -15,7 +16,8 @@
             <div class="card-body">
                 <h4>{{ $taskType }} Task List</h4>
                 @if (isset($totalData) && count($totalData) > 0)
-                    <a class="btn btn-primary float-right btn-sm p-10 h-40" href="{{ route('company.campaign.export', $taskType) }}" role="button">Export</a>
+                    <a class="btn btn-primary float-right btn-sm p-10 h-40"
+                        href="{{ route('company.campaign.export', $taskType) }}" role="button">Export</a>
                 @endif
                 <div>
                     <table id="campaign_tables" class="table">
@@ -29,6 +31,7 @@
                                 <th>Description</th>
                                 <th>Type</th>
                                 <th>No of referral users</th>
+                                <th>Notifications type</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -112,6 +115,14 @@
                     },
                     {
                         'targets': 8,
+                        'visible': true, // Corrected syntax
+                        'orderable': false,
+                        'render': function(data, type, row) {
+                            return row[10];
+                        },
+                    },
+                    {
+                        'targets': 9,
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
@@ -126,7 +137,7 @@
                             }
                         },
                     }, {
-                        'targets': 9,
+                        'targets': 10,
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
@@ -154,7 +165,8 @@
                                 '" role="button" title="View"><i class="fa fa-eye"></i></a> @can('task-edit') <a class="btn btn-primary btn-sm" href="' +
                                 editUrl +
                                 '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> @endcan @can('task-delete') ' +
-                                deleteButton + ' @endcan';
+                                deleteButton +
+                                ' @endcan';
 
                         },
                     }

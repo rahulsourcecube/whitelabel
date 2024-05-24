@@ -1,5 +1,5 @@
 @extends('company.layouts.master')
-@section('title', 'Add Employee')
+@section('title', 'Edit Survey Form')
 @section('main-content')
     <div class="main-content">
         @include('company.includes.message')
@@ -13,14 +13,14 @@
                 </nav>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <h4>Edit Survey Form</h4>
+        <form id="surveyForm" method="POST" action="{{ route('company.survey.form.update', $surveyFiled->id) }}"
+            data-parsley-validate="">
+            @csrf
+            <div class="card">
+                <div class="card-body">
+                    <h4>Edit Survey Form</h4>
 
-                <div class="m-t-50" style="">
-                    <form id="surveyForm" method="POST"
-                        action="{{ route('company.survey.form.update', $surveyFiled->id) }}" data-parsley-validate="">
-                        @csrf
+                    <div class="m-t-50" style="">
                         <div class="row">
                             <div class=" form-group col-md-6">
 
@@ -39,7 +39,25 @@
 
                             </div>
                         </div>
+                        <div class="row">
+                            <div class=" form-group col-md-12">
+                                <label for="survey_title" class="col-sm-3 col-form-label">Description</label>
+                                <div class=" form-group col-md-12">
+                                    <label for="description" class="col-sm-3 col-form-label">Description</label>
+                                    <textarea class="form-control ckeditor" name="description" id="description" placeholder="Enter description" required>{{ !empty($surveyFiled) && !empty($surveyFiled->description) ? $surveyFiled->description : '' }}</textarea>
+                                </div>
+                            </div>
 
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h4>Add Question </h4>
+                    <div>
                         @if (!empty($surveyFiled) && !empty($surveyFiled->fields))
                             @php
                                 $fieldData = json_decode($surveyFiled->fields, true);
@@ -53,6 +71,7 @@
                                         onclick="addFiledRemove(this)" data-removeCount="{{ $key }}"><i
                                             class="fa fa-trash"></i></span>
                                 @endif
+
                                 <div class="form-group row ">
                                     <div class="col-md-6">
                                         <label for="type" class="col-form-label">Type</label>
@@ -66,9 +85,7 @@
                                             <option value="number" <?php if (!empty($field['type']) && $field['type'] == 'number') {
                                                 echo 'selected';
                                             } ?>>Number</option>
-                                            <option value="textarea" <?php if (!empty($field['type']) && $field['type'] == 'textarea') {
-                                                echo 'selected';
-                                            } ?>>Textarea</option>
+
                                             <option value="select" <?php if (!empty($field['type']) && $field['type'] == 'select') {
                                                 echo 'selected';
                                             } ?>>Select</option>
@@ -81,14 +98,9 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="label" class=" col-form-label">Label</label>
-                                        <input type="text" class="form-control" name="label[]" id="label"
-                                            placeholder="Enter Label" value="<?= $field['label'] ?>" required>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="placeholder" class=" col-form-label">Placeholder</label>
-                                        <input type="text" class="form-control" name="placeholder[]" id="placeholder" placeholder="Enter Placeholder"
-                                            value="<?= $field['placeholder'] ?>">
+                                        <label for="question" class=" col-form-label">Question</label>
+                                        <input type="text" class="form-control" name="question[]" id="question"
+                                            placeholder="Enter question" value="<?= $field['label'] ?? '' ?>" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="required" class="col-form-label">Required</label>
@@ -141,7 +153,9 @@
                                         @endforeach
                                     @endif
                                 </div>
-                                <hr>
+                                @if (!empty(count($fieldData)) != $key)
+                                    <hr class="hr-{{ $key == '0' ? '1' : $key }}">
+                                @endif
                             @endforeach
                         @endif
                         @php
@@ -159,19 +173,30 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <span class="btn btn-info addFiledMore">+ Add More Field</span>
-                                <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+                                {{-- <button type="submit" id="submit" class="btn btn-primary">Submit</button> --}}
                             </div>
                         </div>
-                    </form>
 
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="form-group row">
+                <div class="col-md-2">
+                    <button type="submit" id="submit" class="btn btn-primary w-100">Submit</button>
+                </div>
+            </div>
+        </form>
     </div>
 
 @endsection
 
 @section('js')
+    <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+    <script>
+        if (!CKEDITOR.instances['ckeditor']) {
+            CKEDITOR.replace("ckeditor");
+        }
+    </script>
     <script src="{{ asset('assets/js/parsley.min.js?v=' . time()) }}"></script>
     <script>
         function addFiledType(typecount, type) {
@@ -204,6 +229,7 @@
             $(th).next('.form-group.row').remove();
             $('#additionalFieldsContainer' + removeCount).remove();
             $(th).remove();
+            $('.hr-' + removeCount).remove();
         }
         $(document).ready(function() {
 
@@ -222,9 +248,11 @@
                     success: function(response) {
                         $('#addFiledMore' + oldCount).append(response.additionalFields);
                         $('.addFiledRemove').click(function() {
+
                             // Then remove the parent container itself
                             $(this).next('.form-group.row').remove();
                             $(this).remove();
+
                         });
                     }
                 });
@@ -254,7 +282,7 @@
                         'type[]': {
                             required: true
                         },
-                        'label[]': {
+                        'question[]': {
                             required: true
                         },
                         'inputName[]': {
@@ -277,7 +305,7 @@
                     messages: {
                         survey_title: 'Please enter a survey title',
                         'type[]': 'Please select at least one type',
-                        'label[]': 'Please enter a label',
+                        'question[]': 'Please enter a question',
                         'inputName[]': 'Please enter a name',
                         slug: {
                             required: "Please enter a slug",

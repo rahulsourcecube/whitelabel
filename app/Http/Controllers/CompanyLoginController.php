@@ -63,8 +63,11 @@ class CompanyLoginController extends Controller
             // Get the current month and year
             $currentMonth = Carbon::now()->month;
             $currentYear = Carbon::now()->year;
+            if (Helper::getCompanyId() != $companyId = Auth::user()->id) {
+                Auth::logout();
+                return redirect()->route('company.signin');
+            }
 
-            $companyId = Helper::getCompanyId();
 
             $data = [];
 
@@ -175,8 +178,8 @@ class CompanyLoginController extends Controller
             }
             $user = user::where('user_type', '1')->first();
             $siteSetting = SettingModel::where('user_id', $user->id)->first();
-
-            return view('company.signup', compact('siteSetting'));
+            $countrys = CountryModel::all();
+            return view('company.signup', compact('siteSetting', 'countrys'));
         } catch (Exception $e) {
             Log::error('CompanyLoginController::Signup => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -210,6 +213,9 @@ class CompanyLoginController extends Controller
             $user->password = hash::make($request->password);
             $user->view_password = $request->password;
             $user->contact_number = $request->ccontact;
+            $user->country_id = $request->country;
+            $user->state_id = $request->state;
+            $user->city_id = $request->city;
             $user->user_type = '2';
             $user->save();
             if (isset($user)) {
@@ -222,14 +228,13 @@ class CompanyLoginController extends Controller
                 $compnay->save();
                 $token =  Hash::make($user->id);
                 $user->update([
-                    // 'company_id' => $compnay->id,
                     'token' => $token
                 ]);
                 $role = Role::where('name', 'Company')->first();
                 $user->assignRole([$role->id]);
 
                 $userAdmin = user::where('user_type', '1')->first();
-                $SettingValue = SettingModel::where('id', $userAdmin->id)->first();
+                $SettingValue = SettingModel::where('user_id', $userAdmin->id)->first();
 
                 $settingModel = new SettingModel();
                 $settingModel->user_id = $user->id;
@@ -238,17 +243,7 @@ class CompanyLoginController extends Controller
                 $settingModel->title = $request->cname;
                 $settingModel->save();
             }
-            // try {
-            //     $userName  = $request->fname . ' ' . $request->lname;
-            //     $to = $request->email;
-            //     $subject = 'Welcome To ' . $SettingValue->title ?: env('APP_NAME');
-            //     $message = '';
-            //     if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-            //         SendEmailJob::dispatch($to, $subject, $message, $userName, '', 'company');
-            //     }
-            // } catch (Exception $e) {
-            //     Log::error('CompanyLoginController::SignupStore => ' . $e->getMessage());
-            // }
+
             $webUrlGetHost = $request->getHost();
             $currentUrl = URL::current();
             if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
@@ -264,6 +259,7 @@ class CompanyLoginController extends Controller
 
                 $SettingValue = SettingModel::first();
                 $mailTemplate = MailTemplate::where('company_id', '1')->where('template_type', 'welcome')->first();
+
                 $userName  = $request->fname . ' ' . $request->lname;
                 $to = $request->email;
 
@@ -273,38 +269,43 @@ class CompanyLoginController extends Controller
 
                 $message = '';
                 $type =  "";
-                $html =  $mailTemplate->template_html;
+                $html =  $mailTemplate->template_html ? $mailTemplate->template_html : null;
 
                 $data =  ['first_name' => $request->fname, 'company_id' => $adminId, 'template' => $html, 'webUrl' => $webUrl];
 
-                SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type, $html);
+
+                SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type);
             } catch (Exception $e) {
                 Log::error('UsrController::Store => ' . $e->getMessage());
             }
 
-            $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
+            $userMail = User::where('user_type', '1')->first();
+            $smsTemplate = SmsTemplate::where('company_id', $userMail->id)->where('template_type', 'welcome')->first();
             if (!empty($smsTemplate)) {
-                $SettingModel = SettingModel::first();
+                // $SettingModel = SettingModel::first();
 
+                $SettingModel = SettingModel::where('user_id', $userMail->id)->first();
 
-                $name = $request->fname;
-                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                $company_link = $webUrl ? $webUrl : '';
-                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
+                if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                    $name = $request->fname;
+                    $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                    $company_link = $webUrl ? $webUrl : '';
+                    $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
 
-                // Remove HTML tags and decode HTML entities
-                $message = htmlspecialchars_decode(strip_tags($html));
+                    // Remove HTML tags and decode HTML entities
+                    $message = htmlspecialchars_decode(strip_tags($html));
 
-                // Remove unwanted '&nbsp;' text
-                $message = str_replace('&nbsp;', ' ', $message);
-
-                $to = '+18777804236';
-                $twilioService = new TwilioService();
-                try {
-                    $twilioService->sendSMS($to, $message);
-                } catch (Exception $e) {
-                    Log::error('Failed to send SMS: ' . $e->getMessage());
-                    echo "Failed to send SMS: " . $e->getMessage();
+                    // Remove unwanted '&nbsp;' text
+                    $message = str_replace('&nbsp;', ' ', $message);
+                    $contact_number = Helper::getReqestPhoneCode($request->ccontact, $request->country);
+                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                    try {
+                        $twilioService->sendSMS($to, $message);
+                    } catch (Exception $e) {
+                        Log::error('Failed to send SMS: ' . $e->getMessage());
+                        echo "Failed to send SMS: " . $e->getMessage();
+                    }
                 }
             }
 
@@ -368,39 +369,54 @@ class CompanyLoginController extends Controller
             'token' => $token,
             'created_at' => Carbon::now()
         ]);
-        //  try {
-        $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
-        Mail::send('company.email.forgetPassword', ['token' => $token, 'email' => $request->email, 'name' => $userEmail->FullName, 'webUrl' => $webUrl, 'template' => $html], function ($message) use ($request, $mailTemplateSubject) {
-            $message->to($request->email);
-            $message->subject($mailTemplateSubject);
-        });
-        //  } catch (Exception $e) {
-        //     Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
-        //      return redirect()->back()->with('error', "Something went wrong");
-        // }
+        try {
+            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
+
+            // dd($mailTemplateSubject, $userEmail->FullName, $request->email);
+
+            Mail::send(
+                'company.email.forgetPassword',
+                [
+                    'token' => $token,
+                    'email' => $request->email,
+                    'name' => $userEmail->FullName,
+                    'webUrl' => $webUrl,
+                    'template' => $html
+                ],
+                function ($message) use ($request, $mailTemplateSubject) {
+                    $message->to($request->email);
+                    $message->subject($mailTemplateSubject);
+                }
+            );
+        } catch (Exception $e) {
+
+            Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Something went wrong");
+        }
         // Strat sms
         $smsTemplate = SmsTemplate::where('company_id', '1')->where('template_type', 'forgot_password')->first();
 
         if (!empty($smsTemplate)) {
             $SettingModel = SettingModel::first();
+            if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                $name = $userEmail->first_name;
+                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                $company_link = $webUrl ? $webUrl : '';
+                $submit = route('user.confirmPassword', $token);
+                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
+                $message = htmlspecialchars_decode(strip_tags($html));
 
-            $name = $userEmail->first_name;
-            $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-            $company_link = $webUrl ? $webUrl : '';
-            $submit = route('user.confirmPassword', $token);
-            $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
-            $message = htmlspecialchars_decode(strip_tags($html));
-
-            // Remove unwanted '&nbsp;' text
-            $message = str_replace('&nbsp;', ' ', $message);
-
-            $to = '+18777804236';
-            $twilioService = new TwilioService();
-            try {
-                $twilioService->sendSMS($to, $message);
-            } catch (Exception $e) {
-                Log::error('Failed to send SMS: ' . $e->getMessage());
-                echo "Failed to send SMS: " . $e->getMessage();
+                // Remove unwanted '&nbsp;' text
+                $message = str_replace('&nbsp;', ' ', $message);
+                $contact_number = Helper::getReqestPhoneCode($userEmail->contact_number, $userEmail->country_id);
+                $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                try {
+                    $twilioService->sendSMS($to, $message);
+                } catch (Exception $e) {
+                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                    echo "Failed to send SMS: " . $e->getMessage();
+                }
             }
         }
 
@@ -498,24 +514,26 @@ class CompanyLoginController extends Controller
 
             if (!empty($smsTemplate)) {
                 $SettingModel = SettingModel::first();
+                if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                    $name = $user->first_name;
+                    $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                    $company_link = $webUrl ? $webUrl : '';
 
-                $name = $user->first_name;
-                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                $company_link = $webUrl ? $webUrl : '';
+                    $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
+                    $message = htmlspecialchars_decode(strip_tags($html));
 
-                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
-                $message = htmlspecialchars_decode(strip_tags($html));
+                    // Remove unwanted '&nbsp;' text
+                    $message = str_replace('&nbsp;', ' ', $message);
+                    $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
 
-                // Remove unwanted '&nbsp;' text
-                $message = str_replace('&nbsp;', ' ', $message);
-
-                $to = '+18777804236';
-                $twilioService = new TwilioService();
-                try {
-                    $twilioService->sendSMS($to, $message);
-                } catch (Exception $e) {
-                    Log::error('Failed to send SMS: ' . $e->getMessage());
-                    echo "Failed to send SMS: " . $e->getMessage();
+                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                    try {
+                        $twilioService->sendSMS($to, $message);
+                    } catch (Exception $e) {
+                        Log::error('Failed to send SMS: ' . $e->getMessage());
+                        echo "Failed to send SMS: " . $e->getMessage();
+                    }
                 }
             }
             //End sms
@@ -551,8 +569,13 @@ class CompanyLoginController extends Controller
         try {
             $editprofiledetail = User::where('id', Auth::user()->id)->first();
             $country_data = CountryModel::all();
-            $state_data = StateModel::all();
-            $city_data = CityModel::all();
+
+            $state_data = "";
+            $city_data = "";
+            $state_data = StateModel::where('country_id', $editprofiledetail->country_id)->get();
+            $city_data = CityModel::where('state_id', $editprofiledetail->state_id)->get();
+
+
 
             return view('company.editprofile', compact('editprofiledetail',  'country_data', 'state_data', 'city_data'));
         } catch (Exception $e) {
@@ -568,10 +591,9 @@ class CompanyLoginController extends Controller
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
             $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
-            $updateprofiledetail['country_id'] = isset($request->country) ? $request->country : '';
-            $updateprofiledetail['state_id'] = isset($request->state) ? $request->state : '';
-            $updateprofiledetail['city_id'] = isset($request->city) ? $request->city : '';
-
+            $updateprofiledetail['country_id'] =  $request->country;
+            $updateprofiledetail['state_id'] = $request->state;
+            $updateprofiledetail['city_id'] =  $request->city;
             if ($request->hasFile('profile_image')) {
                 if ($updateprofiledetail->profile_image && file_exists(base_path() . '/uploads/user-profile/') . $updateprofiledetail->profile_image) {
                     unlink(base_path() . '/uploads/user-profile/' . $updateprofiledetail->profile_image);
