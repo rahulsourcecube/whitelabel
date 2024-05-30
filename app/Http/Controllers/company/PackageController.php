@@ -30,12 +30,14 @@ class PackageController extends Controller
      */
     function __construct()
     {
+
         // check user permission
         $this->middleware('permission:package-list', ['only' => ['index']]);
         $this->middleware('permission:package-create', ['only' => ['buy']]);
     }
     public function index($type)
     {
+
         try {
             $type = PackageModel::TYPE[strtoupper($type)];
             $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->where('type', $type)->get();
@@ -93,8 +95,8 @@ class PackageController extends Controller
                         "shipping" => [
                             "name" => $user->first_name . ' ' .  $user->last_name,
                             "address" => [
-                                "line1" => rand(123,45654) . ' ' . Str::random(10),
-                                "postal_code" => rand(123,45654),
+                                "line1" => rand(123, 45654) . ' ' . Str::random(10),
+                                "postal_code" => rand(123, 45654),
                                 "city" => Str::random(10),
                                 "state" => "CA",
                                 "country" => "US",
@@ -104,7 +106,7 @@ class PackageController extends Controller
                 } catch (Exception $e) {
                     Log::error('PackageController::Buy => ' . $e->getMessage());
                     if (str_contains($e->getMessage(), 'No such destination:')) {
-                        $jsonResponse['message'] =  "Stripe Account Not Activeted !" ;
+                        $jsonResponse['message'] =  "Stripe Account Not Activeted !";
                         return response()->json($jsonResponse);
                     }
                     Log::info("Buy package action API Error: " . $e->getMessage());
@@ -119,7 +121,7 @@ class PackageController extends Controller
             if (empty($package)) {
                 return redirect()->back()->with('error', 'Package not found');
             }
-            $activePackage = CompanyPackage::where('company_id', $companyId) ->where('status', CompanyPackage::STATUS['ACTIVE'])->first();
+            $activePackage = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->first();
             $addPackage = new CompanyPackage();
             $addPackage->company_id = $companyId;
             $addPackage->package_id = $package->id;
@@ -130,8 +132,13 @@ class PackageController extends Controller
             $addPackage->no_of_employee = $package->no_of_employee;
             $addPackage->price = $package->price;
             $addPackage->paymnet_method = 'card';
-            $addPackage->status = !empty($activePackage) ?'0':'1';
+            $addPackage->status = !empty($activePackage) ? '0' : '1';
             $addPackage->paymnet_response = null;
+            $addPackage->survey_status = $package->survey_status;
+            $addPackage->no_of_survey =  $package->no_of_survey;
+            $addPackage->mail_temp_status = $package->mail_temp_status;
+            $addPackage->sms_temp_status = $package->sms_temp_status;
+            $addPackage->community_status = $package->community_status;
             $addPackage->save();
             if ($addPackage) {
                 $makePayment = new Payment();
@@ -140,8 +147,8 @@ class PackageController extends Controller
                 $makePayment->amount = $addPackage->price;
                 $makePayment->name_on_card = $request->name_on_card ?? '';
                 $makePayment->card_number = $request->card_number ?? '';
-                $makePayment->client_secret = !empty($jsonResponse['client_secret']) ? $jsonResponse['client_secret']: '';
-                $makePayment->payment_intente = !empty($jsonResponse['payment_intente']) ? $jsonResponse['payment_intente']: '';
+                $makePayment->client_secret = !empty($jsonResponse['client_secret']) ? $jsonResponse['client_secret'] : '';
+                $makePayment->payment_intente = !empty($jsonResponse['payment_intente']) ? $jsonResponse['payment_intente'] : '';
                 $expiryDate = explode('/', $request->expiry_date) ?? '';
                 // $makePayment->card_expiry_month = $request->card_expiry_month ?? '';
                 // $makePayment->card_expiry_year = $request->card_expiry_year ?? '';
@@ -152,11 +159,11 @@ class PackageController extends Controller
                 $addPackage->update(['paymnet_id' => $makePayment->id]);
 
                 $jsonResponse['success'] = true;
-                $jsonResponse['message'] =  "Package purchased successfully!" ;
+                $jsonResponse['message'] =  "Package purchased successfully!";
             }
             if ($package->price != 0) {
                 return response()->json($jsonResponse);
-            }else{
+            } else {
                 return redirect()->back()->with('success', 'Package activated successfully!');
             }
         } catch (Exception $e) {
@@ -164,7 +171,7 @@ class PackageController extends Controller
             $jsonResponse['message'] =  "Error : " . $e->getMessage();
             if ($package->price != 0) {
                 return response()->json($jsonResponse);
-            }else{
+            } else {
                 return redirect()->back()->with('error', "Error : " . $e->getMessage());
             }
         }

@@ -22,7 +22,7 @@
 
                     <div class="m-t-50" style="">
                         <div class="row">
-                            <div class=" form-group col-md-6">
+                            <div class=" form-group col-md-4">
 
                                 <label for="survey_title" class="col-form-label">Title</label>
                                 <input type="text" class="form-control" name="survey_title" id="survey_title"
@@ -30,13 +30,20 @@
                                     placeholder="Enter Title">
 
                             </div>
-                            <div class=" form-group col-md-6">
-
+                            <div class=" form-group col-md-4">
                                 <label for="slug" class=" col-form-label">Slug</label>
                                 <input type="text" class="form-control" name="slug" id="slug"
                                     value="{{ !empty($surveyFiled) && !empty($surveyFiled->slug) ? $surveyFiled->slug : '' }}"
                                     placeholder="Enter Slug">
-
+                            </div>
+                            <div class=" form-group col-md-4">
+                                <label for="public" class="col-sm-3 col-form-label">Public</label>
+                                <div class="switch m-r-10">
+                                    <input type="checkbox" id="public-1"
+                                        {{ !empty($surveyFiled) && !empty($surveyFiled->public == 1) ? 'checked' : '' }}
+                                        data-toggle="switch" name="public" value="true">
+                                    <label for="public-1"></label>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -134,7 +141,8 @@
                                                     <label for="label"
                                                         class="col-form-label">{{ !empty($type) && $type == 'select' ? 'Option' : Str::ucfirst($type) }}
                                                         Value</label>
-                                                    <input type="text" value="{{ $value }}" class="form-control"
+                                                    <input type="text" value="{{ $value }}"
+                                                        class="form-control"
                                                         name="{{ $name }}[{{ $key }}][]" id="label"
                                                         placeholder="Enter Value" required>
                                                 </div>

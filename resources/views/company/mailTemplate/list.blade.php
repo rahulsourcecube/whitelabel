@@ -64,7 +64,7 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-10">
-                                    <label for="title" class=" col-form-label">Email addres</label>
+                                    <label for="title" class=" col-form-label">Email address</label>
                                     <input type="email" class="form-control" name="mail[]" id="em" value=""
                                         placeholder="Enter mail">
                                 </div>

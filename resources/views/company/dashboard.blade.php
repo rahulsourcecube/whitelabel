@@ -5,6 +5,7 @@
     <!-- Content Wrapper START -->
     @php $currency = App\Helpers\Helper::getcurrency() @endphp
     <div class="main-content">
+        @include('company.includes.message')
         <div class="row">
             <div class="col-md-6 col-lg-4">
                 <div class="card">
@@ -79,17 +80,19 @@
                                                     <div class="m-l-15">
                                                         <h6 class="m-b-0">
                                                             <a class="text-dark"
-                                                                href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']),base64_encode($referral_task->id)])}}">{{isset($referral_task->title)
-                                                                ? $referral_task->title : ""}}</a>
+                                                                href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['REFERRAL']), base64_encode($referral_task->id)]) }}">{{ isset($referral_task->title) ? $referral_task->title : '' }}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">{{ $referral_task->text_reward ? Str::limit($referral_task->text_reward, 15) : App\Helpers\Helper::getcurrency() . (isset($referral_task->reward) ?
-                                                            $referral_task->reward : "0") }}</p>
+                                                        <p class="text-muted m-b-0">
+                                                            {{ $referral_task->text_reward
+                                                                ? Str::limit($referral_task->text_reward, 15)
+                                                                : App\Helpers\Helper::getcurrency() . (isset($referral_task->reward) ? $referral_task->reward : '0') }}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     @endforeach
-                                    @else
+                                @else
                                     <div class="m-b-25">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div class="media align-items-center">
@@ -132,18 +135,19 @@
                                                     <div class="m-l-15">
                                                         <h6 class="m-b-0">
                                                             <a class="text-dark"
-                                                                href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']),base64_encode($social_share_task->id)])}}">{{isset($social_share_task->title)
-                                                                ?
-                                                                $social_share_task->title : ""}}</a>
+                                                                href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['SOCIAL']), base64_encode($social_share_task->id)]) }}">{{ isset($social_share_task->title) ? $social_share_task->title : '' }}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">{{ $social_share_task->text_reward ? Str::limit($social_share_task->text_reward, 15) : App\Helpers\Helper::getcurrency() . (isset($social_share_task->reward) ?
-                                                            $social_share_task->reward : "") }}</p>
+                                                        <p class="text-muted m-b-0">
+                                                            {{ $social_share_task->text_reward
+                                                                ? Str::limit($social_share_task->text_reward, 15)
+                                                                : App\Helpers\Helper::getcurrency() . (isset($social_share_task->reward) ? $social_share_task->reward : '') }}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     @endforeach
-                                    @else
+                                @else
                                     <div class="m-b-25">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div class="media align-items-center">
@@ -185,27 +189,29 @@
                                                     <div class="m-l-15">
                                                         <h6 class="m-b-0">
                                                             <a class="text-dark"
-                                                                href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']),base64_encode($custom_task->id)])}}">{{isset($custom_task->title)
-                                                                ? $custom_task->title : ""}}</a>
+                                                                href="{{ route('company.campaign.view', [\App\Helpers\Helper::taskType(\App\Models\CampaignModel::TYPE['CUSTOM']), base64_encode($custom_task->id)]) }}">{{ isset($custom_task->title) ? $custom_task->title : '' }}</a>
                                                         </h6>
-                                                        <p class="text-muted m-b-0">{{ $custom_task->text_reward ? Str::limit($custom_task->text_reward, 15) : App\Helpers\Helper::getcurrency() . (isset($custom_task->reward) ?
-                                                            $custom_task->reward : "0") }}</p>
+                                                        <p class="text-muted m-b-0">
+                                                            {{ $custom_task->text_reward
+                                                                ? Str::limit($custom_task->text_reward, 15)
+                                                                : App\Helpers\Helper::getcurrency() . (isset($custom_task->reward) ? $custom_task->reward : '0') }}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     @endforeach
                                 @else
-                                <div class="m-b-25">
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div class="media align-items-center">
-                                            <div class="">
+                                    <div class="m-b-25">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="media align-items-center">
+                                                <div class="">
 
-                                                <p class="text-muted m-b-0">No record found</p>
+                                                    <p class="text-muted m-b-0">No record found</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
                                 @endif
 
                             </div>
@@ -283,14 +289,14 @@
     </div>
 @endsection
 @section('js')
-<script src="{{asset('assets/js/pages/dashboard-chart.js?v='.time())}}"></script>
+    <script src="{{ asset('assets/js/pages/dashboard-chart.js?v=' . time()) }}"></script>
 
-<script>
-    var chartdata = {!! json_encode($user_reward_and_days) !!};
-    chartdata = JSON.parse(chartdata);
-    var currency =  "{{$currency}}";
-    var chart_title = "{{$chart_title}}";
-</script>
+    <script>
+        var chartdata = {!! json_encode($user_reward_and_days) !!};
+        chartdata = JSON.parse(chartdata);
+        var currency = "{{ $currency }}";
+        var chart_title = "{{ $chart_title }}";
+    </script>
     <script>
         var new_user = $("#new_user").val();
         var old_user = $("#old_user").val();

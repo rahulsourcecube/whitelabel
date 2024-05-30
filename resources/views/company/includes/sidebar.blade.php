@@ -7,6 +7,7 @@
 {{-- <script src="{{ asset('assets/vendors/chartist/chartist.min.js') }}"></script> --}}
 @php
     $user = Auth::user();
+    $ActivePackageData = App\Helpers\Helper::GetActivePackageData();
     $isActivePackage = App\Helpers\Helper::isActivePackage();
     use App\Models\Notification;
 
@@ -176,59 +177,68 @@
                             <li @if (request()->segment(2) == 'progression') class='active' @endif>
                                 <a href="{{ route('company.progression.index') }}">Task Progression</a>
                             </li>
-                            <li @if (request()->segment(2) == 'mail') class='active' @endif>
-                                <a href="{{ route('company.mail.index') }}">Mail Template</a>
-                            </li>
-                            <li @if (request()->segment(2) == 'sms') class='active' @endif>
-                                <a href="{{ route('company.sms.index') }}">SMS Template</a>
-                            </li>
+
+                            @if ($ActivePackageData->mail_temp_status == '1' && !empty($ActivePackageData->mail_temp_status))
+                                <li @if (request()->segment(2) == 'mail') class='active' @endif>
+                                    <a href="{{ route('company.mail.index') }}">Mail Template</a>
+                                </li>
+                            @endif
+                            @if ($ActivePackageData->sms_temp_status == '1' && !empty($ActivePackageData->sms_temp_status))
+                                <li @if (request()->segment(2) == 'sms') class='active' @endif>
+                                    <a href="{{ route('company.sms.index') }}">SMS Template</a>
+                                </li>
+                            @endif
+
                         </ul>
                     </li>
                 @endif
+                @if ($ActivePackageData->survey_status == '1' && !empty($ActivePackageData->no_of_survey))
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="javascript:void(0);">
+                            <span class="icon-holder">
+                                <i class="anticon anticon-setting"></i>
+                            </span>
+                            <span class="title">Survey Setting</span>
+                            <span class="arrow">
+                                <i class="arrow-icon"></i>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu">
 
-                <li class="nav-item dropdown">
-                    <a class="dropdown-toggle" href="javascript:void(0);">
-                        <span class="icon-holder">
-                            <i class="anticon anticon-setting"></i>
-                        </span>
-                        <span class="title">Survey Setting</span>
-                        <span class="arrow">
-                            <i class="arrow-icon"></i>
-                        </span>
-                    </a>
-                    <ul class="dropdown-menu">
-
-                        <li @if (request()->segment(2) == 'survey') class='active' @endif>
-                            <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
-                        </li>
-                        {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                            <li @if (request()->segment(2) == 'survey') class='active' @endif>
+                                <a href="{{ route('company.survey.form.index') }}">Survey Form</a>
+                            </li>
+                            {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
                         <a href="{{ route('company.setting.index') }}">Survey list</a>
                     </li> --}}
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="dropdown-toggle" href="javascript:void(0);">
-                        <span class="icon-holder">
-                            <i class="anticon anticon-setting"></i>
-                        </span>
-                        <span class="title">Community</span>
-                        <span class="arrow">
-                            <i class="arrow-icon"></i>
-                        </span>
-                    </a>
-                    <ul class="dropdown-menu">
+                        </ul>
+                    </li>
+                @endif
+                @if ($ActivePackageData->community_status == '1' && !empty($ActivePackageData->community_status))
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle" href="javascript:void(0);">
+                            <span class="icon-holder">
+                                <i class="anticon anticon-setting"></i>
+                            </span>
+                            <span class="title">Community</span>
+                            <span class="arrow">
+                                <i class="arrow-icon"></i>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu">
 
-                        <li @if (request()->segment(2) == 'channel') class='active' @endif>
-                            <a href="{{ route('company.channel.index') }}">Category</a>
-                        </li>
-                        <li @if (request()->segment(2) == 'reply') class='active' @endif>
-                            <a href="{{ route('company.reply.index') }}">Reply</a>
-                        </li>
-                        {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
+                            <li @if (request()->segment(2) == 'channel') class='active' @endif>
+                                <a href="{{ route('company.channel.index') }}">Category</a>
+                            </li>
+                            <li @if (request()->segment(2) == 'reply') class='active' @endif>
+                                <a href="{{ route('company.reply.index') }}">Reply</a>
+                            </li>
+                            {{-- <li @if (request()->segment(2) == 'setting') class='active' @endif>
                         <a href="{{ route('company.setting.index') }}">Survey list</a>
                     </li> --}}
-                    </ul>
-                </li>
+                        </ul>
+                    </li>
+                @endif
             @endif
 
             @can('notification-list')

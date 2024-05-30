@@ -121,6 +121,7 @@ class PackageController extends Controller
             } else {
                 $package->image = ""; // or whatever default value you want
             }
+
             // dd($request->description);
             $package->title = $request->title;
             $package->description = $request->description; // Fix typo in 'description' discription
@@ -131,8 +132,15 @@ class PackageController extends Controller
             $package->price = $request->price;
             $package->type = $request->type;
             $package->status = $request->status ? '1' : '0';
+
+            $package->survey_status = $request->survey_status ? '1' : '0';
+            $package->no_of_survey = $request->survey_status ? $request->no_of_survey : "";
+            $package->mail_temp_status = $request->mail_temp_status ? '1' : '0';
+            $package->sms_temp_status = $request->sms_temp_status ? '1' : '0';
+            $package->community_status = $request->community_status ? '1' : '0';
             // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
+
 
             $package->save();
 
@@ -146,11 +154,11 @@ class PackageController extends Controller
     function edit(PackageModel $package)
     {
         try {
-        return view('admin.package.edit', compact('package'));
-    } catch (Exception $e) {
-        Log::error('PackageController::edit ' . $e->getMessage());
-        return redirect()->back()->with('error', "Error: " . $e->getMessage());
-    }
+            return view('admin.package.edit', compact('package'));
+        } catch (Exception $e) {
+            Log::error('PackageController::edit ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        }
     }
 
     function update(Request $request, $id)
@@ -189,6 +197,13 @@ class PackageController extends Controller
             $package->price = $request->price;
             $package->type = $request->type;
             $package->status = $request->status ? '1' : '0';
+
+            $package->survey_status = $request->survey_status ? '1' : '0';
+            $package->no_of_survey = $request->survey_status ? $request->no_of_survey : "";
+            $package->mail_temp_status = $request->mail_temp_status ? '1' : '0';
+            $package->sms_temp_status = $request->sms_temp_status ? '1' : '0';
+            $package->community_status = $request->community_status ? '1' : '0';
+
             // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
             $package->save();

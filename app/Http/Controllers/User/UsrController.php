@@ -29,6 +29,8 @@ use App\Models\MailTemplate;
 use App\Models\ratings;
 use App\Models\SettingModel;
 use App\Models\SmsTemplate;
+use App\Models\Survey;
+use App\Models\SurveyForm;
 use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
 use App\Services\TwilioService;
@@ -670,7 +672,7 @@ class UsrController extends Controller
                 // URL is under HTTP
                 $webUrl =  'http://' . $webUrlGetHost;
             }
-
+            $ActivePackageData = Helper::GetActivePackageData();
             try {
 
                 $SettingValue = SettingModel::where('user_id', $companyId)->first();
@@ -694,8 +696,10 @@ class UsrController extends Controller
                 Log::error('UsrController::Store => ' . $e->getMessage());
             }
             // End mail
+
             $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
-            if (!empty($smsTemplate)) {
+
+            if (!empty($smsTemplate) && $ActivePackageData->sms_temp_status == "1") {
                 $SettingModel = SettingModel::first();
                 if (!empty($companyId)) {
                     $SettingModel = SettingModel::where('user_id', $companyId)->first();
@@ -777,7 +781,7 @@ class UsrController extends Controller
             if (empty($userEmail)) {
                 return redirect()->back()->with('error', 'Something went wrong.')->withInput();
             }
-
+            $ActivePackageData = Helper::GetActivePackageData();
             $token = Str::random(64);
             $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
             $html = "";
@@ -820,7 +824,7 @@ class UsrController extends Controller
             //Start sms
             $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
 
-            if (!empty($smsTemplate)) {
+            if (!empty($smsTemplate) && $ActivePackageData->sms_temp_status == "1") {
                 Log::error('UsrController:: check for sms');
 
                 $SettingModel = SettingModel::first();
@@ -898,6 +902,7 @@ class UsrController extends Controller
             DB::table('password_resets')->where(['email' => $request->email])->delete();
             $currentUrl = URL::current();
             $webUrlGetHost = $request->getHost();
+            $ActivePackageData = Helper::GetActivePackageData();
             if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
                 // URL is under HTTPS
                 $webUrl =  'https://' . $webUrlGetHost;
@@ -931,7 +936,7 @@ class UsrController extends Controller
             //Start sms
             $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
 
-            if (!empty($smsTemplate)) {
+            if (!empty($smsTemplate) && $ActivePackageData->sms_temp_status == "1") {
                 $SettingModel = SettingModel::first();
                 if (!empty($companyId)) {
                     $SettingModel = SettingModel::where('user_id', $companyId)->first();
@@ -1119,5 +1124,81 @@ class UsrController extends Controller
         //     Log::error('UsrController::notificationSetting => ' . $e->getMessage());
         //     return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
         // }
+    }
+    public function surevy()
+    {
+        try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+
+                return redirect('user/dashboard')->with('error', 'Please contact to Company administrator.');
+            }
+            return view('user.survey.list');
+        } catch (Exception $e) {
+            Log::error('UsrController::survey => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+    }
+    public function surevyList(Request $request)
+    {
+
+        try {
+            $companyId = Helper::getCompanyId(); // Assuming Helper is properly defined
+
+            $columns = ['id', 'title'];
+            $totalData = SurveyForm::where('company_id', $companyId)->count();
+            $start = $request->input('start');
+            $length = $request->input('length');
+            $order = $request->input('order.0.column');
+            $dir = $request->input('order.0.dir');
+            $list = [];
+            $searchColumns = ['title'];
+            $query = SurveyForm::orderBy($columns[$order], $dir)->where('company_id', $companyId)
+                ->where('public', SurveyForm::PUBLIC['YES']);
+
+
+            // Server-side search
+            if ($request->has('search') && $request->input('search.value') !== '') {
+                $search = $request->input('search.value');
+                $query->where(function ($query) use ($search, $searchColumns) {
+                    foreach ($searchColumns as $column) {
+                        $query->orWhere($column, 'like', "%{$search}%");
+                    }
+                });
+                // Count total records after applying search criteria
+                $totalData = $query->count();
+            }
+
+            $results = $query
+                ->skip($start)
+                ->take($length)
+                ->get();
+
+
+            foreach ($results as $result) {
+                $surveyDatas = "0";
+                $surveyDatas = Survey::where('form_id', $result->id)->count();
+                $list[] = [
+                    base64_encode($result->id),
+                    $result->slug,
+                    $result->title,
+                ];
+            }
+
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalData,
+                'recordsFiltered' => $totalData,
+                'data' => $list
+            ]);
+        } catch (\Exception $e) {
+            Log::error('SurveyController::formList ' . $e->getMessage());
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
     }
 }

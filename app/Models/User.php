@@ -45,6 +45,8 @@ class User extends Authenticatable
         'sms_new_task_notification',
         'mail_custom_notification',
         'sms_custom_notification',
+        'package_id',
+        'public',
     ];
 
     /**
@@ -81,7 +83,10 @@ class User extends Authenticatable
         }
         return $string;
     }
-
+    public function company()
+    {
+        return $this->belongsTo(CompanyModel::class, 'id', 'user_id');
+    }
     public function country()
     {
         return $this->belongsTo(CountryModel::class);
@@ -103,5 +108,9 @@ class User extends Authenticatable
         $code = $this->country->phonecode;
         $number = $code . $contact_number;
         return '+' . $number;
+    }
+    public function companyPackage()
+    {
+        return $this->hasOne(CompanyPackage::class, 'id', 'company_id');
     }
 }

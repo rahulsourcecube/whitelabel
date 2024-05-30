@@ -27,7 +27,12 @@ class SmstemplateController extends Controller
     function index()
     {
         try {
-            $companyId = Helper::getCompanyId();
+            $ActivePackageData = Helper::GetActivePackageData();
+
+            if ($ActivePackageData->sms_temp_status != "1") {
+                return redirect()->route('company.dashboard')->with('error', "You don't hav epermission.");
+            }
+
 
             return view('company.smsTemplate.list');
         } catch (Exception $e) {
@@ -110,6 +115,11 @@ class SmstemplateController extends Controller
     function create()
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+
+            if ($ActivePackageData->sms_temp_status != "1") {
+                return redirect()->route('company.dashboard')->with('error', "You don't hav epermission.");
+            }
             return view('company.smsTemplate.create');
         } catch (Exception $e) {
             Log::error('SmstemplateController::Create => ' . $e->getMessage());
@@ -119,6 +129,11 @@ class SmstemplateController extends Controller
     function edit($id)
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+
+            if ($ActivePackageData->sms_temp_status != "1") {
+                return redirect()->route('company.dashboard')->with('error', "You don't hav epermission.");
+            }
             $companyId = Helper::getCompanyId();
             $SmsTemplate = SmsTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
             if (empty($SmsTemplate)) {
@@ -498,15 +513,63 @@ class SmstemplateController extends Controller
                                 }
                             }
                         } else {
-                            $notFoundNumber[] = $number;
+                            $SettingValue = SettingModel::where('user_id', $companyId)->first();
+                            $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
+
+
+
+                            $companyData =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
+                            // foreach ($companyDatas as $companyData) {
+
+                            if (!empty($smsTemplate)) {
+                                if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
+                                    $name =  "";
+                                    $contact_number =  $number;
+                                    $company_title = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : 'Referdio';
+                                    $company_link = $webUrl ? $webUrl : '';
+                                    $campaign_title = $companyData->title;
+                                    $campaign_price = !empty($companyData->text_reward) ? $companyData->text_reward : $companyData->reward;
+
+                                    //set survey shortcut
+                                    $campaign_join_link = route('front.campaign.Join', base64_encode($companyData->id));
+                                    $template = $smsTemplate->template_html_sms;
+
+                                    $pattern = '/\[survey\[(.*?)\]\]/';
+                                    preg_match_all($pattern, $template, $matches);
+                                    if (!empty($matches[1])) {
+                                        foreach ($matches[1] as $surveyValue) {
+                                            $surveyFrom = Helper::getSurveyFrom($surveyValue);
+                                            $survey_link = $company_link . '/survey' . '/' . $surveyFrom->slug;
+
+                                            $template = str_replace('[survey[' . $surveyValue . ']]', $survey_link, $template);
+                                        }
+                                    }
+                                    $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[campaign_title]", "[campaign_price]", "[campaign_join_link]"], [$name, $company_title, $company_link, $campaign_title, $campaign_price, $campaign_join_link], $template);
+
+                                    // Remove HTML tags and decode HTML entities
+                                    $message = htmlspecialchars_decode(strip_tags($html));
+
+                                    // Remove unwanted '&nbsp;' text
+                                    $message = str_replace('&nbsp;', ' ', $message);
+
+                                    $to = $SettingValue->type == "2" ? $contact_number : $SettingValue->sms_account_to_number;
+                                    $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
+                                    try {
+                                        $twilioService->sendSMS($to, $message);
+                                    } catch (Exception $e) {
+                                        Log::error('Notifications >> Que SMS Fail => ' . $e->getMessage());
+                                    }
+                                }
+                            }
+                            // $notFoundNumber[] = $number;
                         }
                     }
                 }
-                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                // $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
 
                 return redirect()->route('company.sms.index')->with([
-                    'success' => 'SMS sent successfully',
-                    'error_sms_hold' => $errorMessage
+                    'success' => 'SMS sent successfully'
+
                 ]);
             }
             return redirect()->route('company.sms.index')

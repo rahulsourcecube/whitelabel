@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Company;
 use App\Helpers\Helper;
 use App\Exports\UsersExport;
 use App\Http\Controllers\Controller;
+use App\Imports\UserImport;
+use App\Imports\UsersImport;
 use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
 use App\Models\User;
@@ -22,6 +24,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPUnit\TextUI\Help;
+use SplFileObject;
 
 class UserController extends Controller
 {
@@ -442,6 +445,38 @@ class UserController extends Controller
             return Excel::download(new UsersExport($date), ('user' . '_' . $date . '.xlsx'));
         } catch (Exception $e) {
             Log::error('UserController::Export => ' . $e->getMessage());
+            return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+    }
+    public function import(Request $request)
+    {
+        try {
+
+            $companyId = Helper::getCompanyId();
+
+            $request->validate([
+                'import_file' => 'required|file|mimes:xlsx|',
+            ]);
+            $ActivePackageData = Helper::GetActivePackageData();
+            $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
+
+            if ($userCount >= $ActivePackageData->no_of_user) {
+
+                return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_user . ' users');
+            }
+
+            if ($request->hasFile('import_file')) {
+                $file = $request->file('import_file');
+
+                (Excel::import(new UserImport(), $file));
+
+                return redirect()->back()->with('success', 'File uploaded successfully.');
+            } else {
+                // No file uploaded
+                return redirect()->back()->with('error', 'No file uploaded.');
+            }
+        } catch (Exception $e) {
+            Log::error('UserController::Import => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }

@@ -114,7 +114,16 @@
                                                 @endforeach
                                             @endif
                                         </select>
-
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="font-weight-semibold" for="city">Show my profile publicly</label>
+                                        <div class="switch m-r-10">
+                                            <input type="checkbox" id="public-1"
+                                                {{ !empty($editprofiledetail) && !empty($editprofiledetail->public == 1) ? 'checked' : '' }}
+                                                data-toggle="switch" name="public" value="true"
+                                                onclick='handleClickpublic(this)';>
+                                            <label for="public-1"></label>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -156,6 +165,22 @@
 @endsection
 @section('js')
     <script>
+        function handleClickpublic(checkbox) {
+            var isChecked = checkbox.checked;
+            var message = isChecked ? 'make it public' : 'make it uncheck';
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to ' + message + ', right?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, ' + message + '!'
+            }).then((result) => {
+                checkbox.checked = result.isConfirmed ? isChecked : !isChecked;
+            });
+        }
         $(function() {
             $('#imagePreviews').on('click', function() {
                 $('profile_image').trigger('click');

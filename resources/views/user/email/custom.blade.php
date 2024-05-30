@@ -2,12 +2,14 @@
 
 use App\Models\SettingModel;
 use App\Helpers\Helper;
+$ActivePackageData = Helper::GetActivePackageData();
 ?>
 @if (!empty($company_id))
     <?php $mail = SettingModel::where('user_id', $company_id)->first(); ?>
-    @if (!empty($template))
+
+    @if (!empty($template) && $ActivePackageData->mail_temp_status == '1')
         <?php
-        $name = $name;
+        $name = $name ?? '';
         $company_title = !empty($mail) && !empty($mail->title) ? $mail->title : 'Referdio';
         
         $company_link = $webUrl ? $webUrl : '';
@@ -36,4 +38,5 @@ use App\Helpers\Helper;
         echo $html;
         ?>
     @endif
+
 @endif

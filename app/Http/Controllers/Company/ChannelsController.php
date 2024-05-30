@@ -13,6 +13,10 @@ class ChannelsController extends Controller
 {
     public function index()
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+        }
         $channels = Channels::all();
 
         return view('company.channels.list')->with('channels', $channels);
@@ -77,6 +81,10 @@ class ChannelsController extends Controller
     }
     public function create()
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+        }
         return view('company.channels.create');
     }
     public function store(Request $request)
@@ -125,6 +133,10 @@ class ChannelsController extends Controller
     public function edit($id)
 
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+        }
         try {
             $companyId = Helper::getCompanyId();
             $channels = Channels::where('id', base64_decode($id))->where('company_id', $companyId)->first();
@@ -137,6 +149,7 @@ class ChannelsController extends Controller
     }
     public function delete($id)
     {
+
         try {
 
             $channels = Channels::find(base64_decode($id));

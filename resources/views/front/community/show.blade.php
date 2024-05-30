@@ -74,6 +74,9 @@
                                                     text-right btn btn-danger btn-sm"
                                                         href="javascript:void(0)"><i class="fa fa-trash"></i></a>
                                                 @endif
+                                                {{-- <div class="card-footer"> --}}
+
+                                                {{-- </div> --}}
                                             </div>
                                             <div class="media m-b-15">
 
@@ -99,15 +102,26 @@
                                                         class="font-size-13 text-gray">{{ $reply->created_at->diffForhumans() }}</span>
                                                 </div>
                                             </div>
-                                            <span>
-                                                @if (!empty($reply) && $reply->content)
-                                                    {!! htmlspecialchars_decode(strip_tags($reply->content)) !!}
-                                                @endif
-                                            </span>
-
                                         </li>
-                                    @endforeach
+                                        <span>
+                                            @if (!empty($reply) && $reply->content)
+                                                {!! $reply->content ?? '' !!}
+                                            @endif
+                                        </span>
 
+                                        <span>
+                                            <button href="javascript:void(0)"
+                                                onclick="like('{{ route('community.like', base64_encode($reply->id)) }}','1')"
+                                                class="btn btn-success btn-sm "><i class="fa-solid fa-thumbs-up"></i> <span
+                                                    class="badge">
+                                                    {{ $reply->likeCountReply ?? 0 }}</span></button>
+                                            <button href="javascript:void(0)"
+                                                onclick="like('{{ route('community.unlike', base64_encode($reply->id)) }}','2')"
+                                                class="btn  btn-danger btn-sm"><i class="fa-solid fa-thumbs-down"></i>
+                                                <span class="badge">
+                                                    {{ $reply->unlikeCountReply ?? 0 }}</span></button>
+                                        </span>
+                                    @endforeach
 
                                 </ul>
                             </div>
@@ -196,6 +210,65 @@
                 }
             });
         });
+
+        function like(url, type) {
+            // Use SweetAlert for confirmation
+            // Swal.fire({
+            //     title: 'Are you sure?',
+            //     text: 'You won\'t be able to revert this!',
+            //     icon: 'warning',
+            //     showCancelButton: true,
+            //     confirmButtonColor: '#d33',
+            //     cancelButtonColor: '#3085d6',
+            //     confirmButtonText: 'Yes, delete it!'
+            // }).then((result) => {
+            //     if (result.isConfirmed) {
+            // If the user confirms, proceed with AJAX deletion
+            $.ajax({
+                url: url,
+                type: 'get',
+                data: {
+
+                    'type': type
+                },
+                success: (response) => {
+
+                    if (response.success == 'error') {
+                        // Handle error case
+                        Swal.fire({
+                            text: response.message,
+                            icon: "error",
+                            button: "Ok",
+                        }).then(() => {
+                            // Reload the page or take appropriate action
+                            location.reload();
+                        });
+                    } else {
+
+                        // Handle success case
+                        Swal.fire({
+                            text: response.message,
+                            icon: "success",
+                            button: "Ok",
+                        }).then(() => {
+                            // Reload the page or take appropriate action
+                            location.reload();
+                        });
+                    }
+                },
+                error: (xhr, status, error) => {
+                    // Handle AJAX request error
+                    console.error(xhr.responseText);
+                    Swal.fire({
+                        text: 'An error occurred while processing your request.',
+                        icon: "error",
+                        button: "Ok",
+                    });
+                }
+            });
+            // }
+            // });
+        }
 
         function sweetAlertAjax(deleteUrl) {
             // Use SweetAlert for confirmation

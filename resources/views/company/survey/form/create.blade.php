@@ -20,17 +20,27 @@
                     <div class="m-t-50" style="">
                         @csrf
                         <div class="row">
-                            <div class=" form-group col-md-6">
+                            <div class=" form-group col-md-4">
                                 <label for="survey_title" class="col-sm-3 col-form-label">Title</label>
                                 <input type="text" class="form-control" name="survey_title" id="survey_title"
                                     placeholder="Enter Title">
                             </div>
-                            <div class=" col-md-6">
+                            <div class=" col-md-4">
                                 <label for="slug" class="col-sm-3 col-form-label">Slug</label>
+
                                 <input type="text" class="form-control" name="slug" id="slug"
                                     placeholder="Enter Slug">
 
                             </div>
+                            <div class=" form-group col-md-4">
+                                <label for="public" class="col-sm-3 col-form-label">Public</label>
+                                <div class="switch m-r-10">
+                                    <input type="checkbox" id="public-1" data-toggle="switch" name="public"
+                                        value="true">
+                                    <label for="public-1"></label>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="row">
                             <div class=" form-group col-md-12">

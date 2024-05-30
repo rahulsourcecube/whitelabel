@@ -12,8 +12,20 @@ use Illuminate\Support\Facades\Log;
 
 class SurveyController extends Controller
 {
+
+    public function __construct()
+    {
+
+        $ActivePackageData = Helper::GetActivePackageData();
+    }
     public function survey(Request $request, SurveyForm $surveyForm)
     {
+
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+
+            return redirect()->route('home')->with('error', 'Please contact to Company administrator.');
+        }
         $companyId = Helper::getCompanyId();
 
         if ($surveyForm->company_id !=  $companyId) {
@@ -43,10 +55,10 @@ class SurveyController extends Controller
                 if (!empty($fields)) {
 
                     if ($key == 'user_username') {
-                        $fieldData[] = ['Username' => (is_array($row) ? implode(", ", $row) : $row)];
+                        $fieldData[] = ['Username' => (is_array($row) ? (auth()->user() && !empty(auth()->user()->Fullname)  ? auth()->user()->Fullname  :  implode(", ", $row)) : $row)];
                     }
                     if ($key == 'user_email') {
-                        $fieldData[] = ['Email Address' => (is_array($row) ? implode(", ", $row) : $row)];
+                        $fieldData[] = ['Email Address' => (is_array($row) ? (auth()->user()  && !empty(auth()->user()->Fullname)  ? auth()->user()->email  :  implode(", ", $row)) : $row)];
                     }
                     foreach ($fields as $field) {
 
