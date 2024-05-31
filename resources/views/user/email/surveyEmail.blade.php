@@ -2,10 +2,12 @@
 
 use App\Models\SettingModel;
 use App\Helpers\Helper;
+$ActivePackageData = App\Helpers\Helper::GetActivePackageData();
+
 ?>
 
 <?php $mail = SettingModel::where('user_id', $company_id)->first(); ?>
-@if (!empty($template))
+@if (!empty($template) && $ActivePackageData->mail_temp_status == '1')
     <?php
     
     $company_link = $webUrl ? $webUrl : '';

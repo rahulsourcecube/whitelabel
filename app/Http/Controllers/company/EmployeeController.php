@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Company;
 use App\Exports\EmployeeExport;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Imports\EmployeesImport;
 use App\Models\ModelHasRoles;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -259,6 +260,45 @@ class EmployeeController extends Controller
         } catch (Exception $e) {
             Log::error('EmployeeController::Export => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
+        }
+    }
+    public function import(Request $request)
+    {
+
+        $companyId = Helper::getCompanyId();
+        // Start check package
+        $ActivePackageData = Helper::GetActivePackageData();
+
+        $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['STAFF'])->count();
+
+        if ($userCount >= $ActivePackageData->no_of_employee) {
+            return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_employee . ' employees');
+            // End
+        }
+        // Validate the request to ensure a file was uploaded
+        $request->validate([
+            'import_file' => 'required|file|mimes:xlsx,xls,csv'
+        ]);
+
+        // Get the file from the request
+        $file = $request->file('import_file');
+
+        try {
+            // Preprocess the uploaded file and convert it into a collection of rows
+            $data = Excel::toArray(new EmployeesImport(), $file);
+
+            // Extract the rows from the processed data
+            $rows = collect($data)->collapse();
+
+            // Instantiate the EmployeesImport class and call the collection method with the rows
+            $import = new EmployeesImport();
+            $import->collection($rows);
+
+            // Import successful, redirect with success message
+            return redirect()->back()->with('success', 'Employees imported successfully');
+        } catch (\Exception $e) {
+            // Import failed, redirect back with error message
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

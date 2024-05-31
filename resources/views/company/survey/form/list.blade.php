@@ -1,6 +1,7 @@
 @extends('company.layouts.master')
 @section('title', 'Survey Form List')
 @section('main-content')
+    <?php $ActivePackageData = App\Helpers\Helper::GetActivePackageData(); ?>
 
     <div class="main-content">
 
@@ -28,6 +29,7 @@
                                 {{-- <th></th> --}}
                                 <th>Title</th>
                                 <th>Shortcuts</th>
+                                <th>Public</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -258,53 +260,66 @@
 
                     // Adjust column indexes based on your data structure
                     {
-                        'targets': 4, // Assuming the second column in your data corresponds to this action column
+                        'targets': 5, // Assuming the sixth column in your data corresponds to this action column
                         'visible': true,
                         'orderable': false,
                         'render': function(data, type, row) {
-                            var copy = '{{ route('front.survey.form', ':survey') }}';
-                            copy = copy.replace(':survey', row[1]);
-                            var view = '{{ route('company.survey.form.view', ':survey') }}';
-                            view = view.replace(':survey', row[0]);
+                            var copy = '{{ route('front.survey.form', ':survey') }}'.replace(
+                                ':survey', row[1]);
+                            var view = '{{ route('company.survey.form.view', ':survey') }}'.replace(
+                                ':survey', row[0]);
                             var count = row[3];
-
-                            var editUrl = '{{ route('company.survey.form.edit', ':survey') }}';
-                            editUrl = editUrl.replace(':survey', row[0]);
-                            var deleteUrl = '{{ route('company.survey.form.delete', ':survey') }}';
-                            deleteUrl = deleteUrl.replace(':survey', row[0]);
+                            var editUrl = '{{ route('company.survey.form.edit', ':survey') }}'
+                                .replace(':survey', row[0]);
+                            var deleteUrl = '{{ route('company.survey.form.delete', ':survey') }}'
+                                .replace(':survey', row[0]);
                             var facebookUrl = "https://www.facebook.com/sharer/sharer.php?u=" +
                                 copy;
-
                             var twitterUrl = "https://www.twitter.com/share?u=" + copy;
-                            var instagramUrl = "https://www.instagram.com//sharer/sharer.php?u=" +
+                            var instagramUrl = "https://www.instagram.com/sharer/sharer.php?u=" +
                                 copy;
+                            var shortcut = '[survey[' + row[0] + ']]';
 
-                            var shortcut = '[survey[' + row[0] + ']]'
-
-                            return '<a class="btn btn-info btn-sm" href="' +
-                                view +
-                                '" role="button"  title="View"> Total Submitted ' + count +
-                                '</a><p id="url_copy_' + row[1] + '" style="display:none">' + copy +
-                                '</p><span class="btn btn-success btn-sm" role="button"  title="Url Copy" onclick="copyToClipboard(\'#url_copy_' +
-                                row[1] +
-                                '\')"><i class="anticon anticon-copy"></i> Copy</span> </a><a class="btn btn-success btn-sm" href="' +
-                                view +
-                                '" role="button"  title="View"><i class="fa fa-eye"></i></a>  <a class="btn btn-primary btn-sm" href="' +
-                                editUrl +
-                                '" role="button"  title="Edit"><i class="fa fa-pencil"></i></a> <a class="btn btn-primary btn-sm" role="button" href="' +
+                            var actionsHtml = '<a class="btn btn-info btn-sm" href="' + view +
+                                '" role="button" title="View">Total Submitted ' + count + '</a>';
+                            actionsHtml += '<p id="url_copy_' + row[1] + '" style="display:none">' +
+                                copy + '</p>';
+                            actionsHtml +=
+                                '<span class="btn btn-success btn-sm" role="button" title="Url Copy" onclick="copyToClipboard(\'#url_copy_' +
+                                row[1] + '\')"><i class="anticon anticon-copy"></i> Copy</span>';
+                            actionsHtml += '<a class="btn btn-success btn-sm" href="' + view +
+                                '" role="button" title="View"><i class="fa fa-eye"></i></a>';
+                            actionsHtml += '<a class="btn btn-primary btn-sm" href="' + editUrl +
+                                '" role="button" title="Edit"><i class="fa fa-pencil"></i></a>';
+                            actionsHtml += '<a class="btn btn-primary btn-sm" href="' +
                                 facebookUrl +
-                                '"   title="Facebook"> <i class="fab fa-facebook-square"></i></a><a class="btn btn-sm btn-danger  btn-sm" role="button" href="' +
+                                '" title="Facebook"><i class="fab fa-facebook-square"></i></a>';
+                            actionsHtml += '<a class="btn btn-sm btn-danger btn-sm" href="' +
                                 instagramUrl +
-                                '"   title="Instagram"><i class="fab fa-instagram-square"></i></a><a class="btn  btn-sm btn-primary" role="button"  href="' +
-                                twitterUrl +
-                                '"   title="Twitter"><i class="fab fa-twitter-square "></i></a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openSmsModels(\'' +
-                                shortcut +
-                                '\')" role=" button "  title="SMS ">Send SMS</a><a class="btn btn-primary btn-sm " href="javascript: void(0); " onclick="openMailModels(\'' +
-                                shortcut +
-                                '\')"    role=" button "  title="Mail ">Send Mail</a><a class="btn btn-danger btn-sm" role="button"  href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
-                                deleteUrl + '\')"  title="Delete"><i class="fa fa-trash"></i></a> ';
+                                '" title="Instagram"><i class="fab fa-instagram-square"></i></a>';
+                            actionsHtml += '<a class="btn btn-sm btn-primary" href="' + twitterUrl +
+                                '" title="Twitter"><i class="fab fa-twitter-square"></i></a>';
+
+                            if (row[5] == 'true') {
+                                actionsHtml +=
+                                    '<a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="openSmsModels(\'' +
+                                    shortcut + '\')" role="button" title="SMS">Send SMS</a>';
+                            }
+
+                            if (row[6] == 'true') {
+                                actionsHtml +=
+                                    '<a class="btn btn-primary btn-sm" href="javascript:void(0);" onclick="openMailModels(\'' +
+                                    shortcut + '\')" role="button" title="Mail">Send Mail</a>';
+                            }
+
+                            actionsHtml +=
+                                '<a class="btn btn-danger btn-sm" href="javascript:void(0)" onclick="sweetAlertAjax(\'' +
+                                deleteUrl + '\')" title="Delete"><i class="fa fa-trash"></i></a>';
+
+                            return actionsHtml;
                         },
                     }
+
                 ],
             });
         });

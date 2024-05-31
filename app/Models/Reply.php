@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Helper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -34,30 +35,42 @@ class Reply extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    // public function likes()
-    // {
-    //     return $this->hasMany('App\Like');
-    // }
+    public function likes()
+    {
+        $companyId = Helper::getCompanyId();
+        // $likers = $this->hasOne(CommunityLikes::class, 'id', 'reply_id')->where('user_id', auth::id())->where('company_id', $companyId)->first();
 
-    public function is_liked_by_auth_user()
+        return $this->hasOne(CommunityLikes::class, 'id', 'reply_id')->where('user_id', auth::id())->where('company_id', $companyId)->where('type', "1");
+    }
+    public function getunlikes()
     {
 
-        $id = Auth::id();
+        $companyId = Helper::getCompanyId();
+        $getunlikes = CommunityLikes::where('reply_id', $this->id)->where('type', "2")
+            ->where('company_id', $companyId)->first();
+        return $getunlikes;
+    }
 
-        $likers = array();
-        if (!empty($this->likes)) {
-            foreach ($this->likes as $like) :
+    public function getlikeCountReplyAttribute()
+    {
 
-                array_push($likers, $like->user_id);
+        $likeCount = "0";
+        $companyId = Helper::getCompanyId();
+        $likeCount = CommunityLikes::where('reply_id', $this->id)->where('type', "1")
+            ->where('company_id', $companyId)
+            ->count();
 
-            endforeach;
+        return $likeCount;
+    }
+    public function getunlikeCountReplyAttribute()
+    {
 
-            if (in_array($id, $likers)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
+        $likeCount = "0";
+        $companyId = Helper::getCompanyId();
+        $likeCount = CommunityLikes::where('reply_id', $this->id)->where('type', "2")
+            ->where('company_id', $companyId)
+            ->count();
+
+        return $likeCount;
     }
 }

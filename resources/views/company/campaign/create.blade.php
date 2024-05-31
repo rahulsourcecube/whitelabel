@@ -1,3 +1,4 @@
+<?php $ActivePackageData = App\Helpers\Helper::GetActivePackageData(); ?>
 @extends('company.layouts.master')
 @section('title', 'Add Task')
 @section('main-content')
@@ -218,12 +219,14 @@
 
                             @if (
                                 (!empty($mail) &&
+                                    $ActivePackageData->sms_temp_status == '1' &&
                                     !empty($smsTemplate) &&
                                     !empty($smsTemplate->template_html_sms) &&
                                     !empty($mail->sms_account_sid) &&
                                     !empty($mail->sms_account_token) &&
                                     !empty($mail->sms_account_number)) ||
                                     (!empty($mail) &&
+                                        $ActivePackageData->mail_temp_status == '1' &&
                                         !empty($mailTemplate) &&
                                         !empty($mailTemplate->template_html) &&
                                         !empty($mail->mail_username) &&
@@ -237,7 +240,8 @@
                                         <option value="">Select Type
                                         </option>
                                         @if (
-                                            !empty($mail) &&
+                                            $ActivePackageData->mail_temp_status == '1' &&
+                                                !empty($mail) &&
                                                 !empty($mailTemplate) &&
                                                 !empty($mailTemplate->template_html) &&
                                                 !empty($mail->mail_username) &&
@@ -247,7 +251,8 @@
                                             </option>
                                         @endif
                                         @if (
-                                            !empty($mail) &&
+                                            $ActivePackageData->sms_temp_status == '1' &&
+                                                !empty($mail) &&
                                                 !empty($smsTemplate) &&
                                                 !empty($smsTemplate->template_html_sms) &&
                                                 !empty($mail->sms_account_sid) &&
@@ -260,6 +265,8 @@
                                             !empty($mail) &&
                                                 !empty($smsTemplate) &&
                                                 !empty($smsTemplate->template_html_sms) &&
+                                                $ActivePackageData->sms_temp_status == '1' &&
+                                                $ActivePackageData->mail_temp_status == '1' &&
                                                 !empty($mail->sms_account_sid) &&
                                                 !empty($mail->sms_account_token) &&
                                                 !empty($mail->sms_account_number) &&

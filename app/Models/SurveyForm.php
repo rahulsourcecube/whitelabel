@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SurveyForm extends Model
 {
+    const PUBLIC = [
+        'YES' => '1',
+        'NO' => '0',
+
+    ];
     use SoftDeletes;
     use HasFactory;
     protected $dates = ['deleted_at'];

@@ -31,6 +31,10 @@ class CompanyModel extends Model
     {
         return   $this->where('subdomain', $subdomain)->first();
     }
+    public function setting()
+    {
+        return $this->hasOne(SettingModel::class, 'user_id');
+    }
 
     public  function checkUserLogin($userId, $companyId)
     {

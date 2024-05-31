@@ -395,7 +395,7 @@ class Helper
     }
     public static function smsMessage()
     {
-        $admin = User::where('user_type', '1')->first();; // Fetching the first mail configuration
+        $admin = User::where('user_type', '1')->first(); // Fetching the first mail configuration
         $mailConfig = SettingModel::where('user_id', $admin->id)
             ->select('stripe_key', 'stripe_secret')
             ->first();
@@ -443,5 +443,22 @@ class Helper
         $survey = "";
         $survey = SurveyForm::where('id', base64_decode($id))->where('company_id', $companyId)->first();
         return $survey;
+    }
+    // Get Admin
+    public static function getAdmin()
+    {
+        $admin = "";
+        $admin = User::where('user_type', '1')->first(); // Fetching the first mail configuration
+
+        return $admin;
+    }
+    // Get Admin
+    public static function getAdminSetting()
+    {
+
+        $getAdmin = Helper::getAdmin();
+        $getAdminSetting = "";
+        $getAdminSetting = SettingModel::where('user_id', $getAdmin->id)->first();
+        return $getAdminSetting;
     }
 }

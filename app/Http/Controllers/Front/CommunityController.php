@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Channels;
 use App\Models\Community;
+use App\Models\CommunityLikes;
 use App\Models\Reply;
 use Exception;
 use Illuminate\Http\Request;
@@ -19,7 +20,10 @@ class CommunityController extends Controller
 {
     public function community($type = null)
     {
-
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect('/')->with('error', 'Please contact to Company administrator.');
+        }
         $companyId = Helper::getCompanyId();
         // $discussions = Community::orderby('created_at', 'desc')->paginate(2);
         $questions = Community::where('company_id', $companyId)->orderBy('created_at', 'desc');
@@ -45,12 +49,20 @@ class CommunityController extends Controller
 
     public function index()
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect('/')->with('error', 'Please contact to Company administrator.');
+        }
 
         $discussions = Community::orderby('created_at', 'desc')->paginate(2);
         return view('front.community.forum')->with('discussions', $discussions);
     }
     public function discuss()
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect('/')->with('error', 'Please contact to Company administrator.');
+        }
 
         $companyId = Helper::getCompanyId();
         $channels = Channels::where('company_id', $companyId)->get();
@@ -60,6 +72,10 @@ class CommunityController extends Controller
 
     public function channel($id)
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect('/')->with('error', 'Please contact to Company administrator.');
+        }
         $check = Community::where('channel_id', $id)->first();
         $channel = Channels::find($id);
         return view('layouts.channel')->with('discussions', $channel->discussions()->paginate(3))
@@ -67,6 +83,10 @@ class CommunityController extends Controller
     }
     public function create()
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect('/')->with('error', 'Please contact to Company administrator.');
+        }
         if (!(Auth::user())) {
             session()->put('questions_create', 'questions_create');
 
@@ -81,6 +101,10 @@ class CommunityController extends Controller
     public function store(Request $request)
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->community_status != "1") {
+                return redirect('/')->with('error', 'Please contact to Company administrator.');
+            }
             $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'content' => 'required',
@@ -127,6 +151,10 @@ class CommunityController extends Controller
     public function show($id)
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->community_status != "1") {
+                return redirect('/')->with('error', 'Please contact to Company administrator.');
+            }
 
 
             $companyId = Helper::getCompanyId();
@@ -162,6 +190,10 @@ class CommunityController extends Controller
     public function reply(Request $request, $id)
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->community_status != "1") {
+                return redirect('/')->with('error', 'Please contact to Company administrator.');
+            }
             $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
                 'content' => 'required',
@@ -248,6 +280,53 @@ class CommunityController extends Controller
         } catch (\Exception $e) {
             Log::error('CommunityController::status ' . $e->getMessage());
             return response()->json(["status" => 400, "message" => "Error: " . $e->getMessage()]);
+        }
+    }
+    public function like($id, Request $request)
+    {
+
+        $companyId = Helper::getCompanyId();
+        $like = CommunityLikes::where('company_id', $companyId)->where('user_id', Auth::id())->where('reply_id', base64_decode($id))->first();
+        if (empty($like)) {
+            $like = CommunityLikes::create(
+                [
+                    'reply_id' => base64_decode($id),
+                    'company_id' => $companyId,
+                    'user_id' => Auth::id(),
+                    'type' => $request->type,
+                ],
+            );
+        } else {
+            $like->delete();
+            return response()->json(["status" => 200, "message" => "You unliked this like", "type" => ""]);
+        }
+
+
+        return response()->json(["status" => 200, "message" => "Thank you for like", "type" => "like"]);
+    }
+
+    public function unlike($id, Request $request)
+    {
+
+        $companyId = Helper::getCompanyId();
+        $replyId = base64_decode($id);
+
+        // Check if the like already exists
+        $like = CommunityLikes::where('company_id', $companyId)->where('user_id', Auth::id())->where('reply_id', base64_decode($id))->first();
+
+        if ($like) {
+            // If the like exists, delete it (unlike)
+            $like->delete();
+            return response()->json(["status" => 200, "message" => "You unliked this reply", "type" => ""]);
+        } else {
+            // If the like does not exist, create a new one
+            CommunityLikes::create([
+                'reply_id' => $replyId,
+                'company_id' => $companyId,
+                'user_id' => Auth::id(),
+                'type' => $request->type,
+            ]);
+            return response()->json(["status" => 200, "message" => "You unliked this reply", "type" => "unliked"]);
         }
     }
 }

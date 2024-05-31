@@ -2,6 +2,7 @@
 
 <?php
 $user = Auth::user();
+$ActivePackageData = App\Helpers\Helper::GetActivePackageData();
 // $notificationCount = Notification::where('user_id', $user->id)->where('is_read','0')->get();
 use App\Models\Notification;
 $notificationCount = Notification::where('user_id', $user->id)
@@ -101,6 +102,24 @@ $notificationCount = Notification::where('user_id', $user->id)
                     @endif
                 </a>
             </li>
+            <li class="nav-item dropdown open @if (request()->segment(2) == 'community' && request()->segment(3) == '') active @endif ">
+                <a class="dropdown-toggle" href="{{ route('community') }}">
+                    <span class="icon-holder">
+                        <i class="anticon anticon-team"></i>
+                    </span>
+                    <span class="title">Community</span>
+                </a>
+            </li>
+            @if ($ActivePackageData->survey_status == '1' && !empty($ActivePackageData->no_of_survey))
+                <li class="nav-item dropdown open @if (request()->segment(2) == 'survey' && request()->segment(3) == '') active @endif ">
+                    <a class="dropdown-toggle" href="{{ route('user.survey') }}">
+                        <span class="icon-holder">
+                            <i class="anticon anticon-safety-certificate"></i>
+                        </span>
+                        <span class="title">Survey</span>
+                    </a>
+                </li>
+            @endif
             <li class="nav-item dropdown open">
                 <a class="dropdown-toggle" href="{{ route('user.logout') }}">
                     <span class="icon-holder">

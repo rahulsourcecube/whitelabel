@@ -594,6 +594,9 @@ class CompanyLoginController extends Controller
             $updateprofiledetail['country_id'] =  $request->country;
             $updateprofiledetail['state_id'] = $request->state;
             $updateprofiledetail['city_id'] =  $request->city;
+
+            $updateprofiledetail['public'] =  $request->public ? '1' : "0";
+
             if ($request->hasFile('profile_image')) {
                 if ($updateprofiledetail->profile_image && file_exists(base_path() . '/uploads/user-profile/') . $updateprofiledetail->profile_image) {
                     unlink(base_path() . '/uploads/user-profile/' . $updateprofiledetail->profile_image);

@@ -20,9 +20,21 @@ use Illuminate\Support\Facades\URL;
 
 class SurveyController extends Controller
 {
+    public function __construct()
+    {
+        $ActivePackageData = Helper::GetActivePackageData();
+
+        if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+
+            return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+        }
+    }
     function formIndex(Request $request)
     {
-
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+            return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+        }
         return view('company.survey.form.list');
     }
 
@@ -30,6 +42,7 @@ class SurveyController extends Controller
     {
 
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
             $companyId = Helper::getCompanyId(); // Assuming Helper is properly defined
 
             $columns = ['id', 'title'];
@@ -63,12 +76,22 @@ class SurveyController extends Controller
             foreach ($results as $result) {
                 $surveyDatas = "0";
                 $surveyDatas = Survey::where('form_id', $result->id)->count();
+                $mailStatus = 'true';
+                if ($ActivePackageData->mail_temp_status != '1') {
+                    $mailStatus = 'false';
+                }
+                $smsStatus = 'true';
+                if ($ActivePackageData->sms_temp_status != '1') {
+                    $smsStatus = 'false';
+                }
                 $list[] = [
                     base64_encode($result->id),
                     $result->slug,
                     $result->title,
-                    $surveyDatas
-                    // Add more fields as needed
+                    $surveyDatas,
+                    ($result->public == '1') ? 'Yes' : "No",
+                    $smsStatus,
+                    $mailStatus
                 ];
             }
 
@@ -93,9 +116,18 @@ class SurveyController extends Controller
     public function formCreate()
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
             $companyId = Helper::getCompanyId();
+            $surveyCount = SurveyForm::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->count();
+            if (!empty($ActivePackageData->no_of_survey) && $surveyCount >= $ActivePackageData->no_of_survey) {
+
+                return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_survey . ' survey');
+            }
             $surveyFiled = SurveyForm::where('company_id', $companyId)->first();
-            $survey_dtt = SurveyForm::where('company_id', $companyId)->count();
+
             // dd($survey_dtt);
             return view('company.survey.form.create', compact('surveyFiled', 'survey_dtt'));
         } catch (Exception $e) {
@@ -107,6 +139,10 @@ class SurveyController extends Controller
     public function formView(Request $request, $id)
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
             $id = base64_decode($id);
             $surveyFiled = SurveyForm::find($id);
             $fields = json_decode($surveyFiled->fields, true);
@@ -123,9 +159,13 @@ class SurveyController extends Controller
     public function formEdit(Request $request, $id)
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
             $id = base64_decode($id);
             $companyId = Helper::getCompanyId();
-            $surveyFiled = SurveyForm::find($id);
+            $surveyFiled = SurveyForm::where('company_id', $companyId)->find($id);
 
             // $survey_dtt = SurveyForm::where('company_id', $companyId)->count();
 
@@ -139,6 +179,10 @@ class SurveyController extends Controller
 
     public function getAdditionalFields(Request $request)
     {
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+            return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+        }
         $type = $request->input('type');
         $addCount = $request->input('addCount');
         $add = $request->input('addrequest');
@@ -256,13 +300,24 @@ class SurveyController extends Controller
     public function formStore(Request $request)
     {
         try {
-            $inputFields = $request->all();
+            $ActivePackageData = Helper::GetActivePackageData();
             $companyId = Helper::getCompanyId();
+            if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
+            $surveyCount = SurveyForm::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->count();
+            if (!empty($ActivePackageData->no_of_survey) && $surveyCount >= $ActivePackageData->no_of_survey) {
+
+                return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_survey . ' survey');
+            }
+            $inputFields = $request->all();
             $SurveyForm = new SurveyForm;
             $SurveyForm->company_id = $companyId;
             $SurveyForm->title = $request->input('survey_title');
             $SurveyForm->slug = $request->input('slug');
             $SurveyForm->description = $request->input('description');
+            $SurveyForm->public = $request->input('public') ? '1' : '0';
+            $SurveyForm->package_id = $ActivePackageData->id;
 
             $fields = [];
             $types = $request->input('type');
@@ -272,16 +327,19 @@ class SurveyController extends Controller
 
             // Loop through each field and create an array for each field
             foreach ($types as $key => $type) {
-                $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
-                $fields[] = [
-                    'type' => $type,
-                    'inputName' => $inputNames,
-                    'label' => $question[$key],
-                    'idname' => $inputNames,
-                    'class' => $inputNames,
-                    'required' => $required[$key],
-                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
-                ];
+                if (!empty($type) && $question[$key]) {
+
+                    $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
+                    $fields[] = [
+                        'type' => $type,
+                        'inputName' => $inputNames,
+                        'label' => $question[$key],
+                        'idname' => $inputNames,
+                        'class' => $inputNames,
+                        'required' => $required[$key],
+                        $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
+                    ];
+                }
             }
 
             // Convert fields array to JSON and save it in the SurveyForm model
@@ -300,6 +358,10 @@ class SurveyController extends Controller
     public function formUpdate(Request $request, $id)
     {
         try {
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->survey_status != "1" || empty($ActivePackageData->no_of_survey)) {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
             $companyId = Helper::getCompanyId();
             $SurveyForm = SurveyForm::find($id);
             $inputFields = $request->all();
@@ -308,6 +370,7 @@ class SurveyController extends Controller
             $SurveyForm->title = $request->input('survey_title');
             $SurveyForm->slug = $request->input('slug');
             $SurveyForm->description = $request->input('description');
+            $SurveyForm->public = $request->input('public') ? '1' : '0';
 
             $fields = [];
             $types = $request->input('type');
@@ -317,17 +380,19 @@ class SurveyController extends Controller
 
             // Loop through each field and create an array for each field
             foreach ($types as $key => $type) {
-                $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
-                $fields[] = [
-                    'type' => $type,
-                    'inputName' => $inputNames,
-                    'label' => $question[$key],
-                    'idname' => $inputNames,
-                    'class' => $inputNames,
+                if (!empty($type) && $question[$key]) {
+                    $inputNames = 'input_' . $key . '_' . rand(10000, 200000);
+                    $fields[] = [
+                        'type' => $type,
+                        'inputName' => $inputNames,
+                        'label' => $question[$key],
+                        'idname' => $inputNames,
+                        'class' => $inputNames,
 
-                    'required' => $required[$key],
-                    $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
-                ];
+                        'required' => $required[$key],
+                        $type => !empty($inputFields[$type]) && !empty($inputFields[$type][$key]) ? $inputFields[$type][$key] : null, // Assuming 'position' is common for all fields
+                    ];
+                }
             }
 
 
@@ -348,6 +413,7 @@ class SurveyController extends Controller
     {
 
         try {
+
             $id = base64_decode($id);
             $form_id = $id;
             $form_id = SurveyForm::where('id', $form_id)->delete();
@@ -360,6 +426,7 @@ class SurveyController extends Controller
     function checkSlug(Request $request)
     {
         try {
+
             $companyId = Helper::getCompanyId();
             $checkSlug = SurveyForm::where('company_id', $companyId)->where('slug', '=', $request->slug);
 

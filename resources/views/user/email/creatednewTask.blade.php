@@ -1,8 +1,9 @@
 <?php
 
 use App\Models\SettingModel;
+$ActivePackageData = App\Helpers\Helper::GetActivePackageData();
 ?>
-@if (!empty($company_id))
+@if (!empty($company_id) && $ActivePackageData->mail_temp_status == '1')
     <?php $mail = SettingModel::where('user_id', $company_id)->first(); ?>
     @if (!empty($template))
         <?php

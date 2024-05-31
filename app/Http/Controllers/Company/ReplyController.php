@@ -17,7 +17,10 @@ class ReplyController extends Controller
 {
     public function index()
     {
-
+        $ActivePackageData = Helper::GetActivePackageData();
+        if ($ActivePackageData->community_status != "1") {
+            return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+        }
 
         return view('company.reply.list');
     }
@@ -88,6 +91,10 @@ class ReplyController extends Controller
     {
         try {
 
+            $ActivePackageData = Helper::GetActivePackageData();
+            if ($ActivePackageData->community_status != "1") {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
             $companyId = Helper::getCompanyId();
             $companyAdmin = Helper::companyAdmin();
             $questions = Community::where('company_id', $companyId)->where('id', base64_decode($id))->first();

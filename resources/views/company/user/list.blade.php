@@ -1,5 +1,6 @@
 @extends('company.layouts.master')
 @section('title', 'Users List')
+
 @section('main-content')
     <div class="main-content">
         @include('company.includes.message')
@@ -18,6 +19,9 @@
                 {{-- @if (isset($totalData) && count($totalData) > 0) --}}
                 {{-- @endif --}}
                 <div class="float-right">
+                    @can('user-list')
+                        <a class="btn btn-primary " href="javascript: void(0);" onclick="openModels()" role="button">Import</a>
+                    @endcan
                     @if (isset($totalUsers) && count($totalUsers) > 0)
                         @can('user-list')
                             <a class="btn btn-primary " href="{{ route('company.user.export') }}" role="button">Export</a>
@@ -47,9 +51,76 @@
             </div>
         </div>
     </div>
+    <div class="modal fade add-import-file">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title h4">Import User</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="anticon anticon-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="col-md-8 col-md-offset-2">
+                                <h3>Import User </h3>
+                                <form id="import_form" method="POST" action="{{ route('company.user.import') }}"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="form-group">
+                                        <div class="input-group input-file">
+                                            <input id="import_file" type="file" class="form-control" name="import_file"
+                                                accept=".xlsx" />
+                                        </div>
+                                        {{-- <div id="excel_icon" style="display: none;">
+                                            <i class="fas fa-file-excel"></i> <!-- FontAwesome Excel icon -->
+                                        </div> --}}
+                                    </div>
+                                    <div class="form-group">
+                                        <a href="{{ asset('public/download/users-sample.xlsx') }}" class="btn btn-success"
+                                            download="users-sample.xlsx" title="Sample Download">Sample download</a>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        $(document).ready(function() {
+            // Preview Excel icon
+            $('#import_file').change(function() {
+                var input = this;
+                var fileName = input.files[0].name;
+                var ext = fileName.split('.').pop().toLowerCase();
+                if (ext === 'xlsx') {
+                    $('#excel_icon').show();
+                } else {
+                    $('#excel_icon').hide();
+                    alert('Please select a valid .xlsx file.');
+                    $(this).val(''); // Clear the file input field
+                }
+            });
+
+            // Validate file type
+            $('#import_form').submit(function() {
+                var fileName = $('#import_file').val();
+                var ext = fileName.split('.').pop().toLowerCase();
+                if (ext !== 'xlsx') {
+                    alert('Please select a valid .xlsx file.');
+                    return false;
+                }
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             var table = $('#user_tables').DataTable({
@@ -137,6 +208,12 @@
                 ],
             });
         });
+
+        function openModels() {
+
+            $('.add-import-file').modal('show');
+            var fileName = $('#import_file').val();
+        }
 
 
         function sweetAlertAjax(deleteUrl) {

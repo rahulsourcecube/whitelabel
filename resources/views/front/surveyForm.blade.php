@@ -95,20 +95,22 @@
                                             @endphp
                                             <div class="step step-0 active" id="step-0" data-key="0">
                                                 <div class="form-group col-md-12">
+                                                    <label class="font-weight-semibold" for="userName">Name
+                                                    </label>
+                                                    <input type="text" class="form-control" required id=""
+                                                        placeholder="Enter Username" name="user_username"
+                                                        {{ !empty(auth::user()->Fullname) && auth::user()->Fullname ? 'readonly' : '' }}
+                                                        value="{{ auth::user()->Fullname ?? '' }}" maxlength="50">
+                                                </div>
+                                                <div class="form-group col-md-12">
                                                     <label class="font-weight-semibold" for="email">Email
                                                         Address:</label>
                                                     <input type="email" class="form-control" required id=""
-                                                        placeholder="Enter Email" name="user_email" value=""
-                                                        maxlength="50">
+                                                        placeholder="Enter Email" name="user_email"
+                                                        {{ !empty(auth::user()->Fullname) && auth::user()->Fullname ? 'readonly' : '' }}
+                                                        value="{{ auth::user()->email ?? '' }}" maxlength="50">
                                                     <label id="user_email-error" class="error"
                                                         for="user_email"></label>
-                                                </div>
-                                                <div class="form-group col-md-12">
-                                                    <label class="font-weight-semibold" for="userName">Username
-                                                    </label>
-                                                    <input type="text" class="form-control" required id=""
-                                                        placeholder="Enter Username" name="user_username" value=""
-                                                        maxlength="50">
                                                 </div>
 
                                                 <button type="submit"
@@ -116,15 +118,17 @@
                                                     data-name1="user_email" data-name2="User name"
                                                     data-required="1">Start</button>
                                             </div>
+
                                             @foreach ($fields as $key => $field)
-                                                <div class="step step-{{ $key + 1 }}  "
-                                                    id="step-{{ $key + 1 }}" data-key="{{ $key + 1 }}">
+                                                @php $key=$key+1 @endphp
+                                                <div class="step step-{{ $key }}  "
+                                                    id="step-{{ $key }}" data-key="{{ $key }}">
 
                                                     <?php  if($field['type'] == 'text'){ ?>
 
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key }}
                                                             {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}</label>
                                                         <input type="text" class="form-control"
                                                             id="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
@@ -138,7 +142,7 @@
                                                     <?php }elseif($field['type']=='number'){ ?>
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key }}
                                                             {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
                                                             <span class="error"></span></label>
                                                         <input type="text" class="form-control"
@@ -152,7 +156,7 @@
                                                     <?php }elseif($field['type']=='textarea'){ ?>
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key }}
                                                             {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
                                                                 class="error"></span></label>
                                                         <textarea {{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? 'required' : '' }}
@@ -164,7 +168,7 @@
                                                     <?php }elseif($field['type']=='select'){ ?>
                                                     <div class="form-group col-md-12">
                                                         <label
-                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key + 1 }}
+                                                            for="{{ !empty($field) && !empty($field['idname']) ? $field['idname'] : '' }}">Q.{{ $key }}
                                                             {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}
                                                             <span class="error"></span></label>
                                                         <select
@@ -187,7 +191,7 @@
                                                     </div>
                                                     <?php }elseif($field['type']=='radio'){ ?>
                                                     <div class="form-group col-md-12">
-                                                        <label>Q.{{ $key + 1 }}
+                                                        <label>Q.{{ $key }}
                                                             {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
                                                                 class="error"></span></label><br>
                                                         @if (!empty($field['radio']))
@@ -207,7 +211,7 @@
                                                     </div>
                                                     <?php }elseif($field['type']=='checkbox'){ ?>
                                                     <div class="form-group col-md-12">
-                                                        <label>Q.{{ $key + 1 }}
+                                                        <label>Q.{{ $key }}
                                                             {{ !empty($field) && !empty($field['label']) ? $field['label'] : '' }}<span
                                                                 class="error"></span></label><br>
                                                         @if (!empty($field['checkbox']))
@@ -228,7 +232,8 @@
 
 
                                                     <?php } ?>
-                                                    @if ($key + 1 == '1')
+
+                                                    @if ($key == 1)
                                                         <button type="button"
                                                             class="next-btn btn btn-success check-validation"
                                                             data-type="{{ $field['type'] }}"
@@ -238,7 +243,22 @@
                                                         <button type="button"
                                                             class="previous-btn btn btn-danger">Prev</button>
 
-                                                        @if ($key + 1 === $count)
+                                                        @if ($key == $count)
+                                                            <button type="submit"
+                                                                class="btn btn-primary submitform check-validation">Submit</button>
+                                                        @else
+                                                            <button type="submit"
+                                                                class=" btn btn-success next-btn check-validation"
+                                                                data-type="{{ $field['type'] }}"
+                                                                data-name="{{ !empty($field) && !empty($field['inputName']) ? $field['inputName'] : '' }}"
+                                                                data-required="{{ !empty($field) && !empty($field['required']) && $field['required'] == 'yes' ? '1' : '' }}">Nexts
+                                                            </button>
+                                                        @endif
+                                                    @elseif($key == $count && $count > 1)
+                                                        <button type="button"
+                                                            class="previous-btn btn btn-danger">Prev</button>
+
+                                                        @if ($key == $count)
                                                             <button type="submit"
                                                                 class="btn btn-primary submitform check-validation">Submit</button>
                                                         @else

@@ -1,13 +1,14 @@
 <?php
 
 use App\Models\SettingModel;
-$mail = SettingModel::first();
+$ActivePackageData = App\Helpers\Helper::GetActivePackageData();
+$mail = App\Helpers\Helper::getAdminSetting();
 if (!empty($company_id)) {
     $mail = SettingModel::where('user_id', $company_id)->first();
 }
 ?>
 
-@if (!empty($template))
+@if (!empty($template) && $ActivePackageData->mail_temp_status == '1')
     <?php
     $name = $name;
     $company_title = !empty($mail) && !empty($mail->title) ? $mail->title : 'Referdio';

@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('password_resets', function (Blueprint $table) {
-            $table->string('email')->index();
-            $table->string('token')->nullable();
-            $table->timestamp('created_at')->nullable();
+        Schema::table('community_likes', function (Blueprint $table) {
+            $table->enum('type', ['0', '1', '2'])->default('0')->comment('0 = Defult 1= Like, 2= Unlike ')->after('company_id');
         });
     }
 
@@ -27,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('password_resets');
+        Schema::table('community_likes', function (Blueprint $table) {
+            $table->removeColumn('type');
+        });
     }
 };

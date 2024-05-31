@@ -13,5 +13,6 @@ class CommunityLikes extends Model
         'user_id',
         'company_id',
         'reply_id',
+        'type',
     ];
 }

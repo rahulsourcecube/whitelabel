@@ -28,7 +28,13 @@ class MailtemplateController extends Controller
     function index()
     {
         try {
-            $companyId = Helper::getCompanyId();
+            // Check permission
+            $ActivePackageData = Helper::GetActivePackageData();
+
+            if ($ActivePackageData->mail_temp_status != "1") {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
+
 
             return view('company.mailTemplate.list');
         } catch (Exception $e) {
@@ -112,6 +118,12 @@ class MailtemplateController extends Controller
     function create()
     {
         try {
+            // Check permission
+            $ActivePackageData = Helper::GetActivePackageData();
+
+            if ($ActivePackageData->mail_temp_status != "1") {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
             return view('company.mailTemplate.create');
         } catch (Exception $e) {
             Log::error('MailtemplateController::Create => ' . $e->getMessage());
@@ -121,6 +133,12 @@ class MailtemplateController extends Controller
     function edit($id)
     {
         try {
+            // Check permission
+            $ActivePackageData = Helper::GetActivePackageData();
+
+            if ($ActivePackageData->mail_temp_status != "1") {
+                return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
+            }
             $companyId = Helper::getCompanyId();
             $mailTemplate = MailTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
             if (empty($mailTemplate)) {
@@ -177,249 +195,302 @@ class MailtemplateController extends Controller
     }
     public function sendMail(Request $request)
     {
-        try {
-            $companyId = Helper::getCompanyId();
+        // Check permission
 
-            $webUrlGetHost = $request->getHost();
-            $currentUrl = URL::current();
-            $webUrl = "";
-            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-                // URL is under HTTPS
-                $webUrl =  'https://' . $webUrlGetHost;
-            } else {
-                // URL is under HTTP
-                $webUrl =  'http://' . $webUrlGetHost;
-            }
-            $SettingModel = SettingModel::where('user_id', $companyId)->first();
+        // try {
+        $companyId = Helper::getCompanyId();
 
-            if (
-                empty($SettingModel) &&
-                empty($SettingModel->mail_username) &&
-                empty($SettingModel->mail_host) &&
-                empty($SettingModel->mail_password)
-            ) {
-                return redirect()->route('company.mail.index')->with(['error' => "Please enter mail Cridntioal"]);
-            }
+        $webUrlGetHost = $request->getHost();
+        $currentUrl = URL::current();
+        $webUrl = "";
+        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+            // URL is under HTTPS
+            $webUrl =  'https://' . $webUrlGetHost;
+        } else {
+            // URL is under HTTP
+            $webUrl =  'http://' . $webUrlGetHost;
+        }
+        $SettingModel = SettingModel::where('user_id', $companyId)->first();
+
+        if (
+            empty($SettingModel) &&
+            empty($SettingModel->mail_username) &&
+            empty($SettingModel->mail_host) &&
+            empty($SettingModel->mail_password)
+        ) {
+            return redirect()->route('company.mail.index')->with(['error' => "Please enter mail Cridntioal"]);
+        }
 
 
-            $notFoundEmails = [];
-            if ($request->template_type == 'welcome') {
-                foreach ($request->mail as $mail) {
-                    if (!empty($mail)) {
-                        $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
-                        if (!empty($user)) {
-                            try {
-                                $SettingValue = SettingModel::where('user_id', $companyId)->first();
-                                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
-                                $userName  = $user->fname . ' ' . $user->lname;
-                                $to = $user->email;
+        $notFoundEmails = [];
+        if ($request->template_type == 'welcome') {
+            foreach ($request->mail as $mail) {
+                if (!empty($mail)) {
+                    $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
+                    if (!empty($user)) {
+                        try {
+                            $SettingValue = SettingModel::where('user_id', $companyId)->first();
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
+                            $userName  = $user->fname . ' ' . $user->lname;
+                            $to = $user->email;
 
-                                $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '';
-                                $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
-                                $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
+                            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '';
+                            $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
+                            $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
 
-                                $message = '';
-                                $type =  "user";
-                                $html =  !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : "";
+                            $message = '';
+                            $type =  "user";
+                            $html =  !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : "";
 
-                                $data =  ['first_name' => $user->first_name, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl];
-                                if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
-                                    SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type, $html);
-                                }
-                            } catch (Exception $e) {
-                                Log::error('MailtemplateController::Store => ' . $e->getMessage());
+                            $data =  ['first_name' => $user->first_name, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl];
+                            if ((config('app.sendmail') == 'true' && config('app.mailSystem') == 'local') || (config('app.mailSystem') == 'server')) {
+                                SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type, $html);
                             }
-                        } else {
-                            $notFoundEmails[] = $mail;
+                        } catch (Exception $e) {
+                            Log::error('MailtemplateController::Store => ' . $e->getMessage());
                         }
+                    } else {
+                        $notFoundEmails[] = $mail;
                     }
                 }
-                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+            }
+            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
 
-                return redirect()->route('company.mail.index')->with([
-                    'success' => 'Mail sent successfully',
-                    'error_hold' => $errorMessage
-                ]);
-            } elseif ($request->template_type == 'forgot_password') {
+            return redirect()->route('company.mail.index')->with([
+                'success' => 'Mail sent successfully',
+                'error_hold' => $errorMessage
+            ]);
+        } elseif ($request->template_type == 'forgot_password') {
 
-                foreach ($request->mail as $mail) {
-                    if (!empty($mail)) {
-                        $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
-                        if (!empty($user)) {
-                            $token = Str::random(64);
-                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
-                            $html = "";
-                            $webUrl = "";
-                            $submit = route('user.confirmPassword', $token);
-                            $currentUrl = URL::current();
-                            $webUrlGetHost = $request->getHost();
-                            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-                                // URL is under HTTPS
-                                $webUrl =  'https://' . $webUrlGetHost;
-                            } else {
-                                // URL is under HTTP
-                                $webUrl =  'http://' . $webUrlGetHost;
-                            }
-                            if (!empty($mailTemplate)) {
-                                $html = $mailTemplate->template_html;
-                            }
-                            DB::table('password_resets')->insert([
-                                'email' => $user->email,
+            foreach ($request->mail as $mail) {
+                if (!empty($mail)) {
+                    $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
+                    if (!empty($user)) {
+                        $token = Str::random(64);
+                        $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
+                        $html = "";
+                        $webUrl = "";
+                        $submit = route('user.confirmPassword', $token);
+                        $currentUrl = URL::current();
+                        $webUrlGetHost = $request->getHost();
+                        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+                            // URL is under HTTPS
+                            $webUrl =  'https://' . $webUrlGetHost;
+                        } else {
+                            // URL is under HTTP
+                            $webUrl =  'http://' . $webUrlGetHost;
+                        }
+                        if (!empty($mailTemplate)) {
+                            $html = $mailTemplate->template_html;
+                        }
+                        DB::table('password_resets')->insert([
+                            'email' => $user->email,
+                            'token' => $token,
+                            'created_at' => Carbon::now()
+                        ]);
+                        try {
+                            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
+                            Mail::send('user.email.forgetPassword', [
                                 'token' => $token,
-                                'created_at' => Carbon::now()
-                            ]);
-                            try {
-                                $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
-                                Mail::send('user.email.forgetPassword', [
-                                    'token' => $token,
-                                    'name' => $user->FullName,
-                                    'company_id' => $companyId,
-                                    'template' => $html,
-                                    'webUrl' => $webUrl
-                                ], function ($message) use ($user, $mailTemplateSubject) {
-                                    $message->to($user->email);
-                                    $message->subject($mailTemplateSubject);
-                                });
-                            } catch (Exception $e) {
-                                Log::error('UsrController:: => ' . $e->getMessage());
-                                return redirect()->back()->with('error', "Something went wrong!");
-                            }
-                        } else {
-                            $notFoundEmails[] = $mail;
+                                'name' => $user->FullName,
+                                'company_id' => $companyId,
+                                'template' => $html,
+                                'webUrl' => $webUrl
+                            ], function ($message) use ($user, $mailTemplateSubject) {
+                                $message->to($user->email);
+                                $message->subject($mailTemplateSubject);
+                            });
+                        } catch (Exception $e) {
+                            Log::error('UsrController:: => ' . $e->getMessage());
+                            return redirect()->back()->with('error', "Something went wrong!");
                         }
+                    } else {
+                        $notFoundEmails[] = $mail;
                     }
                 }
-                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+            }
+            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
 
-                return redirect()->route('company.mail.index')->with([
-                    'success' => 'Mail sent successfully',
-                    'error_hold' => $errorMessage
-                ]);
-            } elseif ($request->template_type == 'change_pass') {
-                $notFoundEmails = [];
-                foreach ($request->mail as $mail) {
-                    if (!empty($mail)) {
-                        $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
-                        if (!empty($user)) {
+            return redirect()->route('company.mail.index')->with([
+                'success' => 'Mail sent successfully',
+                'error_hold' => $errorMessage
+            ]);
+        } elseif ($request->template_type == 'change_pass') {
+            $notFoundEmails = [];
+            foreach ($request->mail as $mail) {
+                if (!empty($mail)) {
+                    $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
+                    if (!empty($user)) {
+                        try {
+                            // $user = User::where('email', $request->email)->where('company_id', $companyId)->first();
+
+                            $SettingValue = SettingModel::where('user_id', $companyId)->first();
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
+
+                            $userName  = $user->first_name . ' ' . $user->last_name;
+                            $to = $user->email;
+                            // $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
+
+                            $message = '';
+                            $html = "";
+                            $type =  "user";
+                            $html =  $mailTemplate->template_html;
+
+                            Mail::send('user.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($user) {
+                                $message->to($user->email);
+                                $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Your New Password Is Set');
+                            });
+                        } catch (Exception $e) {
+                            Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
+                        }
+                    } else {
+                        $notFoundEmails[] = $mail;
+                    }
+                }
+            }
+            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+
+            return redirect()->route('company.mail.index')->with([
+                'success' => 'Mail sent successfully',
+                'error_hold' => $errorMessage
+            ]);
+        } elseif ($request->template_type == 'new_task') {
+
+            foreach ($request->mail as $mail) {
+                if (!empty($mail)) {
+                    $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
+                    if (!empty($user)) {
+                        if ($user->mail_new_task_notification != '1') {
+                            $SettingValue = SettingModel::where('user_id', $companyId)->first();
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'new_task')->first();
+
+
+                            $companyData =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
+                            // foreach ($companyDatas as $companyData) {
+                            $userDetails = User::where('email', $request->mail)->where('company_id', $companyId)->where('user_type', '4')->first();
                             try {
-                                // $user = User::where('email', $request->email)->where('company_id', $companyId)->first();
 
-                                $SettingValue = SettingModel::where('user_id', $companyId)->first();
-                                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
+                                if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
 
-                                $userName  = $user->first_name . ' ' . $user->last_name;
-                                $to = $user->email;
-                                // $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
+                                    $userName  = $userDetails->FullName;
+                                    $campaign_title  = $companyData->title;
+                                    $campaign_price = $companyData->text_reward ? $companyData->text_reward : $companyData->reward;
+                                    $to = $userDetails->email;
+                                    $campaign_join_link = route('front.campaign.Join', base64_encode($companyData->id));
 
+                                    $message = '';
+
+                                    $html =  $mailTemplate->template_html;
+
+                                    $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'new_task';
+
+                                    Mail::send('user.email.creatednewTask', [
+                                        'name' => $userName,
+                                        'company_id' => $companyData->company_id,
+                                        'template' => $html,
+                                        'webUrl' => $webUrl,
+                                        'campaign_title' => $campaign_title,
+                                        'campaign_price' => $campaign_price,
+                                        'campaign_join_link' => $campaign_join_link
+                                    ], function ($message) use ($to, $mailTemplateSubject) {
+                                        $message->to($to);
+                                        $message->subject($mailTemplateSubject);
+                                    });
+                                }
+                                // }
+                            } catch (Exception $e) {
+                                Log::error('Notifications >> Que MAIL Fail => ' . $e->getMessage());
+                            }
+                        }
+                    } else {
+                        $notFoundEmails[] = $mail;
+                    }
+                }
+            }
+            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+
+            return redirect()->route('company.mail.index')->with([
+                'success' => 'Mail sent successfully',
+                'error_hold' => $errorMessage
+            ]);
+        } elseif ($request->template_type == 'earn_reward') {
+            foreach ($request->mail as $mail) {
+                if (!empty($mail)) {
+                    $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
+                    if (!empty($user)) {
+                        try {
+                            $reward = UserCampaignHistoryModel::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+                            $SettingValue = SettingModel::where('user_id', $companyId)->first();
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
+                            $userDetails = User::where('id', $reward->user_id)->where('company_id', $companyId)->first();
+                            if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
+                                $userName  = $userDetails->FullName;
+                                $campaign_title  = $reward->getCampaign->title;
+                                $campaign_price = $reward->text_reward ? 'text_reward' : $reward->reward;
+                                $to = $userDetails->email;
                                 $message = '';
-                                $html = "";
-                                $type =  "user";
+
                                 $html =  $mailTemplate->template_html;
 
-                                Mail::send('user.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($user) {
-                                    $message->to($user->email);
-                                    $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Your New Password Is Set');
+                                $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'earn_reward';
+                                Mail::send('user.email.earnReward', [
+                                    'name' => $userName,
+                                    'company_id' => $companyId,
+                                    'template' => $html,
+                                    'webUrl' => $webUrl,
+                                    'campaign_title' => $campaign_title,
+                                    'campaign_price' => $campaign_price,
+                                ], function ($message) use ($to, $mailTemplateSubject) {
+                                    $message->to($to);
+                                    $message->subject($mailTemplateSubject);
                                 });
-                            } catch (Exception $e) {
-                                Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
                             }
-                        } else {
-                            $notFoundEmails[] = $mail;
+                        } catch (Exception $e) {
+                            Log::error('CampaignController::Action => ' . $e->getMessage());
                         }
+                    } else {
+                        $notFoundEmails[] = $mail;
                     }
                 }
-                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+            }
+            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
 
-                return redirect()->route('company.mail.index')->with([
-                    'success' => 'Mail sent successfully',
-                    'error_hold' => $errorMessage
-                ]);
-            } elseif ($request->template_type == 'new_task') {
+            return redirect()->route('company.mail.index')->with([
+                'success' => 'Mail sent successfully',
+                'error_hold' => $errorMessage
+            ]);
+        } elseif ($request->template_type == 'custom') {
+            foreach ($request->mail as $mail) {
+                if (!empty($mail)) {
+                    $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
+                    if (!empty($user)) {
+                        if ($user->mail_custom_notification != '1') {
 
-                foreach ($request->mail as $mail) {
-                    if (!empty($mail)) {
-                        $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
-                        if (!empty($user)) {
-                            if ($user->mail_new_task_notification != '1') {
-                                $SettingValue = SettingModel::where('user_id', $companyId)->first();
-                                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'new_task')->first();
-
-
-                                $companyData =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
-                                // foreach ($companyDatas as $companyData) {
-                                $userDetails = User::where('email', $request->mail)->where('company_id', $companyId)->where('user_type', '4')->first();
-                                try {
-
-                                    if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
-
-                                        $userName  = $userDetails->FullName;
-                                        $campaign_title  = $companyData->title;
-                                        $campaign_price = $companyData->text_reward ? $companyData->text_reward : $companyData->reward;
-                                        $to = $userDetails->email;
-                                        $campaign_join_link = route('front.campaign.Join', base64_encode($companyData->id));
-
-                                        $message = '';
-
-                                        $html =  $mailTemplate->template_html;
-
-                                        $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'new_task';
-
-                                        Mail::send('user.email.creatednewTask', [
-                                            'name' => $userName,
-                                            'company_id' => $companyData->company_id,
-                                            'template' => $html,
-                                            'webUrl' => $webUrl,
-                                            'campaign_title' => $campaign_title,
-                                            'campaign_price' => $campaign_price,
-                                            'campaign_join_link' => $campaign_join_link
-                                        ], function ($message) use ($to, $mailTemplateSubject) {
-                                            $message->to($to);
-                                            $message->subject($mailTemplateSubject);
-                                        });
-                                    }
-                                    // }
-                                } catch (Exception $e) {
-                                    Log::error('Notifications >> Que MAIL Fail => ' . $e->getMessage());
-                                }
-                            }
-                        } else {
-                            $notFoundEmails[] = $mail;
-                        }
-                    }
-                }
-                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
-
-                return redirect()->route('company.mail.index')->with([
-                    'success' => 'Mail sent successfully',
-                    'error_hold' => $errorMessage
-                ]);
-            } elseif ($request->template_type == 'earn_reward') {
-                foreach ($request->mail as $mail) {
-                    if (!empty($mail)) {
-                        $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
-                        if (!empty($user)) {
                             try {
-                                $reward = UserCampaignHistoryModel::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+                                $cmpaign =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
                                 $SettingValue = SettingModel::where('user_id', $companyId)->first();
-                                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
-                                $userDetails = User::where('id', $reward->user_id)->where('company_id', $companyId)->first();
+                                $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
+                                $userDetails = User::where('id', $user->id)->where('company_id', $companyId)->first();
                                 if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
                                     $userName  = $userDetails->FullName;
-                                    $campaign_title  = $reward->getCampaign->title;
-                                    $campaign_price = $reward->text_reward ? 'text_reward' : $reward->reward;
+                                    $campaign_title  = $cmpaign->title;
+                                    $campaign_price = $cmpaign->text_reward ? 'text_reward' : $cmpaign->reward;
+                                    $campaign_join_link = route('front.campaign.Join', base64_encode($cmpaign->id));
                                     $to = $userDetails->email;
                                     $message = '';
 
                                     $html =  $mailTemplate->template_html;
 
                                     $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'earn_reward';
-                                    Mail::send('user.email.earnReward', [
+                                    Mail::send('user.email.custom', [
                                         'name' => $userName,
                                         'company_id' => $companyId,
                                         'template' => $html,
                                         'webUrl' => $webUrl,
                                         'campaign_title' => $campaign_title,
                                         'campaign_price' => $campaign_price,
+                                        'campaign_price' => $campaign_price,
+                                        'campaign_join_link' => $campaign_join_link
                                     ], function ($message) use ($to, $mailTemplateSubject) {
                                         $message->to($to);
                                         $message->subject($mailTemplateSubject);
@@ -428,80 +499,66 @@ class MailtemplateController extends Controller
                             } catch (Exception $e) {
                                 Log::error('CampaignController::Action => ' . $e->getMessage());
                             }
-                        } else {
-                            $notFoundEmails[] = $mail;
                         }
-                    }
-                }
-                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+                    } else {
 
-                return redirect()->route('company.mail.index')->with([
-                    'success' => 'Mail sent successfully',
-                    'error_hold' => $errorMessage
-                ]);
-            } elseif ($request->template_type == 'custom') {
-                foreach ($request->mail as $mail) {
-                    if (!empty($mail)) {
-                        $user = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
-                        if (!empty($user)) {
-                            if ($user->mail_custom_notification != '1') {
+                        try {
+                            $cmpaign =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
 
-                                try {
-                                    $cmpaign =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
-                                    $SettingValue = SettingModel::where('user_id', $companyId)->first();
-                                    $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
-                                    $userDetails = User::where('id', $user->id)->where('company_id', $companyId)->first();
-                                    if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
-                                        $userName  = $userDetails->FullName;
-                                        $campaign_title  = $cmpaign->title;
-                                        $campaign_price = $cmpaign->text_reward ? 'text_reward' : $cmpaign->reward;
-                                        $campaign_join_link = route('front.campaign.Join', base64_encode($cmpaign->id));
-                                        $to = $userDetails->email;
-                                        $message = '';
+                            $SettingValue = SettingModel::where('user_id', $companyId)->first();
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
+                            // $userDetails = User::where('id', $user->id)->where('company_id', $companyId)->first();
+                            if (!empty($mailTemplate) && !empty($mailTemplate->template_html)) {
 
-                                        $html =  $mailTemplate->template_html;
+                                $campaign_title  = $cmpaign->title;
+                                $campaign_price = $cmpaign->text_reward ? 'text_reward' : $cmpaign->reward;
+                                $campaign_join_link = route('front.campaign.Join', base64_encode($cmpaign->id));
+                                $to = $mail;
+                                $message = '';
 
-                                        $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'earn_reward';
-                                        Mail::send('user.email.custom', [
-                                            'name' => $userName,
-                                            'company_id' => $companyId,
-                                            'template' => $html,
-                                            'webUrl' => $webUrl,
-                                            'campaign_title' => $campaign_title,
-                                            'campaign_price' => $campaign_price,
-                                            'campaign_price' => $campaign_price,
-                                            'campaign_join_link' => $campaign_join_link
-                                        ], function ($message) use ($to, $mailTemplateSubject) {
-                                            $message->to($to);
-                                            $message->subject($mailTemplateSubject);
-                                        });
-                                    }
-                                } catch (Exception $e) {
-                                    Log::error('CampaignController::Action => ' . $e->getMessage());
-                                }
+                                $html =  $mailTemplate->template_html;
+
+
+                                $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'earn_reward';
+                                Mail::send('user.email.custom', [
+                                    'name' => "",
+                                    'company_id' => $companyId,
+                                    'template' => $html,
+                                    'webUrl' => $webUrl,
+                                    'campaign_title' => $campaign_title,
+                                    'campaign_price' => $campaign_price,
+                                    'campaign_price' => $campaign_price,
+                                    'campaign_join_link' => $campaign_join_link
+                                ], function ($message) use ($to, $mailTemplateSubject) {
+                                    $message->to($to);
+                                    $message->subject($mailTemplateSubject);
+                                });
                             }
-                        } else {
-                            $notFoundEmails[] = $mail;
+                        } catch (Exception $e) {
+                            Log::error('CampaignController::Action => ' . $e->getMessage());
                         }
                     }
                 }
-                $errorMessage = count($notFoundEmails) > 0 ? implode(', ', $notFoundEmails) : '';
-
-                return redirect()->route('company.mail.index')->with([
-                    'success' => 'Mail sent successfully',
-                    'error_hold' => $errorMessage
-                ]);
             }
-            return redirect()->route('company.mail.index')
-                ->with('success', 'Mail send successfully');
-        } catch (Exception $e) {
-            Log::error('MailtemplateController::sendMail  => ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'no found ' . $request->mail);
+            $errorMessage = count($notFoundEmails) > 0 ? implode(', ', $notFoundEmails) : '';
+
+            return redirect()->route('company.mail.index')->with([
+                'success' => 'Mail sent successfully',
+                'error_hold' => $errorMessage
+            ]);
         }
+        return redirect()->route('company.mail.index')
+            ->with('success', 'Mail send successfully');
+        // } catch (Exception $e) {
+        //     Log::error('MailtemplateController::sendMail  => ' . $e->getMessage());
+        //     return redirect()->back()->withInput()->with('error', 'no found ' . $request->mail);
+        // }
     }
     public function sendAllMail(Request $request)
     {
         try {
+            // Check permission
+
             $companyId = Helper::getCompanyId();
 
 

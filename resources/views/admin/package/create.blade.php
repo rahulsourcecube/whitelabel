@@ -33,13 +33,13 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="user"> No Of User <span class="error">*</span></label>
-                                <input  type="number" min="0" class="form-control" id="user" name="user"
+                                <input type="number" min="0" class="form-control" id="user" name="user"
                                     placeholder="No Of User"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="employee"> No Of Employee <span class="error">*</span></label>
-                                <input  type="number" min="0" class="form-control" id="employee" name="employee"
+                                <input type="number" min="0" class="form-control" id="employee" name="employee"
                                     placeholder="No Of Employee"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10">
                             </div>
@@ -55,9 +55,10 @@
 
                             <div class="form-group col-md-3">
                                 <label for="day" class="day_title">No Of Day <span class="error">*</span></label>
-                                <input  type="number" min="0" class="form-control day_place" id="day" name="day"
-                                    placeholder="No Of Day"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10" min="1">
+                                <input type="number" min="0" class="form-control day_place" id="day"
+                                    name="day" placeholder="No Of Day"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10"
+                                    min="1">
                             </div>
                             <div class="col-md-3 pl-5">
                                 <label for="expiry_date">Status</label>
@@ -69,16 +70,68 @@
                                     </div>
                                 </div>
                             </div>
+
+
+
+                            <div class="col-md-2 pl-5">
+                                <label for="community_status">Community (Enable/Disable)</label>
+                                <div class="form-group align-items-center">
+                                    <div class="switch m-r-10">
+                                        <input type="checkbox" id="switch-2" data-toggle="switch" name="community_status"
+                                            value="true" checked>
+                                        <label for="switch-2"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 pl-5">
+                                <label for="">Mail Template (Enable/Disable)</label>
+                                <div class="form-group align-items-center">
+                                    <div class="switch m-r-10">
+                                        <input type="checkbox" id="switch-3" data-toggle="switch"
+                                            name="mail_temp_status" value="true" checked>
+                                        <label for="switch-3"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 pl-5">
+                                <label for="">SMS Template (Enable/Disable)</label>
+                                <div class="form-group align-items-center">
+                                    <div class="switch m-r-10">
+                                        <input type="checkbox" id="switch-4" data-toggle="switch"
+                                            name="sms_temp_status" value="true" checked>
+                                        <label for="switch-4"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 pl-5">
+                                <label for="survey">Survey (Enable/Disable)</label>
+                                <div class="form-group align-items-center">
+                                    <div class="switch m-r-10">
+                                        <input type="checkbox" id="survey" data-toggle="switch" name="survey_status"
+                                            value="true" checked>
+                                        <label for="survey"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 pl-5 no_survey ">
+                                <label for="no_survey">No of Survey</label>
+                                <div class="form-group ">
+                                    <input type="text" class="form-control" id="no_survey" name="no_of_survey"
+                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10"
+                                        placeholder="No of Survey">
+                                </div>
+                            </div>
                             <div class="form-group col-md-6" id="price-section">
                                 <label for="price"> Price <span class="error">*</span></label>
                                 <input type="text" class="form-control" id="price" name="price"
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57" maxlength="10"
-                                    placeholder="Price" >
+                                    placeholder="Price">
                             </div>
 
                             <div class="form-group col-md-12">
                                 <label for="descriptions">Description</label>
-                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description" maxlength="300"> </textarea>
+                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"
+                                    maxlength="300"> </textarea>
                             </div>
                         </div>
                         <div class="form-row">
@@ -128,6 +181,11 @@
                 day: {
                     required: true
                 },
+                no_of_survey: {
+                    required: function() {
+                        return $('input[id="survey"]').is(':checked');
+                    }
+                },
                 price: {
                     required: true
                 },
@@ -157,6 +215,9 @@
                 day: {
                     required: "This field is required"
                 },
+                no_of_survey: {
+                    required: "Please enter no of survey"
+                },
                 price: {
                     required: "Please enter price"
                 },
@@ -170,6 +231,13 @@
 
 
         isFreePackage();
+        $(document).on("change", 'input[id="survey"]', function() {
+            if ($(this).is(':checked') == false) {
+                $('.no_survey').addClass('d-none');
+            } else {
+                $('.no_survey').removeClass('d-none');
+            }
+        });
 
         $(document).on("change", '#inputype', function() {
             type = $(this).val();
