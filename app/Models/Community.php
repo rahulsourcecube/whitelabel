@@ -31,6 +31,6 @@ class Community extends Model
 
     public function reply()
     {
-        return $this->hasMany(Reply::class, 'community_id');
+        return $this->hasMany(Reply::class, 'community_id')->where('status', '0');;
     }
 }

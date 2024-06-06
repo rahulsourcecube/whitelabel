@@ -116,7 +116,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label class="font-weight-semibold" for="city">Show my profile publicly</label>
+                                        <label class="font-weight-semibold" for="">Show my profile publicly</label>
                                         <div class="switch m-r-10">
                                             <input type="checkbox" id="public-1"
                                                 {{ !empty($editprofiledetail) && !empty($editprofiledetail->public == 1) ? 'checked' : '' }}

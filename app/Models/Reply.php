@@ -40,7 +40,7 @@ class Reply extends Model
         $companyId = Helper::getCompanyId();
         // $likers = $this->hasOne(CommunityLikes::class, 'id', 'reply_id')->where('user_id', auth::id())->where('company_id', $companyId)->first();
 
-        return $this->hasOne(CommunityLikes::class, 'id', 'reply_id')->where('user_id', auth::id())->where('company_id', $companyId)->where('type', "1");
+        return $this->belongsTo(CommunityLikes::class, 'id', 'reply_id')->where('user_id', auth::id())->where('company_id', $companyId);
     }
     public function getunlikes()
     {

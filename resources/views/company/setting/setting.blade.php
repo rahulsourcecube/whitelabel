@@ -150,16 +150,22 @@
                                 </div>
                             </div>
                         </div>
-                        <label for="expiry_date">Public</label>
+                        <label for="expiry_date " class="switch-title"> Switch to pilvo Credentials</label>
                         <div class="form-group align-items-center">
                             <div class="switch m-r-10">
-                                <input type="checkbox" id="public-1" data-toggle="switch" name="public"
-                                    value="true" onclick='handleClickpublic(this)';>
+                                <input type="checkbox" id="public-1" data-toggle="switch" name="switch"
+                                    value="true" onclick='handleClickpublic(this)';
+                                    @if (!empty($setting) && $setting->sms_type == '2') checked @endif>
                                 <label for="public-1"></label>
+                                <input type="hidden" id="sms_type" name="sms_type"
+                                    value="{{ !empty($setting) && $setting->sms_type == '2' ? 'true' : 'false' }}">
                             </div>
                         </div>
                         <h4>SMS Credentials</h4>
-                        <div class="m-t-10" style="">
+
+                        {{-- Twilio-credentials --}}
+                        <div class="m-t-10  twilio-credentials @if (!empty($setting) && $setting->sms_type == '2') d-none @endif "
+                            style="">
                             <div class="form-row">
                                 <div class="form-group col-md-4">
                                     <label for="sms_account_sid">Account SID<span class="error">*</span> </label>
@@ -184,7 +190,7 @@
                                     <label for="sms_account_to_number">(Testing) To No. <span class="error"></span>
                                     </label>
                                     <input type="text" class="form-control mb-2" name="sms_account_to_number"
-                                        id="sms_account_number" placeholder="(Testing) To No."
+                                        id="sms_account_to_number" placeholder="(Testing) To No."
                                         onkeypress="return /[0-9+]/i.test(event.key)"
                                         value="{{ !empty($setting) ? $setting->sms_account_to_number : '' }}">
                                 </div>
@@ -201,6 +207,54 @@
                                         </option>
                                     </select>
                                 </div>
+
+                            </div>
+                        </div>
+                        <div class="m-t-10 plivo-credentials @if (!empty($setting) && $setting->sms_type == '1') d-none @endif"
+                            style="">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="plivo_auth_id">Plivo Auth Id<span class="error">*</span> </label>
+                                    <input type="text" class="form-control mb-2" name="plivo_auth_id"
+                                        id="plivo_auth_id" placeholder="Plivo Auth Id"
+                                        value="{{ !empty($setting) ? $setting->plivo_auth_id : '' }}">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="plivo_auth_token">Plivo Auth Token <span class="error">*</span> </label>
+                                    <input type="text" class="form-control mb-2" name="plivo_auth_token"
+                                        id="plivo_auth_token" placeholder="Plivo Auth Token"
+                                        value="{{ !empty($setting) ? $setting->plivo_auth_token : '' }}">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="plivo_phone_number">Plivo Phone Number. <span class="error">*</span>
+                                    </label>
+                                    <input type="text" class="form-control mb-2" name="plivo_phone_number"
+                                        id="plivo_phone_number"
+                                        placeholder="SMS Form No."value="{{ !empty($setting) ? $setting->plivo_phone_number : '' }}">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="plivo_test_phone_number">(Plivo Testing) To No. <span
+                                            class="error"></span>
+                                    </label>
+                                    <input type="text" class="form-control mb-2" name="plivo_test_phone_number"
+                                        id="plivo_test_phone_number" placeholder="(Testing) To No."
+                                        onkeypress="return /[0-9+]/i.test(event.key)"
+                                        value="{{ !empty($setting) ? $setting->plivo_test_phone_number : '' }}">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="plivo_mode">Mode <span class="error"></span>
+                                    </label>
+                                    <select id="plivo_mode" name="plivo_mode" class="form-control type">
+                                        <option value="1"
+                                            {{ !empty($setting) && $setting->plivo_mode == '1' ? 'selected' : '' }}>Test
+                                        </option>
+                                        <option value="2"
+                                            {{ !empty($setting) && $setting->plivo_mode == '2' ? 'selected' : '' }}>
+                                            live
+                                        </option>
+                                    </select>
+                                </div>
+
                             </div>
                         </div>
                         @can('general-setting-create')
@@ -246,20 +300,63 @@
                 mail_address: {
                     required: true
                 },
-                stripe_key: {
-                    required: true
-                },
-                stripe_secret: {
-                    required: true
-                },
                 sms_account_token: {
-                    required: true
+                    // required: true
+                    required: {
+                        depends: function(element) {
+                            return $("#sms_type").val() != 'true';
+                        },
+                    },
                 },
                 sms_account_sid: {
-                    required: true
+                    required: {
+                        depends: function(element) {
+                            return $("#sms_type").val() != 'true';
+                        },
+                    },
                 },
                 sms_account_number: {
-                    required: true
+                    required: {
+                        depends: function(element) {
+                            return $("#sms_type").val() != 'true';
+                        },
+                    },
+                },
+                sms_account_to_number: {
+                    required: {
+                        depends: function(element) {
+                            return $("#sms_mode").val() == '1' && $("#sms_type").val() != 'true';
+                        },
+                    },
+                },
+                plivo_auth_id: {
+                    // required: true
+                    required: {
+                        depends: function(element) {
+                            return $("#sms_type").val() == 'true';
+                        },
+                    },
+                },
+                plivo_auth_token: {
+                    required: {
+                        depends: function(element) {
+                            return $("#sms_type").val() == 'true';
+                        },
+                    },
+                },
+                plivo_phone_number: {
+                    required: {
+                        depends: function(element) {
+                            return $("#sms_type").val() == 'true';
+                        },
+                    },
+                },
+                plivo_test_phone_number: {
+                    required: {
+                        depends: function(element) {
+                            return $("#plivo_mode").val() == '1' && $("#sms_type").val() == 'true';
+                        },
+                    },
                 }
             },
             messages: {
@@ -287,12 +384,6 @@
                 mail_address: {
                     required: "Please enter site mail address"
                 },
-                stripe_key: {
-                    required: "Please enter site stripe key"
-                },
-                stripe_secret: {
-                    required: "Please enter site stripe secret"
-                },
                 sms_account_token: {
                     required: "Please enter sms account number"
                 },
@@ -301,7 +392,70 @@
                 },
                 sms_account_number: {
                     required: "Please enter sms account number"
+                },
+                plivo_auth_id: {
+                    required: "Please enter plivo auth id "
+                },
+                plivo_auth_token: {
+                    required: "Please enter plivo auth token"
+                },
+                plivo_phone_number: {
+                    required: "Please enter plivo phone number"
                 }
+            }
+        });
+
+        function handleClickpublic(checkbox) {
+            var isChecked = checkbox.checked;
+            var message = isChecked ? 'Switch to plivo Credentials ' : 'Switch to twilio Credentials';
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to ' + message + ', right?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, ' + message + '!'
+            }).then((result) => {
+
+
+                checkbox.checked = result.isConfirmed ? isChecked : !isChecked;
+                if (checkbox.checked) {
+                    $('#sms_type').val('true')
+                    $('.plivo-credentials').removeClass('d-none')
+                    $('.twilio-credentials').addClass('d-none')
+                    $('.switch-title').text('Switch to twilio Credentials')
+
+
+                } else {
+                    $('#sms_type').val('false')
+
+                    $('.twilio-credentials').removeClass('d-none')
+                    $('.plivo-credentials').addClass('d-none')
+                    $('.switch-title').text('Switch to pilvo Credentials')
+
+
+                }
+
+            });
+        }
+        $(function() {
+            $('#imagePreviews').on('click', function() {
+                $('profile_image').trigger('click');
+            });
+        });
+        $("#profile_image").change(function() {
+            var input = this;
+            var imagePreview = $(".imagePreviews")[0];
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $(imagePreview).attr("src", e.target.result);
+                    $(imagePreview).show();
+                    $(deleteButton).show();
+                };
+                reader.readAsDataURL(input.files[0]);
             }
         });
         $(document).ready(function() {
@@ -355,7 +509,8 @@
                 var confirmation = confirm("Are you sure you want to delete the image?");
                 if (confirmation) {
                     $("#logofiles").val(""); // Clear the file input
-                    $("#logoimagePreviews").attr("src", "").hide(); // Clear the image preview and hide it
+                    $("#logoimagePreviews").attr("src", "")
+                        .hide(); // Clear the image preview and hide it
                     $(this).hide(); // Hide the delete button
                 }
             });

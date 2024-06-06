@@ -64,8 +64,8 @@
                                 <div class="col-md-10">
                                     <label for="contact_number" class=" col-form-label">Contact Number</label>
                                     <input type="text" class="form-control" id="contact" placeholder="Contact Number"
-                                        maxlength="10" name="contact_number[]" value=""
-                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                        name="contact_number[]" value=""
+                                        onkeypress="return /[0-9+]/i.test(event.key)">
                                 </div>
                                 <div class=" col-md-2">
                                     <label for="title" class="col-form-label"></label>
@@ -164,8 +164,7 @@
 
                         'contact_number[]': {
                             required: true,
-                            minlength: '10',
-                            digits: true
+
                         }
                     },
                     messages: {

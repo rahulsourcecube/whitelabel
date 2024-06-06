@@ -36,7 +36,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\log;
-
+use Plivo\Exceptions\PlivoRestException;
+use Plivo\RestClient;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +77,33 @@ Route::get('send-email-queue', function () {
     }
 });
 
+Route::get('send-sms-queue', function () {
+    try {
+        // Your code inside the try block
+        $plivo = new RestClient(env('PLIVO_AUTH_ID'), env('PLIVO_AUTH_TOKEN'));
+
+        $response = $plivo->messages->create(
+            env('PLIVO_PHONE_NUMBER'),
+            '+919727171113',
+            'SMS text' // SMS text
+        );
+
+        // Check if the message was sent successfully
+        if ($response->getStatusCode() == 202) {
+            // Message sent successfully
+            return response()->json(['message' => 'SMS sent successfully', 'response' => $response->getMessage()]);
+        } else {
+            // Message sending failed
+            return response()->json(['message' => 'Failed to send SMS', 'response' => $response->getMessage()]);
+        }
+    } catch (PlivoRestException $e) {
+        // Handle Plivo API exception
+        return response()->json(['message' => 'Plivo API error: ' . $e->getMessage()], 500);
+    } catch (\Exception $e) {
+        // Handle other exceptions
+        return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+    }
+});
 
 // Route::get('admin/login', [AdminController::class, 'index'])->name('admin');
 // Route::get('/', [AdminController::class, 'index'])->name('admin');
@@ -93,7 +121,10 @@ Auth::routes();
 Route::get('/errors', function () {
     return view('error');
 })->name('error');
-Route::get('/', [UsrController::class, 'index'])->middleware('checkNotLoggedIn');
+// Route::get('/', [UsrController::class, 'index'])->middleware('checkNotLoggedIn');
+// Route::get('/campaign', [FrontCampaignController::class, 'index'])->middleware('checkNotLoggedIn');
+Route::get('/', [FrontCampaignController::class, 'list'])->name('home');
+
 
 Route::group(['middleware' => 'check.session'], function () {
 
@@ -229,7 +260,9 @@ Route::group(['middleware' => 'check.session'], function () {
         });
         Route::get('/join-now/{join_link}', [FrontCampaignController::class, 'joinNow'])->name('front.campaign.Join');
 
-        Route::get('/success-202', [ForntHomeController::class, 'success'])->name('front.success.page');
+        Route::get('/success-202', [ForntHomeController::class, 'succ
+        ess'])->name('front.success.page');
+        Route::get('/company-profiles', [ForntHomeController::class, 'companyProfiles'])->name('front.company.profiles');
         // });
 
         Route::get('community/{type?}', [CommunityController::class, 'community'])->name('community');
@@ -243,6 +276,10 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::post('reply/{id}', [CommunityController::class, 'reply'])->name('reply.store');
             Route::post('reply/status/change', [CommunityController::class, 'replyStatus'])->name('reply.status.change');
             Route::delete('reply/delete/{answer}', [CommunityController::class, 'replyDelete'])->name('reply.delete');
+            Route::get('/reply/like/{id}', [CommunityController::class, 'like'])->name('like');
+            Route::get('/reply/unlike/{id}', [CommunityController::class, 'unlike'])->name('unlike');
+
+
 
             Route::prefix('questions')->name('questions.')->group(function () {
                 Route::get('create', [CommunityController::class, 'create'])->name('create');
@@ -275,6 +312,7 @@ Route::group(['middleware' => 'check.session'], function () {
 
 
             Route::middleware(['user'])->group(function () {
+
                 Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
                 Route::get('/campaign', [UsrController::class, 'campaign'])->name('campaign');
                 Route::get('/campaigns/view', [UsrController::class, 'campaignview'])->name('campaign.view');
@@ -287,6 +325,8 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
                 Route::get('/setting/notification', [UsrController::class, 'notificationSetting'])->name('notification.setting');
                 Route::post('setting/notification/change', [UsrController::class, 'changeNotification'])->name('notification.change');
+                Route::get('survey', [UsrController::class, 'surevy'])->name('survey');
+                Route::get('surevy/list', [UsrController::class, 'surevyList'])->name('survey.list');
 
 
                 Route::post('/reopen/{reopen}', [UsrController::class, 'reopen'])->name('progress.reopen');
@@ -375,13 +415,17 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('/get_states', [UserController::class, 'get_states'])->name('get_states');
                 Route::post('/get_city', [UserController::class, 'get_city'])->name('get_city');
                 Route::get('/export', [UserController::class, 'export'])->name('export');
+                Route::post('/import', [UserController::class, 'import'])->name('import');
             });
             Route::prefix('package')->name('package.')->group(function () {
                 Route::get('/{type}', [CompanyPackageController::class, 'index'])->name('list');
                 Route::post('/buy', [CompanyPackageController::class, 'buy'])->name('buy');
                 Route::post('stripe', [CompanyPackageController::class, 'stripePost'])->name('stripe.post');
             });
+            // Start buy package
             Route::middleware('buy.package')->group(function () {
+
+
                 Route::get('dashboard/{data?}', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
                 Route::prefix('user')->name('user.')->group(function () {
                     Route::get('', [UserController::class, 'index'])->name('list');
@@ -533,6 +577,7 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::delete('delete/{id}', [EmployeeController::class, 'delete'])->name('delete');
                     Route::post('/update/{id}', [EmployeeController::class, 'update'])->name('update');
                     Route::get('export', [EmployeeController::class, 'export'])->name('export');
+                    Route::post('/import', [EmployeeController::class, 'import'])->name('import');
                 });
                 Route::prefix('notification')->name('notification.')->group(function () {
                     Route::get('', [Notification::class, 'index'])->name('list');
@@ -540,5 +585,6 @@ Route::group(['middleware' => 'check.session'], function () {
                 });
             });
         });
+        // End
     });
 });

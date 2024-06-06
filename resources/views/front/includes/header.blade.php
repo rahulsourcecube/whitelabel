@@ -61,44 +61,60 @@
     }
 
     .nav-link-ltr:hover::before {
-        width: 100%;
+        width: 80%;
     }
 </style>
+<?php $ActivePackageData = App\Helpers\Helper::GetActivePackageData(); ?>
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <div class="container-fluid">
         <div class="collapse navbar-collapse  front-header" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto order-0  ">
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ltr active" href="{{ route('front.campaign.list') }}">Task</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ltr " href="{{ route('community') }}">Community</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-link-ltr " href="{{ route('front.company.profiles') }}">Companys</a>
-                </li>
-            </ul>
-            @if (!Auth::user())
-                <ul class="navbar-nav d-flex  order-5">
+                @if (request()->getHttpHost() != config('app.domain'))
                     <li class="nav-item">
-                        <a class="nav-link nav-link-ltr" href="{{ route('user.login') }}">Login</a>
+                        <a class="nav-link nav-link-ltr  @if (request()->segment(1) == 'campaign') active @endif"
+                            href="{{ route('front.campaign.list') }}">Task</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link nav-link-ltr" href="{{ route('user.signup') }}">Sign Up</a>
-                    </li>
-                </ul>
-            @else
-                <ul class="navbar-nav d-flex  order-5">
-                    @if (!empty(Auth::user()) && Auth::user()->user_type == '4')
-                        <a class="nav-link nav-link-ltr" href="{{ route('user.dashboard') }}">Dashboard</a>
-                    @else
+                    @if (
+                        !empty($ActivePackageData) &&
+                            $ActivePackageData->community_status == '1' &&
+                            !empty($ActivePackageData->community_status))
                         <li class="nav-item">
-                            <a class="nav-link nav-link-ltr" href="{{ route('company.dashboard') }}">Dashboard</a>
+                            <a class="nav-link nav-link-ltr   @if (request()->segment(1) == 'community') active @endif "
+                                href="{{ route('community') }}">Community</a>
                         </li>
                     @endif
+                @endif
+                @if (request()->getHttpHost() == config('app.domain'))
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ltr  @if (request()->segment(1) == 'company-profiles') active @endif  "
+                            href="{{ route('front.company.profiles') }}">Company</a>
+                    </li>
+                @endif
+            </ul>
+
+            @if (request()->getHttpHost() != config('app.domain'))
+                @if (!Auth::user())
+                    <ul class="navbar-nav d-flex  order-5">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-ltr" href="{{ route('user.login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-ltr" href="{{ route('user.signup') }}">Sign Up</a>
+                        </li>
+                    </ul>
+                @else
+                    <ul class="navbar-nav d-flex  order-5">
+                        @if (!empty(Auth::user()) && Auth::user()->user_type == '4')
+                            <a class="nav-link nav-link-ltr" href="{{ route('user.dashboard') }}">Dashboard</a>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-ltr" href="{{ route('company.dashboard') }}">Dashboard</a>
+                            </li>
+                        @endif
 
 
-                </ul>
+                    </ul>
+                @endif
             @endif
             <div class="mx-auto">
             </div>

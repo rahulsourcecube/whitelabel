@@ -22,6 +22,7 @@ use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
+use App\Services\PlivoService;
 use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\Request;
@@ -556,7 +557,7 @@ class CampaignController extends Controller
             $companyId = Helper::getCompanyId();
             $action = UserCampaignHistoryModel::where('id', $id)->first();
             $Notification = new Notification();
-
+            $ActivePackageData = Helper::GetActivePackageData();
             if ($request->action == '3') {
 
 
@@ -605,7 +606,7 @@ class CampaignController extends Controller
                         $SettingValue = SettingModel::where('user_id', $companyId)->first();
                         $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
                         $userDetails = User::where('id', $action->user_id)->where('company_id', $companyId)->first();
-                        if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
+                        if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html) && $ActivePackageData->mail_temp_status == "1") {
                             $userName  = $userDetails->FullName;
                             $campaign_title  = $action->getCampaign->title;
                             $campaign_price = $action->text_reward ? 'text_reward' : $action->reward;
@@ -632,14 +633,15 @@ class CampaignController extends Controller
                     }
                     // // End mail
 
+
                     $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
 
-                    if (!empty($smsTemplate)) {
-                        $SettingModel = SettingModel::first();
+                    if (!empty($smsTemplate) && $ActivePackageData->sms_temp_status == "1") {
+                        // $SettingModel = SettingModel::first();
                         if (!empty($companyId)) {
                             $SettingModel = SettingModel::where('user_id', $companyId)->first();
                         }
-                        if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                        if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
                             $name =  $userDetails->FullName;
                             $contact_number =  $userDetails->contact_number;
                             $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
@@ -654,10 +656,17 @@ class CampaignController extends Controller
                             // Remove unwanted '&nbsp;' text
                             $message = str_replace('&nbsp;', ' ', $message);
 
-                            $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                            $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                             try {
-                                $twilioService->sendSMS($to, $message);
+                                if (Helper::activeTwilioSetting()) {
+                                    $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                                    $twilioService->sendSMS($to, $message);
+                                } else {
+                                    $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                                    $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                                    $PlivoService->sendSMS($to, $message);
+                                }
                             } catch (Exception $e) {
                                 Log::error('Failed to send SMS: ' . $e->getMessage());
                                 echo "Failed to send SMS: " . $e->getMessage();

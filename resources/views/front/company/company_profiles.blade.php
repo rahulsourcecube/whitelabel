@@ -1,7 +1,7 @@
 @extends('front.layouts.master')
-@section('title', 'community')
+@section('title', 'Company Profiles')
 @section('main-content')
-
+    <?php ?>
 
     <!-- Content Wrapper START -->
 
@@ -89,10 +89,18 @@
                                             <i class="anticon anticon-eye"></i>
                                             <span class="m-l-5">Task</span>
                                         </a>
-                                        <a href="{{ $community ?? '' }}" class="btn btn-primary btn-tone">
-                                            <i class="anticon anticon-team"></i>
-                                            <span class="m-l-5">Community</span>
-                                        </a>
+
+                                        @php $ActivePackageData = App\Helpers\Helper::GetActivePackageDataCompany($companyProfile->id)  @endphp
+
+                                        @if (
+                                            !empty($ActivePackageData) &&
+                                                $ActivePackageData->community_status == '1' &&
+                                                !empty($ActivePackageData->community_status))
+                                            <a href="{{ $community ?? '' }}" class="btn btn-primary btn-tone">
+                                                <i class="anticon anticon-team"></i>
+                                                <span class="m-l-5">Community</span>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

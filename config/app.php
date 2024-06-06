@@ -65,7 +65,7 @@ return [
     'asset_url' => env('ASSET_URL'),
 
     'sendmail' => 'true', // Use true or false
-    'mailSystem' => 'server', // Use local or server
+    'mailSystem' => 'local', // Use local or server
 
     /*
     |--------------------------------------------------------------------------
@@ -193,7 +193,7 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
 
         /*
-         * Package Service Providers...
+        * Package Service Providers...
          */
 
         /*
@@ -205,6 +205,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class
 
     ],
 
@@ -222,6 +223,8 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
     ])->toArray(),
 
 

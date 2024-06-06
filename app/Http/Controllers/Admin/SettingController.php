@@ -99,12 +99,22 @@ class SettingController extends Controller
                 //Stripe Credentials
                 $SettingModel->stripe_key = $request->stripe_key;
                 $SettingModel->stripe_secret = $request->stripe_secret;
-                //Sms
+                //Sms tipe
+                $SettingModel->sms_type = $request->sms_type == 'true' ? '2' : '1';
+
+                //Sms twilio
                 $SettingModel->sms_account_sid = $request->sms_account_sid;
                 $SettingModel->sms_account_token = $request->sms_account_token;
                 $SettingModel->sms_account_number = $request->sms_account_number;
                 $SettingModel->sms_account_to_number = $request->sms_account_to_number;
                 $SettingModel->sms_mode = $request->sms_mode;
+
+                //Sms plivo
+
+                $SettingModel->plivo_auth_id = $request->plivo_auth_id;
+                $SettingModel->plivo_auth_token = $request->plivo_auth_token;
+                $SettingModel->plivo_phone_number = $request->plivo_phone_number;
+                $SettingModel->plivo_test_phone_number = $request->plivo_test_phone_number;
 
                 $SettingModel->user_id = Auth::user()->id;
                 $SettingModel->save();
@@ -178,12 +188,24 @@ class SettingController extends Controller
                 //Stripe Credentials
                 $SettingModel->stripe_key = $request->stripe_key;
                 $SettingModel->stripe_secret = $request->stripe_secret;
-                // sms Credentials
+                //Sms tipe
+                $SettingModel->sms_type = $request->sms_type == 'true' ? '2' : '1';
+
+                //Sms twilio
                 $SettingModel->sms_account_sid = $request->sms_account_sid;
                 $SettingModel->sms_account_token = $request->sms_account_token;
                 $SettingModel->sms_account_number = $request->sms_account_number;
                 $SettingModel->sms_account_to_number = $request->sms_account_to_number;
                 $SettingModel->sms_mode = $request->sms_mode;
+
+                //Sms plivo
+
+                $SettingModel->plivo_auth_id = $request->plivo_auth_id;
+                $SettingModel->plivo_auth_token = $request->plivo_auth_token;
+                $SettingModel->plivo_phone_number = $request->plivo_phone_number;
+                $SettingModel->plivo_test_phone_number = $request->plivo_test_phone_number;
+                $SettingModel->plivo_mode = $request->plivo_mode;
+
                 $SettingModel->save();
             }
             return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');

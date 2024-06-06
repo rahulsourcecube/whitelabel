@@ -467,15 +467,15 @@ class MailtemplateController extends Controller
                         if ($user->mail_custom_notification != '1') {
 
                             try {
-                                $cmpaign =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
+                                $campaign =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
                                 $SettingValue = SettingModel::where('user_id', $companyId)->first();
                                 $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
                                 $userDetails = User::where('id', $user->id)->where('company_id', $companyId)->first();
                                 if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
                                     $userName  = $userDetails->FullName;
-                                    $campaign_title  = $cmpaign->title;
-                                    $campaign_price = $cmpaign->text_reward ? 'text_reward' : $cmpaign->reward;
-                                    $campaign_join_link = route('front.campaign.Join', base64_encode($cmpaign->id));
+                                    $campaign_title  = $campaign->title;
+                                    $campaign_price = $campaign->text_reward ? 'text_reward' : $campaign->reward;
+                                    $campaign_join_link = route('front.campaign.Join', base64_encode($campaign->id));
                                     $to = $userDetails->email;
                                     $message = '';
 
@@ -503,16 +503,16 @@ class MailtemplateController extends Controller
                     } else {
 
                         try {
-                            $cmpaign =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
+                            $campaign =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
 
                             $SettingValue = SettingModel::where('user_id', $companyId)->first();
                             $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
                             // $userDetails = User::where('id', $user->id)->where('company_id', $companyId)->first();
                             if (!empty($mailTemplate) && !empty($mailTemplate->template_html)) {
 
-                                $campaign_title  = $cmpaign->title;
-                                $campaign_price = $cmpaign->text_reward ? 'text_reward' : $cmpaign->reward;
-                                $campaign_join_link = route('front.campaign.Join', base64_encode($cmpaign->id));
+                                $campaign_title  = $campaign->title;
+                                $campaign_price = $campaign->text_reward ? 'text_reward' : $campaign->reward;
+                                $campaign_join_link = route('front.campaign.Join', base64_encode($campaign->id));
                                 $to = $mail;
                                 $message = '';
 

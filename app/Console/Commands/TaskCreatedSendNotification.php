@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\Helper;
 use App\Models\CompanyModel;
 use App\Models\MailTemplate;
 use App\Models\NotificationsQue;
 use App\Models\SettingModel;
 use App\Models\SmsTemplate;
 use App\Models\User;
+use App\Services\PlivoService;
 use App\Services\TwilioService;
 use Illuminate\Console\Command;
 use Exception;
@@ -95,7 +97,7 @@ class TaskCreatedSendNotification extends Command
                     if ($companyData->notifications_type == '2' || $companyData->notifications_type == '3') {
                         if (!empty($smsTemplate)) {
 
-                            if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
+                            if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
                                 $name =  $userDetails->FullName;
                                 $contact_number =  $userDetails->contact_number;
                                 $company_title = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : 'Referdio';
@@ -110,10 +112,17 @@ class TaskCreatedSendNotification extends Command
                                 // Remove unwanted '&nbsp;' text
                                 $message = str_replace('&nbsp;', ' ', $message);
 
-                                $to = $SettingValue->type == "2" ? $contact_number : $SettingValue->sms_account_to_number;
-                                $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
                                 try {
-                                    $twilioService->sendSMS($to, $message);
+                                    if (Helper::activeTwilioSetting()) {
+                                        $to = $SettingValue->sms_mode == "2" ? $contact_number : $SettingValue->sms_account_to_number;
+                                        $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
+                                        $twilioService->sendSMS($to, $message);
+                                    } else {
+                                        $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                                        $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                                        $PlivoService->sendSMS($to, $message);
+                                    }
                                 } catch (Exception $e) {
                                     Log::error('Notifications >> Que SMS Fail => ' . $e->getMessage());
                                 }

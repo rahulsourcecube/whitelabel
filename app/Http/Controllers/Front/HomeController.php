@@ -25,20 +25,32 @@ class HomeController extends Controller
     }
     public function companyProfiles(Request $request)
     {
+
+        $currentUrl = URL::current();
+        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+            // URL is under HTTPS
+            $webUrl =  'https://';
+        } else {
+            // URL is under HTTP
+            $webUrl =  'http://';
+        }
+        if (request()->getHttpHost() != config('app.domain')) {
+            $url = $webUrl . config('app.domain');
+            return redirect()->away($url);
+        }
+
+
         $data['countrys'] = CountryModel::all();
         $data['states'] = StateModel::where('country_id', $request->input('country'))->get();
         $data['citys'] = CityModel::where('state_id', $request->input('state'))->get();
-
         $company_data = User::where('user_type', User::USER_TYPE['COMPANY'])
             ->where('status', '1')
             ->where('public', '1')
-            ->orderBy('created_at', 'desc')
-            ->with(['companyPackage' => function ($query) {
-                $query->where('status', CompanyPackage::STATUS['ACTIVE'])
-                    ->orderBy('id', 'desc');
-            }]);
-
-        // $company_data = User::where('user_type', User::USER_TYPE['COMPANY'])->where('status', "1")->where('public', "1")->orderby('created_at', 'desc')
+            ->whereHas('campaigns', function ($query) {
+                $query->where('public', '1')
+                    ->whereDate('expiry_date', '>=', now());
+            })->whereHas('companyActivePackage')
+            ->orderBy('created_at', 'desc');
 
 
 
@@ -54,16 +66,10 @@ class HomeController extends Controller
             $company_data->where('city_id', $request->city);
         }
         $data['companyProfiles'] = $company_data->paginate(12);
-        // $data['companyProfiles'] = CompanyModel::orderby('created_at', 'desc')->paginate(12);
 
-        $currentUrl = URL::current();
-        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-            // URL is under HTTPS
-            $data['webUrl'] =  'https://';
-        } else {
-            // URL is under HTTP
-            $data['webUrl'] =  'http://';
-        }
+
+        $data['webUrl'] =  $webUrl;
+
 
         $data['selectedCountry'] = $request->input('country');
         $data['selectedState'] = $request->input('state');
