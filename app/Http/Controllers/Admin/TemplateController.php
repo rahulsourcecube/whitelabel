@@ -570,7 +570,7 @@ class TemplateController extends Controller
         // }
         $SettingModel = SettingModel::where('user_id', $adminId)->first();
 
-        if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+        if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
             return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
         }
         $notFoundNumber = [];
@@ -789,7 +789,7 @@ class TemplateController extends Controller
                 ->get();
 
             $SettingModel = SettingModel::where('user_id', $adminId)->first();
-            if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+            if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
                 // return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
                 return response()->json(['success' => false, 'message' => "Error: Please enter SMS Credential"]);
             }

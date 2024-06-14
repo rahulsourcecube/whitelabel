@@ -54,17 +54,26 @@ class HomeController extends Controller
 
 
 
-        if (!empty($request->country) && $request->has('country')) {
+        if (!empty($request->country)) {
             $company_data->where('country_id', $request->country);
         }
 
-        if (!empty($request->state) &&  $request->has('state')) {
+        if (!empty($request->state)) {
             $company_data->where('state_id', $request->state);
         }
 
-        if (!empty($request->city) &&  $request->has('city')) {
+        if (!empty($request->city)) {
             $company_data->where('city_id', $request->city);
         }
+        if (!empty($request->input('company_name'))) {
+            $company_name = $request->input('company_name');
+
+            // Use whereHas with the company relationship to filter by company_name using LIKE
+            $company_data->whereHas('company', function ($query) use ($company_name) {
+                $query->where('company_name', 'like', '%' . $company_name . '%');
+            });
+        }
+
         $data['companyProfiles'] = $company_data->paginate(12);
 
 

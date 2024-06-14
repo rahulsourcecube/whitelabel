@@ -286,8 +286,8 @@ class CompanyLoginController extends Controller
                 // $SettingModel = SettingModel::first();
 
                 $SettingModel = SettingModel::where('user_id', $userMail->id)->first();
-
-                if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
+                dd($SettingModel);
+                if (!empty($SettingModel) && (Helper::adminactiveTwilioSetting() == true || Helper::adminActivePlivoSetting() == true)) {
 
                     $name = $request->fname;
                     $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
@@ -301,7 +301,7 @@ class CompanyLoginController extends Controller
                     $message = str_replace('&nbsp;', ' ', $message);
                     $contact_number = Helper::getReqestPhoneCode($request->ccontact, $request->country);
                     try {
-                        if (Helper::activeTwilioSetting()) {
+                        if (Helper::adminactiveTwilioSetting()) {
                             $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                             $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                             $twilioService->sendSMS($to, $message);
@@ -407,7 +407,7 @@ class CompanyLoginController extends Controller
 
         if (!empty($smsTemplate)) {
             $SettingModel = SettingModel::first();
-            if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
+            if (!empty($SettingModel) && (Helper::adminactiveTwilioSetting() == true || Helper::adminActivePlivoSetting() == true)) {
 
                 $name = $userEmail->first_name;
                 $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
@@ -420,7 +420,7 @@ class CompanyLoginController extends Controller
                 $message = str_replace('&nbsp;', ' ', $message);
                 $contact_number = Helper::getReqestPhoneCode($userEmail->contact_number, $userEmail->country_id);
                 try {
-                    if (Helper::activeTwilioSetting()) {
+                    if (Helper::adminactiveTwilioSetting()) {
                         $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                         $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                         $twilioService->sendSMS($to, $message);
@@ -531,7 +531,7 @@ class CompanyLoginController extends Controller
 
             if (!empty($smsTemplate)) {
                 $SettingModel = SettingModel::first();
-                if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
+                if (!empty($SettingModel) && (Helper::adminactiveTwilioSetting() == true || Helper::adminActivePlivoSetting() == true)) {
 
                     $name = $user->first_name;
                     $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
@@ -545,7 +545,7 @@ class CompanyLoginController extends Controller
                     $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
 
                     try {
-                        if (Helper::activeTwilioSetting()) {
+                        if (Helper::adminactiveTwilioSetting()) {
                             $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                             $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                             $twilioService->sendSMS($to, $message);

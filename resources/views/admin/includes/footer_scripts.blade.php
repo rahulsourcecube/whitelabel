@@ -11,7 +11,7 @@
 <script src="{{ asset('assets/vendors/jquery-validation/jquery.validate.min.js') }}"></script>
 <script src="https://cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
 
-        {{-- <!-- Responsive examples -->
+{{-- <!-- Responsive examples -->
         <script src="https://coderthemes.com/abstack/layouts/blue/assets/libs/datatables/dataTables.responsive.min.js"></script>
         <script src="https://coderthemes.com/abstack/layouts/blue/assets/libs/datatables/responsive.bootstrap4.min.js"></script>
         <script src="https://coderthemes.com/abstack/layouts/blue/assets/libs/datatables/buttons.bootstrap4.min.js"></script> --}}

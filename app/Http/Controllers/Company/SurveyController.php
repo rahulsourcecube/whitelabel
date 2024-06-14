@@ -470,7 +470,7 @@ class SurveyController extends Controller
             // }
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
-            if (empty($SettingModel) &&  (Helper::activeTwilioSetting() != true && Helper::activePlivoSetting() != true || (Helper::activeTwilioSetting() != true && Helper::activePlivoSetting() != true))) {
+            if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
                 return redirect()->route('company.survey.form.index')->with(['error' => "Please enter SMS Credential "]);
             }
 

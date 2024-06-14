@@ -35,7 +35,7 @@ class EmployeesImport implements ToCollection
             return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_employee . ' employees');
         }
         // @end
-        dd($rowsCount, $userCount, $rowsCount >= $ActivePackageData->no_of_employee, $ActivePackageData->no_of_employee < ($rowsCount + $userCount));
+
         foreach ($rows as $key => $row) {
 
             if ($key == 0) continue;

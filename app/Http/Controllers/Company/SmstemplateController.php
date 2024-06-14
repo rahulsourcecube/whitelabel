@@ -202,7 +202,7 @@ class SmstemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
 
-            if (empty($SettingModel) &&  (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
+            if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
                 return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Credential"]);
             }
 
@@ -395,7 +395,7 @@ class SmstemplateController extends Controller
                                 // foreach ($companyDatas as $companyData) {
 
                                 if (!empty($smsTemplate)) {
-                                    if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
+                                    if (!empty($SettingValue) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
                                         $name =  $user->FullName;
                                         $contact_number =  $user->contact_number;
                                         $company_title = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : 'Referdio';
@@ -513,7 +513,7 @@ class SmstemplateController extends Controller
                                 // foreach ($companyDatas as $companyData) {
 
                                 if (!empty($smsTemplate)) {
-                                    if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
+                                    if (!empty($SettingValue) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
                                         $name =  $user->FullName;
                                         $contact_number =  $user->contact_number;
                                         $company_title = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : 'Referdio';
@@ -572,7 +572,7 @@ class SmstemplateController extends Controller
 
                             if (!empty($smsTemplate)) {
 
-                                if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
+                                if (!empty($SettingValue) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
                                     $name =  "";
                                     $contact_number =  $number;
                                     $company_title = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : 'Referdio';
@@ -647,7 +647,7 @@ class SmstemplateController extends Controller
                 ->get();
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
-            if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+            if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
                 return response()->json(['success' => false, 'message' => "Error: Please enter SMS Credential"]);
             }
 

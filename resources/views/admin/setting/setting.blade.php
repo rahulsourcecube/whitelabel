@@ -283,7 +283,7 @@
                                                 class="error"></span>
                                         </label>
                                         <input type="text" class="form-control mb-2" name="plivo_test_phone_number"
-                                            id="plivo_phone_number" placeholder="(Testing) To No."
+                                            id="plivo_test_phone_number" placeholder="(Testing) To No."
                                             onkeypress="return /[0-9+]/i.test(event.key)"
                                             value="{{ !empty($setting) ? $setting->plivo_test_phone_number : '' }}">
                                     </div>

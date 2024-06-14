@@ -74,7 +74,7 @@
 
 
                             <div class="col-md-2 pl-5">
-                                <label for="community_status">Community (Enable/Disable)</label>
+                                <label for="community_status">Community </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="switch-2" data-toggle="switch" name="community_status"
@@ -84,7 +84,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2 pl-5">
-                                <label for="">Mail Template (Enable/Disable)</label>
+                                <label for="">Mail Template </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="switch-3" data-toggle="switch"
@@ -94,7 +94,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2 pl-5">
-                                <label for="">SMS Template (Enable/Disable)</label>
+                                <label for="">SMS Template </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="switch-4" data-toggle="switch"
@@ -104,7 +104,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2 pl-5">
-                                <label for="survey">Survey (Enable/Disable)</label>
+                                <label for="survey">Survey </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="survey" data-toggle="switch" name="survey_status"

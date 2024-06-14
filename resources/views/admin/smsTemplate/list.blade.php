@@ -50,22 +50,13 @@
                         <form id="smsMail" method="POST" action="{{ route('admin.sms.sendSms') }}"
                             data-parsley-validate="">
                             @csrf
-                            {{-- <div class="col-md-4 mb-3 all-sms-send d-none">
-                                <div class="form-group align-items-center">
-                                    <label for="expiry_date"> Send SMS All User</label>
-                                    <div class="switch m-r-10">
-                                        <input type="checkbox" id="public-1" data-toggle="switch"
-                                            onclick="sendAllSms(this)" name="public" value="true">
-                                        <label for="public-1"></label>
-                                    </div>
-                                </div>
-                            </div> --}}
+
                             <div class="row mb-3">
                                 <div class="col-md-10">
                                     <label for="contact_number" class=" col-form-label">Contact Number</label>
                                     <input type="text" class="form-control" id="contact" placeholder="Contact Number"
-                                        maxlength="10" name="contact_number[]" value=""
-                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                                        name="contact_number[]" value=""
+                                        oninput="this.value = this.value.replace(/[^0-9\-+]+/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class=" col-md-2">
                                     <label for="title" class="col-form-label"></label>
@@ -162,8 +153,7 @@
 
                         'contact_number[]': {
                             required: true,
-                            minlength: '10',
-                            digits: true
+
                         }
                     },
                     messages: {

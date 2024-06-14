@@ -507,4 +507,28 @@ class Helper
         }
         return false;
     }
+    public static function adminActivePlivoSetting()
+    {
+
+        $admin = User::where('user_type', '1')->first();
+        $SettingModel = SettingModel::where('user_id', $admin->id)->first();
+        if (!empty($SettingModel) && !empty($SettingModel->plivo_auth_id) && !empty($SettingModel->plivo_auth_token) && !empty($SettingModel->plivo_phone_number) && $SettingModel->sms_type == '2') {
+            return true;
+        }
+
+
+        return false;
+    }
+    public static function adminActiveTwilioSetting()
+    {
+
+        $admin = User::where('user_type', '1')->first();
+        $SettingModel = SettingModel::where('user_id', $admin->id)->first();
+        if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number) && $SettingModel->sms_type == '1') {
+            return true;
+        }
+
+
+        return false;
+    }
 }

@@ -36,7 +36,7 @@ class CompanyModel extends Model
     }
     public function setting()
     {
-        return $this->hasOne(SettingModel::class, 'user_id');
+        return $this->hasOne(SettingModel::class, 'user_id', 'user_id');
     }
 
     public  function checkUserLogin($userId, $companyId)

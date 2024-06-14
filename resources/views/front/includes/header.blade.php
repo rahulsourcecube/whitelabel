@@ -71,7 +71,7 @@
             <ul class="navbar-nav me-auto order-0  ">
                 @if (request()->getHttpHost() != config('app.domain'))
                     <li class="nav-item">
-                        <a class="nav-link nav-link-ltr  @if (request()->segment(1) == 'campaign') active @endif"
+                        <a class="nav-link nav-link-ltr  @if (request()->segment(1) == 'campaign' || request()->segment(1) == '') active @endif"
                             href="{{ route('front.campaign.list') }}">Task</a>
                     </li>
                     @if (
@@ -115,6 +115,12 @@
 
                     </ul>
                 @endif
+            @else
+                <ul class="navbar-nav d-flex  order-5">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-ltr" href="{{ route('company.signup') }}">Sign Up</a>
+                    </li>
+                </ul>
             @endif
             <div class="mx-auto">
             </div>

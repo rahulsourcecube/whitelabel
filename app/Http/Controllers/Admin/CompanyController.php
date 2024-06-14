@@ -45,6 +45,7 @@ class CompanyController extends Controller
     {
         try {
             $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
+
             return view('admin.company.list', compact('packages'));
         } catch (Exception $e) {
             Log::error('CompanyController::Index ' . $e->getMessage());
@@ -180,6 +181,7 @@ class CompanyController extends Controller
     public function dtList(Request $request)
     {
         try {
+
             $columns = ['id', 'company_name', 'id', 'contact_number', 'company_name', 'subdomain', 'id']; // Add more columns as needed
 
             $start = $request->input('start');
@@ -210,21 +212,23 @@ class CompanyController extends Controller
             $results = $query->skip($start)
                 ->take($length)
                 ->get();
+
             $totalData = CompanyModel::count();
             $list = [];
             foreach ($results as $result) {
+
                 $list[] = [
                     $result->id,
                     $result->user->first_name  . ' ' . $result->user->last_name,
                     $result->user->email,
                     $result->user->contact_number,
-                    $result['company_name'],
-                    $result['subdomain'] . '.' . $request->getHost(),
+                    $result->company_name,
+                    $result->subdomain . '.' . $request->getHost(),
                     $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
-                    $result['email'],
-                    $result['email'],
-                    $result['email'],
-                    $result['is_individual'],
+                    $result->email,
+                    $result->email,
+                    $result->email,
+                    $result->is_individual,
                 ];
             }
 
@@ -244,6 +248,7 @@ class CompanyController extends Controller
             ]);
         }
     }
+
 
     public function view(Request $request)
     {

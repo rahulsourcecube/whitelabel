@@ -367,7 +367,7 @@ class MailtemplateController extends Controller
 
                             $companyData =  CampaignModel::where('company_id', $companyId)->where('status', '1')->orderBy('created_at', 'desc')->first();
                             // foreach ($companyDatas as $companyData) {
-                            $userDetails = User::where('email', $request->mail)->where('company_id', $companyId)->where('user_type', '4')->first();
+                            $userDetails = User::where('email', $mail)->where('company_id', $companyId)->where('user_type', '4')->first();
                             try {
 
                                 if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {

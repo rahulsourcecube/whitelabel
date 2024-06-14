@@ -260,8 +260,7 @@ Route::group(['middleware' => 'check.session'], function () {
         });
         Route::get('/join-now/{join_link}', [FrontCampaignController::class, 'joinNow'])->name('front.campaign.Join');
 
-        Route::get('/success-202', [ForntHomeController::class, 'succ
-        ess'])->name('front.success.page');
+        Route::get('/success-202', [ForntHomeController::class, 'success'])->name('front.success.page');
         Route::get('/company-profiles', [ForntHomeController::class, 'companyProfiles'])->name('front.company.profiles');
         // });
 

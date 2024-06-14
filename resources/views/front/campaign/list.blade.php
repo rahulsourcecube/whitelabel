@@ -122,10 +122,10 @@
                                 {{ $task_data->appends(Request::all())->links() }}
                             </div>
                         @else
-                            @include('front.error.error')
-                            {{-- <div class="col-md-12">
-                                <h1 class="m-100 text-center">No Data Found!</h1>
-                            </div> --}}
+                            <div class="col-sm-12 h-15 w-50 pagination justify-content-center">
+                                <h1 class="text-center">Not Found</h1>
+                            </div>
+
                         @endif
                     </div>
                 </div>
