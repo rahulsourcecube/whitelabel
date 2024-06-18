@@ -6,7 +6,8 @@
         <div class="page-header">
             <div class="header-sub-title">
                 <nav class="breadcrumb breadcrumb-dash">
-                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Dashboard</a>
+                    <a href="{{ route('admin.dashboard') }}" class="breadcrumb-item"><i
+                            class="anticon anticon-home m-r-5"></i>Dashboard</a>
                     <a class="breadcrumb-item" href="{{ route('admin.company.list') }}">Company</a>
                     <span class="breadcrumb-item active">Profile</span>
                 </nav>
@@ -87,7 +88,8 @@
                                                         <span>Email: </span>
                                                     </p>
                                                     <p class="col font-weight-semibold">
-                                                        <a href="mailTo:{{ $user_company['contact_email'] }}">{{ $user_company->contact_email ?: 'N/A' }}</a>
+                                                        <a
+                                                            href="mailTo:{{ $user_company['contact_email'] }}">{{ $user_company->contact_email ?: 'N/A' }}</a>
                                                     </p>
                                                 </li>
                                                 <li class="row">
@@ -96,7 +98,8 @@
                                                         <span>Phone: </span>
                                                     </p>
                                                     <p class="col font-weight-semibold">
-                                                        <a href="tel:{{ $user_company['contact_number'] }}">{{ $user_company->contact_number ?: 'N/A' }}</a>
+                                                        <a
+                                                            href="tel:{{ $user_company['contact_number'] }}">{{ $user_company->contact_number ?: 'N/A' }}</a>
                                                     </p>
                                                 </li>
                                             </ul>
@@ -113,14 +116,17 @@
                                             @if (!empty($ActivePackageData) && !empty($ActivePackageData->GetPackageData))
                                                 <div class="d-flex justify-content-between p-b-20 border-bottom">
                                                     <div class="media align-items-center">
-                                                        <div class="avatar avatar-blue avatar-icon" style="height: 55px; width: 55px;">
-                                                            <i class="anticon anticon-dollar font-size-25" style="line-height: 55px"></i>
+                                                        <div class="avatar avatar-blue avatar-icon"
+                                                            style="height: 55px; width: 55px;">
+                                                            <i class="anticon anticon-dollar font-size-25"
+                                                                style="line-height: 55px"></i>
                                                         </div>
                                                         <div class="m-l-15">
                                                             <h2 class="font-weight-bold font-size-30 m-b-0">
                                                                 @if ($ActivePackageData->GetPackageData->type != '1')
                                                                     {{ App\Helpers\Helper::getcurrency() }}
-                                                                @endif{{ $ActivePackageData->GetPackageData->plan_price }}
+                                                                @endif
+                                                                {{ $ActivePackageData->GetPackageData->plan_price }}
                                                             </h2>
                                                             <h4 class="m-b-0">
                                                                 {{ $ActivePackageData->GetPackageData->title }}
@@ -130,7 +136,8 @@
                                                 </div>
                                                 <ul class="list-unstyled m-v-30">
                                                     <li class="m-b-20">
-                                                        <div class="d-flex justify-content-between"> <span class="text-dark font-weight-semibold">
+                                                        <div class="d-flex justify-content-between"> <span
+                                                                class="text-dark font-weight-semibold">
                                                                 validity date <br> From
                                                                 {{ date('d-M-y', strtotime($ActivePackageData->start_date)) }}
                                                                 to
@@ -139,7 +146,8 @@
                                                         </div>
                                                     </li>
                                                     <li class="m-b-20">
-                                                        <div class="d-flex justify-content-between"> <span class="text-dark font-weight-semibold">Total campaign
+                                                        <div class="d-flex justify-content-between"> <span
+                                                                class="text-dark font-weight-semibold">Total campaign
                                                                 {{ $ActivePackageData->no_of_campaign }}/{{ $CampaignModelCount }}</span>
                                                         </div>
                                                     </li>
@@ -155,6 +163,49 @@
                                                                 {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
                                                         </div>
                                                     </li>
+
+                                                    <li class="m-b-20">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span class="text-dark font-weight-semibold">
+                                                                <i
+                                                                    class="mr-2 fa fa-{{ $ActivePackageData->survey_status && $ActivePackageData->survey_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                Survey </span>
+                                                        </div>
+                                                    </li>
+                                                    @if ($ActivePackageData->no_of_survey && $ActivePackageData->survey_status == '1')
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Total Survey
+                                                                    {{ $ActivePackageData->no_of_survey }}/{{ $surveyCount }}</span>
+                                                            </div>
+                                                        </li>
+                                                    @endif
+                                                    <li class="m-b-20">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span class="text-dark font-weight-semibold">
+
+                                                                <i
+                                                                    class="mr-2 fa fa-{{ $ActivePackageData->community_status && $ActivePackageData->community_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                Community</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="m-b-20">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span class="text-dark font-weight-semibold">
+                                                                <i
+                                                                    class="mr-2 fa fa-{{ $ActivePackageData->mail_temp_status && $ActivePackageData->mail_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                Mail Template</span>
+                                                        </div>
+                                                    </li>
+                                                    <li class="m-b-20">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span class="text-dark font-weight-semibold"><i
+                                                                    class="mr-2 fa fa-{{ $ActivePackageData->sms_temp_status && $ActivePackageData->sms_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                Sms Template
+                                                            </span>
+                                                        </div>
+                                                    </li>
+
                                                 </ul>
                                             @else
                                                 <div class="d-flex justify-content-between p-b-20 border-bottom">

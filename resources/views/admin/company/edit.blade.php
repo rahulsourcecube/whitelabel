@@ -218,7 +218,6 @@
                                                                 <img id="logoimagePreviews"
                                                                     src="{{ !empty($setting) && $setting->logo ? asset('uploads/setting/' . $setting->logo) : '' }}"
                                                                     alt="Logo Preview" class="img-reposive w-100">
-                                                                <!-- <button type="button" id="logodeleteImageButtons" class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button> -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -231,7 +230,6 @@
                                                                 <img id="imagePreviews"
                                                                     src="{{ !empty($setting) && $setting->favicon ? asset('uploads/setting/' . $setting->favicon) : '' }}"
                                                                     alt="Favicon Icon Preview" class="img-reposive w-100">
-                                                                <!-- <button type="button" id="deleteImageButtons" class="btn btn-sm btn-danger mt-2"><i class="fa fa-trash"></i></button> -->
                                                             </div>
                                                         </div>
                                                     </div>

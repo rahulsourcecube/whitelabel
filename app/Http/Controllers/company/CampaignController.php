@@ -600,10 +600,7 @@ class CampaignController extends Controller
                     }
 
                     //Start Mail
-
                     try {
-
-                        $SettingValue = SettingModel::where('user_id', $companyId)->first();
                         $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
                         $userDetails = User::where('id', $action->user_id)->where('company_id', $companyId)->first();
                         if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html) && $ActivePackageData->mail_temp_status == "1") {
@@ -734,8 +731,6 @@ class CampaignController extends Controller
 
     public function storeChat(UserCampaignHistoryModel $id, Request $request)
     {
-
-
         try {
             if ($request->hasFile('image') || $request->chat_input != null) {
                 if ($request->hasFile('image')) {
@@ -745,11 +740,8 @@ class CampaignController extends Controller
                     $image->move(public_path('uploads/Chats'), $imageName);
                     $imageName = 'uploads/Chats/' . $imageName;
                 }
-                $chats = TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
-                // if ($chats->count() == 0) {
+                TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
 
-                // $id->status = '2';
-                // $id->save();
                 if ($request->hasFile('image')) {
                     $sentMessage = ' sent file...';
                 } else {
@@ -773,13 +765,6 @@ class CampaignController extends Controller
                     $Notification->save();
                 }
 
-                // dd($Notification);
-
-                // }
-                // if ($id->status == '4' && Auth::user()->user_type == 4) {
-                //     $id->status = '5';
-                //     $id->save();
-                // }
                 $TaskEvidence = new TaskEvidence();
                 $TaskEvidence->user_id = $id->user_id;
                 $TaskEvidence->company_id = $id->getCampaign->company_id;
@@ -816,7 +801,6 @@ class CampaignController extends Controller
                         "label" => Carbon::create()->month($item['month'])->format('F'), // Format the day of the month
                         "total_completed" => $item['total_completed'],
                         "total_joined" => $item['total_joined']
-
                     ];
                 }
             }
@@ -842,10 +826,6 @@ class CampaignController extends Controller
                 $dir = $request->input('order.0.dir');
                 $searchValue = $request->input('search.value');
 
-                // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
-                // (SELECT count(*) as total FROM campaign where campaign.id=user_campaign_history.campaign_id) as total
-
-                // $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
                 $query = UserCampaignHistoryModel::join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
                     ->select(
                         'campaign.id',

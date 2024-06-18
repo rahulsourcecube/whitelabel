@@ -25,10 +25,9 @@
                         <thead>
                             <tr>
                                 <th>Sr No.</th>
-                                <th>Country Name</th>
-                                <th>State Name</th>
-                                <th>City Name</th>
-                                {{-- <th>Zipcode</th> --}}
+                                <th>Country</th>
+                                <th>State</th>
+                                <th>City</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -74,7 +73,6 @@
                                 '" class="chk-row">';
                         },
                     },
-
                     {
                         'targets': 4,
                         'visible': true,

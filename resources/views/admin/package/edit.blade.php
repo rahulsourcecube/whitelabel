@@ -214,7 +214,8 @@
                 no_of_survey: {
                     required: function() {
                         return $('input[id="survey"]').is(':checked');
-                    }
+                    },
+                    digits: true
                 },
                 price: {
                     required: true

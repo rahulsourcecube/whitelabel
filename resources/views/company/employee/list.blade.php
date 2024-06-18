@@ -69,19 +69,22 @@
                                     <div class="form-group">
                                         <div class="input-group input-file">
                                             <input id="import_file" type="file" class="form-control" name="import_file"
-                                                accept=".xlsx" />
+                                                accept=".xlsx , .csv" />
                                         </div>
-                                        {{-- <div id="excel_icon" style="display: none;">
-                                            <i class="fas fa-file-excel"></i> <!-- FontAwesome Excel icon -->
-                                        </div> --}}
+
                                     </div>
                                     <div class="form-group">
-                                        <a href="{{ asset('public/download/employee-sample.xlsx') }}"
-                                            class="btn btn-success" download="employee-sample.xlsx"
-                                            title="Sample Download">Sample download</a>
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                     </div>
                                 </form>
+                                <div class="form-group">
+                                    <a href="{{ asset('public/download/employee-sample.xlsx') }}" class="btn btn-success"
+                                        download="employee-sample.xlsx" title="Sample.xlsx Download">Sample.xlsx
+                                        download</a>
+                                    <a href="{{ asset('public/download/employee-sample.csv') }}" class="btn btn-success"
+                                        download="employee-sample.csv" title="Sample.csv Download">Sample.csv download</a>
+
+                                </div>
                             </div>
                         </div>
 
@@ -99,11 +102,11 @@
                 var input = this;
                 var fileName = input.files[0].name;
                 var ext = fileName.split('.').pop().toLowerCase();
-                if (ext === 'xlsx') {
+                if (ext === 'xlsx' || ext === 'csv') {
                     $('#excel_icon').show();
                 } else {
                     $('#excel_icon').hide();
-                    alert('Please select a valid .xlsx file.');
+                    alert('Please select a valid .xlsx or .csv file.');
                     $(this).val(''); // Clear the file input field
                 }
             });
@@ -112,8 +115,8 @@
             $('#import_form').submit(function() {
                 var fileName = $('#import_file').val();
                 var ext = fileName.split('.').pop().toLowerCase();
-                if (ext !== 'xlsx') {
-                    alert('Please select a valid .xlsx file.');
+                if (ext !== 'xlsx' && ext !== 'csv') {
+                    alert('Please select a valid .xlsx or .csv file.');
                     return false;
                 }
             });

@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
 
 
 class TemplateController extends Controller
@@ -29,8 +28,6 @@ class TemplateController extends Controller
     function index()
     {
         try {
-
-
             return view('admin.mailTemplate.list');
         } catch (Exception $e) {
             Log::error('MailtemplateController::Index => ' . $e->getMessage());
@@ -40,7 +37,6 @@ class TemplateController extends Controller
     public function list(Request $request)
     {
         try {
-
             $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
 
             $columns = ['id'];
@@ -123,7 +119,7 @@ class TemplateController extends Controller
             $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
             $mailTemplate = MailTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
             if (empty($mailTemplate)) {
-                return redirect()->back()->with('error', 'No Found Mail Template ')->withInput();
+                return redirect()->back()->with('error', 'Mail Template Not Found')->withInput();
             }
             return view('admin.mailTemplate.create', compact('mailTemplate'));
         } catch (Exception $e) {
@@ -137,7 +133,6 @@ class TemplateController extends Controller
             $request->validate([
                 'subject' => 'required',
                 'tempHtml' => 'required',
-
             ]);
 
             $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
@@ -145,14 +140,13 @@ class TemplateController extends Controller
                 ->where('template_type', $request->type)
                 ->first();
 
-
             if (empty($mailTemplate) || empty($request->id)) {
 
                 $existingTemplate = MailTemplate::where('company_id', $companyId)
                     ->where('template_type', $request->type)
                     ->first();
                 if (!empty($existingTemplate)) {
-                    return redirect()->back()->withInput()->with('error', 'Template already exit ' . $request->type);
+                    return redirect()->back()->withInput()->with('error', 'Template already exit');
                 }
 
                 $mailTemplate = new MailTemplate;
@@ -175,8 +169,6 @@ class TemplateController extends Controller
     function smsIndex()
     {
         try {
-
-
             return view('admin.smsTemplate.list');
         } catch (Exception $e) {
             Log::error('SmstemplateController::Index => ' . $e->getMessage());
@@ -266,7 +258,7 @@ class TemplateController extends Controller
             $companyId = (auth()->user()->user_type == "1") ?? auth()->user()->id;
             $SmsTemplate = SmsTemplate::where('company_id', $companyId)->where('id', base64_decode($id))->first();
             if (empty($SmsTemplate)) {
-                return redirect()->back()->with('error', 'No Found SMS Template ')->withInput();
+                return redirect()->back()->with('error', 'SMS Template Not Found')->withInput();
             }
             return view('admin.smsTemplate.create', compact('SmsTemplate'));
         } catch (Exception $e) {
@@ -289,7 +281,7 @@ class TemplateController extends Controller
                     ->where('template_type', $request->type)
                     ->first();
                 if (!empty($existingTemplate)) {
-                    return redirect()->back()->with('error', 'Template already exit ' . $request->type);
+                    return redirect()->back()->with('error', 'Template already exit ');
                 }
 
                 $SmsTemplate = new SmsTemplate;
@@ -310,209 +302,202 @@ class TemplateController extends Controller
     }
     public function sendMail(Request $request)
     {
-        // try {
-        $companyId = auth::user()->id;
-
-        $webUrlGetHost = $request->getHost();
-        $currentUrl = URL::current();
-        $webUrl = "";
-        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-            // URL is under HTTPS
-            $webUrl =  'https://' . $webUrlGetHost;
-        } else {
-            // URL is under HTTP
-            $webUrl =  'http://' . $webUrlGetHost;
-        }
-        $SettingModel = SettingModel::where('user_id', $companyId)->first();
-
-        if (
-            empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
-        ) {
-            return redirect()->route('admin.mail.index')->with(['error' => "Please enter mail Cridntioal"]);
-        }
-
-
-        $notFoundEmails = [];
-        if ($request->template_type == 'welcome') {
-            foreach ($request->mail as $mail) {
-                $user = User::where('email', $mail)->where('user_type', '2')->first();
-                if (!empty($user)) {
-
-                    try {
-
-                        // $SettingValue = SettingModel::first();
-                        $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
-
-                        $userName  = $request->fname . ' ' . $request->lname;
-                        $to = $request->email;
-
-                        $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '';
-                        $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
-                        $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
-
-                        $message = '';
-                        $type =  "";
-                        $html =  $mailTemplate->template_html ? $mailTemplate->template_html : null;
-
-                        $data =  ['first_name' => $request->fname, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl];
-
-
-                        SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type);
-                    } catch (Exception $e) {
-                        Log::error('UsrController::Store => ' . $e->getMessage());
-                    }
-                } else {
-                    $notFoundEmails[] = $mail;
-                }
-            }
-            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
-
-            return redirect()->route('admin.mail.index')->with([
-                'success' => 'Mail sent successfully',
-                'error_hold' => $errorMessage
-            ]);
-        } elseif ($request->template_type == 'forgot_password') {
-
-            foreach ($request->mail as $mail) {
-                $user = User::where('email', $mail)->where('user_type', '2')->first();
-                if (!empty($user)) {
-                    $token = Str::random(64);
-                    $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
-                    $html = "";
-
-                    $submit = route('user.confirmPassword', $token);
-
-                    if (!empty($mailTemplate)) {
-                        $html = $mailTemplate->template_html;
-                    }
-                    DB::table('password_resets')->insert([
-                        'email' => $user->email,
-                        'token' => $token,
-                        'created_at' => Carbon::now()
-                    ]);
-                    try {
-                        $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
-
-                        // dd($mailTemplateSubject, $userEmail->FullName, $request->email);
-
-                        Mail::send(
-                            'company.email.forgetPassword',
-                            [
-                                'token' => $token,
-                                'email' => $user->email,
-                                'name' => $user->FullName,
-                                'webUrl' => $webUrl,
-                                'template' => $html
-                            ],
-                            function ($message) use ($user, $mailTemplateSubject) {
-                                $message->to($user->email);
-                                $message->subject($mailTemplateSubject);
-                            }
-                        );
-                    } catch (Exception $e) {
-
-                        Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
-                        return redirect()->back()->with('error', "Something went wrong");
-                    }
-                } else {
-                    $notFoundEmails[] = $mail;
-                }
-            }
-            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
-
-            return redirect()->route('admin.mail.index')->with([
-                'success' => 'Mail sent successfully',
-                'error_hold' => $errorMessage
-            ]);
-        } elseif ($request->template_type == 'change_pass') {
-            $notFoundEmails = [];
-            foreach ($request->mail as $mail) {
-                $user = User::where('email', $mail)->where('user_type', '2')->first();
-                if (!empty($user)) {
-
-                    try {
-                        $SettingValue = SettingModel::first();
-                        $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
-
-                        $userName  = $user->first_name . ' ' . $user->last_name;
-                        $to = $request->email;
-                        $message = '';
-                        $type =  "user";
-                        $html =  $mailTemplate->template_html;
-
-                        Mail::send('company.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => 1, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($user) {
-                            $message->to($user->email);
-                            $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Your New Password Is Set');
-                        });
-                    } catch (Exception $e) {
-                        Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
-                    }
-                } else {
-                    $notFoundEmails[] = $mail;
-                }
-            }
-            $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
-
-            return redirect()->route('admin.mail.index')->with([
-                'success' => 'Mail sent successfully',
-                'error_hold' => $errorMessage
-            ]);
-        } elseif ($request->template_type == 'custom') {
-            foreach ($request->mail as $mail) {
-                $user = User::where('email', $mail)->where('user_type', '2')->first();
-                if (!empty($user)) {
-                    try {
-                        $SettingValue = SettingModel::first();
-                        $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
-
-                        $userName  = $user->first_name . ' ' . $user->last_name;
-                        $to = $request->email;
-                        $message = '';
-                        $type =  "user";
-                        $html =  $mailTemplate->template_html;
-
-                        Mail::send('company.email.custom', ['user' => $user, 'first_name' => $userName, 'company_id' => 1, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($user) {
-                            $message->to($user->email);
-                            $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Your New Password Is Set');
-                        });
-                    } catch (Exception $e) {
-                        Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
-                    }
-                } else {
-                    $notFoundEmails[] = $mail;
-                }
-            }
-            $errorMessage = count($notFoundEmails) > 0 ? implode(', ', $notFoundEmails) : '';
-
-            return redirect()->route('admin.mail.index')->with([
-                'success' => 'Mail sent successfully',
-                'error_hold' => $errorMessage
-            ]);
-        }
-        return redirect()->route('admin.mail.index')
-            ->with('success', 'Mail send successfully');
-        // } else {
-        //     Log::error('MailtemplateController::Delete  => ' . $e->getMessage());
-        //     return redirect()->back()->withInput()->with('error', 'no found ' . $request->mail);
-        // }
-    }
-    public function sendAllMail(Request $request)
-    {
         try {
             $companyId = auth::user()->id;
 
-
-            // $notificationsQue=new NotificationsQue()
-            $userDatas = User::where('user_type', User::USER_TYPE['COMPANY'])
-                ->where('status', '1')
-
-                ->get();
+            $webUrlGetHost = $request->getHost();
+            $currentUrl = URL::current();
+            $webUrl = "";
+            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+                // URL is under HTTPS
+                $webUrl =  'https://' . $webUrlGetHost;
+            } else {
+                // URL is under HTTP
+                $webUrl =  'http://' . $webUrlGetHost;
+            }
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (
                 empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
             ) {
-                return response()->json(['success' => false, 'message' => "Error: Please enter mail Cridntioal "]);
+                return redirect()->route('admin.mail.index')->with(['error' => "Please enter mail credentials"]);
+            }
+
+
+            $notFoundEmails = [];
+            if ($request->template_type == 'welcome') {
+                foreach ($request->mail as $mail) {
+                    $user = User::where('email', $mail)->where('user_type', '2')->first();
+                    if (!empty($user)) {
+
+                        try {
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'welcome')->first();
+
+                            $userName  = $request->fname . ' ' . $request->lname;
+                            $to = $request->email;
+
+                            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : '';
+                            $settingTitle = !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
+                            $subject = !empty($mailTemplateSubject) ? $mailTemplateSubject : 'Welcome To ' . $settingTitle;
+
+                            $message = '';
+                            $type =  "";
+                            $html =  $mailTemplate->template_html ? $mailTemplate->template_html : null;
+
+                            $data =  ['first_name' => $request->fname, 'company_id' => $companyId, 'template' => $html, 'webUrl' => $webUrl];
+
+
+                            SendEmailJob::dispatch($to, $subject, $message, $userName, $data, $type);
+                        } catch (Exception $e) {
+                            Log::error('UsrController::Store => ' . $e->getMessage());
+                        }
+                    } else {
+                        $notFoundEmails[] = $mail;
+                    }
+                }
+                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+
+                return redirect()->route('admin.mail.index')->with([
+                    'success' => 'Mail sent successfully',
+                    'error_hold' => $errorMessage
+                ]);
+            } elseif ($request->template_type == 'forgot_password') {
+
+                foreach ($request->mail as $mail) {
+                    $user = User::where('email', $mail)->where('user_type', '2')->first();
+                    if (!empty($user)) {
+                        $token = Str::random(64);
+                        $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'forgot_password')->first();
+                        $html = "";
+
+                        $submit = route('user.confirmPassword', $token);
+
+                        if (!empty($mailTemplate)) {
+                            $html = $mailTemplate->template_html;
+                        }
+                        DB::table('password_resets')->insert([
+                            'email' => $user->email,
+                            'token' => $token,
+                            'created_at' => Carbon::now()
+                        ]);
+                        try {
+                            $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
+
+                            Mail::send(
+                                'company.email.forgetPassword',
+                                [
+                                    'token' => $token,
+                                    'email' => $user->email,
+                                    'name' => $user->FullName,
+                                    'webUrl' => $webUrl,
+                                    'template' => $html
+                                ],
+                                function ($message) use ($user, $mailTemplateSubject) {
+                                    $message->to($user->email);
+                                    $message->subject($mailTemplateSubject);
+                                }
+                            );
+                        } catch (Exception $e) {
+
+                            Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
+                            return redirect()->back()->with('error', "Something went wrong");
+                        }
+                    } else {
+                        $notFoundEmails[] = $mail;
+                    }
+                }
+                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+
+                return redirect()->route('admin.mail.index')->with([
+                    'success' => 'Mail sent successfully',
+                    'error_hold' => $errorMessage
+                ]);
+            } elseif ($request->template_type == 'change_pass') {
+                $notFoundEmails = [];
+                foreach ($request->mail as $mail) {
+                    $user = User::where('email', $mail)->where('user_type', '2')->first();
+                    if (!empty($user)) {
+
+                        try {
+                            $SettingValue = SettingModel::first();
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'change_pass')->first();
+
+                            $userName  = $user->first_name . ' ' . $user->last_name;
+                            $to = $request->email;
+                            $message = '';
+                            $type =  "user";
+                            $html =  $mailTemplate->template_html;
+
+                            Mail::send('company.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => 1, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($user) {
+                                $message->to($user->email);
+                                $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Your New Password Updated Successfully.');
+                            });
+                        } catch (Exception $e) {
+                            Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
+                        }
+                    } else {
+                        $notFoundEmails[] = $mail;
+                    }
+                }
+                $errorMessage = count($notFoundEmails) > 0 ?  implode(', ', $notFoundEmails) : '';
+
+                return redirect()->route('admin.mail.index')->with([
+                    'success' => 'Mail sent successfully',
+                    'error_hold' => $errorMessage
+                ]);
+            } elseif ($request->template_type == 'custom') {
+                foreach ($request->mail as $mail) {
+                    $user = User::where('email', $mail)->where('user_type', '2')->first();
+                    if (!empty($user)) {
+                        try {
+                            $SettingValue = SettingModel::first();
+                            $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
+
+                            $userName  = $user->first_name . ' ' . $user->last_name;
+                            $to = $request->email;
+                            $message = '';
+                            $type =  "user";
+                            $html =  $mailTemplate->template_html;
+
+                            Mail::send('company.email.custom', ['user' => $user, 'first_name' => $userName, 'company_id' => 1, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($user) {
+                                $message->to($user->email);
+                                $message->subject(!empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Referdio');
+                            });
+                        } catch (Exception $e) {
+                            Log::error('UsrController::SubmitResetPassword => ' . $e->getMessage());
+                        }
+                    } else {
+                        $notFoundEmails[] = $mail;
+                    }
+                }
+
+                return redirect()->route('admin.mail.index')->with([
+                    'success' => 'Mail sent successfully',
+
+                ]);
+            }
+            return redirect()->route('admin.mail.index')
+                ->with('success', 'Mail send successfully');
+        } catch (Exception $e) {
+            Log::error('TemplateController::sendMail  => ' . $e->getMessage());
+            return redirect()->route('admin.mail.index')
+                ->with('error', 'Something went wrong.');
+        }
+    }
+
+    public function sendAllMail(Request $request)
+    {
+        try {
+            $companyId = auth::user()->id;
+
+            $userDatas = User::where('user_type', User::USER_TYPE['COMPANY'])->where('status', '1')->get();
+
+            $SettingModel = SettingModel::where('user_id', $companyId)->first();
+
+            if (
+                empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
+            ) {
+                return response()->json(['success' => false, 'message' => "Error: Please enter mail credentials "]);
             }
 
             if (!$userDatas->isEmpty()) {
@@ -522,7 +507,6 @@ class TemplateController extends Controller
                     $notificationsQueBatch[] = [
                         'company_id' => $companyId,
                         'user_id' => $userData->id,
-
                         'notifications_type' => "1",
                         'type' => $request->type,
                         'created_at' => now(),
@@ -541,7 +525,6 @@ class TemplateController extends Controller
                 }
             }
             return response()->json(['success' => true, 'message' => 'Send mail successfully']);
-            // return response()->json(['success' => false, 'message' => "Error: "  . $e->getMessage()]);
         } catch (Exception $e) {
             Log::error('TemplateController::sendAllMail  => ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => "Error: "  . $e->getMessage()]);
@@ -551,247 +534,239 @@ class TemplateController extends Controller
     public function sendSms(Request $request)
     {
 
-        // try {
-        $adminId = auth::user()->id;
+        try {
+            $adminId = auth::user()->id;
 
-        $webUrlGetHost = $request->getHost();
-        $currentUrl = URL::current();
-        $webUrl = "";
-        if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
-            // URL is under HTTPS
-            $webUrl =  'https://' . $webUrlGetHost;
-        } else {
-            // URL is under HTTP
-            $webUrl =  'http://' . $webUrlGetHost;
-        }
+            $webUrlGetHost = $request->getHost();
+            $currentUrl = URL::current();
+            $webUrl = "";
+            if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
+                // URL is under HTTPS
+                $webUrl =  'https://' . $webUrlGetHost;
+            } else {
+                // URL is under HTTP
+                $webUrl =  'http://' . $webUrlGetHost;
+            }
 
-        // $SettingModel = SettingModel::first();
-        // if (!empty($companyId)) {
-        // }
-        $SettingModel = SettingModel::where('user_id', $adminId)->first();
+            $SettingModel = SettingModel::where('user_id', $adminId)->first();
 
-        if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
-            return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
-        }
-        $notFoundNumber = [];
-        if ($request->template_type == 'welcome') {
-            foreach ($request->contact_number as $number) {
-                $user = User::where('contact_number', $number)->where('user_type', '2')->first();
+            if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
+                return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
+            }
+            $notFoundNumber = [];
+            if ($request->template_type == 'welcome') {
+                foreach ($request->contact_number as $number) {
+                    $user = User::where('contact_number', $number)->where('user_type', '2')->first();
 
-                if (!empty($user)) {
-                    $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
-                    if (!empty($smsTemplate)) {
-                        // $SettingModel = SettingModel::first();
+                    if (!empty($user)) {
+                        $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'welcome')->first();
+                        if (!empty($smsTemplate)) {
+                            // $SettingModel = SettingModel::first();
 
-                        $SettingModel = SettingModel::where('user_id', $adminId)->first();
+                            $SettingModel = SettingModel::where('user_id', $adminId)->first();
 
-                        if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
-                            $name = $user->fname;
-                            $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                            $company_link = $webUrl ? $webUrl : '';
-                            $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
+                            if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
+                                $name = $user->fname;
+                                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                                $company_link = $webUrl ? $webUrl : '';
+                                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link], $smsTemplate->template_html_sms);
 
-                            // Remove HTML tags and decode HTML entities
-                            $message = htmlspecialchars_decode(strip_tags($html));
+                                // Remove HTML tags and decode HTML entities
+                                $message = htmlspecialchars_decode(strip_tags($html));
 
-                            // Remove unwanted '&nbsp;' text
-                            $message = str_replace('&nbsp;', ' ', $message);
-                            $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
-                            try {
-                                if (Helper::activeTwilioSetting()) {
+                                // Remove unwanted '&nbsp;' text
+                                $message = str_replace('&nbsp;', ' ', $message);
+                                $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
+                                try {
+                                    if (Helper::activeTwilioSetting()) {
+                                        $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                                        $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                                        $twilioService->sendSMS($to, $message);
+                                    } else {
+                                        $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                                        $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                                        $PlivoService->sendSMS($to, $message);
+                                    }
+                                } catch (Exception $e) {
+                                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                                    echo "Failed to send SMS: " . $e->getMessage();
+                                }
+                            }
+                        }
+                    } else {
+                        $notFoundNumber[] = $number;
+                    }
+                }
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+
+                return redirect()->route('admin.sms.index')->with([
+                    'success' => 'SMS sent successfully',
+                    'error_sms_hold' => $errorMessage
+                ]);
+            } elseif ($request->template_type == 'forgot_password') {
+
+                foreach ($request->contact_number as $number) {
+                    $user = User::where('contact_number', $number)->where('user_type', '2')->first();
+                    if (!empty($user)) {
+                        $token = Str::random(64);
+                        $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'forgot_password')->first();
+
+                        if (!empty($smsTemplate)) {
+
+                            if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
+                                $name = $user->first_name;
+                                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                                $company_link = $webUrl ? $webUrl : '';
+                                $submit = route('user.confirmPassword', $token);
+                                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
+                                $message = htmlspecialchars_decode(strip_tags($html));
+
+                                // Remove unwanted '&nbsp;' text
+                                $message = str_replace('&nbsp;', ' ', $message);
+                                $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
+                                try {
                                     $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
                                     $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
-                                    $twilioService->sendSMS($to, $message);
-                                } else {
-                                    $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+                                    if (Helper::activeTwilioSetting()) {
+                                        $twilioService->sendSMS($to, $message);
+                                    } else {
+                                        $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
 
-                                    $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
-                                    $PlivoService->sendSMS($to, $message);
+                                        $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                                        $PlivoService->sendSMS($to, $message);
+                                    }
+                                } catch (Exception $e) {
+                                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                                    echo "Failed to send SMS: " . $e->getMessage();
                                 }
-                            } catch (Exception $e) {
-                                Log::error('Failed to send SMS: ' . $e->getMessage());
-                                echo "Failed to send SMS: " . $e->getMessage();
                             }
                         }
+                    } else {
+                        $notFoundNumber[] = $number;
                     }
-                } else {
-                    $notFoundNumber[] = $number;
                 }
-            }
-            $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
 
-            return redirect()->route('admin.sms.index')->with([
-                'success' => 'SMS sent successfully',
-                'error_sms_hold' => $errorMessage
-            ]);
-        } elseif ($request->template_type == 'forgot_password') {
+                return redirect()->route('admin.sms.index')->with([
+                    'success' => 'SMS sent successfully',
+                    'error_sms_hold' => $errorMessage
+                ]);
+            } elseif ($request->template_type == 'change_pass') {
+                $notFoundEmails = [];
+                foreach ($request->contact_number as $number) {
+                    $user = User::where('contact_number', $number)->where('user_type', '2')->first();
+                    if (!empty($user)) {
+                        $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'change_pass')->first();
 
-            foreach ($request->contact_number as $number) {
-                $user = User::where('contact_number', $number)->where('user_type', '2')->first();
-                if (!empty($user)) {
-                    $token = Str::random(64);
-                    $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'forgot_password')->first();
+                        if (!empty($smsTemplate)) {
 
-                    if (!empty($smsTemplate)) {
+                            if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
+                                $name = $user->first_name;
+                                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                                $company_link = $webUrl ? $webUrl : '';
 
-                        if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
-                            $name = $user->first_name;
-                            $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                            $company_link = $webUrl ? $webUrl : '';
-                            $submit = route('user.confirmPassword', $token);
-                            $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
-                            $message = htmlspecialchars_decode(strip_tags($html));
+                                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
+                                $message = htmlspecialchars_decode(strip_tags($html));
 
-                            // Remove unwanted '&nbsp;' text
-                            $message = str_replace('&nbsp;', ' ', $message);
-                            $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
-                            try {
-                                $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                                $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
-                                if (Helper::activeTwilioSetting()) {
-                                    $twilioService->sendSMS($to, $message);
-                                } else {
-                                    $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+                                // Remove unwanted '&nbsp;' text
+                                $message = str_replace('&nbsp;', ' ', $message);
+                                $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
 
-                                    $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
-                                    $PlivoService->sendSMS($to, $message);
+                                try {
+                                    if (Helper::activeTwilioSetting()) {
+                                        $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                                        $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                                        $twilioService->sendSMS($to, $message);
+                                    } else {
+                                        $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                                        $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                                        $PlivoService->sendSMS($to, $message);
+                                    }
+                                } catch (Exception $e) {
+                                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                                    echo "Failed to send SMS: " . $e->getMessage();
                                 }
-                            } catch (Exception $e) {
-                                Log::error('Failed to send SMS: ' . $e->getMessage());
-                                echo "Failed to send SMS: " . $e->getMessage();
                             }
                         }
+                        //End sms
+                    } else {
+                        $notFoundNumber[] = $number;
                     }
-                } else {
-                    $notFoundNumber[] = $number;
                 }
-            }
-            $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
 
-            return redirect()->route('admin.sms.index')->with([
-                'success' => 'SMS sent successfully',
-                'error_sms_hold' => $errorMessage
-            ]);
-        } elseif ($request->template_type == 'change_pass') {
-            $notFoundEmails = [];
-            foreach ($request->contact_number as $number) {
-                $user = User::where('contact_number', $number)->where('user_type', '2')->first();
-                if (!empty($user)) {
-                    $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'change_pass')->first();
+                return redirect()->route('admin.sms.index')->with([
+                    'success' => 'SMS sent successfully',
+                    'error_sms_hold' => $errorMessage
+                ]);
+            } elseif ($request->template_type == 'custom') {
 
-                    if (!empty($smsTemplate)) {
+                foreach ($request->contact_number as $number) {
+                    $user = User::where('contact_number', $number)->where('user_type', '2')->first();
 
-                        if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
-                            $name = $user->first_name;
-                            $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                            $company_link = $webUrl ? $webUrl : '';
+                    if (!empty($user)) {
+                        $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'custom')->first();
+                        if (!empty($smsTemplate)) {
 
-                            $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
-                            $message = htmlspecialchars_decode(strip_tags($html));
+                            if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
+                                $name = $user->first_name;
+                                $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
+                                $company_link = $webUrl ? $webUrl : '';
 
-                            // Remove unwanted '&nbsp;' text
-                            $message = str_replace('&nbsp;', ' ', $message);
-                            $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
+                                $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
+                                $message = htmlspecialchars_decode(strip_tags($html));
 
-                            try {
-                                if (Helper::activeTwilioSetting()) {
-                                    $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
-                                    $twilioService->sendSMS($to, $message);
-                                } else {
-                                    $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+                                // Remove unwanted '&nbsp;' text
+                                $message = str_replace('&nbsp;', ' ', $message);
+                                $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
 
-                                    $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
-                                    $PlivoService->sendSMS($to, $message);
+                                try {
+                                    if (Helper::activeTwilioSetting()) {
+                                        $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                                        $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                                        $twilioService->sendSMS($to, $message);
+                                    } else {
+                                        $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                                        $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                                        $PlivoService->sendSMS($to, $message);
+                                    }
+                                } catch (Exception $e) {
+                                    Log::error('Failed to send SMS: ' . $e->getMessage());
+                                    echo "Failed to send SMS: " . $e->getMessage();
                                 }
-                            } catch (Exception $e) {
-                                Log::error('Failed to send SMS: ' . $e->getMessage());
-                                echo "Failed to send SMS: " . $e->getMessage();
                             }
                         }
+                    } else {
+                        $notFoundNumber[] = $number;
                     }
-                    //End sms
-                } else {
-                    $notFoundNumber[] = $number;
                 }
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+
+                return redirect()->route('admin.sms.index')->with([
+                    'success' => 'SMS sent successfully',
+                    'error_sms_hold' => $errorMessage
+                ]);
             }
-            $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
-
-            return redirect()->route('admin.sms.index')->with([
-                'success' => 'SMS sent successfully',
-                'error_sms_hold' => $errorMessage
-            ]);
-        } elseif ($request->template_type == 'custom') {
-
-            foreach ($request->contact_number as $number) {
-                $user = User::where('contact_number', $number)->where('user_type', '2')->first();
-
-                if (!empty($user)) {
-                    $smsTemplate = SmsTemplate::where('company_id', $adminId)->where('template_type', 'custom')->first();
-                    if (!empty($smsTemplate)) {
-
-                        if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
-                            $name = $user->first_name;
-                            $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
-                            $company_link = $webUrl ? $webUrl : '';
-
-                            $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]"], [$name, $company_title, $company_link,], $smsTemplate->template_html_sms);
-                            $message = htmlspecialchars_decode(strip_tags($html));
-
-                            // Remove unwanted '&nbsp;' text
-                            $message = str_replace('&nbsp;', ' ', $message);
-                            $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
-
-                            try {
-                                if (Helper::activeTwilioSetting()) {
-                                    $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
-                                    $twilioService->sendSMS($to, $message);
-                                } else {
-                                    $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
-
-                                    $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
-                                    $PlivoService->sendSMS($to, $message);
-                                }
-                            } catch (Exception $e) {
-                                Log::error('Failed to send SMS: ' . $e->getMessage());
-                                echo "Failed to send SMS: " . $e->getMessage();
-                            }
-                        }
-                    }
-                } else {
-                    $notFoundNumber[] = $number;
-                }
-            }
-            $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
-
-            return redirect()->route('admin.sms.index')->with([
-                'success' => 'SMS sent successfully',
-                'error_sms_hold' => $errorMessage
-            ]);
+            return redirect()->route('admin.sms.index')
+                ->with('success', 'SMS send successfully');
+        } catch (Exception $e) {
+            Log::error('SmstemplateController::sendSms  => ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => "Error: "  . $e->getMessage()]);
         }
-        return redirect()->route('admin.sms.index')
-            ->with('success', 'SMS send successfully');
-        // } else {
-        //     Log::error('MailtemplateController::Delete  => ' . $e->getMessage());
-        //     return redirect()->back()->withInput()->with('error', 'no found ' . $request->mail);
-        // }
     }
+
     public function sendAllSms(Request $request)
     {
         try {
             $adminId = auth::user()->id;
-
-
-            // $notificationsQue=new NotificationsQue()
-            $userDatas = User::where('user_type', User::USER_TYPE['COMPANY'])
-                ->where('status', '1')
-                ->get();
+            $userDatas = User::where('user_type', User::USER_TYPE['COMPANY'])->where('status', '1')->get();
 
             $SettingModel = SettingModel::where('user_id', $adminId)->first();
             if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
-                // return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
-                return response()->json(['success' => false, 'message' => "Error: Please enter SMS Credential"]);
+                return response()->json(['success' => false, 'message' => "Error: Please Enter SMS Credential"]);
             }
 
             if (!$userDatas->isEmpty()) {
@@ -819,8 +794,7 @@ class TemplateController extends Controller
                     NotificationsQue::insert($notificationsQueBatch);
                 }
             }
-            return response()->json(['success' => true, 'message' => 'Send SMS successfully']);
-            // return response()->json(['success' => false, 'message' => "Error: "  . $e->getMessage()]);
+            return response()->json(['success' => true, 'message' => 'Send SMS Successfully']);
         } catch (Exception $e) {
             Log::error('SmstemplateController::sendAllSms  => ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => "Error: "  . $e->getMessage()]);

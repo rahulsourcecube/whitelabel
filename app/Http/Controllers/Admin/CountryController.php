@@ -19,16 +19,14 @@ class CountryController extends Controller
 
     public function dtList(Request $request)
     {
-        // dd('tergh');
         try {
-            $columns = [ 'name'];
+            $columns = ['name'];
             $start = $request->input('start');
             $length = $request->input('length');
             $order = $request->input('order.0.column');
             $dir = $request->input('order.0.dir');
             $list = [];
             $searchColumn = ['name'];
-
 
             $query = CountryModel::orderBy($columns[$order], $dir);
 
@@ -42,14 +40,14 @@ class CountryController extends Controller
                         }
                     }
                 });
-             $totalData = $query->count();
+                $totalData = $query->count();
             } else {
                 // Count total records without search criteria
                 $totalData = CountryModel::count();
             }
 
             $results = $query->skip($start)->take($length)->get();
-          
+
             $list = [];
             foreach ($results as $result) {
                 $list[] = [
@@ -84,32 +82,32 @@ class CountryController extends Controller
 
     public function store(Request $request)
     {
-         try {
-            $countryCheckName = CountryModel::where(function($query) use ($request) {
+        try {
+            $countryCheckName = CountryModel::where(function ($query) use ($request) {
                 $query->where('name', $request->name);
-                
-                    if (!empty($request->short_name)) {
-                         
-                        $query->orWhere('short_name', $request->short_name);
-                    }
-                    if (!empty($request->code)) {
-                        $query->orWhere('phonecode', $request->code);
-                    }
+
+                if (!empty($request->short_name)) {
+
+                    $query->orWhere('short_name', $request->short_name);
+                }
+                if (!empty($request->code)) {
+                    $query->orWhere('phonecode', $request->code);
+                }
             })->first();
-            
+
             if (!empty($countryCheckName)) {
                 $errorFields = [];
                 if ($countryCheckName->name == $request->name) {
                     $errorFields[] = 'Country name';
                 }
-                if (!empty($request->short_name) &&$countryCheckName->short_name == $request->short_name) {
+                if (!empty($request->short_name) && $countryCheckName->short_name == $request->short_name) {
                     $errorFields[] = 'Short name';
                 }
-                if (!empty($request->code)&& $countryCheckName->phonecode == $request->code) {
+                if (!empty($request->code) && $countryCheckName->phonecode == $request->code) {
                     $errorFields[] = 'Phone code';
                 }
-            
-                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+
+                return redirect()->back()->with('error', implode(', ', $errorFields) . ' already exists ')->withInput();
             }
             $country = new CountryModel();
             $country->name = $request->name;
@@ -117,7 +115,7 @@ class CountryController extends Controller
             $country->phonecode = $request->code;
             $country->save();
 
-            return redirect()->route('admin.location.country.list')->with('success', 'Country Added successfully');
+            return redirect()->route('admin.location.country.list')->with('success', 'Country Added Successfully');
         } catch (\Exception $e) {
             Log::error('CountryController::store ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());
@@ -126,7 +124,6 @@ class CountryController extends Controller
 
     public function edit(Request $request)
     {
-        // dd($request->country);
         try {
             $data = [];
             $data['country'] = CountryModel::where('id', $request->country)->first();
@@ -141,21 +138,19 @@ class CountryController extends Controller
     function update(Request $request, $id)
     {
         try {
-          
             $countryCheckName = CountryModel::where('id', '!=', $id)
-    ->where(function($query) use ($request) {
-        $query->where('name', $request->name);
-        
-        if (!empty($request->short_name)) {
-            $query->orWhere('short_name', $request->short_name);
-        }
-        if (!empty($request->code)) {
-            $query->orWhere('phonecode', $request->code);
-        }
-        
-    })
-    ->first();
-            
+                ->where(function ($query) use ($request) {
+                    $query->where('name', $request->name);
+
+                    if (!empty($request->short_name)) {
+                        $query->orWhere('short_name', $request->short_name);
+                    }
+                    if (!empty($request->code)) {
+                        $query->orWhere('phonecode', $request->code);
+                    }
+                })
+                ->first();
+
             if (!empty($countryCheckName)) {
                 $errorFields = [];
                 if ($countryCheckName->name == $request->name) {
@@ -164,11 +159,11 @@ class CountryController extends Controller
                 if ($countryCheckName->short_name == $request->short_name) {
                     $errorFields[] = 'Short name';
                 }
-                if (!empty($request->code) && $countryCheckName->phonecode == $request->code) { 
+                if (!empty($request->code) && $countryCheckName->phonecode == $request->code) {
                     $errorFields[] = 'Phone code';
                 }
-            
-                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+
+                return redirect()->back()->with('error', implode(', ', $errorFields) . ' already exists ')->withInput();
             }
 
             $country =   CountryModel::find($id);
@@ -177,7 +172,7 @@ class CountryController extends Controller
             $country->phonecode = $request->code;
 
             $country->save();
-            return redirect()->route('admin.location.country.list')->with('success', 'Country Update successfully');
+            return redirect()->route('admin.location.country.list')->with('success', 'Country Update Successfully');
         } catch (\Exception $e) {
             Log::error('CountryController::update ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());

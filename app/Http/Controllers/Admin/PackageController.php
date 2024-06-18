@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\CompanyPackage;
 use App\Models\PackageModel;
 use Exception;
 use Illuminate\Http\Request;
@@ -129,7 +130,8 @@ class PackageController extends Controller
             $package->no_of_user = $request->user;
             $package->no_of_employee = $request->employee;
             $package->duration = $request->day;
-            $package->price = $request->price;
+
+            $package->price = $request->price ?? '0';
             $package->type = $request->type;
             $package->status = $request->status ? '1' : '0';
 
@@ -166,35 +168,33 @@ class PackageController extends Controller
         try {
             $package = new PackageModel();
             $package =   PackageModel::where('id', $id)->first();
+            if (empty($package)) {
+                return redirect()->back()->with('error', 'Package not found ');
+            }
             if ($request->hasFile('image')) {
-                $originalFilename = $request->file('image')->getClientOriginalName();
                 $extension = $request->file('image')->getClientOriginalExtension();
 
-                // Generate a random number as a prefix
+
                 $randomNumber = rand(1000, 9999);
-
-                // Generate a timestamp (e.g., current Unix timestamp)
                 $timestamp = time();
-
-                // Combine the timestamp, random number, an underscore, and the original extension
                 $image = $timestamp . '_' . $randomNumber . '.' . $extension;
 
-                // Move the file to the storage directory with the new filename+
+
                 $request->file('image')->move(base_path() . '/uploads/package', $image);
 
-                // Save the image path to the database
+
                 $package->image = $image;
             } else {
-                $package->image = $package->image; // or whatever default value you want
+                $package->image = $package->image;
             }
-            // dd($request->description);
+
             $package->title = $request->title;
-            $package->description = $request->description; // Fix typo in 'description' discription
+            $package->description = $request->description;
             $package->no_of_campaign = $request->campaign;
             $package->no_of_user = $request->user;
             $package->no_of_employee = $request->employee;
             $package->duration = $request->day;
-            $package->price = $request->price;
+            $package->price = $request->price ?? '0';
             $package->type = $request->type;
             $package->status = $request->status ? '1' : '0';
 
@@ -207,6 +207,26 @@ class PackageController extends Controller
             // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
             $package->save();
+            // Company Package details update
+            $activePackage = CompanyPackage::where('package_id', $id)->where('status', CompanyPackage::STATUS['ACTIVE'])->first();
+            $addPackage = new CompanyPackage();
+            $addPackage->company_id = $companyId;
+            $addPackage->package_id = $package->id;
+            $addPackage->start_date = $package->start_date;
+            $addPackage->end_date = $package->end_date;
+            $addPackage->no_of_campaign = $package->no_of_campaign;
+            $addPackage->no_of_user = $package->no_of_user;
+            $addPackage->no_of_employee = $package->no_of_employee;
+            $addPackage->price = $package->price;
+            $addPackage->paymnet_method = 'card';
+            $addPackage->status = !empty($activePackage) ? '0' : '1';
+            $addPackage->paymnet_response = null;
+            $addPackage->survey_status = $package->survey_status;
+            $addPackage->no_of_survey =  $package->no_of_survey;
+            $addPackage->mail_temp_status = $package->mail_temp_status;
+            $addPackage->sms_temp_status = $package->sms_temp_status;
+            $addPackage->community_status = $package->community_status;
+            $addPackage->save();
             return redirect()->route('admin.package.list')->with('success', 'Package Update successfully');
         } catch (\Exception $e) {
             Log::error('PackageController::update ' . $e->getMessage());

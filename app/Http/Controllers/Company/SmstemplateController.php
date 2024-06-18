@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
-use App\Jobs\SendEmailJob;
 use App\Models\CampaignModel;
-use App\Models\MailTemplate;
 use App\Models\NotificationsQue;
 use App\Models\SettingModel;
 use App\Models\SmsTemplate;
@@ -14,13 +12,11 @@ use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
 use App\Services\PlivoService;
 use App\Services\TwilioService;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
 class SmstemplateController extends Controller
@@ -33,8 +29,6 @@ class SmstemplateController extends Controller
             if ($ActivePackageData->sms_temp_status != "1") {
                 return redirect()->route('company.dashboard')->with('error', "You don't hav epermission.");
             }
-
-
             return view('company.smsTemplate.list');
         } catch (Exception $e) {
             Log::error('SmstemplateController::Index => ' . $e->getMessage());
@@ -93,8 +87,6 @@ class SmstemplateController extends Controller
                     base64_encode($result->id),
                     $type,
                     $result->template_type ?? "",
-
-
                 ];
             }
             return response()->json([
@@ -148,13 +140,9 @@ class SmstemplateController extends Controller
     }
     public function store(Request $request)
     {
-
         try {
             $companyId = Helper::getCompanyId();
-            $SmsTemplate = SmsTemplate::where('company_id', $companyId)
-                ->where('template_type', $request->type)
-                ->first();
-
+            $SmsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', $request->type)->first();
 
             if (empty($SmsTemplate) || empty($request->id)) {
 
@@ -181,9 +169,9 @@ class SmstemplateController extends Controller
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
     public function sendSms(Request $request)
     {
-
         try {
             $companyId = Helper::getCompanyId();
 
@@ -198,9 +186,7 @@ class SmstemplateController extends Controller
                 $webUrl =  'http://' . $webUrlGetHost;
             }
 
-
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
-
 
             if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
                 return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Credential"]);
@@ -232,7 +218,6 @@ class SmstemplateController extends Controller
                                     $message = str_replace('&nbsp;', ' ', $message);
                                     $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
 
-
                                     try {
                                         if (Helper::activeTwilioSetting()) {
                                             $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
@@ -241,13 +226,11 @@ class SmstemplateController extends Controller
                                             $twilioService->sendSMS($to, $message);
                                         } else {
                                             $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
-
                                             $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
                                             $PlivoService->sendSMS($to, $message);
                                         }
                                     } catch (Exception $e) {
                                         Log::error('Failed to send SMS: ' . $e->getMessage());
-                                        echo "Failed to send SMS: " . $e->getMessage();
                                     }
                                 }
                             }
@@ -256,7 +239,7 @@ class SmstemplateController extends Controller
                         }
                     }
                 }
-                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS Sent Fail</strong> :' . implode(', ', $notFoundNumber) : '';
 
                 return redirect()->route('company.sms.index')->with([
                     'success' => 'SMS sent successfully',
@@ -289,7 +272,6 @@ class SmstemplateController extends Controller
                                     // Remove unwanted '&nbsp;' text
                                     $message = str_replace('&nbsp;', ' ', $message);
 
-
                                     $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
                                     try {
                                         if (Helper::activeTwilioSetting()) {
@@ -300,13 +282,11 @@ class SmstemplateController extends Controller
                                             Log::error('UsrController:: sms send');
                                         } else {
                                             $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
-
                                             $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
                                             $PlivoService->sendSMS($to, $message);
                                         }
                                     } catch (Exception $e) {
                                         Log::error('Failed to send SMS: ' . $e->getMessage());
-                                        echo "Failed to send SMS: " . $e->getMessage();
                                     }
                                 }
                             }
@@ -315,7 +295,7 @@ class SmstemplateController extends Controller
                         }
                     }
                 }
-                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS Sent Fail</strong> :' . implode(', ', $notFoundNumber) : '';
 
                 return redirect()->route('company.sms.index')->with([
                     'success' => 'SMS sent successfully',
@@ -355,13 +335,11 @@ class SmstemplateController extends Controller
                                             $twilioService->sendSMS($to, $message);
                                         } else {
                                             $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
-
                                             $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
                                             $PlivoService->sendSMS($to, $message);
                                         }
                                     } catch (Exception $e) {
                                         Log::error('Failed to send SMS: ' . $e->getMessage());
-                                        echo "Failed to send SMS: " . $e->getMessage();
                                     }
                                 }
                             }
@@ -371,28 +349,22 @@ class SmstemplateController extends Controller
                         }
                     }
                 }
-                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS Sent Fail</strong> :' . implode(', ', $notFoundNumber) : '';
 
                 return redirect()->route('company.sms.index')->with([
                     'success' => 'SMS sent successfully',
                     'error_sms_hold' => $errorMessage
                 ]);
             } elseif ($request->template_type == 'new_task') {
-
-
                 foreach ($request->contact_number as $number) {
                     if (!empty($number)) {
-
                         $user = User::where('contact_number', $number)->where('company_id', $companyId)->where('user_type', '4')->first();
                         if (!empty($user)) {
                             if ($user->sms_new_task_notification != '1') {
                                 $SettingValue = SettingModel::where('user_id', $companyId)->first();
                                 $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'new_task')->first();
 
-
-
                                 $companyData =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
-                                // foreach ($companyDatas as $companyData) {
 
                                 if (!empty($smsTemplate)) {
                                     if (!empty($SettingValue) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
@@ -418,7 +390,6 @@ class SmstemplateController extends Controller
                                                 $twilioService->sendSMS($to, $message);
                                             } else {
                                                 $to = $SettingValue->plivo_mode == "2" ? $contact_number : $SettingValue->plivo_test_phone_number;
-
                                                 $PlivoService = new PlivoService($SettingValue->plivo_auth_id, $SettingValue->plivo_auth_token, $SettingValue->plivo_phone_number);
                                                 $PlivoService->sendSMS($to, $message);
                                             }
@@ -433,7 +404,7 @@ class SmstemplateController extends Controller
                         }
                     }
                 }
-                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS Sent Fail</strong> :' . implode(', ', $notFoundNumber) : '';
 
                 return redirect()->route('company.sms.index')->with([
                     'success' => 'SMS sent successfully',
@@ -476,13 +447,11 @@ class SmstemplateController extends Controller
                                             $twilioService->sendSMS($to, $message);
                                         } else {
                                             $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
-
                                             $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
                                             $PlivoService->sendSMS($to, $message);
                                         }
                                     } catch (Exception $e) {
                                         Log::error('Failed to send SMS: ' . $e->getMessage());
-                                        echo "Failed to send SMS: " . $e->getMessage();
                                     }
                                 }
                             }
@@ -491,7 +460,7 @@ class SmstemplateController extends Controller
                         }
                     }
                 }
-                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
+                $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS Sent Fail</strong> :' . implode(', ', $notFoundNumber) : '';
 
                 return redirect()->route('company.sms.index')->with([
                     'success' => 'SMS sent successfully',
@@ -507,10 +476,7 @@ class SmstemplateController extends Controller
                                 $SettingValue = SettingModel::where('user_id', $companyId)->first();
                                 $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
 
-
-
                                 $companyData =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
-                                // foreach ($companyDatas as $companyData) {
 
                                 if (!empty($smsTemplate)) {
                                     if (!empty($SettingValue) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
@@ -550,7 +516,6 @@ class SmstemplateController extends Controller
                                                 $twilioService->sendSMS($to, $message);
                                             } else {
                                                 $to = $SettingValue->plivo_mode == "2" ? $contact_number : $SettingValue->plivo_test_phone_number;
-
                                                 $PlivoService = new PlivoService($SettingValue->plivo_auth_id, $SettingValue->plivo_auth_token, $SettingValue->plivo_phone_number);
                                                 $PlivoService->sendSMS($to, $message);
                                             }
@@ -565,10 +530,7 @@ class SmstemplateController extends Controller
                             $SettingValue = SettingModel::where('user_id', $companyId)->first();
                             $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'custom')->first();
 
-
-
                             $companyData =  CampaignModel::where('company_id', $companyId)->orderBy('created_at', 'desc')->first();
-                            // foreach ($companyDatas as $companyData) {
 
                             if (!empty($smsTemplate)) {
 
@@ -590,7 +552,6 @@ class SmstemplateController extends Controller
                                         foreach ($matches[1] as $surveyValue) {
                                             $surveyFrom = Helper::getSurveyFrom($surveyValue);
                                             $survey_link = $company_link . '/survey' . '/' . $surveyFrom->slug;
-
                                             $template = str_replace('[survey[' . $surveyValue . ']]', $survey_link, $template);
                                         }
                                     }
@@ -609,8 +570,6 @@ class SmstemplateController extends Controller
                                             $twilioService->sendSMS($to, $message);
                                         } else {
                                             $to = $SettingValue->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
-
-
                                             $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
                                             $PlivoService->sendSMS($to, $message);
                                         }
@@ -619,15 +578,11 @@ class SmstemplateController extends Controller
                                     }
                                 }
                             }
-                            // $notFoundNumber[] = $number;
                         }
                     }
                 }
-                // $errorMessage = count($notFoundNumber) > 0 ? '<strong>SMS not sent this Number</strong> :' . implode(', ', $notFoundNumber) : '';
-
                 return redirect()->route('company.sms.index')->with([
                     'success' => 'SMS sent successfully'
-
                 ]);
             }
             return redirect()->route('company.sms.index')
@@ -658,7 +613,6 @@ class SmstemplateController extends Controller
                     $notificationsQueBatch[] = [
                         'company_id' => $companyId,
                         'user_id' => $userData->id,
-
                         'notifications_type' => "2",
                         'type' => $request->type,
                         'created_at' => now(),

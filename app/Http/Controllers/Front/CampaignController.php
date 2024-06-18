@@ -51,13 +51,8 @@ class CampaignController extends Controller
         $selectedState = $request->input('state');
         $selectedCity = $request->input('city');
 
-
-
-
         return view('front.campaign.list', compact('task_data', 'countrys', 'states', 'citys', 'selectedCountry', 'selectedState', 'selectedCity'));
     }
-
-
 
     public function detail($id)
     {
@@ -103,10 +98,8 @@ class CampaignController extends Controller
     function joinNow($join_link)
     {
         try {
-
             if (!(Auth::user())) {
                 session()->put('join_link', $join_link);
-
                 return redirect()->route('user.login');
             }
             return redirect()->route('user.campaign.view', $join_link);

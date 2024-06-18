@@ -1,0 +1,5 @@
+First Name,Last Name,Email Address,Contact,Password (Minimum=8),"Status(active=1,Deactive=0)"
+xyz,xyz,xyz1@yopmail.com,1234006789,12345678,1
+abc,abc,abc@yopmail.com,1534506789,12345678,1
+bcd,bcd,bcd@yopmail.com,1134506789,12345678,1
+pqr,pqr,pqr@yopmail.com,1334567089,12345678,1

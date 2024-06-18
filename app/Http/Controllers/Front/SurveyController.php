@@ -13,11 +13,6 @@ use Illuminate\Support\Facades\Log;
 class SurveyController extends Controller
 {
 
-    public function __construct()
-    {
-
-        $ActivePackageData = Helper::GetActivePackageData();
-    }
     public function survey(Request $request, SurveyForm $surveyForm)
     {
 
@@ -39,7 +34,6 @@ class SurveyController extends Controller
 
     public function Store(Request $request)
     {
-
         try {
             $companyId = Helper::getCompanyId();
 

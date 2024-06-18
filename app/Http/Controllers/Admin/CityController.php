@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-
-use App\Models\CountryModel;
 use App\Models\StateModel;
 use App\Models\CityModel;
+use App\Models\CountryModel;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 
 class CityController extends Controller
@@ -87,7 +83,7 @@ class CityController extends Controller
 
     public function create()
     {
-        $data['state'] = StateModel::all();
+        $data['country'] = CountryModel::all();
         return view('admin.location.city.create', $data);
     }
 
@@ -96,9 +92,10 @@ class CityController extends Controller
         try {
             $StateCheckName = CityModel::where(function ($query) use ($request) {
                 $query->where('name', $request->name)
-                    ->Where('state_id', $request->state);
-            })
-                ->first();
+                    ->Where('state_id', $request->state)
+                    ->Where('country_id', $request->country);
+            })->first();
+
 
             if (!empty($StateCheckName)) {
                 $errorFields = [];
@@ -113,11 +110,11 @@ class CityController extends Controller
             }
             $city = new CityModel();
             $city->state_id = $request->state;
+            $city->country_id = $request->country;
             $city->name = $request->name;
-            // $city->zipcode = $request->zipcode;
             $city->save();
 
-            return redirect()->route('admin.location.city.list')->with('success', 'City Added successfully');
+            return redirect()->route('admin.location.city.list')->with('success', 'City Added Successfully');
         } catch (\Exception $e) {
             Log::error('CityController::store ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());
@@ -131,8 +128,15 @@ class CityController extends Controller
 
         try {
             $data = [];
-            $data['city'] = CityModel::where('id', $request->city)->first();
-            $data['state'] = StateModel::all();
+            $city = CityModel::where('id', $request->city)->first();
+            if (empty($city)) {
+                return redirect()->back()->with('error', 'city not found');
+            }
+
+            $data['country'] = CountryModel::all();
+            $data['state'] = StateModel::where('country_id', $city->country_id)->get();
+            $data['city'] = $city;
+
             return view('admin.location.city.edit', $data);
         } catch (Exception $e) {
             Log::error('CityController::edit ' . $e->getMessage());
@@ -147,6 +151,7 @@ class CityController extends Controller
             $StateCheckName = CityModel::where('id', '!=', $id)
                 ->where(function ($query) use ($request) {
                     $query->where('name', $request->name)
+                        ->Where('country_id', $request->country)
                         ->Where('state_id', $request->state)
                         ->Where('zipcode', $request->zipcode);
                 })
@@ -160,19 +165,16 @@ class CityController extends Controller
                 if ($StateCheckName->state_id === $request->state_id) {
                     $errorFields[] = 'State name';
                 }
-
-
                 return redirect()->back()->with('error', implode(', ', $errorFields) . ' already exists ')->withInput();
             }
 
             $city =   CityModel::find($id);
-
+            $city->country_id = $request->country;
             $city->state_id = $request->state;
             $city->name = $request->name;
-            // $city->zipcode = $request->zipcode;
             $city->save();
 
-            return redirect()->route('admin.location.city.list')->with('success', 'City Update successfully');
+            return redirect()->route('admin.location.city.list')->with('success', 'City Update Successfully');
         } catch (\Exception $e) {
             Log::error('CityController::update ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());

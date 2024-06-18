@@ -4,19 +4,8 @@
     <?php ?>
     <style>
         /* .select2-container .select2-selection--single {
-                                                                                                                                                                                                                                                                                                                    height: 4px;
-
-                                                                                                                                                                                                                                                                                                                }
-
-                                                                                                                                                                                                                                                                                                                .select2-selection__rendered {
-                                                                                                                                                                                                                                                                                                                    line-height: 40px;
-
-                                                                                                                                                                                                                                                                                                                }
-
-                                                                                                                                                                                                                                                                                                                .select2-selection__arrow {
-                                                                                                                                                                                                                                                                                                                    height: 40px;
-
-                                                                                                                                                                                                                                                                                                                } */
+                                                                                                                                                                                                                                                                                                                                                height: 4px;
+                                                                                                                                                                                                                                                                                                                              } */
     </style>
     <!-- Content Wrapper START -->
 
@@ -143,10 +132,10 @@
                 </div>
             @else
                 <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="p-v-30">
-                            {{-- <h1 class="font-weight-semibold display-1 text-primary lh-1-2">404</h1> --}}
-                            <h1 class="font-weight-light font-size-30">Not Found</h1>
+                    <div class="col-md-12">
+                        <div class="p-v-30 text-center">
+                            <img src="{{ asset('assets/images/not-found.png') }}" class="w-25">
+                            <h2 class="text-center">Not Found</h2>
 
                         </div>
                     </div>

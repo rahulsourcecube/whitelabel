@@ -6,11 +6,9 @@ use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\StateController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\CompanyLoginController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TemplateController;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Company\CampaignController;
 use App\Http\Controllers\Company\ChannelsController;
 use App\Http\Controllers\Company\EmployeeController;
@@ -29,8 +27,6 @@ use App\Http\Controllers\Front\HomeController as ForntHomeController;
 use App\Http\Controllers\Front\SurveyController as ForntSurveyController;
 use App\Http\Controllers\User\CampaignController as UserCampaignController;
 use App\Http\Controllers\User\UsrController;
-
-
 use App\Jobs\SendEmailJob;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -151,6 +147,8 @@ Route::group(['middleware' => 'check.session'], function () {
         Route::prefix('setting')->name('setting.')->group(function () {
             Route::get('', [SettingController::class, 'index'])->name('index');
             Route::post('store', [SettingController::class, 'store'])->name('store');
+            Route::post('/get_states', [SettingController::class, 'get_states'])->name('get_states');
+            Route::post('/get_city', [SettingController::class, 'get_city'])->name('get_city');
         });
         Route::prefix('company')->name('company.')->group(function () {
             Route::get('', [AdminCompanyController::class, 'index'])->name('list');
@@ -167,11 +165,8 @@ Route::group(['middleware' => 'check.session'], function () {
         Route::post('update-change-password', [AdminController::class, 'update_change_password'])->name('update_change_password');
 
         Route::prefix('location')->name('location.')->group(function () {
-
             // country
-
             Route::prefix('country')->name('country.')->group(function () {
-
                 Route::get('', [CountryController::class, 'index'])->name('list');
                 Route::post('list', [CountryController::class, 'dtList'])->name('dtlist');
                 Route::get('create', [CountryController::class, 'create'])->name('create');
@@ -182,9 +177,7 @@ Route::group(['middleware' => 'check.session'], function () {
             });
 
             // state
-
             Route::prefix('state')->name('state.')->group(function () {
-
                 Route::get('', [StateController::class, 'index'])->name('list');
                 Route::post('list', [StateController::class, 'dtList'])->name('dtlist');
                 Route::get('create', [StateController::class, 'create'])->name('create');
@@ -193,12 +186,8 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::put('update/{state}', [StateController::class, 'update'])->name('update');
                 Route::delete('delete/{state}', [StateController::class, 'delete'])->name('delete');
             });
-
-
             // city
-
             Route::prefix('city')->name('city.')->group(function () {
-
                 Route::get('', [CityController::class, 'index'])->name('list');
                 Route::post('list', [CityController::class, 'dtList'])->name('dtlist');
                 Route::get('create', [CityController::class, 'create'])->name('create');
@@ -277,15 +266,11 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::delete('reply/delete/{answer}', [CommunityController::class, 'replyDelete'])->name('reply.delete');
             Route::get('/reply/like/{id}', [CommunityController::class, 'like'])->name('like');
             Route::get('/reply/unlike/{id}', [CommunityController::class, 'unlike'])->name('unlike');
-
-
-
             Route::prefix('questions')->name('questions.')->group(function () {
                 Route::get('create', [CommunityController::class, 'create'])->name('create');
                 Route::delete('delete/{questions}', [CommunityController::class, 'delete'])->name('delete');
             });
         });
-
 
         Route::prefix('user')->name('user.')->group(function () {
 
@@ -306,10 +291,7 @@ Route::group(['middleware' => 'check.session'], function () {
             Route::get('/phone/code', [UsrController::class, 'phoneCode'])->name('phone.code');
             Route::post('/get_states', [UsrController::class, 'get_states'])->name('get_states');
             Route::post('/get_city', [UsrController::class, 'get_city'])->name('get_city');
-
             Route::get('/sendsms', [UsrController::class, 'sendSMS'])->name('sendSMS');
-
-
             Route::middleware(['user'])->group(function () {
 
                 Route::get('/dashboard', [UsrController::class, 'dashboard'])->name('dashboard');
@@ -326,12 +308,8 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::post('setting/notification/change', [UsrController::class, 'changeNotification'])->name('notification.change');
                 Route::get('survey', [UsrController::class, 'surevy'])->name('survey');
                 Route::get('surevy/list', [UsrController::class, 'surevyList'])->name('survey.list');
-
-
                 Route::post('/reopen/{reopen}', [UsrController::class, 'reopen'])->name('progress.reopen');
-
                 Route::post('/claim-reward/{id}', [UsrController::class, 'claimReward'])->name('progress.claimReward');
-
                 Route::get('/analytics', [UsrController::class, 'analytics'])->name('analytics');
                 Route::get('/notification', [UsrController::class, 'notification'])->name('notification');
                 Route::get('/changePassword', [UsrController::class, 'editProfile'])->name('changePassword');
@@ -341,13 +319,8 @@ Route::group(['middleware' => 'check.session'], function () {
                 Route::get('/logout', [UsrController::class, 'Logout'])->name('logout');
                 //Rating
                 Route::post('/reivews/store', [UsrController::class, 'addTaskRating'])->name('store.reivews');
-                //end Rating
-
                 //Feedback
                 Route::post('/feedback/store', [UsrController::class, 'addTaskFeedback'])->name('store.feedback.task');
-                //end Feedback
-
-
             });
         });
 
@@ -390,9 +363,6 @@ Route::group(['middleware' => 'check.session'], function () {
         Route::get('verifyemail/{id}', [CompanyLoginController::class, 'verifyemail'])->name('user.verifyemail');
         Route::get('verifycontact/{id}', [CompanyLoginController::class, 'verifycontact'])->name('user.verifycontact');
 
-        // {{-- Company Middleware --}}
-
-
         Route::prefix('company')->name('company.')->middleware(['company'])->group(function () {
             Route::post('logout', [CompanyLoginController::class, 'logout'])->name('logout');
             Route::get('edit_profile', [CompanyLoginController::class, 'editProfile'])->name('edit_profile');
@@ -423,8 +393,6 @@ Route::group(['middleware' => 'check.session'], function () {
             });
             // Start buy package
             Route::middleware('buy.package')->group(function () {
-
-
                 Route::get('dashboard/{data?}', [CompanyLoginController::class, 'dashboard'])->name('dashboard');
                 Route::prefix('user')->name('user.')->group(function () {
                     Route::get('', [UserController::class, 'index'])->name('list');
@@ -442,22 +410,15 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('list/{type}', [CampaignController::class, 'index'])->name('list');
                     Route::get('tdlist/{type}', [CampaignController::class, 'tdlist'])->name('tdlist');;
                     Route::post('statuswiselist/user', [CampaignController::class, 'statuswiselist'])->name('statuswiselist');
-
                     Route::get('request/user/{id}', [CampaignController::class, 'request'])->name('request');
-
                     Route::get('request/user/details/{t_id}', [CampaignController::class, 'userDetails'])->name('userDetails');
                     Route::post('store/chat/{id}', [CampaignController::class, 'storeChat'])->name('storeChat');
                     Route::post('company-custom', [CampaignController::class, 'CompanyCustom'])->name('custom');
                     Route::post('request/social-analytics', [CampaignController::class, 'getSocialAnalytics'])->name('getSocialAnalytics');
-
-
-
                     Route::get('/create/{type}', [CampaignController::class, 'create'])->name('create');
                     Route::post('/store', [CampaignController::class, 'store'])->name('store');
                     Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
                     Route::get('/view/{type}/{id}', [CampaignController::class, 'view'])->name('view');
-
-
                     Route::get('/edit/{type}/{id}', [CampaignController::class, 'edit'])->name('edit');
                     Route::post('/update/{Campaign}', [CampaignController::class, 'update'])->name('update');
                     Route::delete('/delete/{id}', [CampaignController::class, 'delete'])->name('delete');
@@ -486,9 +447,6 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::post('/slug/check', [SurveyController::class, 'checkSlug'])->name('checkSlug');
                     Route::post('/sendSms', [SurveyController::class, 'sendSms'])->name('sendSms');
                     Route::post('/sendMail', [SurveyController::class, 'sendMail'])->name('sendMail');
-
-
-
                     Route::post('form/update/{survey}', [SurveyController::class, 'formUpdate'])->name('form.update');
                     Route::post('form/update_form/', [SurveyController::class, 'formUpdateForm'])->name('form.updateform');
                     Route::get('form/view/{survey}', [SurveyController::class, 'formView'])->name('form.view');
@@ -513,8 +471,6 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('edit/{id}', [ReplyController::class, 'view'])->name('view');
                     Route::delete('delete/{id}', [ReplyController::class, 'delete'])->name('delete');
                 });
-
-
                 //Task Progression
                 Route::prefix('progression')->name('progression.')->group(function () {
                     Route::get('progression', [CompanySettingController::class, 'progressionIndex'])->name('index');
@@ -530,7 +486,6 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::get('template/list', [MailtemplateController::class, 'list'])->name('template.list');
                     Route::post('template/store', [MailtemplateController::class, 'store'])->name('template.store');
                     Route::get('edit/{id}', [MailtemplateController::class, 'edit'])->name('template.edit');
-                    // Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
                     Route::post('send/mail', [MailtemplateController::class, 'sendMail'])->name('sendMail');
                     Route::post('send/all/mail', [MailtemplateController::class, 'sendAllMail'])->name('send.all');
                 });
@@ -543,14 +498,7 @@ Route::group(['middleware' => 'check.session'], function () {
                     Route::post('send/sms', [SmstemplateController::class, 'sendSms'])->name('sendSms');
                     Route::post('send/all/sms', [SmstemplateController::class, 'sendAllSms'])->name('send.all');
                 });
-                // Route::prefix('mail')->name('mail.')->group(function () {
-                //     Route::get('template', [MailtemplateController::class, 'index'])->name('index');
-                //     Route::get('template/create', [MailtemplateController::class, 'create'])->name('create');
-                //     Route::get('template/list', [MailtemplateController::class, 'list'])->name('template.list');
-                //     Route::post('template/store', [MailtemplateController::class, 'store'])->name('template.store');
-                //     Route::get('edit/{id}', [MailtemplateController::class, 'edit'])->name('template.edit');
-                //     Route::delete('delete/{id}', [CompanySettingController::class, 'progressionDelete'])->name('delete');
-                // });
+
                 // roles Route
                 Route::prefix('role')->name('role.')->group(function () {
                     // roles list Route

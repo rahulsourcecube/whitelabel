@@ -16,16 +16,15 @@ class HomeController extends Controller
 {
     public function success()
     {
-
         return view('front.error.thankyou');
     }
     public function error()
     {
         return view('front.error.error');
     }
+
     public function companyProfiles(Request $request)
     {
-
         $currentUrl = URL::current();
         if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
             // URL is under HTTPS
@@ -38,7 +37,6 @@ class HomeController extends Controller
             $url = $webUrl . config('app.domain');
             return redirect()->away($url);
         }
-
 
         $data['countrys'] = CountryModel::all();
         $data['states'] = StateModel::where('country_id', $request->input('country'))->get();
@@ -76,9 +74,7 @@ class HomeController extends Controller
 
         $data['companyProfiles'] = $company_data->paginate(12);
 
-
         $data['webUrl'] =  $webUrl;
-
 
         $data['selectedCountry'] = $request->input('country');
         $data['selectedState'] = $request->input('state');

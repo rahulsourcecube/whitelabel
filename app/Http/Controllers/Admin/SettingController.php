@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CityModel;
 use App\Models\SettingModel;
+use App\Models\StateModel;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -208,10 +210,38 @@ class SettingController extends Controller
 
                 $SettingModel->save();
             }
-            return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');
+            return redirect()->route('admin.setting.index')->with('success', 'Setting Update Successfully');
         } catch (\Throwable $e) {
             Log::error('SettingController::store ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
+    }
+    public function get_states(Request $request)
+    {
+        $country_id = $request->input('country_id');
+
+        $states = StateModel::where('country_id', $country_id)->get();
+
+        $options = '';
+        $options .= "<option value=''>Select state</option>";
+        foreach ($states as $state) {
+            $options .= "<option value='" . $state->id . "'>" . $state->name . "</option>";
+        }
+        // Return the options as JSON response
+        return response()->json($options);
+    }
+
+
+    public function get_city(Request $request)
+    {
+        $state_id = $request->input('state_id');
+
+        $citys = CityModel::where('state_id', $state_id)->get();
+        $options = '';
+        $options .= "<option value=''>Select City</option>";
+        foreach ($citys as $city) {
+            $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
+        }
+        return response()->json($options);
     }
 }

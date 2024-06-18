@@ -72,9 +72,10 @@ class User extends Authenticatable
 
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        $first_name = $this->first_name ?? '';
+        $last_name = $this->last_name ?? '';
+        return trim($first_name . ' ' . $last_name);
     }
-
     public function getUserStatusAttribute()
     {
         $status = $this->status;

@@ -16,11 +16,11 @@ use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
-     /**
+    /**
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
-     */   
+     */
 
     public function index()
     {
@@ -47,8 +47,6 @@ class AdminController extends Controller
             $data['total_user'] = User::where('user_type', 4)->where('status', '1')->count();
 
             $data['company'] = CompanyModel::leftJoin('users', 'company.user_id', '=', 'users.id')->where('users.status', '1')->get();
-            // $query = CompanyModel:: // Assuming 'user_id' is the foreign key in CompanyModel
-               
 
             $data['old_company'] = User::where('user_type', 2)->where('status', '1')->where(function ($query) use ($currentMonth, $currentYear) {
                 $query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);
@@ -123,8 +121,7 @@ class AdminController extends Controller
             if (Hash::check($request->current_password, auth()->user()->password)) {
                 $user->password = Hash::make($request->new_password);
                 $user->save();
-                // Auth::logout();
-                return redirect()->route('admin.ChengPassword')->with('success', 'Password Update successfully');
+                return redirect()->route('admin.ChengPassword')->with('success', 'Password Update Successfully');
             } else {
                 return redirect()->back()->with('error', 'Current Password do not match your Password.');
             }

@@ -11,9 +11,7 @@ use App\Models\PackageModel;
 use App\Models\Payment;
 use App\Models\SettingModel;
 use App\Models\User;
-use App\Models\CountryModel;
-use App\Models\StateModel;
-use App\Models\CityModel;
+use App\Models\SurveyForm;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -24,28 +22,20 @@ use Illuminate\Support\Facades\Log;
 
 class CompanyController extends Controller
 {
-
-
-    function statelist()
+    public function statelist()
     {
-        // dd('egvertg');
         return view('admin.location.statelist');
     }
 
-    function citylist()
+    public function citylist()
     {
-        // dd('egvertg');
         return view('admin.location.citylist');
     }
 
-
-
-
-    function index()
+    public function index()
     {
         try {
             $packages = PackageModel::where('status', PackageModel::STATUS['ACTIVE'])->get();
-
             return view('admin.company.list', compact('packages'));
         } catch (Exception $e) {
             Log::error('CompanyController::Index ' . $e->getMessage());
@@ -137,7 +127,80 @@ class CompanyController extends Controller
                                                             class="anticon anticon-check"></i> </div>
                                                 </div>
                                             </li>
-                                        </ul>
+                                            <li class="m-b-20">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-dark font-weight-semibold">Survey</span>';
+                    if ($list->no_of_survey && $list->survey_status == '1') {
+                        $html .= '<div class="text-success font-size-16">
+                                                      <i class="anticon anticon-check"></i>
+                                                  </div>';
+                    } else {
+                        $html .= '<div class="text-danger font-size-16">
+                                                      <i class="anticon anticon-close"></i>
+                                                  </div>';
+                    }
+                    $html .= '</div>
+                                        </li>';
+
+                    if ($list->no_of_survey && $list->survey_status == '1') {
+                        $html .= '<li class="m-b-20">
+                                                    <div class="d-flex justify-content-between">
+                                                        <span class="text-dark font-weight-semibold">No Of Survey ' . $list->no_of_survey . '</span>
+                                                        <div class="text-success font-size-16">
+                                                            <i class="anticon anticon-check"></i>
+                                                        </div>
+                                                    </div>
+                                                </li>';
+                    }
+
+                    $html .= '
+                                        <li class="m-b-20">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-dark font-weight-semibold">Community ' . ($list->community_status ? 'on' : '') . '</span>';
+                    if ($list->community_status && $list->community_status == '1') {
+                        $html .= '<div class="text-success font-size-16">
+                                                      <i class="anticon anticon-check"></i>
+                                                  </div>';
+                    } else {
+                        $html .= '<div class="text-danger font-size-16">
+                                                      <i class="anticon anticon-close"></i>
+                                                  </div>';
+                    }
+                    $html .= '</div>
+                                        </li>';
+
+                    $html .= '
+                                        <li class="m-b-20">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-dark font-weight-semibold">Mail Template ' . ($list->mail_temp_status ? 'on' : '') . '</span>';
+                    if ($list->mail_temp_status && $list->mail_temp_status == '1') {
+                        $html .= '<div class="text-success font-size-16">
+                                                      <i class="anticon anticon-check"></i>
+                                                  </div>';
+                    } else {
+                        $html .= '<div class="text-danger font-size-16">
+                                                      <i class="anticon anticon-close"></i>
+                                                  </div>';
+                    }
+                    $html .= '</div>
+                                        </li>';
+
+                    $html .= '
+                                        <li class="m-b-20">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-dark font-weight-semibold">Sms Template ' . ($list->sms_temp_status ? 'on' : '') . '</span>';
+                    if ($list->sms_temp_status && $list->sms_temp_status == '1') {
+                        $html .= '<div class="text-success font-size-16">
+                                                      <i class="anticon anticon-check"></i>
+                                                  </div>';
+                    } else {
+                        $html .= '<div class="text-danger font-size-16">
+                                                      <i class="anticon anticon-close"></i>
+                                                  </div>';
+                    }
+                    $html .= '</div>
+                                        </li>
+                                    </ul>
                                         <div class="package-description">
                                          ' . $list->description . '</div>
                                         <form action="' . route("admin.company.buy") . '" method="POST"
@@ -173,10 +236,6 @@ class CompanyController extends Controller
             return response()->json(['success' => false, 'html' => $html = '<div class="row"><h4>No packages found</h4></div>']);
         }
     }
-
-
-
-
 
     public function dtList(Request $request)
     {
@@ -217,21 +276,22 @@ class CompanyController extends Controller
             $list = [];
             foreach ($results as $result) {
 
-                $list[] = [
-                    $result->id,
-                    $result->user->first_name  . ' ' . $result->user->last_name,
-                    $result->user->email,
-                    $result->user->contact_number,
-                    $result->company_name,
-                    $result->subdomain . '.' . $request->getHost(),
-                    $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
-                    $result->email,
-                    $result->email,
-                    $result->email,
-                    $result->is_individual,
-                ];
+                if (!empty($result->user)) {
+                    $list[] = [
+                        $result->id,
+                        $result->user->FullName ?? '-',
+                        $result->user->email ?? '',
+                        $result->user->contact_number ?? '',
+                        $result->company_name ?? '',
+                        $result->subdomain . '.' . $request->getHost(),
+                        $result->user->status == '1' ? '<button class="btn btn-success btn-sm">Active</button>' : '<button class="btn btn-danger btn-sm">Deactive</button>',
+                        $result->email ?? '',
+                        $result->email ?? '',
+                        $result->email ?? '',
+                        $result->is_individual,
+                    ];
+                }
             }
-
             return response()->json([
                 "draw" => intval($request->input('draw')),
                 "recordsTotal" => $totalData,
@@ -262,6 +322,7 @@ class CompanyController extends Controller
             $data['CampaignModelCount'] = !empty($data['ActivePackageData']) ? CampaignModel::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count() : 0;
             $data['staffCount'] =  !empty($data['ActivePackageData']) ? User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['STAFF'])->count() : 0;
             $data['userCount'] =  !empty($data['ActivePackageData']) ? User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['USER'])->count() : 0;
+            $data['surveyCount'] =  !empty($data['ActivePackageData']) ? SurveyForm::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count() : 0;
 
             return view('admin.company.view', $data);
         } catch (Exception $e) {
@@ -274,7 +335,6 @@ class CompanyController extends Controller
     {
         try {
             $data = [];
-
             $data['user_company'] = CompanyModel::where('user_id', $request->id)->first();
             $data['setting'] = SettingModel::where('user_id', $data['user_company']->user_id)->first();
             $data['editprofiledetail'] = User::where('id', $data['user_company']->user_id)->first();
@@ -298,7 +358,6 @@ class CompanyController extends Controller
             return redirect()->back()->with('success', 'Password Update Successfully!');
         } catch (Exception $e) {
             Log::info("CompanyController::updatepassword " . $e->getMessage());
-            // return $this->sendError($e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
     }
@@ -309,7 +368,6 @@ class CompanyController extends Controller
             $updateprofiledetail = User::where('id', $id)->first();
             $updateprofiledetail['first_name'] = isset($request->first_name) ? $request->first_name : '';
             $updateprofiledetail['last_name'] = isset($request->last_name) ? $request->last_name : '';
-            // $updateprofiledetail['email'] = isset($request->email) ? $request->email : '';
             $updateprofiledetail['contact_number'] = isset($request->contact_number) ? $request->contact_number : '';
             $updateprofiledetail['status'] = !empty($request->status) ? '1' : '0';
             if ($request->hasFile('profile_image')) {
@@ -386,7 +444,7 @@ class CompanyController extends Controller
                 $SettingModel->twitter_link = $request->twitter_link;
                 $SettingModel->linkedin_link = $request->linkedin_link;
                 $SettingModel->save();
-                return redirect()->back()->with('success', 'Setting Update successfully');
+                return redirect()->back()->with('success', 'Setting Update Successfully');
             }
         } catch (\Throwable $e) {
             Log::info("CompanyController::store " . $e->getMessage());
@@ -406,11 +464,9 @@ class CompanyController extends Controller
 
             $package = PackageModel::where('id', $request->package_id)->first();
             if (empty($package)) {
-                // return response()->json(['error' => true, 'message' => 'Package not found']);
                 return redirect()->back()->with('error', 'Package not found');
             }
 
-            // dd($package->start_date, $package, $package->end_date);
             $addPackage = new CompanyPackage();
             $addPackage->company_id = $companyId;
             $addPackage->package_id = $package->id;
@@ -440,9 +496,7 @@ class CompanyController extends Controller
 
                 $addPackage->update(['paymnet_id' => $makePayment->id]);
                 return redirect()->back()->with('success', 'Package activated successfully!');
-                // return response()->json(['success' => true, 'message' => 'Package activated successfully!']);
             } else {
-                // return response()->json(['error' => true, 'message' => 'Something went wrong, please try again later!']);
                 return redirect()->back()->with('error', 'Something went wrong, please try again later!');
             }
         } catch (Exception $e) {

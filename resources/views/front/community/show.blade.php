@@ -34,9 +34,6 @@
                                     file_exists(base_path() . '/uploads/community/' . $questions->image))
                                 <img src="{{ asset('uploads/community/' . $questions->image) }}"
                                     style="max-width:80%; max-height: 500px;">
-                            @else
-                                <img src="{{ asset('assets/images/profile_image.jpg') }}"
-                                    style="max-width:80%; max-height: 500px;">
                             @endif
 
 

@@ -178,12 +178,12 @@
                                 <a href="{{ route('company.progression.index') }}">Task Progression</a>
                             </li>
 
-                            @if ($ActivePackageData->mail_temp_status == '1' && !empty($ActivePackageData->mail_temp_status))
+                            @if (!empty($ActivePackageData->mail_temp_status) && $ActivePackageData->mail_temp_status == '1')
                                 <li @if (request()->segment(2) == 'mail') class='active' @endif>
                                     <a href="{{ route('company.mail.index') }}">Mail Template</a>
                                 </li>
                             @endif
-                            @if ($ActivePackageData->sms_temp_status == '1' && !empty($ActivePackageData->sms_temp_status))
+                            @if (!empty($ActivePackageData->sms_temp_status) && $ActivePackageData->sms_temp_status == '1')
                                 <li @if (request()->segment(2) == 'sms') class='active' @endif>
                                     <a href="{{ route('company.sms.index') }}">SMS Template</a>
                                 </li>
@@ -192,7 +192,7 @@
                         </ul>
                     </li>
                 @endif
-                @if ($ActivePackageData->survey_status == '1' && !empty($ActivePackageData->no_of_survey))
+                @if (!empty($ActivePackageData->no_of_survey) && $ActivePackageData->survey_status == '1')
                     <li class="nav-item dropdown">
                         <a class="dropdown-toggle" href="javascript:void(0);">
                             <span class="icon-holder">
@@ -214,7 +214,7 @@
                         </ul>
                     </li>
                 @endif
-                @if ($ActivePackageData->community_status == '1' && !empty($ActivePackageData->community_status))
+                @if (!empty($ActivePackageData->community_status) && $ActivePackageData->community_status == '1')
                     <li class="nav-item dropdown">
                         <a class="dropdown-toggle" href="javascript:void(0);">
                             <span class="icon-holder">

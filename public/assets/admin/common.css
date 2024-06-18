@@ -1,322 +1,322 @@
-.form-control::placeholder {
-    color: #0f0f0f;
-}
-
-.logo  img{
-    /* max-width: 100px; */
-    max-height: 70px;
-}
-
-.error {
-    color: red;
-}
-.notification {
-    max-width: 100%;
-    padding: calc(70px + 25px) 25px 25px;
-}
-.company.page-container .main-content,
-.user-panel.page-container .main-content {
-    padding: calc(2px) 25px 25px;
-}
-.side-nav .side-nav-inner .side-nav-menu li.dropdown.open>a {
-    /* color: #3f87f5; */
-}
-
-.side-nav .side-nav-inner .side-nav-menu>li.active {
-    background-color: rgba(63, 135, 245, 0.15);
-    color: #3f87f5;
-    position: relative;
-
-}
-
-/* .side-nav .side-nav-inner .side-nav-menu>li {
-    position: relative;
-} */
-
-.side-nav .side-nav-inner .side-nav-menu>li.active::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    -webkit-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-    -moz-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-    -o-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-    -ms-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-    opacity: 1;
-    border-right: 2px solid;
-    border-color: #3f87f5;
-}
-.readonly{
-    background-color: unset Im !important;
-}
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin: 0;
-}
-
-.user-table-scroll{
-    max-height: 200px;
-    overflow-y: auto;
-}
-.user-table-scroll thead {
-    position: sticky;
-    top: 0;
-}
-
-.user-table-scroll thead{
-    background-color: #ffffff;
-}
-/* a i.anticon {
-    line-height: 0;
-    vertical-align: -0.6em;
-} */
-
-
-        .container {
-            max-width: 1100px;
-            /*padding: 0 20px;*/
-            margin: 0 auto;
-        }
-
-        .panel {
-            /* margin: 100px auto 40px; */
-            max-width: 500px;
-            text-align: center;
-        }
-
-        .button_outer {
-            background: #83ccd3;
-            border-radius: 30px;
-            text-align: center;
-            height: 50px;
-            width: 200px;
-            display: inline-block;
-            transition: .2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn_upload {
-            padding: 17px 30px 12px;
-            color: #fff;
-            text-align: center;
-            position: relative;
-            display: inline-block;
-            overflow: hidden;
-            z-index: 3;
-            white-space: nowrap;
-        }
-
-        .btn_upload input {
-            position: absolute;
-            width: 100%;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 105%;
-            cursor: pointer;
-            opacity: 0;
-        }
-
-        .file_uploading {
-            width: 100%;
-            height: 10px;
-            margin-top: 20px;
-            background: #ccc;
-        }
-
-        .file_uploading .btn_upload {
-            display: none;
-        }
-
-        .processing_bar {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 0;
-            height: 100%;
-            border-radius: 30px;
-            background: #83ccd3;
-            transition: 3s;
-        }
-
-        .file_uploading .processing_bar {
-            width: 100%;
-        }
-
-        .success_box {
-            display: none;
-            width: 50px;
-            height: 50px;
-            position: relative;
-        }
-
-        .success_box:before {
-            content: '';
-            display: block;
-            width: 9px;
-            height: 18px;
-            border-bottom: 6px solid #fff;
-            border-right: 6px solid #fff;
-            -webkit-transform: rotate(45deg);
-            -moz-transform: rotate(45deg);
-            -ms-transform: rotate(45deg);
-            transform: rotate(45deg);
-            position: absolute;
-            left: 17px;
-            top: 10px;
-        }
-
-        .file_uploaded .success_box {
-            display: inline-block;
-        }
-
-        .file_uploaded {
-            margin-top: 0;
-            width: 50px;
-            background: #83ccd3;
-            height: 50px;
-            padding: 5px
-        }
-
-        .uploaded_file_view {
-            max-width: 300px;
-            margin: 20px auto;
-            text-align: center;
-            position: relative;
-            transition: .2s;
-            opacity: 0;
-            border: 2px solid #ddd;
-            padding: 15px;
-        }
-
-        .file_remove {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: block;
-            position: absolute;
-            background: #aaa;
-            line-height: 30px;
-            color: #fff;
-            font-size: 12px;
-            cursor: pointer;
-            right: -15px;
-            top: -15px;
-        }
-
-        .file_remove:hover {
-            background: #222;
-            transition: .2s;
-        }
-
-        .uploaded_file_view img {
-            max-width: 100%;
-        }
-
-        .uploaded_file_view.show {
-            opacity: 1;
-        }
-
-        .error_msg {
-            text-align: center;
-            color: #f00
-        }
-        .chat-style{
-            line-height: normal !important;
-            max-width: none !important;
-            resize:none !important;
-        }
-        .custom-footer{
-            max-height: 75px !important;
-            align-items: center !important;
-        }
-        .custom-button{
-            width: max-content !important;
-        }
-#style-4::-webkit-scrollbar-track
-{
-	/* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); */
-	background-color: #F5F5F5;
-}
-
-#style-4::-webkit-scrollbar
-{
-	width: 5px;
-	background-color: #F5F5F5;
-}
-
-#style-4::-webkit-scrollbar-thumb
-{
-	background-color:   #3f87f5;
-	border: 2px solid #3f87f5;
-    border-radius: 6px;
-}
-.custom-modal{
-    padding-bottom: 6px;
-}
-
-@media(max-width: 767.9px){
-    .conversation{
-        display: block !important;
+    .form-control::placeholder {
+        color: #0f0f0f;
     }
-}
 
-.chat.chat-app .chat-content .conversation-body.empty-chat{
-    height: calc(50vh - 70px - 155px - 70px - 30px);
-}
+    .logo  img{
+        /* max-width: 100px; */
+        max-height: 70px;
+    }
 
-.chat.chat-app .chat-content .conversation-body.empty-chat h3{
-    line-height: 90px;
+    .error {
+        color: red;
+    }
+    .notification {
+        max-width: 100%;
+        padding: calc(70px + 25px) 25px 25px;
+    }
+    .company.page-container .main-content,
+    .user-panel.page-container .main-content {
+        padding: calc(2px) 25px 25px;
+    }
+    .side-nav .side-nav-inner .side-nav-menu li.dropdown.open>a {
+        /* color: #3f87f5; */
+    }
 
-}
-.btn-sm{
-    margin: 0px 5px 5px 0px;
-}
+    .side-nav .side-nav-inner .side-nav-menu>li.active {
+        background-color: rgba(63, 135, 245, 0.15);
+        color: #3f87f5;
+        position: relative;
 
-.w-max-content {
-    width: max-content !important;
-}
-.empty-chat{
-    height: 250px !important;
-    display: flex !important;
-    justify-content: center !important;
-}
+    }
 
-.addFiledRemove {
-    position: absolute;
-    right: 21px;
-    margin: 0px 10px;
-    z-index: 1;
-}
-.survey-app .footer {
-    position: fixed !important;
-    bottom: 0 !important;
+    /* .side-nav .side-nav-inner .side-nav-menu>li {
+        position: relative;
+    } */
 
-}
-.front-app .footer {
-    position: fixed !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    background-color: #ffffff !important;
+    .side-nav .side-nav-inner .side-nav-menu>li.active::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        -webkit-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+        -moz-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+        -o-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+        -ms-transition: opacity 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+        opacity: 1;
+        border-right: 2px solid;
+        border-color: #3f87f5;
+    }
+    .readonly{
+        background-color: unset Im !important;
+    }
 
-}
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    .user-table-scroll{
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .user-table-scroll thead {
+        position: sticky;
+        top: 0;
+    }
+
+    .user-table-scroll thead{
+        background-color: #ffffff;
+    }
+    /* a i.anticon {
+        line-height: 0;
+        vertical-align: -0.6em;
+    } */
+
+
+            .container {
+                max-width: 1100px;
+                /*padding: 0 20px;*/
+                margin: 0 auto;
+            }
+
+            .panel {
+                /* margin: 100px auto 40px; */
+                max-width: 500px;
+                text-align: center;
+            }
+
+            .button_outer {
+                background: #83ccd3;
+                border-radius: 30px;
+                text-align: center;
+                height: 50px;
+                width: 200px;
+                display: inline-block;
+                transition: .2s;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn_upload {
+                padding: 17px 30px 12px;
+                color: #fff;
+                text-align: center;
+                position: relative;
+                display: inline-block;
+                overflow: hidden;
+                z-index: 3;
+                white-space: nowrap;
+            }
+
+            .btn_upload input {
+                position: absolute;
+                width: 100%;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 105%;
+                cursor: pointer;
+                opacity: 0;
+            }
+
+            .file_uploading {
+                width: 100%;
+                height: 10px;
+                margin-top: 20px;
+                background: #ccc;
+            }
+
+            .file_uploading .btn_upload {
+                display: none;
+            }
+
+            .processing_bar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 0;
+                height: 100%;
+                border-radius: 30px;
+                background: #83ccd3;
+                transition: 3s;
+            }
+
+            .file_uploading .processing_bar {
+                width: 100%;
+            }
+
+            .success_box {
+                display: none;
+                width: 50px;
+                height: 50px;
+                position: relative;
+            }
+
+            .success_box:before {
+                content: '';
+                display: block;
+                width: 9px;
+                height: 18px;
+                border-bottom: 6px solid #fff;
+                border-right: 6px solid #fff;
+                -webkit-transform: rotate(45deg);
+                -moz-transform: rotate(45deg);
+                -ms-transform: rotate(45deg);
+                transform: rotate(45deg);
+                position: absolute;
+                left: 17px;
+                top: 10px;
+            }
+
+            .file_uploaded .success_box {
+                display: inline-block;
+            }
+
+            .file_uploaded {
+                margin-top: 0;
+                width: 50px;
+                background: #83ccd3;
+                height: 50px;
+                padding: 5px
+            }
+
+            .uploaded_file_view {
+                max-width: 300px;
+                margin: 20px auto;
+                text-align: center;
+                position: relative;
+                transition: .2s;
+                opacity: 0;
+                border: 2px solid #ddd;
+                padding: 15px;
+            }
+
+            .file_remove {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                display: block;
+                position: absolute;
+                background: #aaa;
+                line-height: 30px;
+                color: #fff;
+                font-size: 12px;
+                cursor: pointer;
+                right: -15px;
+                top: -15px;
+            }
+
+            .file_remove:hover {
+                background: #222;
+                transition: .2s;
+            }
+
+            .uploaded_file_view img {
+                max-width: 100%;
+            }
+
+            .uploaded_file_view.show {
+                opacity: 1;
+            }
+
+            .error_msg {
+                text-align: center;
+                color: #f00
+            }
+            .chat-style{
+                line-height: normal !important;
+                max-width: none !important;
+                resize:none !important;
+            }
+            .custom-footer{
+                max-height: 75px !important;
+                align-items: center !important;
+            }
+            .custom-button{
+                width: max-content !important;
+            }
+    #style-4::-webkit-scrollbar-track
+    {
+        /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); */
+        background-color: #F5F5F5;
+    }
+
+    #style-4::-webkit-scrollbar
+    {
+        width: 5px;
+        background-color: #F5F5F5;
+    }
+
+    #style-4::-webkit-scrollbar-thumb
+    {
+        background-color:   #3f87f5;
+        border: 2px solid #3f87f5;
+        border-radius: 6px;
+    }
+    .custom-modal{
+        padding-bottom: 6px;
+    }
+
+    @media(max-width: 767.9px){
+        .conversation{
+            display: block !important;
+        }
+    }
+
+    .chat.chat-app .chat-content .conversation-body.empty-chat{
+        height: calc(50vh - 70px - 155px - 70px - 30px);
+    }
+
+    .chat.chat-app .chat-content .conversation-body.empty-chat h3{
+        line-height: 90px;
+
+    }
+    .btn-sm{
+        margin: 0px 5px 5px 0px;
+    }
+
+    .w-max-content {
+        width: max-content !important;
+    }
+    .empty-chat{
+        height: 250px !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
+    .addFiledRemove {
+        position: absolute;
+        right: 21px;
+        margin: 0px 10px;
+        z-index: 1;
+    }
+    .survey-app .footer {
+        position: fixed !important;
+        bottom: 0 !important;
+
+    }
+    .front-app .footer {
+        position: fixed !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        background-color: #ffffff !important;
+
+    }
 
 
     .select2-container .select2-selection--single {
-        height: 40px !important; /* Adjust this value as needed */
+        height: 40px !important;
     }
     .select2-selection__rendered {
-        line-height: 40px !important; /* Match this to the height */
+        line-height: 40px !important;
 
     }
     .select2-selection__arrow {
-        height: 40px !important; /* Match this to the height */
+        height: 40px !important;
 
     }
     .select2-container--bootstrap4 .select2-selection--single:focus {

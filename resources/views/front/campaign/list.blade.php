@@ -122,8 +122,9 @@
                                 {{ $task_data->appends(Request::all())->links() }}
                             </div>
                         @else
-                            <div class="col-sm-12 h-15 w-50 pagination justify-content-center">
-                                <h1 class="text-center">Not Found</h1>
+                            <div class="col-sm-12 h-15 w-50 text-center">
+                                <img src="{{ asset('assets/images/not-found.png') }}" class="w-25">
+                                <h2 class="text-center">Not Found</h2>
                             </div>
 
                         @endif
