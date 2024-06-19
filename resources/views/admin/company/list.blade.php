@@ -38,7 +38,7 @@
                         <i class="anticon anticon-close"></i>
                     </button>
                 </div>
-                <div class="modal-body d-flex">
+                <div class="modal-body">
 
                 </div>
             </div>
@@ -59,7 +59,7 @@
                     search: "",
                     searchPlaceholder: "Search Here",
                 },
-              // Load data from an Ajax source
+                // Load data from an Ajax source
                 "ajax": {
                     "url": "{{ route('admin.company.dtlist') }}",
                     "type": "POST",
@@ -81,7 +81,7 @@
                 }, {
                     'targets': 7,
                     'visible': true,
-                    'class':'d-flex',
+                    'class': 'd-flex',
                     'orderable': false,
                     'render': function(data, type, row) {
                         var viewUrl = '{{ route('admin.company.view', ':id') }}';

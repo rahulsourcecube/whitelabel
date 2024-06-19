@@ -17,17 +17,16 @@ use App\Models\SettingModel;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Str;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail as FacadesMail;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
-use App\Mail\company\CompanyWelcomeMail;
 use App\Jobs\SendEmailJob;
 use App\Models\MailTemplate;
 use App\Models\SmsTemplate;
+use App\Models\SurveyForm;
+use App\Services\PlivoService;
 use App\Services\TwilioService;
 use Illuminate\Support\Facades\URL;
 
@@ -68,13 +67,13 @@ class CompanyLoginController extends Controller
                 return redirect()->route('company.signin');
             }
 
-
             $data = [];
 
             $data['total_campaign'] = 0;
             $data['total_user'] = 0;
             $data['new_user'] = 0;
             $data['old_user'] = 0;
+            $data['surveyCount'] = 0;
             $data['total_campaign'] = CampaignModel::where('company_id', $companyId)->where('status', '1')->count();
             $data['old_user'] = User::where('company_id', $companyId)->where('user_type', '4')->where(function ($query) use ($currentMonth, $currentYear) {
                 $query->whereMonth('created_at', '<>', $currentMonth)->orWhereYear('created_at', '<>', $currentYear);
@@ -90,6 +89,7 @@ class CompanyLoginController extends Controller
             $data['referral_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '1')->orderBy("id", "DESC")->take(5)->get();
             $data['social_share_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '2')->orderBy("id", "DESC")->take(5)->get();
             $data['custom_tasks'] = CampaignModel::where('company_id', $companyId)->where('type', '3')->orderBy("id", "DESC")->take(5)->get();
+            $data['surveyCount'] = SurveyForm::where('company_id', $companyId)->count();
 
             $start_time = strtotime('first day of this month');
             $end_time = strtotime(date("Y-m-d"));
@@ -282,11 +282,11 @@ class CompanyLoginController extends Controller
             $userMail = User::where('user_type', '1')->first();
             $smsTemplate = SmsTemplate::where('company_id', $userMail->id)->where('template_type', 'welcome')->first();
             if (!empty($smsTemplate)) {
-                // $SettingModel = SettingModel::first();
 
                 $SettingModel = SettingModel::where('user_id', $userMail->id)->first();
 
-                if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                if (!empty($SettingModel) && (Helper::adminactiveTwilioSetting() == true || Helper::adminActivePlivoSetting() == true)) {
+
                     $name = $request->fname;
                     $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
                     $company_link = $webUrl ? $webUrl : '';
@@ -298,10 +298,17 @@ class CompanyLoginController extends Controller
                     // Remove unwanted '&nbsp;' text
                     $message = str_replace('&nbsp;', ' ', $message);
                     $contact_number = Helper::getReqestPhoneCode($request->ccontact, $request->country);
-                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                     try {
-                        $twilioService->sendSMS($to, $message);
+                        if (Helper::adminactiveTwilioSetting()) {
+                            $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                            $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                            $twilioService->sendSMS($to, $message);
+                        } else {
+                            $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                            $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                            $PlivoService->sendSMS($to, $message);
+                        }
                     } catch (Exception $e) {
                         Log::error('Failed to send SMS: ' . $e->getMessage());
                         echo "Failed to send SMS: " . $e->getMessage();
@@ -372,8 +379,6 @@ class CompanyLoginController extends Controller
         try {
             $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'Reset Password';
 
-            // dd($mailTemplateSubject, $userEmail->FullName, $request->email);
-
             Mail::send(
                 'company.email.forgetPassword',
                 [
@@ -389,7 +394,6 @@ class CompanyLoginController extends Controller
                 }
             );
         } catch (Exception $e) {
-
             Log::error('CompanyLoginController::submitForgetPassword => ' . $e->getMessage());
             return redirect()->back()->with('error', "Something went wrong");
         }
@@ -398,7 +402,8 @@ class CompanyLoginController extends Controller
 
         if (!empty($smsTemplate)) {
             $SettingModel = SettingModel::first();
-            if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+            if (!empty($SettingModel) && (Helper::adminactiveTwilioSetting() == true || Helper::adminActivePlivoSetting() == true)) {
+
                 $name = $userEmail->first_name;
                 $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
                 $company_link = $webUrl ? $webUrl : '';
@@ -406,13 +411,19 @@ class CompanyLoginController extends Controller
                 $html = str_replace(["[user_name]", "[company_title]", "[company_web_link]", "[change_password_link]"], [$name, $company_title, $company_link, $submit], $smsTemplate->template_html_sms);
                 $message = htmlspecialchars_decode(strip_tags($html));
 
-                // Remove unwanted '&nbsp;' text
                 $message = str_replace('&nbsp;', ' ', $message);
                 $contact_number = Helper::getReqestPhoneCode($userEmail->contact_number, $userEmail->country_id);
-                $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                 try {
-                    $twilioService->sendSMS($to, $message);
+                    if (Helper::adminactiveTwilioSetting()) {
+                        $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                        $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                        $twilioService->sendSMS($to, $message);
+                    } else {
+                        $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                        $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                        $PlivoService->sendSMS($to, $message);
+                    }
                 } catch (Exception $e) {
                     Log::error('Failed to send SMS: ' . $e->getMessage());
                     echo "Failed to send SMS: " . $e->getMessage();
@@ -421,10 +432,6 @@ class CompanyLoginController extends Controller
         }
 
         return back()->with('success', 'We have e-mailed your password reset link!');
-        // } catch (Exception $e) {
-        //     Log::error('CompanyLoginController::SubmitForgetPassword => ' . $e->getMessage());
-        //     return redirect()->back()->with('error', "Error : " . $e->getMessage());
-        // }
     }
     public function forgetPassSendmail(Request $request)
     {
@@ -446,7 +453,6 @@ class CompanyLoginController extends Controller
 
     public function confirmPassword($token)
     {
-
         try {
             $user = DB::table('password_resets')->where('token', $token)->first();
             $siteSetting = Helper::getSiteSetting();
@@ -459,7 +465,6 @@ class CompanyLoginController extends Controller
 
     public function submitResetPassword(Request $request)
     {
-
         try {
             $updatePassword = DB::table('password_resets')
                 ->where([
@@ -490,16 +495,13 @@ class CompanyLoginController extends Controller
             }
             try {
                 $user = User::where('email', $request->email)->first();
-                // dd($user );
-                $SettingValue = SettingModel::first();
+
                 $mailTemplate = MailTemplate::where('company_id', 1)->where('template_type', 'change_pass')->first();
 
                 $userName  = $user->first_name . ' ' . $user->last_name;
                 $to = $request->email;
-                // $subject = 'Welcome To '. !empty($SettingValue) && !empty($SettingValue->title) ? $SettingValue->title : env('APP_NAME');
 
                 $message = '';
-                $type =  "user";
                 $html =  $mailTemplate->template_html;
 
                 Mail::send('company.email.passwordChange', ['user' => $user, 'first_name' => $userName, 'company_id' => 1, 'template' => $html, 'webUrl' => $webUrl], function ($message) use ($request) {
@@ -514,7 +516,8 @@ class CompanyLoginController extends Controller
 
             if (!empty($smsTemplate)) {
                 $SettingModel = SettingModel::first();
-                if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                if (!empty($SettingModel) && (Helper::adminactiveTwilioSetting() == true || Helper::adminActivePlivoSetting() == true)) {
+
                     $name = $user->first_name;
                     $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
                     $company_link = $webUrl ? $webUrl : '';
@@ -526,10 +529,17 @@ class CompanyLoginController extends Controller
                     $message = str_replace('&nbsp;', ' ', $message);
                     $contact_number = Helper::getReqestPhoneCode($user->contact_number, $user->country_id);
 
-                    $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                     try {
-                        $twilioService->sendSMS($to, $message);
+                        if (Helper::adminactiveTwilioSetting()) {
+                            $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                            $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                            $twilioService->sendSMS($to, $message);
+                        } else {
+                            $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                            $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                            $PlivoService->sendSMS($to, $message);
+                        }
                     } catch (Exception $e) {
                         Log::error('Failed to send SMS: ' . $e->getMessage());
                         echo "Failed to send SMS: " . $e->getMessage();
@@ -565,7 +575,6 @@ class CompanyLoginController extends Controller
     }
     public function editProfile()
     {
-
         try {
             $editprofiledetail = User::where('id', Auth::user()->id)->first();
             $country_data = CountryModel::all();
@@ -575,14 +584,13 @@ class CompanyLoginController extends Controller
             $state_data = StateModel::where('country_id', $editprofiledetail->country_id)->get();
             $city_data = CityModel::where('state_id', $editprofiledetail->state_id)->get();
 
-
-
             return view('company.editprofile', compact('editprofiledetail',  'country_data', 'state_data', 'city_data'));
         } catch (Exception $e) {
             Log::error('CompanyLoginController::EditProfile => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
+
     public function updateprofile(Request $request)
     {
         try {
@@ -612,6 +620,7 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
+
     public function Profile()
     {
         try {
@@ -625,6 +634,7 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
+
     public function updatepassword(Request $request)
     {
         try {
@@ -641,6 +651,7 @@ class CompanyLoginController extends Controller
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
+
     public function verifyemail(Request $request, $id)
     {
         try {
@@ -656,6 +667,7 @@ class CompanyLoginController extends Controller
             echo 'false';
         }
     }
+
     public function verifycontact(Request $request, $id)
     {
         try {
@@ -670,7 +682,8 @@ class CompanyLoginController extends Controller
             echo 'false';
         }
     }
-    public function logout(Request $request)
+
+    public function logout()
     {
         Auth::logout();
         return redirect()->route('company.signin');

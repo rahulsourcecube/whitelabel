@@ -55,11 +55,9 @@ class ChannelsController extends Controller
 
 
             foreach ($results as $result) {
-
                 $list[] = [
                     base64_encode($result->id),
                     $result->title,
-
                 ];
             }
 
@@ -149,13 +147,9 @@ class ChannelsController extends Controller
     }
     public function delete($id)
     {
-
         try {
-
             $channels = Channels::find(base64_decode($id));
-
             $channels->delete();
-
             return response()->json(['success' => 'success', 'message' => 'Category deleted successfully']);
         } catch (Exception $e) {
             Log::error('ChannelController::delete ' . $e->getMessage());

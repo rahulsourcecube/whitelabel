@@ -45,7 +45,7 @@ class StateController extends Controller
                         $query->orWhere($column, 'like', "%{$search}%");
                     }
                 });
-            
+
                 // Count total records after applying search criteria
                 $totalData = $query->count();
             } else {
@@ -54,7 +54,7 @@ class StateController extends Controller
             }
 
             $results = $query->skip($start)->take($length)->get();
-          
+
 
             foreach ($results as $result) {
                 $list[] = [
@@ -91,13 +91,12 @@ class StateController extends Controller
     public function store(Request $request)
     {
         try {
-            $StateCheckName = StateModel::where(function($query) use ($request) {
+            $StateCheckName = StateModel::where(function ($query) use ($request) {
                 $query->where('name', $request->name)
-                      ->Where('country_id', $request->country);
-                     
+                    ->Where('country_id', $request->country);
             })
-            ->first();
-            
+                ->first();
+
             if (!empty($StateCheckName)) {
                 $errorFields = [];
                 if ($StateCheckName->name === $request->name) {
@@ -106,16 +105,16 @@ class StateController extends Controller
                 if ($StateCheckName->country_id === $request->country) {
                     $errorFields[] = 'Country name';
                 }
-               
-            
-                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+
+
+                return redirect()->back()->with('error', implode(', ', $errorFields) . ' already exists ')->withInput();
             }
             $state = new StateModel();
             $state->country_id = $request->country;
             $state->name = $request->name;
             $state->save();
 
-            return redirect()->route('admin.location.state.list')->with('success', 'State Added successfully');
+            return redirect()->route('admin.location.state.list')->with('success', 'State Added Successfully');
         } catch (\Exception $e) {
             Log::error('StateController::store ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());
@@ -140,14 +139,13 @@ class StateController extends Controller
     function update(Request $request, $id)
     {
         try {
-             $StateCheckName = StateModel::where('id', '!=', $id)
-            ->where(function($query) use ($request) {
-                $query->where('name', $request->name)
-                      ->Where('country_id', $request->country);
-                     
-            })
-            ->first();
-            
+            $StateCheckName = StateModel::where('id', '!=', $id)
+                ->where(function ($query) use ($request) {
+                    $query->where('name', $request->name)
+                        ->Where('country_id', $request->country);
+                })
+                ->first();
+
             if (!empty($StateCheckName)) {
                 $errorFields = [];
                 if ($StateCheckName->name === $request->name) {
@@ -156,16 +154,16 @@ class StateController extends Controller
                 if ($StateCheckName->country_id === $request->country) {
                     $errorFields[] = 'Country name';
                 }
-               
-            
-                return redirect()->back()->with('error', implode(', ', $errorFields) .' already exists ')->withInput();
+
+
+                return redirect()->back()->with('error', implode(', ', $errorFields) . ' already exists ')->withInput();
             }
 
             $state =   StateModel::find($id);
             $state->country_id = $request->country;
             $state->name = $request->name;
             $state->save();
-            return redirect()->route('admin.location.state.list')->with('success', 'State Update successfully');
+            return redirect()->route('admin.location.state.list')->with('success', 'State Update Successfully');
         } catch (\Exception $e) {
             Log::error('StateController::update ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());

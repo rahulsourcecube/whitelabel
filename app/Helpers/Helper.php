@@ -153,6 +153,19 @@ class Helper
 
         return $packageData;
     }
+    public static function GetActivePackageDataCompany($companyId)
+    {
+
+
+        $currentDate = Carbon::now();
+        $currentDate = $currentDate->format('Y-m-d');
+        $packageData = "";
+        // and then you can get query log
+        $packageData = CompanyPackage::where('company_id', $companyId)->where('status', CompanyPackage::STATUS['ACTIVE'])->where('start_date', '<=', $currentDate)->where('end_date', '>=', $currentDate)->orderBy('id', 'desc')->first();
+
+
+        return $packageData;
+    }
     // get Last Package Data
     public static function GetLastPackageData()
     {
@@ -460,5 +473,62 @@ class Helper
         $getAdminSetting = "";
         $getAdminSetting = SettingModel::where('user_id', $getAdmin->id)->first();
         return $getAdminSetting;
+    }
+    public static function activeTwilioSetting()
+    {
+        if (request()->getHttpHost() == config('app.domain')) {
+            $admin = User::where('user_type', '1')->first();
+            $SettingModel = SettingModel::where('user_id', $admin->id)->first();
+            if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number) && $SettingModel->sms_type == '1') {
+                return true;
+            }
+        }
+        $companyId = Helper::getCompanyId();
+        $SettingModel = SettingModel::where('user_id', $companyId)->first();
+        if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number) && $SettingModel->sms_type == '1') {
+            return true;
+        }
+        return false;
+    }
+    public static function activePlivoSetting()
+    {
+        if (request()->getHttpHost() == config('app.domain')) {
+            $admin = User::where('user_type', '1')->first();
+            $SettingModel = SettingModel::where('user_id', $admin->id)->first();
+            if (!empty($SettingModel) && !empty($SettingModel->plivo_auth_id) && !empty($SettingModel->plivo_auth_token) && !empty($SettingModel->plivo_phone_number) && $SettingModel->sms_type == '2') {
+                return true;
+            }
+        }
+        $companyId = Helper::getCompanyId();
+        $SettingModel = SettingModel::where('user_id', $companyId)->first();
+
+        if (!empty($SettingModel) && !empty($SettingModel->plivo_auth_id) && !empty($SettingModel->plivo_auth_token) && !empty($SettingModel->plivo_phone_number) && $SettingModel->sms_type == '2') {
+            return true;
+        }
+        return false;
+    }
+    public static function adminActivePlivoSetting()
+    {
+
+        $admin = User::where('user_type', '1')->first();
+        $SettingModel = SettingModel::where('user_id', $admin->id)->first();
+        if (!empty($SettingModel) && !empty($SettingModel->plivo_auth_id) && !empty($SettingModel->plivo_auth_token) && !empty($SettingModel->plivo_phone_number) && $SettingModel->sms_type == '2') {
+            return true;
+        }
+
+
+        return false;
+    }
+    public static function adminActiveTwilioSetting()
+    {
+
+        $admin = User::where('user_type', '1')->first();
+        $SettingModel = SettingModel::where('user_id', $admin->id)->first();
+        if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number) && $SettingModel->sms_type == '1') {
+            return true;
+        }
+
+
+        return false;
     }
 }

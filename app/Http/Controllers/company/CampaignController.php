@@ -22,6 +22,7 @@ use App\Models\TaskProgression;
 use App\Models\taskProgressionUserHistory;
 use App\Models\User;
 use App\Models\UserCampaignHistoryModel;
+use App\Services\PlivoService;
 use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\Request;
@@ -556,7 +557,7 @@ class CampaignController extends Controller
             $companyId = Helper::getCompanyId();
             $action = UserCampaignHistoryModel::where('id', $id)->first();
             $Notification = new Notification();
-
+            $ActivePackageData = Helper::GetActivePackageData();
             if ($request->action == '3') {
 
 
@@ -599,13 +600,10 @@ class CampaignController extends Controller
                     }
 
                     //Start Mail
-
                     try {
-
-                        $SettingValue = SettingModel::where('user_id', $companyId)->first();
                         $mailTemplate = MailTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
                         $userDetails = User::where('id', $action->user_id)->where('company_id', $companyId)->first();
-                        if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html)) {
+                        if (!empty($userDetails) && !empty($mailTemplate) && !empty($mailTemplate->template_html) && $ActivePackageData->mail_temp_status == "1") {
                             $userName  = $userDetails->FullName;
                             $campaign_title  = $action->getCampaign->title;
                             $campaign_price = $action->text_reward ? 'text_reward' : $action->reward;
@@ -632,14 +630,15 @@ class CampaignController extends Controller
                     }
                     // // End mail
 
+
                     $smsTemplate = SmsTemplate::where('company_id', $companyId)->where('template_type', 'earn_reward')->first();
 
-                    if (!empty($smsTemplate)) {
-                        $SettingModel = SettingModel::first();
+                    if (!empty($smsTemplate) && $ActivePackageData->sms_temp_status == "1") {
+                        // $SettingModel = SettingModel::first();
                         if (!empty($companyId)) {
                             $SettingModel = SettingModel::where('user_id', $companyId)->first();
                         }
-                        if (!empty($SettingModel) && !empty($SettingModel->sms_account_sid) && !empty($SettingModel->sms_account_token) && !empty($SettingModel->sms_account_number)) {
+                        if (!empty($SettingModel) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
                             $name =  $userDetails->FullName;
                             $contact_number =  $userDetails->contact_number;
                             $company_title = !empty($SettingModel) && !empty($SettingModel->title) ? $SettingModel->title : 'Referdio';
@@ -654,10 +653,17 @@ class CampaignController extends Controller
                             // Remove unwanted '&nbsp;' text
                             $message = str_replace('&nbsp;', ' ', $message);
 
-                            $to = $SettingModel->type == "2" ? $contact_number : $SettingModel->sms_account_to_number;
-                            $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
                             try {
-                                $twilioService->sendSMS($to, $message);
+                                if (Helper::activeTwilioSetting()) {
+                                    $to = $SettingModel->sms_mode == "2" ? $contact_number : $SettingModel->sms_account_to_number;
+                                    $twilioService = new TwilioService($SettingModel->sms_account_sid, $SettingModel->sms_account_token, $SettingModel->sms_account_number);
+                                    $twilioService->sendSMS($to, $message);
+                                } else {
+                                    $to = $SettingModel->plivo_mode == "2" ? $contact_number : $SettingModel->plivo_test_phone_number;
+
+                                    $PlivoService = new PlivoService($SettingModel->plivo_auth_id, $SettingModel->plivo_auth_token, $SettingModel->plivo_phone_number);
+                                    $PlivoService->sendSMS($to, $message);
+                                }
                             } catch (Exception $e) {
                                 Log::error('Failed to send SMS: ' . $e->getMessage());
                                 echo "Failed to send SMS: " . $e->getMessage();
@@ -725,8 +731,6 @@ class CampaignController extends Controller
 
     public function storeChat(UserCampaignHistoryModel $id, Request $request)
     {
-
-
         try {
             if ($request->hasFile('image') || $request->chat_input != null) {
                 if ($request->hasFile('image')) {
@@ -736,11 +740,8 @@ class CampaignController extends Controller
                     $image->move(public_path('uploads/Chats'), $imageName);
                     $imageName = 'uploads/Chats/' . $imageName;
                 }
-                $chats = TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
-                // if ($chats->count() == 0) {
+                TaskEvidence::where('campaign_id', $id->id)->where('user_id', $id->user_id)->where('company_id', $id->getCampaign->company_id)->get();
 
-                // $id->status = '2';
-                // $id->save();
                 if ($request->hasFile('image')) {
                     $sentMessage = ' sent file...';
                 } else {
@@ -764,13 +765,6 @@ class CampaignController extends Controller
                     $Notification->save();
                 }
 
-                // dd($Notification);
-
-                // }
-                // if ($id->status == '4' && Auth::user()->user_type == 4) {
-                //     $id->status = '5';
-                //     $id->save();
-                // }
                 $TaskEvidence = new TaskEvidence();
                 $TaskEvidence->user_id = $id->user_id;
                 $TaskEvidence->company_id = $id->getCampaign->company_id;
@@ -807,7 +801,6 @@ class CampaignController extends Controller
                         "label" => Carbon::create()->month($item['month'])->format('F'), // Format the day of the month
                         "total_completed" => $item['total_completed'],
                         "total_joined" => $item['total_joined']
-
                     ];
                 }
             }
@@ -833,10 +826,6 @@ class CampaignController extends Controller
                 $dir = $request->input('order.0.dir');
                 $searchValue = $request->input('search.value');
 
-                // CampaignModel::where('company_id', $companyId)->where('type', $type)->count();
-                // (SELECT count(*) as total FROM campaign where campaign.id=user_campaign_history.campaign_id) as total
-
-                // $query = CampaignModel::select(['id', 'title'])->where('type', '2')->where('company_id', $companyId)->whereDate('created_at', '>=' , date('Y-m-d', strtotime($request->from_date)))->whereDate('created_at', '<=' , date('Y-m-d', strtotime($request->to_date)));
                 $query = UserCampaignHistoryModel::join('campaign', 'user_campaign_history.campaign_id', '=', 'campaign.id')
                     ->select(
                         'campaign.id',

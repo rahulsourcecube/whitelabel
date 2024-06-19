@@ -3,11 +3,18 @@
 @section('main-content')
     <!-- Page Container START -->
     <!-- Content Wrapper START -->
-    @php $currency = App\Helpers\Helper::getcurrency() @endphp
+    @php
+        $currency = App\Helpers\Helper::getcurrency();
+        $ActivePackageData = App\Helpers\Helper::GetActivePackageData();
+    @endphp
     <div class="main-content">
         @include('company.includes.message')
         <div class="row">
-            <div class="col-md-6 col-lg-4">
+            @php $classDiv = 'col-md-6 col-lg-4'; @endphp
+            @if (!empty($ActivePackageData->no_of_survey) && $ActivePackageData->survey_status == '1')
+                @php $classDiv = 'col-md-6 col-lg-3'; @endphp
+            @endif
+            <div class="{{ $classDiv }}">
                 <div class="card">
                     <div class="card-body">
                         <div class="media align-items-center">
@@ -22,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
+            <div class="{{ $classDiv }}">
                 <div class="card">
                     <div class="card-body">
                         <div class="media align-items-center">
@@ -37,7 +44,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-4">
+            <div class="{{ $classDiv }}">
                 <div class="card">
                     <div class="card-body">
                         <div class="media align-items-center">
@@ -52,6 +59,23 @@
                     </div>
                 </div>
             </div>
+            @if (!empty($ActivePackageData->no_of_survey) && $ActivePackageData->survey_status == '1')
+                <div class="{{ $classDiv }}">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="media align-items-center">
+                                <div class="avatar avatar-icon avatar-lg avatar-gold">
+                                    <i class="anticon anticon-check"></i>
+                                </div>
+                                <div class="m-l-15">
+                                    <h2 class="m-b-0">{{ isset($surveyCount) ? $surveyCount : '' }}</h2>
+                                    <p class="m-b-0 text-muted">Number of Survey</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
         @if (Auth::user()->hasPermissionTo('task-list'))
             <div class="row">

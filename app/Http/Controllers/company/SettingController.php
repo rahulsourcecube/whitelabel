@@ -48,6 +48,7 @@ class SettingController extends Controller
     function store(Request $request)
     {
         try {
+
             $companyId = Helper::getCompanyId();
 
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
@@ -103,12 +104,24 @@ class SettingController extends Controller
                 $SettingModel->mail_password = $request->mail_password;
                 $SettingModel->mail_encryption = $request->mail_encryption;
                 $SettingModel->mail_address = $request->mail_address;
-                //Sms
+                //Sms tipe
+                $SettingModel->sms_type = $request->sms_type == 'true' ? '2' : '1';
+
+                //Sms twilio
                 $SettingModel->sms_account_sid = $request->sms_account_sid;
                 $SettingModel->sms_account_token = $request->sms_account_token;
                 $SettingModel->sms_account_number = $request->sms_account_number;
                 $SettingModel->sms_account_to_number = $request->sms_account_to_number;
                 $SettingModel->sms_mode = $request->sms_mode;
+
+                //Sms plivo
+
+                $SettingModel->plivo_auth_id = $request->plivo_auth_id;
+                $SettingModel->plivo_auth_token = $request->plivo_auth_token;
+                $SettingModel->plivo_phone_number = $request->plivo_phone_number;
+                $SettingModel->plivo_test_phone_number = $request->plivo_test_phone_number;
+                $SettingModel->plivo_mode = $request->plivo_mode;
+
 
                 $SettingModel->save();
                 return redirect()->route('company.setting.index')->with('success', 'Setting Update successfully');

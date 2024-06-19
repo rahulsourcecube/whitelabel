@@ -19,6 +19,7 @@ class CountriesTableSeeder extends Seeder
      */
     public function run()
     {
+        set_time_limit(1000);
         $countriesData = json_decode(file_get_contents(storage_path("countries.json")), true);
 
         foreach ($countriesData as $countryData) {
@@ -70,16 +71,19 @@ class CountriesTableSeeder extends Seeder
             // Find the country
 
             // Find the state
+
             $state = StateModel::where('name', $stateName)->first();
+            $country = CountryModel::where('name', $countryName)->first();
 
             if ($country && $state) {
 
                 CityModel::updateOrCreate(
                     [
 
+                        'country_id' => $country->id,
                         'state_id' => $state->id,
                         "name" => $cityData["name"],
-                        // "status" => 1 //active,
+
                     ],
                     [
                         "name" => $cityData["name"],

@@ -16,54 +16,65 @@ class HomeController extends Controller
 {
     public function success()
     {
-
         return view('front.error.thankyou');
     }
     public function error()
     {
         return view('front.error.error');
     }
+
     public function companyProfiles(Request $request)
     {
-        $data['countrys'] = CountryModel::all();
-        $data['states'] = StateModel::where('country_id', $request->input('country'))->get();
-        $data['citys'] = CityModel::where('state_id', $request->input('state'))->get();
-
-        $company_data = User::where('user_type', User::USER_TYPE['COMPANY'])
-            ->where('status', '1')
-            ->where('public', '1')
-            ->orderBy('created_at', 'desc')
-            ->with(['companyPackage' => function ($query) {
-                $query->where('status', CompanyPackage::STATUS['ACTIVE'])
-                    ->orderBy('id', 'desc');
-            }]);
-
-        // $company_data = User::where('user_type', User::USER_TYPE['COMPANY'])->where('status', "1")->where('public', "1")->orderby('created_at', 'desc')
-
-
-
-        if (!empty($request->country) && $request->has('country')) {
-            $company_data->where('country_id', $request->country);
-        }
-
-        if (!empty($request->state) &&  $request->has('state')) {
-            $company_data->where('state_id', $request->state);
-        }
-
-        if (!empty($request->city) &&  $request->has('city')) {
-            $company_data->where('city_id', $request->city);
-        }
-        $data['companyProfiles'] = $company_data->paginate(12);
-        // $data['companyProfiles'] = CompanyModel::orderby('created_at', 'desc')->paginate(12);
-
         $currentUrl = URL::current();
         if (URL::isValidUrl($currentUrl) && strpos($currentUrl, 'https://') === 0) {
             // URL is under HTTPS
-            $data['webUrl'] =  'https://';
+            $webUrl =  'https://';
         } else {
             // URL is under HTTP
-            $data['webUrl'] =  'http://';
+            $webUrl =  'http://';
         }
+        if (request()->getHttpHost() != config('app.domain')) {
+            $url = $webUrl . config('app.domain');
+            return redirect()->away($url);
+        }
+
+        $data['countrys'] = CountryModel::all();
+        $data['states'] = StateModel::where('country_id', $request->input('country'))->get();
+        $data['citys'] = CityModel::where('state_id', $request->input('state'))->get();
+        $company_data = User::where('user_type', User::USER_TYPE['COMPANY'])
+            ->where('status', '1')
+            ->where('public', '1')
+            ->whereHas('campaigns', function ($query) {
+                $query->where('public', '1')
+                    ->whereDate('expiry_date', '>=', now());
+            })->whereHas('companyActivePackage')
+            ->orderBy('created_at', 'desc');
+
+
+
+        if (!empty($request->country)) {
+            $company_data->where('country_id', $request->country);
+        }
+
+        if (!empty($request->state)) {
+            $company_data->where('state_id', $request->state);
+        }
+
+        if (!empty($request->city)) {
+            $company_data->where('city_id', $request->city);
+        }
+        if (!empty($request->input('company_name'))) {
+            $company_name = $request->input('company_name');
+
+            // Use whereHas with the company relationship to filter by company_name using LIKE
+            $company_data->whereHas('company', function ($query) use ($company_name) {
+                $query->where('company_name', 'like', '%' . $company_name . '%');
+            });
+        }
+
+        $data['companyProfiles'] = $company_data->paginate(12);
+
+        $data['webUrl'] =  $webUrl;
 
         $data['selectedCountry'] = $request->input('country');
         $data['selectedState'] = $request->input('state');

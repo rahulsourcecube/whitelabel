@@ -34,9 +34,6 @@
                                     file_exists(base_path() . '/uploads/community/' . $questions->image))
                                 <img src="{{ asset('uploads/community/' . $questions->image) }}"
                                     style="max-width:80%; max-height: 500px;">
-                            @else
-                                <img src="{{ asset('assets/images/profile_image.jpg') }}"
-                                    style="max-width:80%; max-height: 500px;">
                             @endif
 
 
@@ -111,11 +108,13 @@
 
                                         <span>
                                             <button href="javascript:void(0)"
+                                                {{ !empty($reply) && !empty($reply->likes->type) && $reply->likes->type == '2' ? 'disabled' : '' }}
                                                 onclick="like('{{ route('community.like', base64_encode($reply->id)) }}','1')"
                                                 class="btn btn-success btn-sm "><i class="fa-solid fa-thumbs-up"></i> <span
                                                     class="badge">
                                                     {{ $reply->likeCountReply ?? 0 }}</span></button>
                                             <button href="javascript:void(0)"
+                                                {{ !empty($reply) && !empty($reply->likes->type) && $reply->likes->type == '1' ? 'disabled' : '' }}
                                                 onclick="like('{{ route('community.unlike', base64_encode($reply->id)) }}','2')"
                                                 class="btn  btn-danger btn-sm"><i class="fa-solid fa-thumbs-down"></i>
                                                 <span class="badge">

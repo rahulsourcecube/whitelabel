@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2 pl-5">
-                                <label for="community_status">Community (Enable/Disable)</label>
+                                <label for="community_status">Community </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="switch-2" data-toggle="switch"
@@ -94,7 +94,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2 pl-5">
-                                <label for="">Mail Template (Enable/Disable)</label>
+                                <label for="">Mail Template </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="switch-3" data-toggle="switch"
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2 pl-5">
-                                <label for="">SMS Template (Enable/Disable)</label>
+                                <label for="">SMS Template </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="switch-4" data-toggle="switch"
@@ -116,7 +116,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2 pl-5">
-                                <label for="survey">Survey (Enable/Disable)</label>
+                                <label for="survey">Survey </label>
                                 <div class="form-group align-items-center">
                                     <div class="switch m-r-10">
                                         <input type="checkbox" id="survey" data-toggle="switch" name="survey_status"
@@ -143,7 +143,8 @@
 
                             <div class="form-group col-md-12">
                                 <label for="descriptions">Description <span class="error">*</span></label>
-                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> {{ !empty($package->description) ? $package->description : '' }} </textarea>
+                                <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"
+                                    required> {{ !empty($package->description) ? $package->description : '' }} </textarea>
                             </div>
                         </div>
 
@@ -213,7 +214,8 @@
                 no_of_survey: {
                     required: function() {
                         return $('input[id="survey"]').is(':checked');
-                    }
+                    },
+                    digits: true
                 },
                 price: {
                     required: true

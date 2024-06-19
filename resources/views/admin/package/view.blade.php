@@ -27,11 +27,11 @@
                             <h4 class="m-b-10">{{ $package->title }}</h4>
                             <div class="d-flex align-items-center m-t-5 m-b-15">
                                 <div class="">
-                                    <h1>Price :- {{ \App\Helpers\Helper::getcurrency() . $package->price }} </h1>
+
                                 </div>
                                 <div class="m-l-10">
+                                    <h1>Price :- {{ \App\Helpers\Helper::getcurrency() . $package->price }} </h1>
                                     <span class="text-gray font-weight-semibold"></span>
-                                    <span class="m-h-5 text-gray">|</span>
                                     <span class="text-gray">
                                         {{ $package->duration }}
                                         @if ($package->type == '1')
@@ -42,39 +42,51 @@
                                             Year
                                         @endif
                                     </span>
-                                    <span class="text-gray"> | </span>
-                                    <span class="text-gray">No Of Campaign :-</span>
-                                    <span class="text-gray">{{ $package->no_of_campaign }}</span>
-                                    <span class="text-gray"> | </span>
-                                    <span class="text-gray">No Of User :-</span>
-                                    <span class="text-gray">{{ $package->no_of_user }}</span>
-                                    <span class="text-gray"> | </span>
-                                    <span class="text-gray">No Of Employee :-</span>
-                                    <span class="text-gray">{{ $package->no_of_employee }}</span>
+                                    <br>
+                                    <span class="text-gray font-weight-bold">No Of Campaign :-</span>
+                                    <span class="text-gray font-weight-bold">{{ $package->no_of_campaign }}</span>
+                                    <br>
+                                    <span class="text-gray  font-weight-bold">No Of User :-</span>
+                                    <span class="text-gray font-weight-bold">{{ $package->no_of_user }}</span>
+                                    <br>
+                                    <span class="text-gray font-weight-bold">No Of Employee :-</span>
+                                    <span class="text-gray font-weight-bold">{{ $package->no_of_employee }}</span>
                                     @if (!empty($package) && $package->survey_status == '1')
-                                        <span class="text-gray"> | </span>
-                                        <span class="text-gray"> Survey :-</span>
-                                        <span class="text-gray">{{ $package->survey_status ? 'Enable' : 'Disable' }}</span>
-                                        <span class="text-gray"> | </span>
-                                        <span class="text-gray">No Of Survey :-</span>
-                                        <span class="text-gray">{{ $package->no_of_survey }}</span>
+                                        <br>
+                                        <br>
+                                        <span class="text-gray font-weight-bold">
+                                            <i
+                                                class="mr-2 fa fa-{{ $package->survey_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                            Survey </span>
+                                        <span class="text-gray font-weight-bold">
+                                        </span>
+                                        <br>
+                                        <span class="text-gray font-weight-bold ">No Of Survey :-</span>
+                                        <span class="text-gray font-weight-bold">{{ $package->no_of_survey }}</span>
                                     @endif
                                     @if (!empty($package) && $package->community_status == '1')
-                                        <span class="text-gray"> | </span>
-                                        <span class="text-gray"> Community :-</span>
-                                        <span class="text-gray">{{ $package->survey_status ? 'Enable' : 'Disable' }}</span>
+                                        <br>
+                                        <br>
+                                        <span class="text-gray  font-weight-bold">
+                                            <i
+                                                class="mr-2 fa fa-{{ $package->survey_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                            Community</span>
                                     @endif
                                     @if (!empty($package) && $package->mail_temp_status == '1')
-                                        <span class="text-gray"> | </span>
-                                        <span class="text-gray"> Community :-</span>
-                                        <span
-                                            class="text-gray">{{ $package->mail_temp_status ? 'Enable' : 'Disable' }}</span>
+                                        <br>
+                                        <span class="text-gray font-weight-bold">
+                                            <i
+                                                class="mr-2 fa fa-{{ $package->mail_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+
+                                            Mail Template</span>
                                     @endif
                                     @if (!empty($package) && $package->sms_temp_status == '1')
-                                        <span class="text-gray"> | </span>
-                                        <span class="text-gray"> Community :-</span>
-                                        <span
-                                            class="text-gray">{{ $package->sms_temp_status ? 'Enable' : 'Disable' }}</span>
+                                        <br>
+                                        <span class="text-gray font-weight-bold">
+                                            <i
+                                                class="mr-2 fa fa-{{ $package->sms_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+
+                                            SMS Template :-</span>
                                     @endif
 
                                 </div>

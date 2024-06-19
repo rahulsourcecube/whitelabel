@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\Helper;
 use Illuminate\Pagination\Paginator;
-
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     { {
             try {
+                Schema::defaultStringLength(191);
                 Paginator::useBootstrap();
 
                 Log::info('AppServiceProvider Check Mail Setting : ');

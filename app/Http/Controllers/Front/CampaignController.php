@@ -20,6 +20,10 @@ class CampaignController extends Controller
 {
     public function list(Request $request)
     {
+        if (request()->getHttpHost() == config('app.domain')) {
+            return redirect()->route('front.company.profiles');
+        }
+
         $countrys = CountryModel::all();
         $states = StateModel::where('country_id', $request->input('country'))->get();
         $citys = CityModel::where('state_id', $request->input('state'))->get();
@@ -47,13 +51,8 @@ class CampaignController extends Controller
         $selectedState = $request->input('state');
         $selectedCity = $request->input('city');
 
-
-
-
         return view('front.campaign.list', compact('task_data', 'countrys', 'states', 'citys', 'selectedCountry', 'selectedState', 'selectedCity'));
     }
-
-
 
     public function detail($id)
     {
@@ -99,10 +98,8 @@ class CampaignController extends Controller
     function joinNow($join_link)
     {
         try {
-
             if (!(Auth::user())) {
                 session()->put('join_link', $join_link);
-
                 return redirect()->route('user.login');
             }
             return redirect()->route('user.campaign.view', $join_link);

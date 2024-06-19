@@ -1,8 +1,12 @@
 @extends('front.layouts.master')
-@section('title', 'community')
+@section('title', 'Company Profiles')
 @section('main-content')
-
-
+    <?php ?>
+    <style>
+        /* .select2-container .select2-selection--single {
+                                                                                                                                                                                                                                                                                                                                                height: 4px;
+                                                                                                                                                                                                                                                                                                                              } */
+    </style>
     <!-- Content Wrapper START -->
 
 
@@ -12,53 +16,70 @@
 
         <div class="container">
             <form action="{{ route('front.company.profiles') }}" method="get">
-                <div class="row from-group mb-5">
-                    <div class="col-md-3 from-group">
+                <div class="row mb-5">
+                    <div class="col-md-3 mb-3">
+                        <div class="input-group rounded">
+                            <input type="search" class="form-control rounded" name="company_name"
+                                placeholder="Search Company " value="{{ $_GET['company_name'] ?? '' }}" aria-label="Search"
+                                aria-describedby="search-addon" />
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 mb-3">
                         <select name="country" id="country" class="form-control form-select">
                             <option value="0">Select Country</option>
                             @if (isset($countrys) && !empty($countrys))
                                 @foreach ($countrys as $country)
                                     <option value="{{ $country->id }}" @if (isset($selectedCountry) && $selectedCountry == $country->id) selected @endif>
-                                        {{ $country->name }} </option>
+                                        {{ $country->name }}
+                                    </option>
                                 @endforeach
                             @endif
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-2 mb-3">
                         <select name="state" id="state" class="form-control form-select">
                             <option value="0">Select State</option>
                             @if (!empty($states))
                                 @foreach ($states as $state)
                                     <option value="{{ $state->id }}" @if (isset($selectedState) && $state->id == $selectedState) selected @endif>
-                                        {{ $state->name }} </option>
+                                        {{ $state->name }}
+                                    </option>
                                 @endforeach
                             @endif
                         </select>
                     </div>
-                    <div class="col-md-3">
+
+                    <div class="col-md-2 mb-3">
                         <select name="city" id="city" class="form-control form-select">
                             <option value="0">Select City</option>
                             @if (isset($citys) && !empty($citys))
                                 @foreach ($citys as $city)
                                     <option value="{{ $city->id }}" @if (!empty($selectedCity) && $selectedCity == $city->id) selected @endif>
-                                        {{ $city->name }} </option>
+                                        {{ $city->name }}
+                                    </option>
                                 @endforeach
                             @endif
                         </select>
                     </div>
+
                     <div class="col-md-1 mr-3">
-                        <button id="search_dtt" type="submit" value="" class="btn btn-primary">Search</button>
+                        <button id="search_dtt" type="submit" class="btn btn-primary">Search</button>
                     </div>
-                    @if (isset($_GET['country']) && !empty($_GET['country']))
+
+                    @if (isset($_GET) && !empty($_GET))
                         <div class="col-md-1">
-                            <a href="{{ route('front.company.profiles') }}" value="" class="btn btn-danger">Clear</a>
+                            <a href="{{ route('front.company.profiles') }}" class="btn btn-danger">Clear</a>
                         </div>
                     @endif
                 </div>
 
                 @csrf
             </form>
+
+
             {{-- @include('front.includes.message') --}}
 
             @if (!empty($companyProfiles) && count($companyProfiles) > 0)
@@ -66,8 +87,7 @@
                 <div class="row" id="card-view">
                     @foreach ($companyProfiles as $companyProfile)
                         <div class="col-md-4">
-                            <div class="card" style="height: 350px;
-                        };">
+                            <div class="card" style="height: 350px;">
                                 <div class="card-body">
                                     <div class="m-t-20 text-center">
                                         <div class="avatar avatar-image" style="height: 100px; width: 100px;">
@@ -89,10 +109,18 @@
                                             <i class="anticon anticon-eye"></i>
                                             <span class="m-l-5">Task</span>
                                         </a>
-                                        <a href="{{ $community ?? '' }}" class="btn btn-primary btn-tone">
-                                            <i class="anticon anticon-team"></i>
-                                            <span class="m-l-5">Community</span>
-                                        </a>
+
+                                        @php $ActivePackageData = App\Helpers\Helper::GetActivePackageDataCompany($companyProfile->id)  @endphp
+
+                                        @if (
+                                            !empty($ActivePackageData) &&
+                                                $ActivePackageData->community_status == '1' &&
+                                                !empty($ActivePackageData->community_status))
+                                            <a href="{{ $community ?? '' }}" class="btn btn-primary btn-tone">
+                                                <i class="anticon anticon-team"></i>
+                                                <span class="m-l-5">Community</span>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -104,10 +132,10 @@
                 </div>
             @else
                 <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="p-v-30">
-                            {{-- <h1 class="font-weight-semibold display-1 text-primary lh-1-2">404</h1> --}}
-                            <h1 class="font-weight-light font-size-30">Not Found</h1>
+                    <div class="col-md-12">
+                        <div class="p-v-30 text-center">
+                            <img src="{{ asset('assets/images/not-found.png') }}" class="w-25">
+                            <h2 class="text-center">Not Found</h2>
 
                         </div>
                     </div>
@@ -120,6 +148,27 @@
 
 @endsection
 @section('js')
+
+    <script>
+        $(document).ready(function() {
+            $('#searchInput').on('input', function() {
+                var searchValue = $(this).val().trim();
+
+                // Clear previous search results
+                $('#searchResults').empty();
+
+                // Perform search after a brief delay (for demonstration purposes)
+                setTimeout(function() {
+                    // Example: Simulate search results
+                    var searchResultsDiv = $('#searchResults');
+                    var newDiv = $('<div>').addClass('search-result').text('Search results for: ' +
+                        searchValue);
+                    searchResultsDiv.append(newDiv);
+                }, 300); // Adjust delay as needed
+            });
+        });
+    </script>
+
     <script>
         function sweetAlertAjax(deleteUrl) {
             // Use SweetAlert for confirmation

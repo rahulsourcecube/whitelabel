@@ -13,7 +13,12 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<script>
+    var $disabledResults = $("select");
+    $disabledResults.select2();
+</script>
 <script>
     $(document).ready(function() {
         // Show the alert
@@ -105,6 +110,7 @@
 
 
         $('#state').on('change', function() {
+            // alert(123);
             var state_id = $(this).val();
             var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 

@@ -453,9 +453,8 @@ class UserController extends Controller
         try {
 
             $companyId = Helper::getCompanyId();
-
             $request->validate([
-                'import_file' => 'required|file|mimes:xlsx|',
+                'import_file' => 'required|file|mimes:xlsx,csv',
             ]);
             $ActivePackageData = Helper::GetActivePackageData();
             $userCount = User::where('company_id', $companyId)->where('package_id', $ActivePackageData->id)->where('user_type',  User::USER_TYPE['USER'])->count();
@@ -467,6 +466,7 @@ class UserController extends Controller
 
             if ($request->hasFile('import_file')) {
                 $file = $request->file('import_file');
+
 
                 (Excel::import(new UserImport(), $file));
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -71,9 +72,10 @@ class User extends Authenticatable
 
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        $first_name = $this->first_name ?? '';
+        $last_name = $this->last_name ?? '';
+        return trim($first_name . ' ' . $last_name);
     }
-
     public function getUserStatusAttribute()
     {
         $status = $this->status;
@@ -102,6 +104,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(CityModel::class);
     }
+
     public function getContactNoAttribute()
     {
         $contact_number = $this->contact_number;
@@ -109,8 +112,19 @@ class User extends Authenticatable
         $number = $code . $contact_number;
         return '+' . $number;
     }
-    public function companyPackage()
+
+    public function companyPackages()
     {
-        return $this->hasOne(CompanyPackage::class, 'id', 'company_id');
+        return $this->hasMany(CompanyPackage::class, 'company_id');
+    }
+
+    public function campaigns()
+    {
+        return $this->hasMany(CampaignModel::class, 'company_id');
+    }
+
+    public function companyActivePackage()
+    {
+        return $this->hasMany(CompanyPackage::class, 'company_id')->where('status', CompanyPackage::STATUS['ACTIVE'])->latest();
     }
 }

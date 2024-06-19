@@ -10,6 +10,7 @@ use App\Models\SmsTemplate;
 use App\Models\Survey;
 use App\Models\SurveyForm;
 use App\Models\User;
+use App\Services\PlivoService;
 use App\Services\TwilioService;
 use Exception;
 use Illuminate\Http\Request;
@@ -40,7 +41,6 @@ class SurveyController extends Controller
 
     public function formList(Request $request)
     {
-
         try {
             $ActivePackageData = Helper::GetActivePackageData();
             $companyId = Helper::getCompanyId(); // Assuming Helper is properly defined
@@ -71,7 +71,6 @@ class SurveyController extends Controller
                 ->skip($start)
                 ->take($length)
                 ->get();
-
 
             foreach ($results as $result) {
                 $surveyDatas = "0";
@@ -127,9 +126,7 @@ class SurveyController extends Controller
                 return redirect()->back()->with('error', 'You can create only ' . $ActivePackageData->no_of_survey . ' survey');
             }
             $surveyFiled = SurveyForm::where('company_id', $companyId)->first();
-
-            // dd($survey_dtt);
-            return view('company.survey.form.create', compact('surveyFiled', 'survey_dtt'));
+            return view('company.survey.form.create', compact('surveyFiled'));
         } catch (Exception $e) {
             Log::error('SurveyController::formCreate => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -155,7 +152,6 @@ class SurveyController extends Controller
         }
     }
 
-
     public function formEdit(Request $request, $id)
     {
         try {
@@ -167,15 +163,12 @@ class SurveyController extends Controller
             $companyId = Helper::getCompanyId();
             $surveyFiled = SurveyForm::where('company_id', $companyId)->find($id);
 
-            // $survey_dtt = SurveyForm::where('company_id', $companyId)->count();
-
             return view('company.survey.form.edit ', compact('surveyFiled'));
         } catch (Exception $e) {
             Log::error('SurveyController::formEdit => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
         }
     }
-
 
     public function getAdditionalFields(Request $request)
     {
@@ -395,7 +388,6 @@ class SurveyController extends Controller
                 }
             }
 
-
             // Convert fields array to JSON and save it in the SurveyForm model
             $SurveyForm->fields = json_encode($fields);
 
@@ -411,9 +403,7 @@ class SurveyController extends Controller
     }
     public function formDelete($id)
     {
-
         try {
-
             $id = base64_decode($id);
             $form_id = $id;
             $form_id = SurveyForm::where('id', $form_id)->delete();
@@ -469,21 +459,17 @@ class SurveyController extends Controller
             // }
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
-            if (empty($SettingModel) && empty($SettingModel->sms_account_sid) && empty($SettingModel->sms_account_token) && empty($SettingModel->sms_account_number)) {
+            if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
                 return redirect()->route('company.survey.form.index')->with(['error' => "Please enter SMS Credential "]);
             }
 
             if ($request->contact_number != '') {
-
                 foreach ($request->contact_number as $number) {
-
 
                     $SettingValue = SettingModel::where('user_id', $companyId)->first();
 
                     if (!empty($request->smsHtml)) {
-                        if (!empty($SettingValue) && !empty($SettingValue->sms_account_sid) && !empty($SettingValue->sms_account_token) && !empty($SettingValue->sms_account_number)) {
-
-
+                        if (!empty($SettingValue) && (Helper::activeTwilioSetting() == true || Helper::activePlivoSetting() == true)) {
                             //set survey shortcut
                             $template = $request->smsHtml;
 
@@ -505,10 +491,17 @@ class SurveyController extends Controller
                             // Remove unwanted '&nbsp;' text
                             $message = str_replace('&nbsp;', ' ', $message);
 
-                            $to = $SettingValue->type == "2" ? $number : $SettingValue->sms_account_to_number;
-                            $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
                             try {
-                                $twilioService->sendSMS($to, $message);
+                                if (Helper::activeTwilioSetting()) {
+                                    $to = $SettingValue->sms_mode == "2" ? $number : $SettingValue->sms_account_to_number;
+                                    $twilioService = new TwilioService($SettingValue->sms_account_sid, $SettingValue->sms_account_token, $SettingValue->sms_account_number);
+                                    $twilioService->sendSMS($to, $message);
+                                } else {
+                                    $to = $SettingValue->plivo_mode == "2" ? $number : $SettingValue->plivo_test_phone_number;
+
+                                    $PlivoService = new PlivoService($SettingValue->plivo_auth_id, $SettingValue->plivo_auth_token, $SettingValue->plivo_phone_number);
+                                    $PlivoService->sendSMS($to, $message);
+                                }
                             } catch (Exception $e) {
                                 Log::error('Notifications >> Que SMS Fail => ' . $e->getMessage());
                             }
@@ -529,7 +522,6 @@ class SurveyController extends Controller
     public function sendMail(Request $request)
     {
         try {
-
             $companyId = Helper::getCompanyId();
 
             $webUrlGetHost = $request->getHost();
@@ -542,10 +534,6 @@ class SurveyController extends Controller
                 // URL is under HTTP
                 $webUrl =  'http://' . $webUrlGetHost;
             }
-
-            // $SettingModel = SettingModel::first();
-            // if (!empty($companyId)) {
-            // }
 
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
@@ -577,7 +565,6 @@ class SurveyController extends Controller
                     Log::error('CampaignController::Action => ' . $e->getMessage());
                 }
             }
-
 
             return redirect()->route('company.survey.form.index')->with([
                 'success' => 'Mail sent successfully',

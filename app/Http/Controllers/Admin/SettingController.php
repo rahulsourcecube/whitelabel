@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CityModel;
 use App\Models\SettingModel;
+use App\Models\StateModel;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -99,12 +101,22 @@ class SettingController extends Controller
                 //Stripe Credentials
                 $SettingModel->stripe_key = $request->stripe_key;
                 $SettingModel->stripe_secret = $request->stripe_secret;
-                //Sms
+                //Sms tipe
+                $SettingModel->sms_type = $request->sms_type == 'true' ? '2' : '1';
+
+                //Sms twilio
                 $SettingModel->sms_account_sid = $request->sms_account_sid;
                 $SettingModel->sms_account_token = $request->sms_account_token;
                 $SettingModel->sms_account_number = $request->sms_account_number;
                 $SettingModel->sms_account_to_number = $request->sms_account_to_number;
                 $SettingModel->sms_mode = $request->sms_mode;
+
+                //Sms plivo
+
+                $SettingModel->plivo_auth_id = $request->plivo_auth_id;
+                $SettingModel->plivo_auth_token = $request->plivo_auth_token;
+                $SettingModel->plivo_phone_number = $request->plivo_phone_number;
+                $SettingModel->plivo_test_phone_number = $request->plivo_test_phone_number;
 
                 $SettingModel->user_id = Auth::user()->id;
                 $SettingModel->save();
@@ -178,18 +190,58 @@ class SettingController extends Controller
                 //Stripe Credentials
                 $SettingModel->stripe_key = $request->stripe_key;
                 $SettingModel->stripe_secret = $request->stripe_secret;
-                // sms Credentials
+                //Sms tipe
+                $SettingModel->sms_type = $request->sms_type == 'true' ? '2' : '1';
+
+                //Sms twilio
                 $SettingModel->sms_account_sid = $request->sms_account_sid;
                 $SettingModel->sms_account_token = $request->sms_account_token;
                 $SettingModel->sms_account_number = $request->sms_account_number;
                 $SettingModel->sms_account_to_number = $request->sms_account_to_number;
                 $SettingModel->sms_mode = $request->sms_mode;
+
+                //Sms plivo
+
+                $SettingModel->plivo_auth_id = $request->plivo_auth_id;
+                $SettingModel->plivo_auth_token = $request->plivo_auth_token;
+                $SettingModel->plivo_phone_number = $request->plivo_phone_number;
+                $SettingModel->plivo_test_phone_number = $request->plivo_test_phone_number;
+                $SettingModel->plivo_mode = $request->plivo_mode;
+
                 $SettingModel->save();
             }
-            return redirect()->route('admin.setting.index')->with('success', 'Setting Update successfully');
+            return redirect()->route('admin.setting.index')->with('success', 'Setting Update Successfully');
         } catch (\Throwable $e) {
             Log::error('SettingController::store ' . $e->getMessage());
             return redirect()->back()->with('error', "Error: " . $e->getMessage());
         }
+    }
+    public function get_states(Request $request)
+    {
+        $country_id = $request->input('country_id');
+
+        $states = StateModel::where('country_id', $country_id)->get();
+
+        $options = '';
+        $options .= "<option value=''>Select state</option>";
+        foreach ($states as $state) {
+            $options .= "<option value='" . $state->id . "'>" . $state->name . "</option>";
+        }
+        // Return the options as JSON response
+        return response()->json($options);
+    }
+
+
+    public function get_city(Request $request)
+    {
+        $state_id = $request->input('state_id');
+
+        $citys = CityModel::where('state_id', $state_id)->get();
+        $options = '';
+        $options .= "<option value=''>Select City</option>";
+        foreach ($citys as $city) {
+            $options .= "<option value='" . $city->id . "'>" . $city->name . "</option>";
+        }
+        return response()->json($options);
     }
 }

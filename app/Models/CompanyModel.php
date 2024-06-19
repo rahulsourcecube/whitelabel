@@ -22,7 +22,10 @@ class CompanyModel extends Model
         'is_indivisual',
         // Add more fields as needed
     ];*/
-
+    public function campaign()
+    {
+        return $this->belongsTo(CampaignModel::class)->where('company_id', 'user_id')->where('public', '1')->exite();
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -33,7 +36,7 @@ class CompanyModel extends Model
     }
     public function setting()
     {
-        return $this->hasOne(SettingModel::class, 'user_id');
+        return $this->hasOne(SettingModel::class, 'user_id', 'user_id');
     }
 
     public  function checkUserLogin($userId, $companyId)

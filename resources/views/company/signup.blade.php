@@ -21,6 +21,8 @@
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <link rel="stylesheet" href="{{ asset('assets/admin/common.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 
 </head>
 
@@ -69,7 +71,7 @@
                                             <div class="form-group col-md-4">
                                                 <label class="font-weight-semibold" for="country">Country:</label>
                                                 <select name="country" id="country" class="form-control">
-                                                    <option value="">Country</option>
+                                                    <option value="">Select Country</option>
                                                     @if (!empty($countrys))
                                                         @foreach ($countrys as $country)
                                                             <option
@@ -80,19 +82,18 @@
 
                                                     @endif
                                                 </select>
-
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label class="font-weight-semibold" for="state">State:</label>
                                                 <select name="state" id="state" class="form-control">
-                                                    <option value="">State</option>
+                                                    <option value="">Select State</option>
                                                 </select>
 
                                             </div>
                                             <div class="form-group col-md-4">
                                                 <label class="font-weight-semibold" for="city">City:</label>
                                                 <select name="city" id="city" class="form-control">
-                                                    <option value="">City</option>
+                                                    <option value="">Select City</option>
                                                 </select>
 
                                             </div>
@@ -168,7 +169,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Include jQuery Validation Plugin -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        // var $disabledResults = $("select");
+        // $disabledResults.select2();
+
+
         $.validator.addMethod("email", function(value, element) {
             return this.optional(element) ||
                 /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i

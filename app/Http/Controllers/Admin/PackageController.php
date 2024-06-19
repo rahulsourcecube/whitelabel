@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\CompanyPackage;
 use App\Models\PackageModel;
 use Exception;
 use Illuminate\Http\Request;
@@ -33,6 +34,7 @@ class PackageController extends Controller
 
             $query = PackageModel::orderBy($columns[$order], $dir);
 
+            $totalData = PackageModel::count();
             // Server-side search
             if ($request->has('search') && !empty($request->input('search.value'))) {
                 $search = $request->input('search.value');
@@ -50,7 +52,6 @@ class PackageController extends Controller
             $results = $query->skip($start)
                 ->take($length)
                 ->get();
-            $totalData = $results->count();
             foreach ($results as $result) {
                 $list[] = [
                     $result->id,
@@ -129,7 +130,8 @@ class PackageController extends Controller
             $package->no_of_user = $request->user;
             $package->no_of_employee = $request->employee;
             $package->duration = $request->day;
-            $package->price = $request->price;
+
+            $package->price = $request->price ?? '0';
             $package->type = $request->type;
             $package->status = $request->status ? '1' : '0';
 
@@ -151,68 +153,74 @@ class PackageController extends Controller
         }
     }
 
-    function edit(PackageModel $package)
+    public function edit(PackageModel $package)
     {
         try {
             return view('admin.package.edit', compact('package'));
-        } catch (Exception $e) {
-            Log::error('PackageController::edit ' . $e->getMessage());
-            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('PackageController::edit - Error loading package with ID: ' . $package->id . ' - ' . $e->getMessage());
+            return redirect()->back()->with('error', 'ackage not found.');
         }
     }
 
-    function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         try {
-            $package = new PackageModel();
-            $package =   PackageModel::where('id', $id)->first();
+            $package = PackageModel::findOrFail($id);
+
             if ($request->hasFile('image')) {
-                $originalFilename = $request->file('image')->getClientOriginalName();
                 $extension = $request->file('image')->getClientOriginalExtension();
-
-                // Generate a random number as a prefix
                 $randomNumber = rand(1000, 9999);
-
-                // Generate a timestamp (e.g., current Unix timestamp)
                 $timestamp = time();
+                $imageName = $timestamp . '_' . $randomNumber . '.' . $extension;
 
-                // Combine the timestamp, random number, an underscore, and the original extension
-                $image = $timestamp . '_' . $randomNumber . '.' . $extension;
-
-                // Move the file to the storage directory with the new filename+
-                $request->file('image')->move(base_path() . '/uploads/package', $image);
-
-                // Save the image path to the database
-                $package->image = $image;
-            } else {
-                $package->image = $package->image; // or whatever default value you want
+                $request->file('image')->move(base_path() . '/uploads/package', $imageName);
+                $package->image = $imageName;
             }
-            // dd($request->description);
+
+            // Update package details
             $package->title = $request->title;
-            $package->description = $request->description; // Fix typo in 'description' discription
+            $package->description = $request->description;
             $package->no_of_campaign = $request->campaign;
             $package->no_of_user = $request->user;
             $package->no_of_employee = $request->employee;
             $package->duration = $request->day;
-            $package->price = $request->price;
+            $package->price = $request->price ?? '0';
             $package->type = $request->type;
             $package->status = $request->status ? '1' : '0';
-
             $package->survey_status = $request->survey_status ? '1' : '0';
-            $package->no_of_survey = $request->survey_status ? $request->no_of_survey : "";
+            $package->no_of_survey = $request->survey_status ? $request->no_of_survey : '';
             $package->mail_temp_status = $request->mail_temp_status ? '1' : '0';
             $package->sms_temp_status = $request->sms_temp_status ? '1' : '0';
             $package->community_status = $request->community_status ? '1' : '0';
-
-            // $Packages->status=$request->discription;
             $package->created_by = auth()->user()->id;
+
             $package->save();
-            return redirect()->route('admin.package.list')->with('success', 'Package Update successfully');
+
+            // Batch update company packages
+            $companyPackages = CompanyPackage::where('package_id', $package->id)->get();
+            foreach ($companyPackages as $companyPackage) {
+                $companyPackage->no_of_campaign = $package->no_of_campaign;
+                $companyPackage->no_of_user = $package->no_of_user;
+                $companyPackage->no_of_employee = $package->no_of_employee;
+                $companyPackage->survey_status = $package->survey_status;
+                $companyPackage->no_of_survey = $package->no_of_survey;
+                $companyPackage->mail_temp_status = $package->mail_temp_status;
+                $companyPackage->sms_temp_status = $package->sms_temp_status;
+                $companyPackage->community_status = $package->community_status;
+                $companyPackage->save();
+            }
+
+            return redirect()->route('admin.package.list')->with('success', 'Package updated successfully');
         } catch (\Exception $e) {
-            Log::error('PackageController::update ' . $e->getMessage());
-            return redirect()->back()->with('error', "Error: " . $e->getMessage());
+
+            Log::error('PackageController::update - Error updating package with ID: ' . $id . ' - ' . $e->getMessage());
+
+
+            return redirect()->back()->with('error', 'An error updating the package: ' . $e->getMessage());
         }
     }
+
 
     public function delete($id)
     {

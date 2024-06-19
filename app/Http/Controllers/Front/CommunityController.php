@@ -74,7 +74,7 @@ class CommunityController extends Controller
     {
         $ActivePackageData = Helper::GetActivePackageData();
         if ($ActivePackageData->community_status != "1") {
-            return redirect('/')->with('error', 'Please contact to Company administrator.');
+            return redirect('/')->with('error', 'Please contact to company administrator.');
         }
         $check = Community::where('channel_id', $id)->first();
         $channel = Channels::find($id);
@@ -85,7 +85,7 @@ class CommunityController extends Controller
     {
         $ActivePackageData = Helper::GetActivePackageData();
         if ($ActivePackageData->community_status != "1") {
-            return redirect('/')->with('error', 'Please contact to Company administrator.');
+            return redirect('/')->with('error', 'Please contact to company administrator.');
         }
         if (!(Auth::user())) {
             session()->put('questions_create', 'questions_create');
@@ -103,7 +103,7 @@ class CommunityController extends Controller
         try {
             $ActivePackageData = Helper::GetActivePackageData();
             if ($ActivePackageData->community_status != "1") {
-                return redirect('/')->with('error', 'Please contact to Company administrator.');
+                return redirect('/')->with('error', 'Please contact to company administrator.');
             }
             $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
@@ -153,7 +153,7 @@ class CommunityController extends Controller
         try {
             $ActivePackageData = Helper::GetActivePackageData();
             if ($ActivePackageData->community_status != "1") {
-                return redirect('/')->with('error', 'Please contact to Company administrator.');
+                return redirect('/')->with('error', 'Please contact to company administrator.');
             }
 
 
@@ -192,7 +192,7 @@ class CommunityController extends Controller
         try {
             $ActivePackageData = Helper::GetActivePackageData();
             if ($ActivePackageData->community_status != "1") {
-                return redirect('/')->with('error', 'Please contact to Company administrator.');
+                return redirect('/')->with('error', 'Please contact to company administrator.');
             }
             $companyId = Helper::getCompanyId();
             $validator = Validator::make($request->all(), [
@@ -213,7 +213,7 @@ class CommunityController extends Controller
                 ]);
             }
 
-            return redirect()->back()->with('success', 'Thank you for reply  successfully');
+            return redirect()->back()->with('success', 'Thank you for reply successfully');
         } catch (Exception $e) {
             Log::error('CommunityController::reply => ' . $e->getMessage());
             return redirect()->back()->with('error', "Error : " . $e->getMessage());
@@ -234,8 +234,6 @@ class CommunityController extends Controller
     public function replyDelete($id)
     {
         try {
-
-
             $companyId = Helper::getCompanyId();
             $reply = Reply::where('company_id', $companyId)->where('id', base64_decode($id));
             $reply->delete();
@@ -248,17 +246,12 @@ class CommunityController extends Controller
     public function status(Request $request)
     {
         try {
-
-
-
             $companyId = Helper::getCompanyId();
             // Ensure that the community belongs to the current company
             $community = Community::where('company_id', $companyId)->findOrFail(base64_decode($request->id));
             $community->update([
                 'status' => $request->status,
             ]);
-
-
             return response()->json(["status" => 200, "message" => "Updated successfully"]);
         } catch (\Exception $e) {
             Log::error('CommunityController::status ' . $e->getMessage());
@@ -300,7 +293,6 @@ class CommunityController extends Controller
             $like->delete();
             return response()->json(["status" => 200, "message" => "You unliked this like", "type" => ""]);
         }
-
 
         return response()->json(["status" => 200, "message" => "Thank you for like", "type" => "like"]);
     }

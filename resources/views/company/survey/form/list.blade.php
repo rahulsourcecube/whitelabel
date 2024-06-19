@@ -125,7 +125,7 @@
                                     <input type="text" class="form-control" id="contact"
                                         placeholder="Contact Number" maxlength="20" name="contact_number[]"
                                         value=""
-                                        oninput="this.value = this.value.replace(/[^0-9\-+]+/g, '').replace(/(\..*)\./g, '$1');"">
+                                        oninput="this.value = this.value.replace(/[^0-9\-+]+/g, '').replace(/(\..*)\./g, '$1');">
                                 </div>
                                 <div class=" col-md-2">
                                     <label for="title" class="col-form-label"></label>

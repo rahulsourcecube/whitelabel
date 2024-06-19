@@ -122,10 +122,11 @@
                                 {{ $task_data->appends(Request::all())->links() }}
                             </div>
                         @else
-                            @include('front.error.error')
-                            {{-- <div class="col-md-12">
-                                <h1 class="m-100 text-center">No Data Found!</h1>
-                            </div> --}}
+                            <div class="col-sm-12 h-15 w-50 text-center">
+                                <img src="{{ asset('assets/images/not-found.png') }}" class="w-25">
+                                <h2 class="text-center">Not Found</h2>
+                            </div>
+
                         @endif
                     </div>
                 </div>
