@@ -52,7 +52,7 @@ class PackageController extends Controller
     {
         try {
             $companyId = Helper::getCompanyId();
-            $bills = CompanyPackage::where('company_id', $companyId)->get();
+            $bills = CompanyPackage::where('company_id', $companyId)->orderBy('id', 'desc')->get();
             return view('company.billing.list', compact('bills'));
         } catch (Exception $e) {
             Log::error('PackageController::Billing => ' . $e->getMessage());

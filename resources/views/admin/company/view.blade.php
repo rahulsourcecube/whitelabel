@@ -55,6 +55,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
+
                     <div class="card">
                         <div class="card-body">
                             <div class=" align-items-center">
@@ -110,10 +111,133 @@
                                             {!! $user_company_setting['description'] ?: 'N/A' !!}
 
                                         </div>
-                                        <div class="col-md-12">
-                                            <hr>
-                                            <h5>Active Package Detail</h5>
-                                            @if (!empty($ActivePackageData) && !empty($ActivePackageData->GetPackageData))
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+
+                                    {{-- <div class="col-md-6">
+                                                <hr>
+                                                <h5>Active Package Detail</h5>
+                                                @if (!empty($ActivePackageData) && !empty($ActivePackageData->GetPackageData))
+                                                    <div class="d-flex justify-content-between p-b-20 border-bottom">
+                                                        <div class="media align-items-center">
+                                                            <div class="avatar avatar-blue avatar-icon"
+                                                                style="height: 55px; width: 55px;">
+                                                                <i class="anticon anticon-dollar font-size-25"
+                                                                    style="line-height: 55px"></i>
+                                                            </div>
+                                                            <div class="m-l-15">
+                                                                <h2 class="font-weight-bold font-size-30 m-b-0">
+                                                                    @if ($ActivePackageData->GetPackageData->type != '1')
+                                                                        {{ App\Helpers\Helper::getcurrency() }}
+                                                                    @endif
+                                                                    {{ $ActivePackageData->price ?? '0' }}
+                                                                </h2>
+                                                                <h4 class="m-b-0">
+                                                                    {{ $ActivePackageData->GetPackageData->title ?? '' }}
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <ul class="list-unstyled m-v-30">
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between"> <span
+                                                                    class="text-dark font-weight-semibold">
+                                                                    validity date <br> From
+                                                                    {{ date('d-M-y', strtotime($ActivePackageData->start_date)) }}
+                                                                    to
+                                                                    {{ date('d-M-y', strtotime($ActivePackageData->end_date)) }}
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between"> <span
+                                                                    class="text-dark font-weight-semibold">Total
+                                                                    campaign
+                                                                    {{ $ActivePackageData->no_of_campaign }}/{{ $CampaignModelCount }}</span>
+                                                            </div>
+                                                        </li>
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Total
+                                                                    Employee
+                                                                    {{ $ActivePackageData->no_of_employee }}/{{ $staffCount }}</span>
+                                                            </div>
+                                                        </li>
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Total User
+                                                                    {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
+                                                            </div>
+                                                        </li>
+
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">
+                                                                    <i
+                                                                        class="mr-2 fa fa-{{ $ActivePackageData->survey_status && $ActivePackageData->survey_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                    Survey </span>
+                                                            </div>
+                                                        </li>
+                                                        @if ($ActivePackageData->no_of_survey && $ActivePackageData->survey_status == '1')
+                                                            <li class="m-b-20">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span class="text-dark font-weight-semibold">Total
+                                                                        Survey
+                                                                        {{ $ActivePackageData->no_of_survey }}/{{ $surveyCount }}</span>
+                                                                </div>
+                                                            </li>
+                                                        @endif
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">
+
+                                                                    <i
+                                                                        class="mr-2 fa fa-{{ $ActivePackageData->community_status && $ActivePackageData->community_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                    Community</span>
+                                                            </div>
+                                                        </li>
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">
+                                                                    <i
+                                                                        class="mr-2 fa fa-{{ $ActivePackageData->mail_temp_status && $ActivePackageData->mail_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                    Mail Template</span>
+                                                            </div>
+                                                        </li>
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold"><i
+                                                                        class="mr-2 fa fa-{{ $ActivePackageData->sms_temp_status && $ActivePackageData->sms_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
+                                                                    Sms Template
+                                                                </span>
+                                                            </div>
+                                                        </li>
+
+                                                    </ul>
+                                                @else
+                                                    <div class="d-flex justify-content-between p-b-20 border-bottom">
+                                                        <div class="media align-items-center">-</div>
+                                                    </div>
+                                                @endif
+                                            </div> --}}
+
+                                    <h4>Active Package Detail</h4>
+                                    @if (!empty($ActivePackageData) && !empty($ActivePackageData->GetPackageData))
+                                        <div class="card mt-2">
+                                            <div class="card-body">
                                                 <div class="d-flex justify-content-between p-b-20 border-bottom">
                                                     <div class="media align-items-center">
                                                         <div class="avatar avatar-blue avatar-icon"
@@ -122,11 +246,12 @@
                                                                 style="line-height: 55px"></i>
                                                         </div>
                                                         <div class="m-l-15">
+
                                                             <h2 class="font-weight-bold font-size-30 m-b-0">
                                                                 @if ($ActivePackageData->GetPackageData->type != '1')
                                                                     {{ App\Helpers\Helper::getcurrency() }}
                                                                 @endif
-                                                                {{ $ActivePackageData->GetPackageData->plan_price }}
+                                                                {{ $ActivePackageData->price }}
                                                             </h2>
                                                             <h4 class="m-b-0">
                                                                 {{ $ActivePackageData->GetPackageData->title }}
@@ -138,85 +263,296 @@
                                                     <li class="m-b-20">
                                                         <div class="d-flex justify-content-between"> <span
                                                                 class="text-dark font-weight-semibold">
-                                                                validity date <br> From
+                                                                Validity date <br> From
                                                                 {{ date('d-M-y', strtotime($ActivePackageData->start_date)) }}
                                                                 to
                                                                 {{ date('d-M-y', strtotime($ActivePackageData->end_date)) }}
                                                             </span>
                                                         </div>
                                                     </li>
+
                                                     <li class="m-b-20">
                                                         <div class="d-flex justify-content-between"> <span
-                                                                class="text-dark font-weight-semibold">Total campaign
+                                                                class="text-dark font-weight-semibold">Total
+                                                                campaign
                                                                 {{ $ActivePackageData->no_of_campaign }}/{{ $CampaignModelCount }}</span>
+                                                            <div class="text-success font-size-16"> <i
+                                                                    class="anticon anticon-check"></i> </div>
                                                         </div>
                                                     </li>
                                                     <li class="m-b-20">
                                                         <div class="d-flex justify-content-between">
-                                                            <span class="text-dark font-weight-semibold">Total Employee
+                                                            <span class="text-dark font-weight-semibold">Total
+                                                                Employee
                                                                 {{ $ActivePackageData->no_of_employee }}/{{ $staffCount }}</span>
+                                                            <div class="text-success font-size-16"> <i
+                                                                    class="anticon anticon-check"></i> </div>
                                                         </div>
                                                     </li>
                                                     <li class="m-b-20">
                                                         <div class="d-flex justify-content-between">
-                                                            <span class="text-dark font-weight-semibold">Total User
+                                                            <span class="text-dark font-weight-semibold">Total
+                                                                User
                                                                 {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
+                                                            <div class="text-success font-size-16"> <i
+                                                                    class="anticon anticon-check"></i> </div>
                                                         </div>
                                                     </li>
 
                                                     <li class="m-b-20">
                                                         <div class="d-flex justify-content-between">
-                                                            <span class="text-dark font-weight-semibold">
-                                                                <i
-                                                                    class="mr-2 fa fa-{{ $ActivePackageData->survey_status && $ActivePackageData->survey_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
-                                                                Survey </span>
+                                                            <span class="text-dark font-weight-semibold">Survey
+                                                            </span>
+                                                            @if ($ActivePackageData->no_of_survey && $ActivePackageData->survey_status == '1')
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i>
+                                                                </div>
+                                                            @else
+                                                                <div class="text-danger font-size-16"> <i
+                                                                        class="anticon anticon-close"></i>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </li>
+
                                                     @if ($ActivePackageData->no_of_survey && $ActivePackageData->survey_status == '1')
                                                         <li class="m-b-20">
                                                             <div class="d-flex justify-content-between">
-                                                                <span class="text-dark font-weight-semibold">Total Survey
-                                                                    {{ $ActivePackageData->no_of_survey }}/{{ $surveyCount }}</span>
+                                                                <span class="text-dark font-weight-semibold">No
+                                                                    Of
+                                                                    Survey
+                                                                    {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i>
+                                                                </div>
+
                                                             </div>
                                                         </li>
                                                     @endif
-                                                    <li class="m-b-20">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span class="text-dark font-weight-semibold">
 
-                                                                <i
-                                                                    class="mr-2 fa fa-{{ $ActivePackageData->community_status && $ActivePackageData->community_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
-                                                                Community</span>
-                                                        </div>
-                                                    </li>
                                                     <li class="m-b-20">
                                                         <div class="d-flex justify-content-between">
-                                                            <span class="text-dark font-weight-semibold">
-                                                                <i
-                                                                    class="mr-2 fa fa-{{ $ActivePackageData->mail_temp_status && $ActivePackageData->mail_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
-                                                                Mail Template</span>
-                                                        </div>
-                                                    </li>
-                                                    <li class="m-b-20">
-                                                        <div class="d-flex justify-content-between">
-                                                            <span class="text-dark font-weight-semibold"><i
-                                                                    class="mr-2 fa fa-{{ $ActivePackageData->sms_temp_status && $ActivePackageData->sms_temp_status == '1' ? 'check text-success' : 'close text-danger' }}"></i>
-                                                                Sms Template
-                                                            </span>
+                                                            <span class="text-dark font-weight-semibold">Community
+                                                                {{ $ActivePackageData->community_status && $ActivePackageData->community_status == '1' ? 'on' : '' }}</span>
+                                                            @if ($ActivePackageData->community_status && $ActivePackageData->community_status == '1')
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i>
+                                                                </div>
+                                                            @else
+                                                                <div class="text-danger font-size-16"> <i
+                                                                        class="anticon anticon-close"></i>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </li>
 
+
+                                                    <li class="m-b-20">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span class="text-dark font-weight-semibold">Mail
+                                                                Template
+                                                                {{ $ActivePackageData->mail_temp_status ? 'on' : '' }}</span>
+                                                            @if ($ActivePackageData->mail_temp_status && $ActivePackageData->mail_temp_status == '1')
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i>
+                                                                </div>
+                                                            @else
+                                                                <div class="text-danger font-size-16"> <i
+                                                                        class="anticon anticon-close"></i>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </li>
+
+
+                                                    <li class="m-b-20">
+                                                        <div class="d-flex justify-content-between">
+                                                            <span class="text-dark font-weight-semibold">Sms
+                                                                Template
+                                                                {{ $ActivePackageData->sms_temp_status ? 'on' : '' }}</span>
+                                                            @if ($ActivePackageData->sms_temp_status && $ActivePackageData->sms_temp_status == '1')
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i>
+                                                                </div>
+                                                            @else
+                                                                <div class="text-danger font-size-16"> <i
+                                                                        class="anticon anticon-close"></i>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </li>
                                                 </ul>
-                                            @else
-                                                <div class="d-flex justify-content-between p-b-20 border-bottom">
-                                                    <div class="media align-items-center">-</div>
+
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="d-flex justify-content-between p-b-20 ">
+                                            <h3 class="media align-items-center ">Not Found</h3>
+                                        </div>
+                                    @endif
+
+                                </div>
+                            </div>
+                        </div>
+                        {{-- <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="card mt-2">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between p-b-20 border-bottom">
+                                                        <div class="media align-items-center">
+                                                            <div class="avatar avatar-blue avatar-icon"
+                                                                style="height: 55px; width: 55px;">
+                                                                <i class="anticon anticon-dollar font-size-25"
+                                                                    style="line-height: 55px"></i>
+                                                            </div>
+                                                            <div class="m-l-15">
+
+                                                                <h2 class="font-weight-bold font-size-30 m-b-0">
+                                                                    @if ($ActivePackageData->GetPackageData->type != '1')
+                                                                        {{ App\Helpers\Helper::getcurrency() }}
+                                                                    @endif
+                                                                    {{ $ActivePackageData->price }}
+                                                                </h2>
+                                                                <h4 class="m-b-0">
+                                                                    {{ $ActivePackageData->GetPackageData->title }}
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <ul class="list-unstyled m-v-30">
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between"> <span
+                                                                    class="text-dark font-weight-semibold">
+                                                                    validity date <br> From
+                                                                    {{ date('d-M-y', strtotime($ActivePackageData->start_date)) }}
+                                                                    to
+                                                                    {{ date('d-M-y', strtotime($ActivePackageData->end_date)) }}
+                                                                </span>
+                                                            </div>
+                                                        </li>
+
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between"> <span
+                                                                    class="text-dark font-weight-semibold">Total
+                                                                    campaign
+                                                                    {{ $ActivePackageData->no_of_campaign }}/{{ $CampaignModelCount }}</span>
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i> </div>
+                                                            </div>
+                                                        </li>
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Total
+                                                                    Employee
+                                                                    {{ $ActivePackageData->no_of_employee }}/{{ $staffCount }}</span>
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i> </div>
+                                                            </div>
+                                                        </li>
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Total
+                                                                    User
+                                                                    {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
+                                                                <div class="text-success font-size-16"> <i
+                                                                        class="anticon anticon-check"></i> </div>
+                                                            </div>
+                                                        </li>
+
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Survey
+                                                                </span>
+                                                                @if ($ActivePackageData->no_of_survey && $ActivePackageData->survey_status == '1')
+                                                                    <div class="text-success font-size-16"> <i
+                                                                            class="anticon anticon-check"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-danger font-size-16"> <i
+                                                                            class="anticon anticon-close"></i>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </li>
+
+                                                        @if ($ActivePackageData->no_of_survey && $ActivePackageData->survey_status == '1')
+                                                            <li class="m-b-20">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span class="text-dark font-weight-semibold">No
+                                                                        Of
+                                                                        Survey
+                                                                        {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
+                                                                    <div class="text-success font-size-16"> <i
+                                                                            class="anticon anticon-check"></i>
+                                                                    </div>
+
+                                                                </div>
+                                                            </li>
+                                                        @endif
+
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Community
+                                                                    {{ $ActivePackageData->community_status && $ActivePackageData->community_status == '1' ? 'on' : '' }}</span>
+                                                                @if ($ActivePackageData->community_status && $ActivePackageData->community_status == '1')
+                                                                    <div class="text-success font-size-16"> <i
+                                                                            class="anticon anticon-check"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-danger font-size-16"> <i
+                                                                            class="anticon anticon-close"></i>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </li>
+
+
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Mail
+                                                                    Template
+                                                                    {{ $ActivePackageData->mail_temp_status ? 'on' : '' }}</span>
+                                                                @if ($ActivePackageData->mail_temp_status && $ActivePackageData->mail_temp_status == '1')
+                                                                    <div class="text-success font-size-16"> <i
+                                                                            class="anticon anticon-check"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-danger font-size-16"> <i
+                                                                            class="anticon anticon-close"></i>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </li>
+
+
+                                                        <li class="m-b-20">
+                                                            <div class="d-flex justify-content-between">
+                                                                <span class="text-dark font-weight-semibold">Sms
+                                                                    Template
+                                                                    {{ $ActivePackageData->sms_temp_status ? 'on' : '' }}</span>
+                                                                @if ($ActivePackageData->sms_temp_status && $ActivePackageData->sms_temp_status == '1')
+                                                                    <div class="text-success font-size-16"> <i
+                                                                            class="anticon anticon-check"></i>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-danger font-size-16"> <i
+                                                                            class="anticon anticon-close"></i>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+
                                                 </div>
-                                            @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>

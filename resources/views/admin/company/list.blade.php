@@ -38,7 +38,7 @@
                         <i class="anticon anticon-close"></i>
                     </button>
                 </div>
-                <div class="modal-body d-flex">
+                <div class="modal-body">
 
                 </div>
             </div>

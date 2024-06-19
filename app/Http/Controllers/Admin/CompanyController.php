@@ -324,6 +324,7 @@ class CompanyController extends Controller
             $data['userCount'] =  !empty($data['ActivePackageData']) ? User::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->where('user_type',  User::USER_TYPE['USER'])->count() : 0;
             $data['surveyCount'] =  !empty($data['ActivePackageData']) ? SurveyForm::where('company_id', $data['user_company']->user_id)->where('package_id', $data['ActivePackageData']->id)->count() : 0;
 
+
             return view('admin.company.view', $data);
         } catch (Exception $e) {
             Log::error('CompanyController::view ' . $e->getMessage());
@@ -461,10 +462,14 @@ class CompanyController extends Controller
             }
 
             $companyId = $request->company_id;
+            $checkPackage = CompanyPackage::where('company_id', $companyId)
+                ->where('status', CompanyPackage::STATUS['ACTIVE'])
+                ->orderBy('id', 'desc')
+                ->first();
 
-            $package = PackageModel::where('id', $request->package_id)->first();
-            if (empty($package)) {
-                return redirect()->back()->with('error', 'Package not found');
+            if (!empty($checkPackage)) {
+                $checkPackage->status = '0';
+                $checkPackage->save();
             }
 
             $addPackage = new CompanyPackage();
@@ -479,6 +484,11 @@ class CompanyController extends Controller
             $addPackage->paymnet_method = 'card';
             $addPackage->status = '1';
             $addPackage->paymnet_response = null;
+            $addPackage->survey_status = $package->survey_status;
+            $addPackage->no_of_survey =  $package->no_of_survey;
+            $addPackage->mail_temp_status = $package->mail_temp_status;
+            $addPackage->sms_temp_status = $package->sms_temp_status;
+            $addPackage->community_status = $package->community_status;
             $addPackage->save();
             if ($addPackage) {
                 $makePayment = new Payment();
