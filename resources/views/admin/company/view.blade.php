@@ -321,7 +321,7 @@
                                                                 <span class="text-dark font-weight-semibold">No
                                                                     Of
                                                                     Survey
-                                                                    {{ $ActivePackageData->no_of_user }}/{{ $userCount }}</span>
+                                                                    {{ $ActivePackageData->no_of_survey }}/{{ $surveyCount }}</span>
                                                                 <div class="text-success font-size-16"> <i
                                                                         class="anticon anticon-check"></i>
                                                                 </div>
