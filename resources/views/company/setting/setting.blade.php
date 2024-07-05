@@ -67,6 +67,7 @@
                                     placeholder="Linkedin Link"
                                     value="{{ !empty($setting) ? $setting->linkedin_link : '' }}">
                             </div>
+
                             <div class="form-group col-md-12">
                                 <label for="descriptions">Description <span class="error">*</span></label>
                                 <textarea type="text" class="form-control" id="descriptions" name="description" placeholder="description"> {{ !empty($setting->description) ? $setting->description : '' }} </textarea>
@@ -101,6 +102,16 @@
                                 <label for="l_link">Logo Link</label>
                                 <input type="url" class="form-control mb-2" name="logo_link" id="l_link"
                                     placeholder="Logo Link" value="{{ !empty($setting) ? $setting->logo_link : '' }}">
+                            </div>
+                        </div>
+                        <label class="switch-title">Community</label>
+                        <div class="form-group align-items-center">
+                            <div class="switch m-r-10">
+                                <input type="checkbox" id="public-3" data-toggle="switch" name="community_status"
+                                    value="true" onclick='communityStstus(this)';
+                                    @if (!empty($setting) && $setting->community_status == '1') checked  @endif >
+                                <label for="public-3"></label>
+
                             </div>
                         </div>
                         <h4>Mail Credentials</h4>
@@ -150,7 +161,7 @@
                                 </div>
                             </div>
                         </div>
-                        <label for="expiry_date " class="switch-title"> Switch to pilvo Credentials</label>
+                        <label class="switch-title"> Switch to pilvo Credentials</label>
                         <div class="form-group align-items-center">
                             <div class="switch m-r-10">
                                 <input type="checkbox" id="public-1" data-toggle="switch" name="switch"
@@ -404,7 +415,24 @@
                 }
             }
         });
+        function communityStstus(checkbox) {
+            var isChecked = checkbox.checked;
+            var message = isChecked ? 'make it On ' : 'make it Off';
 
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You want to ' + message + ', right?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+
+                checkbox.checked = result.isConfirmed ? isChecked : !isChecked;
+
+            });
+        }
         function handleClickpublic(checkbox) {
             var isChecked = checkbox.checked;
             var message = isChecked ? 'Switch to plivo Credentials ' : 'Switch to twilio Credentials';

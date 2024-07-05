@@ -521,6 +521,7 @@ class SurveyController extends Controller
     }
     public function sendMail(Request $request)
     {
+
         try {
             $companyId = Helper::getCompanyId();
 
@@ -537,7 +538,7 @@ class SurveyController extends Controller
 
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
-            if (empty($SettingModel) && empty($SettingModel->mail_address) && empty($SettingModel->mail_address)) {
+            if ((empty($SettingModel)) || empty($SettingModel->mail_address) && empty($SettingModel->mail_address)) {
                 return redirect()->route('company.survey.form.index')->with(['error' => "Please enter mail credential "]);
             }
             foreach ($request->mail as $mail) {
@@ -547,7 +548,7 @@ class SurveyController extends Controller
 
                     $html =  $request->tempHtml;
 
-                    $mailTemplateSubject = !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : 'custom';
+                    $mailSubject = !empty($request->subject) ? $request->subject : 'Referdio';
                     Mail::send('user.email.surveyEmail', [
                         'name' => "",
                         'company_id' => "",
@@ -557,9 +558,9 @@ class SurveyController extends Controller
                         'campaign_price' => "",
                         'campaign_price' => "",
                         'campaign_join_link' => ""
-                    ], function ($message) use ($to, $mailTemplateSubject) {
+                    ], function ($message) use ($to, $mailSubject) {
                         $message->to($to);
-                        $message->subject($mailTemplateSubject);
+                        $message->subject($mailSubject);
                     });
                 } catch (Exception $e) {
                     Log::error('CampaignController::Action => ' . $e->getMessage());

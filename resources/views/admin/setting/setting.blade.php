@@ -148,6 +148,7 @@
                                         value="{{ !empty($setting) ? $setting->mail_address : '' }}">
                                 </div>
                             </div>
+                            <label for=" " class="switch-title"> Switch to pilvo Credentials</label>
                             <div class="form-group align-items-center">
                                 <div class="switch m-r-10">
                                     <input type="checkbox" id="public-1" data-toggle="switch" name="switch"
@@ -159,55 +160,7 @@
                                 </div>
                             </div>
                             <h4>SMS Credentials</h4>
-                            {{-- <div class="m-t-50" style="">
-                                <div class="form-row">
-                                    <div class="form-group col-md-4">
-                                        <label for="sms_account_sid">Account SID<span class="error">*</span> </label>
-                                        <input type="text" class="form-control mb-2" name="sms_account_sid"
-                                            id="sms_account_sid" placeholder="Account SID"
-                                            value="{{ !empty($setting) ? $setting->sms_account_sid : '' }}" required>
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label for="sms_account_token">Account Token <span class="error">*</span>
-                                        </label>
-                                        <input type="text" class="form-control mb-2" name="sms_account_token"
-                                            id="sms_account_token" placeholder="Account Token"
-                                            value="{{ !empty($setting) ? $setting->sms_account_token : '' }}">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label for="sms_account_number">SMS Form No. <span class="error">*</span>
-                                        </label>
-                                        <input type="text" class="form-control mb-2" name="sms_account_number"
-                                            id="sms_account_number" placeholder="SMS Form No."
-                                            onkeypress="return /[0-9+]/i.test(event.key)"
-                                            value="{{ !empty($setting) ? $setting->sms_account_number : '' }}">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label for="sms_account_to_number">(Testing) To No. <span class="error"></span>
-                                        </label>
-                                        <input type="text" class="form-control mb-2" name="sms_account_to_number"
-                                            id="sms_account_number" placeholder="(Testing) To No."
-                                            onkeypress="return /[0-9+]/i.test(event.key)"
-                                            value="{{ !empty($setting) ? $setting->sms_account_to_number : '' }}">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label for="sms_mode">Mode <span class="error"></span>
-                                        </label>
-                                        <select id="sms_mode" name="sms_mode" class="form-control type">
-                                            <option value="1"
-                                                {{ !empty($setting) && $setting->sms_mode == '1' ? 'selected' : '' }}>Test
-                                            </option>
-                                            <option value="2"
-                                                {{ !empty($setting) && $setting->sms_mode == '2' ? 'selected' : '' }}>
-                                                Live
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div> --}}
 
-
-                            {{-- Twilio-credentials --}}
                             <div class="m-t-10  twilio-credentials @if (!empty($setting) && $setting->sms_type == '2') d-none @endif "
                                 style="">
                                 <div class="form-row">

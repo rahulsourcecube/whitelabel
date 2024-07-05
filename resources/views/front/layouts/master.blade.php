@@ -45,18 +45,20 @@
                     <!-- Content Wrapper START -->
                     @yield('main-content')
                     <!-- Content Wrapper END -->
-                    <!-- Footer START -->
-                    <footer class="footer">
-                        <div class="footer-content">
-                            <p class="m-b-0">Copyright © {{ date('Y') }}. All rights reserved.</p>
-                        </div>
-                    </footer>
-                    <!-- Footer END -->
+
                 </div>
             </div>
             <!-- Page Container END -->
         </div>
+        <!-- Footer START -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p class="m-b-0">Copyright © {{ date('Y') }}. All rights reserved.</p>
+            </div>
+        </footer>
+        <!-- Footer END -->
     </div>
+
     <!--  Footer Scripts -->
     @include('front.includes.footer_scripts')
 </body>

@@ -213,7 +213,7 @@ class MailtemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (
-                empty($SettingModel) &&
+                (empty($SettingModel)) ||
                 empty($SettingModel->mail_username) &&
                 empty($SettingModel->mail_host) &&
                 empty($SettingModel->mail_password)

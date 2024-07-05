@@ -33,7 +33,7 @@
 
                                 <select id="type" name="type" class="form-control templateType"
                                     {{ !empty($SmsTemplate) && $SmsTemplate->template_type ? 'disabled' : '' }}>
-                                    <option value="">Selcet Type
+                                    <option value="">SMS Template Type
                                     </option>
                                     <option value="forgot_password"
                                         {{ !empty($SmsTemplate) && $SmsTemplate->template_type == 'forgot_password' ? 'selected' : '' }}>

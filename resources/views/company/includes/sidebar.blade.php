@@ -214,7 +214,7 @@
                         </ul>
                     </li>
                 @endif
-                @if (!empty($ActivePackageData->community_status) && $ActivePackageData->community_status == '1')
+                @if (!empty($ActivePackageData->community_status) && $ActivePackageData->community_status == '1' &&  $siteSetting->community_status=='1')
                     <li class="nav-item dropdown">
                         <a class="dropdown-toggle" href="javascript:void(0);">
                             <span class="icon-holder">
@@ -226,8 +226,10 @@
                             </span>
                         </a>
                         <ul class="dropdown-menu">
-
-                            <li @if (request()->segment(2) == 'channel') class='active' @endif>
+                            <li>
+                                <a href="{{ route('community') }}">Go to Community</a>
+                            </li>
+                            <li @if (request()->segment(2) == 'category') class='active' @endif>
                                 <a href="{{ route('company.channel.index') }}">Category</a>
                             </li>
                             <li @if (request()->segment(2) == 'reply') class='active' @endif>
