@@ -219,6 +219,6 @@
         var token = "{{ csrf_token() }}";
     </script>
     <script src="{{ asset('assets/js/pages/company-user.js?v=' . time()) }}"></script>
-   
+
 @endsection
 

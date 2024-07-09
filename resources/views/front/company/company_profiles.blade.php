@@ -1,13 +1,10 @@
 @extends('front.layouts.master')
 @section('title', 'Company Profiles')
+
+@php
+    $siteSetting = App\Helpers\Helper::getSiteSetting();
+@endphp
 @section('main-content')
-    <?php ?>
-    <style>
-        /* .select2-container .select2-selection--single {
-                                                                                                                                                                                                                                                                                                                                                height: 4px;
-                                                                                                                                                                                                                                                                                                                              } */
-    </style>
-    <!-- Content Wrapper START -->
 
 
     <div class="mail-wrapper  p-h-20 p-v-20 bg full-height">
@@ -115,7 +112,7 @@
                                         @if (
                                             !empty($ActivePackageData) &&
                                                 $ActivePackageData->community_status == '1' &&
-                                                !empty($ActivePackageData->community_status))
+                                                !empty($ActivePackageData->community_status) && $companyProfile->company->setting->community_status=='1')
                                             <a href="{{ $community ?? '' }}" class="btn btn-primary btn-tone">
                                                 <i class="anticon anticon-team"></i>
                                                 <span class="m-l-5">Community</span>

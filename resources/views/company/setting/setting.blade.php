@@ -1,5 +1,8 @@
+
+
 @extends('company.layouts.master')
 @section('title', 'Company Setting')
+<?php $ActivePackageData = App\Helpers\Helper::GetActivePackageData()?>
 @section('main-content')
     <div class="main-content">
         @include('company.includes.message')
@@ -104,16 +107,18 @@
                                     placeholder="Logo Link" value="{{ !empty($setting) ? $setting->logo_link : '' }}">
                             </div>
                         </div>
-                        <label class="">Community</label>
-                        <div class="form-group align-items-center">
-                            <div class="switch m-r-10">
-                                <input type="checkbox" id="public-3" data-toggle="switch" name="community_status"
-                                    value="true" onclick='communityStstus(this)';
-                                    @if (!empty($setting) && $setting->community_status == '1') checked  @endif >
-                                <label for="public-3"></label>
+                        @if (!empty($ActivePackageData->community_status) && $ActivePackageData->community_status == '1')
+                            <label class="">Community</label>
+                            <div class="form-group align-items-center">
+                                <div class="switch m-r-10">
+                                    <input type="checkbox" id="public-3" data-toggle="switch" name="community_status"
+                                        value="true" onclick='communityStstus(this)';
+                                        @if (!empty($setting) && $setting->community_status == '1') checked  @endif >
+                                    <label for="public-3"></label>
 
+                                </div>
                             </div>
-                        </div>
+                        @endif
                         <h4>Mail Credentials</h4>
                         <div class="m-t-50" style="">
                             <div class="form-row">

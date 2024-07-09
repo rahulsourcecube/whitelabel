@@ -13,10 +13,10 @@ class taskProgressionUserHistory extends Model
 
     public function taskProgressionHistory(): HasMany
     {
-        return $this->hasMany(taskProgression::class, 'id', 'progression_id');
+        return $this->hasMany(TaskProgression::class, 'id', 'progression_id');
     }
     public function taskProgression()
     {
-        return $this->hasOne(taskProgression::class, 'id', 'progression_id');
+        return $this->hasOne(TaskProgression::class, 'id', 'progression_id');
     }
 }

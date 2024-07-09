@@ -102,7 +102,7 @@ $notificationCount = Notification::where('user_id', $user->id)
                     @endif
                 </a>
             </li>
-            @if ($ActivePackageData->community_status == '1' && !empty($ActivePackageData->community_status))
+            @if ($ActivePackageData->community_status == '1' && !empty($ActivePackageData->community_status) &&  $siteSetting->community_status=='1')
                 <li class="nav-item dropdown open @if (request()->segment(2) == 'community' && request()->segment(3) == '') active @endif ">
                     <a class="dropdown-toggle" href="{{ route('community') }}">
                         <span class="icon-holder">

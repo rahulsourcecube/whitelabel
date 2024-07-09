@@ -123,6 +123,7 @@ class UserController extends Controller
     {
         // dd('dfgdg');
         //Check  ActivePackageAccess
+
         $country_data = CountryModel::all();
         $isActivePackageAccess = Helper::isActivePackageAccess();
 
