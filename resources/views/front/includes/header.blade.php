@@ -47,7 +47,7 @@
     }
 
 
-    .nav-link-ltr::before {
+    .nav-link-ltrs::before {
         transition: 300ms;
         height: 5px;
         content: "";
@@ -55,16 +55,18 @@
         background-color: #e6e9ee;
     }
 
-    .nav-link-ltr::before {
+    .nav-link-ltrs::before {
         width: 0%;
         bottom: 8px;
     }
 
-    .nav-link-ltr:hover::before {
+    .nav-link-ltrs:hover::before {
         width: 80%;
     }
 </style>
-<?php $ActivePackageData = App\Helpers\Helper::GetActivePackageData(); ?>
+<?php $ActivePackageData = App\Helpers\Helper::GetActivePackageData();
+        $companySetting = App\Helpers\Helper::companySetting();
+       ?>
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <div class="container-fluid">
         <div class="collapse navbar-collapse  front-header" id="navbarSupportedContent">
@@ -77,7 +79,7 @@
                     @if (
                         !empty($ActivePackageData) &&
                             $ActivePackageData->community_status == '1' &&
-                            !empty($ActivePackageData->community_status))
+                            !empty($ActivePackageData->community_status) && $companySetting->community_status == '1')
                         <li class="nav-item">
                             <a class="nav-link nav-link-ltr   @if (request()->segment(1) == 'community') active @endif "
                                 href="{{ route('community') }}">Community</a>

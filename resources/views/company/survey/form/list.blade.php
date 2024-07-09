@@ -58,6 +58,13 @@
                             @csrf
                             <div class="row mb-3">
                                 <div class="form-group col-md-12">
+                                    <label for="subject">Subject</label>
+                                    <input type="text" class="form-control" id="subject" name="subject"
+                                        value="{{ !empty($mailTemplate) && !empty($mailTemplate->subject) ? $mailTemplate->subject : old('subject') }}"
+                                        placeholder="Subject" maxlength="150">
+
+                                </div>
+                                <div class="form-group col-md-12">
                                     <label for="tempHtml">Html</label>
                                     {{-- <textarea type="text" class="form-control" id="tempHtml" name="tempHtml" placeholder="Html" >{{ !empty($mailTemplate) && !empty($mailTemplate->template_html)  ? $mailTemplate->template_html : '' }}</textarea> --}}
                                     <textarea class="form-control ckeditor" id="tempHtml" cols="30" name="tempHtml" placeholder="Html">{{ !empty($mailTemplate) && !empty($mailTemplate->template_html) ? $mailTemplate->template_html : '' }}</textarea>
@@ -71,9 +78,9 @@
                                     <input type="email" class="form-control" name="mail[]" id="em" value=""
                                         placeholder="Enter mail">
                                 </div>
+
                                 <div class=" col-md-2">
                                     <label for="title" class="col-form-label"></label>
-
                                     <button type="button" onclick="addMailMore(this)" class="btn btn-primary"
                                         style="margin-top:35px">Add</button>
                                 </div>
@@ -192,13 +199,20 @@
                         'mail[]': {
                             required: true,
                             email: true
+                        },
+                        subject: {
+                            required: true,
+
                         }
                     },
                     messages: {
 
-                        'contact_number[]': {
-                            required: "Please enter a Email",
-                        }
+                        'mail[]': {
+                            required: "Please enter a email",
+                        },
+                        subject: {
+                            required: "Please enter a subject",
+                        },
                     }
                 });
             });

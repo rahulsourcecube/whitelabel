@@ -18,7 +18,8 @@ class ReplyController extends Controller
     public function index()
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+        if ($ActivePackageData->community_status != "1"  ($companySetting->community_status =='2')) {
             return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
         }
 
@@ -92,7 +93,8 @@ class ReplyController extends Controller
         try {
 
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($ActivePackageData->community_status != "1") {
+            $companySetting = Helper::companySetting();
+            if ($ActivePackageData->community_status != "1"  ($companySetting->community_status =='2')) {
                 return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
             }
             $companyId = Helper::getCompanyId();

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('plivo_test_phone_number')->nullable()->after('plivo_phone_number');
             $table->enum('plivo_mode', ['1', '2'])->default('1')->comment('1 =Test, 2 =live')->after('plivo_test_phone_number');
             $table->enum('sms_type', ['1', '2'])->default('1')->comment('1 =Twilivo, 2 =Plivo')->after('plivo_mode');
+            $table->enum('community_status', ['1', '2'])->default('1')->comment('1=On, 2 = Off')->after('sms_type');
         });
     }
 

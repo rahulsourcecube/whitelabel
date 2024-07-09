@@ -189,7 +189,7 @@ class SmstemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
-                return redirect()->route('company.sms.index')->with(['error' => "Please enter SMS Credential"]);
+                return redirect()->route('company.sms.index')->with(['error' => "Please configure SMS credentials"]);
             }
 
             $notFoundNumber = [];
@@ -603,7 +603,7 @@ class SmstemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
-                return response()->json(['success' => false, 'message' => "Error: Please enter SMS Credential"]);
+                return response()->json(['success' => false, 'message' => "Error: Please configure SMS credentials"]);
             }
 
             if (!$userDatas->isEmpty()) {

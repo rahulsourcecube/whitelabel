@@ -531,4 +531,14 @@ class Helper
 
         return false;
     }
+    public static function companySetting()
+    {
+
+        $companyId = Helper::getCompanyId();
+        $SettingModel="";
+        $SettingModel = SettingModel::where('user_id', $companyId)->first();
+
+
+        return $SettingModel;
+    }
 }

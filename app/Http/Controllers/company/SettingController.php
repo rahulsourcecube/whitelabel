@@ -122,6 +122,10 @@ class SettingController extends Controller
                 $SettingModel->plivo_test_phone_number = $request->plivo_test_phone_number;
                 $SettingModel->plivo_mode = $request->plivo_mode;
 
+                // Community ststus
+                $SettingModel->community_status = $request->community_status == 'true' ? '1' : '2';
+
+
 
                 $SettingModel->save();
                 return redirect()->route('company.setting.index')->with('success', 'Setting Update successfully');

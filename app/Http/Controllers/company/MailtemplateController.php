@@ -213,12 +213,12 @@ class MailtemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (
-                empty($SettingModel) &&
+                (empty($SettingModel)) ||
                 empty($SettingModel->mail_username) &&
                 empty($SettingModel->mail_host) &&
                 empty($SettingModel->mail_password)
             ) {
-                return redirect()->route('company.mail.index')->with(['error' => "Please enter mail credentials"]);
+                return redirect()->route('company.mail.index')->with(['error' => "Please configure mail credentials"]);
             }
 
 
@@ -563,8 +563,8 @@ class MailtemplateController extends Controller
             $userDatas = User::where('user_type', User::USER_TYPE['USER'])->where('status', '1')->where('company_id', $companyId)->get();
 
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
-            if (empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)) {
-                return response()->json(['success' => false, 'message' => "Error: Please enter mail credentials "]);
+            if (empty($SettingModel) || empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)) {
+                return response()->json(['success' => false, 'message' => "Error: Please configure mail credentials "]);
             }
 
             if (!$userDatas->isEmpty()) {

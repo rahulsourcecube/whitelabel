@@ -14,7 +14,8 @@ class ChannelsController extends Controller
     public function index()
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+        if ($ActivePackageData->community_status != "1"  || $companySetting->community_status =='2') {
             return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
         }
         $channels = Channels::all();
@@ -80,7 +81,8 @@ class ChannelsController extends Controller
     public function create()
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+        if ($ActivePackageData->community_status != "1"  || $companySetting->community_status =='2') {
             return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
         }
         return view('company.channels.create');
@@ -132,7 +134,8 @@ class ChannelsController extends Controller
 
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+        if ($ActivePackageData->community_status != "1"  || $companySetting->community_status =='2') {
             return redirect()->route('company.dashboard')->with('error', "You don't have permission.");
         }
         try {

@@ -21,7 +21,8 @@ class CommunityController extends Controller
     public function community($type = null)
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+        if ($ActivePackageData->community_status != "1" || $companySetting->community_status == '2') {
             return redirect('/')->with('error', 'Please contact to Company administrator.');
         }
         $companyId = Helper::getCompanyId();
@@ -49,8 +50,10 @@ class CommunityController extends Controller
 
     public function index()
     {
+        dd(424);
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+        if ($ActivePackageData->community_status != "1"  || $companySetting->community_status == '2') {
             return redirect('/')->with('error', 'Please contact to Company administrator.');
         }
 
@@ -60,7 +63,8 @@ class CommunityController extends Controller
     public function discuss()
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+        if ($ActivePackageData->community_status != "1" || $companySetting->community_status == '2') {
             return redirect('/')->with('error', 'Please contact to Company administrator.');
         }
 
@@ -73,7 +77,9 @@ class CommunityController extends Controller
     public function channel($id)
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+
+        if ($ActivePackageData->community_status != "1" || $companySetting->community_status == '2') {
             return redirect('/')->with('error', 'Please contact to company administrator.');
         }
         $check = Community::where('channel_id', $id)->first();
@@ -84,7 +90,9 @@ class CommunityController extends Controller
     public function create()
     {
         $ActivePackageData = Helper::GetActivePackageData();
-        if ($ActivePackageData->community_status != "1") {
+        $companySetting = Helper::companySetting();
+
+        if ($ActivePackageData->community_status != "1" || $companySetting->community_status == '2') {
             return redirect('/')->with('error', 'Please contact to company administrator.');
         }
         if (!(Auth::user())) {
@@ -102,7 +110,8 @@ class CommunityController extends Controller
     {
         try {
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($ActivePackageData->community_status != "1") {
+            $companySetting = Helper::companySetting();
+            if ($ActivePackageData->community_status != "1" || $companySetting->community_status == '2') {
                 return redirect('/')->with('error', 'Please contact to company administrator.');
             }
             $companyId = Helper::getCompanyId();
@@ -152,7 +161,8 @@ class CommunityController extends Controller
     {
         try {
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($ActivePackageData->community_status != "1") {
+            $companySetting = Helper::companySetting();
+            if ($ActivePackageData->community_status != "1" || $companySetting->community_status == '2') {
                 return redirect('/')->with('error', 'Please contact to company administrator.');
             }
 
@@ -191,7 +201,8 @@ class CommunityController extends Controller
     {
         try {
             $ActivePackageData = Helper::GetActivePackageData();
-            if ($ActivePackageData->community_status != "1") {
+            $companySetting = Helper::companySetting();
+            if ($ActivePackageData->community_status != "1" || $companySetting->community_status == '2') {
                 return redirect('/')->with('error', 'Please contact to company administrator.');
             }
             $companyId = Helper::getCompanyId();
