@@ -104,7 +104,7 @@
                                     placeholder="Logo Link" value="{{ !empty($setting) ? $setting->logo_link : '' }}">
                             </div>
                         </div>
-                        <label class="switch-title">Community</label>
+                        <label class="">Community</label>
                         <div class="form-group align-items-center">
                             <div class="switch m-r-10">
                                 <input type="checkbox" id="public-3" data-toggle="switch" name="community_status"

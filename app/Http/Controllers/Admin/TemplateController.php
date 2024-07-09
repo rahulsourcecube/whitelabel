@@ -318,9 +318,9 @@ class TemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (
-                empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
+                (empty($SettingModel)) || empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
             ) {
-                return redirect()->route('admin.mail.index')->with(['error' => "Please enter mail credentials"]);
+                return redirect()->route('admin.mail.index')->with(['error' => "Please configure mail credentials "]);
             }
 
 
@@ -495,9 +495,9 @@ class TemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (
-                empty($SettingModel) && empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
+                (empty($SettingModel)) || empty($SettingModel->mail_username) && empty($SettingModel->mail_host) && empty($SettingModel->mail_password)
             ) {
-                return response()->json(['success' => false, 'message' => "Error: Please enter mail credentials "]);
+                return response()->json(['success' => false, 'message' => "Error: Please configure mail credentials "]);
             }
 
             if (!$userDatas->isEmpty()) {
@@ -551,7 +551,7 @@ class TemplateController extends Controller
             $SettingModel = SettingModel::where('user_id', $adminId)->first();
 
             if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
-                return redirect()->route('admin.sms.index')->with(['error' => "Please enter SMS Credential "]);
+                return redirect()->route('admin.sms.index')->with(['error' => "Please configure SMS credentials "]);
             }
             $notFoundNumber = [];
             if ($request->template_type == 'welcome') {
@@ -766,7 +766,7 @@ class TemplateController extends Controller
 
             $SettingModel = SettingModel::where('user_id', $adminId)->first();
             if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
-                return response()->json(['success' => false, 'message' => "Error: Please Enter SMS Credential"]);
+                return response()->json(['success' => false, 'message' => "Error: Please configure SMS credentials"]);
             }
 
             if (!$userDatas->isEmpty()) {

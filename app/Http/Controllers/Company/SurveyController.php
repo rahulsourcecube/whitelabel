@@ -460,7 +460,7 @@ class SurveyController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if (empty($SettingModel) || (Helper::activeTwilioSetting() == false  && $SettingModel->sms_type != '2') || (Helper::activePlivoSetting() == false  && $SettingModel->sms_type != '1')) {
-                return redirect()->route('company.survey.form.index')->with(['error' => "Please enter SMS Credential "]);
+                return redirect()->route('company.survey.form.index')->with(['error' => "Please configure SMS credentials "]);
             }
 
             if ($request->contact_number != '') {
@@ -539,7 +539,7 @@ class SurveyController extends Controller
             $SettingModel = SettingModel::where('user_id', $companyId)->first();
 
             if ((empty($SettingModel)) || empty($SettingModel->mail_address) && empty($SettingModel->mail_address)) {
-                return redirect()->route('company.survey.form.index')->with(['error' => "Please enter mail credential "]);
+                return redirect()->route('company.survey.form.index')->with(['error' => "Please configure mail credentials "]);
             }
             foreach ($request->mail as $mail) {
                 try {
